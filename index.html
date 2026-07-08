@@ -1,0 +1,2373 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>pilot Skill Marketplace</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ===== DESIGN TOKENS ===== */
+    :root {
+      --c-black: #262626;
+      --c-white: #fcfcfc;
+      --c-yellow: #ffe05e;
+      --c-gray-l: #bab8ab;
+      --c-gray-m: #7b7a71;
+      --c-bg: #f1f1ec;
+      --c-gray-d: #98978e;
+      --header-h: 8.5rem;
+      --max-w: 144rem;
+      --pad-d: 8rem;
+      --pad-m: 2rem;
+      --radius-pill: 3rem;
+      --radius-card: 1.2rem;
+      --trans: all .2s cubic-bezier(.17,.67,.83,.67);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { font-size: 10px; scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+      background: var(--c-bg);
+      color: var(--c-black);
+      padding-top: var(--header-h);
+      min-height: 100vh;
+    }
+
+    /* ===== HEADER ===== */
+    .site-header {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      height: var(--header-h);
+      background: var(--c-black);
+      display: flex; align-items: center;
+    }
+    .header-inner {
+      width: 100%; max-width: var(--max-w);
+      margin: 0 auto;
+      padding: 0 var(--pad-d);
+      display: flex; align-items: center; gap: 4rem;
+    }
+    .logo { display: flex; flex-direction: column; flex-shrink: 0; }
+    .logo-mark {
+      font-size: 2.8rem; font-weight: 700; color: var(--c-white);
+      letter-spacing: -.02em; line-height: 1;
+    }
+    .overline {
+      font-size: 1.4rem; font-weight: 500; text-transform: uppercase;
+      letter-spacing: .1em; color: var(--c-yellow);
+    }
+    .search-wrap { flex: 1; max-width: 48rem; }
+    #search {
+      width: 100%; padding: 1.2rem 2rem;
+      background: rgba(252,252,252,.1);
+      border: 1px solid rgba(252,252,252,.2);
+      border-radius: var(--radius-pill);
+      color: var(--c-white);
+      font-size: 1.6rem;
+      font-family: inherit;
+      transition: var(--trans);
+    }
+    #search::placeholder { color: var(--c-gray-l); }
+    #search:focus { outline: none; border-color: var(--c-yellow); background: rgba(252,252,252,.15); }
+
+    /* ===== HERO ===== */
+    .hero {
+      background: var(--c-black);
+      padding: 8rem 0 10rem;
+    }
+    .hero-inner {
+      max-width: var(--max-w);
+      margin: 0 auto;
+      padding: 0 var(--pad-d);
+    }
+    .hero h1 {
+      font-size: 7.2rem; font-weight: 300; color: var(--c-white);
+      margin: .8rem 0 1.2rem;
+      letter-spacing: -.02em;
+      line-height: 1;
+    }
+    .hero .subline {
+      font-size: 2.4rem; font-weight: 400; color: var(--c-gray-l);
+      margin-bottom: 5rem;
+    }
+    .featured-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2.4rem;
+    }
+
+    /* ===== SKILL CARD ===== */
+    .skill-card {
+      background: var(--c-white);
+      border: 1px solid var(--c-gray-l);
+      border-radius: var(--radius-card);
+      padding: 2.4rem;
+      cursor: pointer;
+      transition: var(--trans);
+      display: flex; flex-direction: column;
+      gap: 1.2rem;
+    }
+    .skill-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px rgba(38,38,38,.12);
+      border-color: var(--c-yellow);
+    }
+    .skill-card.featured {
+      border-left: 4px solid var(--c-yellow);
+      background: rgba(255,255,255,.06);
+      color: var(--c-white);
+      border-color: transparent;
+      border-left-color: var(--c-yellow);
+    }
+    .skill-card.featured:hover {
+      background: rgba(255,255,255,.1);
+      border-left-color: var(--c-yellow);
+      box-shadow: 0 12px 32px rgba(0,0,0,.3);
+    }
+    .skill-card.featured .skill-name { color: var(--c-white); }
+    .skill-card.featured .skill-desc { color: rgba(252,252,252,.7); }
+    .skill-card.featured .skill-meta { color: rgba(252,252,252,.5); }
+    .skill-card.featured .tag-chip {
+      background: rgba(255,255,255,.1); border-color: rgba(255,255,255,.2); color: rgba(252,252,252,.7);
+    }
+    .skill-card.featured .tag-chip:hover, .skill-card.featured .tag-chip.active {
+      background: var(--c-yellow); color: var(--c-black); border-color: var(--c-yellow);
+    }
+    .skill-card.featured .rating-text { color: rgba(252,252,252,.6); }
+    .skill-card.featured .diff-badge.easy { background: rgba(212,237,218,.2); color: #7ac59a; }
+    .skill-card.featured .diff-badge.medium { background: rgba(255,243,205,.2); color: #e8c56a; }
+    .skill-card.featured .diff-badge.advanced { background: rgba(248,215,218,.2); color: #e8888e; }
+
+    .card-header { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+    .cat-badge {
+      font-size: 1.2rem; font-weight: 600; padding: .3rem 1rem;
+      border-radius: 2rem; text-transform: uppercase; letter-spacing: .05em;
+      white-space: nowrap;
+    }
+    .cat-badge.pilot-inhouse { background: var(--c-black); color: var(--c-yellow); }
+    .cat-badge.anthropic { background: var(--c-yellow); color: var(--c-black); }
+    .cat-badge.gsd { background: var(--c-gray-l); color: var(--c-black); }
+    .skill-card.featured .cat-badge.pilot-inhouse { background: rgba(255,224,94,.2); color: var(--c-yellow); }
+    .skill-card.featured .cat-badge.anthropic { background: var(--c-yellow); color: var(--c-black); }
+    .skill-card.featured .cat-badge.gsd { background: rgba(186,184,171,.2); color: var(--c-gray-l); }
+
+    .skill-badge {
+      font-size: 1.2rem; font-weight: 700; padding: .3rem 1rem;
+      border-radius: 2rem; text-transform: uppercase; letter-spacing: .05em;
+    }
+    .skill-badge.empfohlen { background: var(--c-yellow); color: var(--c-black); }
+    .skill-badge.neu { background: var(--c-black); color: var(--c-white); }
+    .skill-card.featured .skill-badge.neu { background: var(--c-white); color: var(--c-black); }
+    .skill-card.featured .skill-badge.empfohlen { background: var(--c-yellow); color: var(--c-black); }
+
+    .skill-name {
+      font-size: 2rem; font-weight: 700; color: var(--c-black);
+      margin: 0; line-height: 1.2;
+    }
+    .skill-tagline {
+      font-size: 1.5rem; font-weight: 500; color: var(--c-gray-m);
+      line-height: 1.4;
+    }
+    .skill-card.featured .skill-tagline { color: rgba(252,252,252,.65); }
+    .skill-desc {
+      font-size: 1.5rem; color: #555;
+      line-height: 1.5;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .skill-tags { display: flex; gap: .6rem; flex-wrap: wrap; }
+    .tag-chip {
+      font-size: 1.2rem; padding: .3rem .8rem;
+      background: var(--c-bg);
+      border: 1px solid var(--c-gray-l);
+      border-radius: 2rem;
+      color: var(--c-gray-m);
+      cursor: pointer;
+      transition: var(--trans);
+    }
+    .tag-chip:hover, .tag-chip.active {
+      background: var(--c-black); color: var(--c-white); border-color: var(--c-black);
+    }
+    .skill-meta {
+      font-size: 1.3rem; color: var(--c-gray-d);
+      display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;
+    }
+    .diff-badge {
+      padding: .2rem .7rem; border-radius: 1rem; font-size: 1.2rem; font-weight: 500;
+    }
+    .diff-badge.easy { background: #d4edda; color: #2d6a4f; }
+    .diff-badge.medium { background: #fff3cd; color: #856404; }
+    .diff-badge.advanced { background: #f8d7da; color: #721c24; }
+    .card-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-top: auto; gap: 1rem;
+    }
+    .stars-display { display: flex; align-items: center; gap: .4rem; }
+    .star { font-size: 1.4rem; }
+    .star.filled { color: var(--c-yellow); }
+    .star.empty { color: var(--c-gray-l); }
+    .rating-text { font-size: 1.3rem; color: var(--c-gray-m); }
+    .pilot-avatars { display: flex; }
+    .avatar {
+      width: 2.8rem; height: 2.8rem;
+      background: var(--c-yellow); color: var(--c-black);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; font-weight: 700;
+      border: 2px solid var(--c-white);
+      margin-left: -.6rem;
+    }
+    .avatar:first-child { margin-left: 0; }
+    .avatar.more { background: var(--c-gray-l); color: var(--c-black); font-size: 1rem; }
+    .skill-card.featured .avatar { border-color: var(--c-black); }
+
+    /* ===== FILTER BAR ===== */
+    .filter-bar {
+      position: sticky; top: var(--header-h); z-index: 50;
+      background: var(--c-white);
+      border-bottom: 1px solid var(--c-gray-l);
+      padding: 1.6rem 0;
+    }
+    .filter-inner {
+      max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-d);
+      display: flex; flex-direction: column; gap: 1.2rem;
+    }
+    .cat-tabs { display: flex; gap: .4rem; border-bottom: 1px solid var(--c-gray-l); overflow-x: auto; }
+    .cat-tab {
+      padding: 1rem 1.8rem 1.2rem;
+      font-size: 1.6rem; font-weight: 500;
+      background: none; border: none; border-bottom: 3px solid transparent;
+      color: var(--c-gray-m); cursor: pointer; transition: var(--trans);
+      margin-bottom: -1px; white-space: nowrap;
+      font-family: inherit;
+    }
+    .cat-tab:hover { color: var(--c-black); border-bottom-color: rgba(255,224,94,.5); }
+    .cat-tab.active { color: var(--c-black); border-bottom-color: var(--c-yellow); font-weight: 700; }
+    .tag-chips { display: flex; gap: .8rem; flex-wrap: wrap; align-items: center; }
+    .filter-tag-chip {
+      padding: .6rem 1.4rem;
+      font-size: 1.4rem;
+      background: transparent;
+      border: 1px solid var(--c-black);
+      border-radius: var(--radius-pill);
+      color: var(--c-black);
+      cursor: pointer; transition: var(--trans);
+      font-family: inherit;
+    }
+    .filter-tag-chip:hover { background: rgba(38,38,38,.08); }
+    .filter-tag-chip.active {
+      background: var(--c-black); color: var(--c-white);
+    }
+    .filter-row {
+      display: flex; align-items: center; gap: 2rem; justify-content: space-between;
+      flex-wrap: wrap;
+    }
+    .endorsed-toggle {
+      display: flex; align-items: center; gap: .8rem;
+      font-size: 1.5rem; cursor: pointer;
+    }
+    .endorsed-toggle input { cursor: pointer; width: 1.6rem; height: 1.6rem; accent-color: var(--c-black); }
+    #sort-select {
+      padding: .8rem 1.6rem;
+      border: 1px solid var(--c-gray-l);
+      border-radius: var(--radius-pill);
+      font-size: 1.5rem; font-family: inherit;
+      background: var(--c-white); cursor: pointer;
+    }
+    .filter-meta {
+      display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    }
+    #results-count { font-size: 1.4rem; color: var(--c-gray-m); }
+
+    /* ===== SKILLS GRID ===== */
+    .skills-section { padding: 5rem 0; }
+    .skills-inner {
+      max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-d);
+    }
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2.4rem;
+    }
+
+    /* ===== PILOTS SECTION ===== */
+    .pilots-section {
+      background: var(--c-black); color: var(--c-white);
+      padding: 8rem 0;
+    }
+    .pilots-inner {
+      max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-d);
+    }
+    .pilots-section h2 {
+      font-size: 3.6rem; font-weight: 500; color: var(--c-white);
+      margin: 1rem 0 4rem;
+    }
+    .pilots-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.4rem;
+    }
+    .pilot-card {
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: var(--radius-card);
+      padding: 3rem;
+      cursor: pointer;
+      transition: var(--trans);
+    }
+    .pilot-card:hover {
+      background: rgba(255,255,255,.1);
+      border-color: rgba(255,224,94,.4);
+    }
+    .pilot-avatar-lg {
+      width: 5.6rem; height: 5.6rem;
+      background: var(--c-yellow); color: var(--c-black);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 2rem; font-weight: 700; margin-bottom: 2rem;
+    }
+    .pilot-name { font-size: 1.8rem; font-weight: 700; color: var(--c-white); margin-bottom: .4rem; }
+    .pilot-role { font-size: 1.4rem; color: var(--c-gray-l); margin-bottom: .2rem; }
+    .pilot-dept { font-size: 1.3rem; color: var(--c-gray-m); margin-bottom: 1.6rem; }
+    .pilot-bio { font-size: 1.5rem; color: rgba(252,252,252,.7); line-height: 1.6; margin-bottom: 2rem; }
+    .pilot-skills { display: flex; gap: .6rem; flex-wrap: wrap; }
+    .pilot-skill-chip {
+      font-size: 1.2rem; padding: .3rem .9rem;
+      background: rgba(255,224,94,.15); color: var(--c-yellow);
+      border: 1px solid rgba(255,224,94,.3);
+      border-radius: 2rem; cursor: pointer;
+      transition: var(--trans);
+    }
+    .pilot-skill-chip:hover { background: rgba(255,224,94,.25); }
+
+    /* ===== FOOTER ===== */
+    footer {
+      background: var(--c-black); color: var(--c-gray-d);
+      padding: 3rem 0; text-align: center;
+      font-size: 1.4rem;
+      border-top: 1px solid rgba(255,255,255,.1);
+    }
+    .footer-inner { max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-d); }
+
+    /* ===== MODAL ===== */
+    .modal-overlay {
+      position: fixed; inset: 0; z-index: 200;
+      background: rgba(38,38,38,.7);
+      backdrop-filter: blur(4px);
+      display: none; align-items: center; justify-content: center;
+      padding: 2rem;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--c-white);
+      border-radius: 1.6rem;
+      width: 100%; max-width: 72rem;
+      max-height: 90vh;
+      overflow-y: auto;
+      animation: slideUp .25s ease;
+    }
+    @keyframes slideUp {
+      from { transform: translateY(40px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .modal-header {
+      position: sticky; top: 0; background: var(--c-white);
+      padding: 2.4rem 2.4rem 0;
+      display: flex; align-items: flex-start; justify-content: space-between;
+      border-bottom: 1px solid var(--c-gray-l);
+      z-index: 10;
+    }
+    .modal-title-wrap { display: flex; align-items: center; gap: 1.6rem; flex-wrap: wrap; }
+    .modal-header h2 { font-size: 2.8rem; font-weight: 700; margin: 0 0 1.6rem; }
+    .trigger-badge {
+      font-size: 1.4rem; font-weight: 600; padding: .6rem 1.4rem;
+      background: var(--c-bg); border: 1px solid var(--c-gray-l);
+      border-radius: var(--radius-pill); cursor: pointer;
+      font-family: 'Courier New', monospace; transition: var(--trans);
+      margin-bottom: 1.6rem;
+    }
+    .trigger-badge:hover { background: var(--c-yellow); border-color: var(--c-yellow); }
+    .modal-close {
+      background: none; border: none; font-size: 2.4rem; cursor: pointer;
+      color: var(--c-gray-m); padding: .4rem; line-height: 1;
+      transition: var(--trans); flex-shrink: 0; margin-bottom: 1.6rem;
+    }
+    .modal-close:hover { color: var(--c-black); }
+    .modal-meta {
+      padding: 1.6rem 2.4rem;
+      display: flex; gap: 1.6rem; flex-wrap: wrap; align-items: center;
+      font-size: 1.4rem; color: var(--c-gray-m);
+      border-bottom: 1px solid var(--c-bg);
+    }
+    .modal-meta .diff-badge { font-size: 1.3rem; }
+    .modal-meta-sep { color: var(--c-gray-l); }
+    .modal-tabs {
+      display: flex; padding: 0 2.4rem;
+      border-bottom: 1px solid var(--c-gray-l);
+      overflow-x: auto;
+    }
+    .tab-btn {
+      padding: 1.4rem 2rem;
+      font-size: 1.5rem; font-weight: 500;
+      background: none; border: none; border-bottom: 2px solid transparent;
+      cursor: pointer; transition: var(--trans); color: var(--c-gray-m);
+      margin-bottom: -1px; white-space: nowrap; font-family: inherit;
+    }
+    .tab-btn:hover { color: var(--c-black); }
+    .tab-btn.active { color: var(--c-black); border-bottom-color: var(--c-black); font-weight: 700; }
+    .modal-body { padding: 3rem 2.4rem; }
+
+    /* ===== CTAs ===== */
+    .c-cta {
+      display: inline-block;
+      border: .3rem solid; border-radius: var(--radius-pill);
+      font-size: 1.6rem; font-weight: 500; font-family: inherit;
+      padding: 1rem 2.7rem; cursor: pointer;
+      text-align: center; text-decoration: none;
+      transition: var(--trans);
+    }
+    .c-cta.-yellow-bg { background: var(--c-yellow); border-color: var(--c-yellow); color: var(--c-black); }
+    .c-cta.-yellow-bg:hover { background: #e6ca55; border-color: #e6ca55; }
+    .c-cta.-black-bg { background: var(--c-black); border-color: var(--c-black); color: var(--c-white); }
+    .c-cta.-black-bg:hover { background: #3d3d3d; border-color: #3d3d3d; }
+    .c-cta.-black-border { background: transparent; border-color: var(--c-black); color: var(--c-black); }
+    .c-cta.-black-border:hover { background: var(--c-black); color: var(--c-white); }
+    .c-cta.-yellow-border { background: transparent; border-color: var(--c-yellow); color: var(--c-yellow); }
+    .c-cta.-yellow-border:hover { background: var(--c-yellow); color: var(--c-black); }
+    .c-cta:disabled { opacity: .5; cursor: not-allowed; }
+
+    /* ===== STAR RATING INPUT ===== */
+    .star-input { display: flex; gap: .4rem; margin: 1rem 0; }
+    .star-input .star-btn {
+      font-size: 2.8rem; background: none; border: none; cursor: pointer;
+      color: var(--c-gray-l); transition: color .15s ease; padding: 0; line-height: 1;
+    }
+    .star-input .star-btn.filled { color: var(--c-yellow); }
+    .star-input:hover .star-btn { color: var(--c-gray-l); }
+    .star-input .star-btn:hover,
+    .star-input .star-btn:hover ~ .star-btn { }
+    .star-input .star-btn:hover { color: var(--c-yellow); }
+
+    /* ===== COMMENT FORM ===== */
+    .comment-form { margin-bottom: 3rem; padding: 2.4rem; background: var(--c-bg); border-radius: 1rem; }
+    .comment-form h3 { font-size: 1.8rem; font-weight: 700; margin-bottom: 1.6rem; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin-bottom: 1.2rem; }
+    .comment-form input, .comment-form textarea {
+      width: 100%; padding: 1.2rem 1.6rem;
+      border: 1px solid var(--c-gray-l); border-radius: .8rem;
+      font-size: 1.6rem; font-family: inherit;
+      background: var(--c-white);
+    }
+    .comment-form textarea { min-height: 10rem; resize: vertical; display: block; margin-bottom: 1.2rem; }
+    .comment-form input:focus, .comment-form textarea:focus {
+      outline: none; border-color: var(--c-black);
+    }
+    .comment-item {
+      border-bottom: 1px solid var(--c-bg);
+      padding: 2rem 0;
+      display: grid; grid-template-columns: auto 1fr; gap: 1.6rem;
+    }
+    .comment-item:last-child { border-bottom: none; }
+    .comment-author { font-size: 1.6rem; font-weight: 700; margin-bottom: .2rem; }
+    .comment-role-date { font-size: 1.3rem; color: var(--c-gray-m); margin-bottom: .8rem; }
+    .comment-text { font-size: 1.5rem; line-height: 1.6; }
+    .comment-stars { margin-bottom: .4rem; }
+    .no-comments { font-size: 1.5rem; color: var(--c-gray-m); font-style: italic; padding: 2rem 0; }
+
+    /* ===== TOAST ===== */
+    .toast {
+      position: fixed; bottom: 3rem; left: 50%; transform: translateX(-50%) translateY(100px);
+      background: var(--c-black); color: var(--c-white);
+      padding: 1.2rem 2.4rem; border-radius: var(--radius-pill);
+      font-size: 1.5rem; font-weight: 500;
+      transition: transform .3s ease, opacity .3s ease;
+      opacity: 0; pointer-events: none; z-index: 300;
+      white-space: nowrap;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+    /* ===== EMPTY STATE ===== */
+    .empty-state {
+      text-align: center; padding: 8rem 2rem;
+    }
+    .empty-state p { font-size: 2.4rem; color: var(--c-gray-m); margin-bottom: 2rem; }
+
+    /* ===== ENDORSEMENT CARD ===== */
+    .endorsement-card {
+      display: flex; gap: 1.6rem; align-items: flex-start;
+      padding: 2rem; background: var(--c-bg);
+      border-radius: 1rem; margin-bottom: 1.6rem;
+    }
+    .endorsement-text { font-size: 1.5rem; line-height: 1.6; color: var(--c-gray-m); margin-bottom: 1rem; }
+    .endorsement-name { font-size: 1.5rem; font-weight: 700; margin-bottom: .2rem; }
+    .endorsement-role { font-size: 1.3rem; color: var(--c-gray-d); }
+
+    /* ===== MODAL DETAIL STYLES ===== */
+    .section-label {
+      font-size: 1.4rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .08em; color: var(--c-gray-m); margin: 2.4rem 0 .8rem;
+    }
+    .section-label:first-child { margin-top: 0; }
+    .rating-big { font-size: 4rem; font-weight: 700; color: var(--c-black); line-height: 1; }
+    .rating-sub { font-size: 1.5rem; color: var(--c-gray-m); margin-top: .4rem; }
+    .rating-overview {
+      display: flex; align-items: center; gap: 2rem; margin-bottom: 3rem;
+      padding-bottom: 2rem; border-bottom: 1px solid var(--c-bg);
+    }
+    .use-cases { list-style: none; padding: 0; display: flex; flex-direction: column; gap: .6rem; }
+    .use-cases li {
+      font-size: 1.5rem; padding-left: 2rem; position: relative; line-height: 1.5;
+    }
+    .use-cases li::before {
+      content: '→'; position: absolute; left: 0; color: var(--c-yellow); font-weight: 700;
+    }
+    .req-list { display: flex; gap: .8rem; flex-wrap: wrap; margin-top: .8rem; }
+    .req-chip {
+      font-size: 1.3rem; padding: .4rem 1rem;
+      border: 1px solid var(--c-gray-l); border-radius: 2rem; color: var(--c-gray-m);
+    }
+    .long-desc {
+      font-size: 1.6rem; line-height: 1.7; color: #444; margin-bottom: 2rem;
+    }
+    .modal-tag-list { display: flex; gap: .6rem; flex-wrap: wrap; }
+    .modal-tag {
+      font-size: 1.3rem; padding: .4rem .9rem;
+      background: var(--c-bg); border: 1px solid var(--c-gray-l);
+      border-radius: 2rem; color: var(--c-gray-m);
+    }
+    .info-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1.6rem; margin-bottom: 2rem;
+    }
+    .info-item label {
+      font-size: 1.2rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: .06em; color: var(--c-gray-d); display: block; margin-bottom: .4rem;
+    }
+    .info-item span { font-size: 1.5rem; color: var(--c-black); }
+    .no-endorsements { font-size: 1.5rem; color: var(--c-gray-m); font-style: italic; }
+    .pilot-tab-card {
+      display: flex; gap: 1.6rem; padding: 2rem; background: var(--c-bg);
+      border-radius: 1rem; margin-bottom: 1.6rem; align-items: flex-start;
+    }
+    .pilot-tab-avatar {
+      width: 4.8rem; height: 4.8rem; flex-shrink: 0;
+      background: var(--c-yellow); color: var(--c-black);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 1.6rem; font-weight: 700;
+    }
+    .pilot-tab-name { font-size: 1.6rem; font-weight: 700; margin-bottom: .2rem; }
+    .pilot-tab-role { font-size: 1.3rem; color: var(--c-gray-m); margin-bottom: .8rem; }
+    .pilot-tab-quote { font-size: 1.5rem; line-height: 1.6; color: #555; font-style: italic; }
+    .rating-form-label { font-size: 1.5rem; font-weight: 600; margin-bottom: .4rem; display: block; }
+    .user-rating-hint { font-size: 1.3rem; color: var(--c-gray-m); margin-top: .4rem; }
+
+    /* ===== GETTING STARTED ===== */
+    .getting-started {
+      background: var(--c-bg);
+      border-top: 1px solid var(--c-gray-l);
+    }
+    .gs-inner {
+      max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-d);
+    }
+    .gs-toggle {
+      width: 100%; display: flex; align-items: center; gap: 1rem;
+      padding: 1.6rem 0; background: none; border: none;
+      font-size: 1.5rem; font-weight: 600; font-family: inherit;
+      color: var(--c-black); cursor: pointer;
+      text-align: left;
+    }
+    .gs-toggle:hover { color: var(--c-gray-m); }
+    .gs-arrow { margin-left: auto; font-size: 1.8rem; transition: transform .2s; }
+    .gs-toggle[aria-expanded="true"] .gs-arrow { transform: rotate(90deg); }
+    .gs-content { padding-bottom: 2.4rem; }
+    .gs-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.4rem; }
+    .gs-step { display: flex; gap: 1.6rem; align-items: flex-start; }
+    .gs-num {
+      width: 3.2rem; height: 3.2rem; flex-shrink: 0;
+      background: var(--c-yellow); color: var(--c-black);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 1.6rem; font-weight: 700;
+    }
+    .gs-step strong { font-size: 1.5rem; display: block; margin-bottom: .4rem; }
+    .gs-step p { font-size: 1.4rem; color: var(--c-gray-m); line-height: 1.5; }
+    .gs-step code {
+      background: var(--c-white); border: 1px solid var(--c-gray-l);
+      border-radius: .4rem; padding: .1rem .5rem; font-size: 1.3rem;
+      font-family: 'Courier New', monospace; color: var(--c-black);
+    }
+    @media (max-width: 1023px) { .gs-steps { grid-template-columns: 1fr; gap: 1.6rem; } }
+
+    .info-btn {
+      background: none; border: none; color: rgba(252,252,252,.6);
+      font-size: 2rem; cursor: pointer; transition: var(--trans); padding: .4rem;
+      line-height: 1; flex-shrink: 0;
+    }
+    .info-btn:hover { color: var(--c-yellow); }
+    .info-modal-overlay {
+      position: fixed; inset: 0; z-index: 250;
+      background: rgba(38,38,38,.7); backdrop-filter: blur(4px);
+      display: none; align-items: center; justify-content: center; padding: 2rem;
+    }
+    .info-modal-overlay.open { display: flex; }
+    .info-modal {
+      background: var(--c-white); border-radius: 1.2rem;
+      max-width: 48rem; width: 100%; padding: 3rem;
+      position: relative; animation: slideUp .2s ease;
+    }
+    .info-modal-close {
+      position: absolute; top: 1.6rem; right: 1.6rem;
+      background: none; border: none; font-size: 2rem; cursor: pointer; color: var(--c-gray-m);
+    }
+    .info-modal h3 { font-size: 2.4rem; font-weight: 700; margin-bottom: 1.6rem; }
+    .info-modal p { font-size: 1.6rem; line-height: 1.6; color: #444; margin-bottom: 1.2rem; }
+    .info-modal-cta {
+      background: var(--c-bg); border-left: 3px solid var(--c-yellow);
+      padding: 1.2rem 1.6rem; border-radius: 0 .8rem .8rem 0;
+      font-size: 1.4rem; margin-top: 1.6rem;
+    }
+
+    .more-tags-btn {
+      padding: .6rem 1.4rem; font-size: 1.4rem; font-family: inherit;
+      background: transparent; border: 1px dashed var(--c-gray-l);
+      border-radius: var(--radius-pill); color: var(--c-gray-m);
+      cursor: pointer; transition: var(--trans);
+    }
+    .more-tags-btn:hover { border-color: var(--c-black); color: var(--c-black); }
+    .more-tags-panel { display: flex; gap: .8rem; flex-wrap: wrap; margin-top: .8rem; width: 100%; }
+
+    /* ===== ROLE CHIPS ===== */
+    .role-chips {
+      display: flex; align-items: center; gap: .8rem; flex-wrap: wrap;
+      padding-bottom: 1.2rem;
+      border-bottom: 1px solid var(--c-bg);
+    }
+    .role-label { font-size: 1.4rem; color: var(--c-gray-m); font-weight: 500; white-space: nowrap; }
+    .role-chip {
+      padding: .6rem 1.4rem;
+      font-size: 1.4rem; font-family: inherit;
+      background: transparent;
+      border: 1px solid var(--c-gray-l);
+      border-radius: var(--radius-pill);
+      color: var(--c-gray-m);
+      cursor: pointer; transition: var(--trans);
+    }
+    .role-chip:hover { border-color: var(--c-black); color: var(--c-black); }
+    .role-chip.active { background: var(--c-yellow); border-color: var(--c-yellow); color: var(--c-black); font-weight: 600; }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 1023px) {
+      :root {
+        --header-h: 6.8rem;
+        --pad-d: 2rem;
+      }
+      .header-inner { gap: 2rem; }
+      .hero h1 { font-size: 4.8rem; }
+      .hero .subline { font-size: 1.8rem; }
+      .featured-grid { grid-template-columns: 1fr; }
+      .skills-grid { grid-template-columns: 1fr; }
+      .pilots-grid { grid-template-columns: 1fr; }
+      .modal-overlay { padding: 0; align-items: flex-end; }
+      .modal { border-radius: 1.6rem 1.6rem 0 0; max-height: 95vh; }
+      .form-row { grid-template-columns: 1fr; }
+      .info-grid { grid-template-columns: 1fr; }
+      .logo-mark { font-size: 2.2rem; }
+      .overline { font-size: 1.1rem; }
+    }
+
+    @media (min-width: 768px) and (max-width: 1023px) {
+      .featured-grid { grid-template-columns: repeat(2, 1fr); }
+      .skills-grid { grid-template-columns: repeat(2, 1fr); }
+      .pilots-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    /* ===== ITERATION 2: VISUAL POLISH ===== */
+
+    /* Sub-Icon */
+    .sub-icon { font-size: 2rem; line-height: 1; }
+
+    /* Card Trigger Chip */
+    .card-trigger-chip {
+      font-size: 1.2rem; padding: .3rem .8rem;
+      background: var(--c-bg); border: 1px solid var(--c-gray-l);
+      border-radius: var(--radius-pill); color: var(--c-gray-m);
+      font-family: 'Courier New', monospace; white-space: nowrap;
+    }
+    .card-trigger-chip.no-trigger { font-family: inherit; font-style: italic; }
+    .card-footer-right { display: flex; align-items: center; gap: .8rem; }
+    .skill-card.featured .card-trigger-chip { background: rgba(255,255,255,.1); border-color: rgba(255,255,255,.2); color: rgba(252,252,252,.6); }
+
+    /* Hero Stats */
+    .hero-stats {
+      display: flex; align-items: center; gap: 1.2rem;
+      margin-bottom: 4rem; flex-wrap: wrap;
+    }
+    .hero-stat { font-size: 1.6rem; color: rgba(252,252,252,.6); }
+    .hero-stat strong { color: var(--c-yellow); font-weight: 700; }
+    .hero-stat-sep { color: rgba(252,252,252,.3); }
+
+    /* Mobile Filter Toggle */
+    .filter-toggle-btn {
+      display: none; /* NUR auf Mobile sichtbar */
+      width: 100%; padding: 1.2rem 0;
+      background: none; border: none; border-bottom: 1px solid var(--c-bg);
+      font-size: 1.5rem; font-weight: 600; font-family: inherit;
+      color: var(--c-black); cursor: pointer;
+      justify-content: space-between; align-items: center;
+    }
+    .filter-toggle-arrow { transition: transform .2s; }
+    .filter-toggle-btn[aria-expanded="false"] .filter-toggle-arrow { transform: rotate(-90deg); }
+    @media (max-width: 1023px) {
+      .filter-toggle-btn { display: flex; }
+      .filter-collapsible[hidden] { display: none; }
+      .hero { padding: 4rem 0 6rem; }
+    }
+
+    .output-example {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 1.3rem;
+      line-height: 1.7;
+      padding: 2rem 2.4rem;
+      border-radius: 1rem;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+      margin-top: .8rem;
+      border: 1px solid #333;
+    }
+    .output-label {
+      font-size: 1.2rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--c-gray-m);
+      margin: 2.4rem 0 .6rem;
+    }
+    .install-guide summary::-webkit-details-marker { display: none; }
+    .install-guide[open] summary span:last-child { transform: rotate(180deg); display: inline-block; }
+
+    /* ===== RECENTLY VIEWED ===== */
+    .recently-viewed { padding: 0 var(--pad-d) 2rem; max-width: var(--max-w); margin: 0 auto; }
+    .rv-label { font-size: 1.2rem; font-weight: 600; text-transform: uppercase; letter-spacing: .1em; color: var(--c-gray-m); margin-bottom: 1.2rem; }
+    .rv-row { display: flex; gap: 1rem; overflow-x: auto; padding-bottom: .4rem; scrollbar-width: none; }
+    .rv-row::-webkit-scrollbar { display: none; }
+    .rv-card { display: flex; flex-direction: column; align-items: center; gap: .6rem; padding: 1.2rem 1.6rem; background: var(--c-white); border: 1px solid var(--c-gray-l); border-radius: 1rem; cursor: pointer; white-space: nowrap; font-size: 1.3rem; font-weight: 500; color: var(--c-black); transition: var(--trans); flex-shrink: 0; }
+    .rv-card:hover { border-color: var(--c-black); background: var(--c-bg); }
+    .rv-icon { font-size: 1.8rem; }
+    @media (max-width: 1023px) { .recently-viewed { padding: 0 var(--pad-m) 1.6rem; } }
+
+    /* ===== NEW BADGE ===== */
+
+    .new-badge { background: var(--c-yellow); color: var(--c-black); font-size: 1.1rem; font-weight: 700; padding: .2rem .7rem; border-radius: 3rem; letter-spacing: .04em; text-transform: uppercase; }
+
+    /* ===== SEARCH HINT ===== */
+    .search-hint { font-size: 1.1rem; color: var(--c-gray-m); display: block; margin-top: .4rem; }
+    .search-hint kbd { background: var(--c-bg); border: 1px solid var(--c-gray-l); border-radius: .3rem; padding: .1rem .4rem; font-family: inherit; font-size: 1rem; }
+    @media (max-width: 1023px) { .search-hint { display: none; } }
+
+    /* ===== ACCESSIBILITY (ITERATION 4B) ===== */
+    .skip-link { position: absolute; top: -100%; left: 1rem; background: var(--c-yellow); color: var(--c-black); padding: 1rem 2rem; font-weight: 700; font-size: 1.4rem; border-radius: 0 0 .8rem .8rem; z-index: 9999; text-decoration: none; }
+    .skip-link:focus { top: 0; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+    .modal-close { min-width: 4.4rem; min-height: 4.4rem; display: flex; align-items: center; justify-content: center; }
+    .info-modal-close { min-width: 4.4rem; min-height: 4.4rem; display: flex; align-items: center; justify-content: center; }
+
+    /* ===== FEATURE 1: EMPTY STATE ===== */
+    .empty-state { grid-column: 1/-1; text-align: center; padding: 8rem 2rem; }
+    .empty-icon { font-size: 5rem; margin-bottom: 2rem; }
+    .empty-title { font-size: 2.4rem; font-weight: 700; color: var(--c-black); margin-bottom: 1rem; }
+    .empty-text { font-size: 1.6rem; color: var(--c-gray-m); }
+
+    /* ===== FEATURE 2: SIMILAR SKILLS ===== */
+    .similar-grid { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: .8rem; }
+    .similar-card { display: flex; flex-direction: column; gap: .4rem; padding: 1.2rem 1.6rem; background: var(--c-bg); border: 1px solid var(--c-gray-l); border-radius: 1rem; cursor: pointer; text-align: left; transition: var(--trans); min-width: 14rem; flex: 1; }
+    .similar-card:hover { border-color: var(--c-black); }
+    .similar-icon { font-size: 1.8rem; }
+    .similar-name { font-size: 1.4rem; font-weight: 600; color: var(--c-black); }
+    .similar-cat { font-size: 1.2rem; color: var(--c-gray-m); }
+
+    /* ===== FEATURE 3: TAB COUNT ===== */
+    .tab-count { display: inline-flex; align-items: center; justify-content: center; background: rgba(0,0,0,.08); border-radius: 2rem; padding: .1rem .7rem; font-size: 1.1rem; font-weight: 700; margin-left: .4rem; min-width: 2rem; }
+    .cat-tab.active .tab-count { background: rgba(0,0,0,.15); }
+
+    /* ===== FEATURE 4: CHANGELOG ===== */
+    .changelog { display: flex; flex-direction: column; gap: 2.4rem; }
+    .changelog-entry { border-left: 3px solid var(--c-yellow); padding-left: 2rem; }
+    .changelog-header { display: flex; align-items: center; gap: 1.6rem; margin-bottom: 1rem; }
+    .changelog-version { font-size: 1.6rem; font-weight: 700; color: var(--c-black); font-family: 'Courier New', monospace; }
+    .changelog-date { font-size: 1.3rem; color: var(--c-gray-m); }
+    .changelog-list { margin: 0; padding-left: 2rem; display: flex; flex-direction: column; gap: .6rem; }
+    .changelog-list li { font-size: 1.4rem; color: var(--c-black); line-height: 1.5; }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Zum Hauptinhalt springen</a>
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="logo">
+        <span class="logo-mark">pilot</span>
+        <span class="overline">Skill Marketplace</span>
+      </div>
+      <button class="info-btn" onclick="toggleInfoModal()" aria-label="Was ist ein Skill?">ⓘ</button>
+
+      <!-- INFO MODAL -->
+      <div class="info-modal-overlay" id="info-modal-overlay" onclick="if(event.target===this)toggleInfoModal()">
+        <div class="info-modal">
+          <button class="info-modal-close" onclick="toggleInfoModal()" aria-label="Info schließen">✕</button>
+          <h3>Was ist ein Skill?</h3>
+          <p>Ein <strong>Skill</strong> ist ein vorgefertigtes Claude-Code-Modul das du mit einem einzigen Befehl aktivierst. Piloten bei pilot haben diese Skills gebaut und empfohlen — für typische Aufgaben in Kreation, Analyse, Entwicklung und mehr.</p>
+          <p>Skills sparen Zeit weil sie komplexe Workflows in einem Befehl zusammenfassen. Du brauchst keine Programmier-Kenntnisse.</p>
+          <div class="info-modal-cta">
+            <strong>So startest du:</strong> Scrolle nach unten und klappe "Neu bei Skills?" auf.
+          </div>
+        </div>
+      </div>
+
+      <div class="search-wrap">
+        <input type="search" id="search" aria-label="Skills suchen" placeholder="Skills suchen..." autocomplete="off">
+        <span class="search-hint" aria-hidden="true">Drücke <kbd>/</kbd> zum Suchen</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- RECENTLY VIEWED -->
+  <div id="recently-viewed" class="recently-viewed" hidden></div>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-inner">
+      <p class="overline" style="color:#ffe05e">Entdecken &amp; teilen</p>
+      <h1>Unsere Skills.</h1>
+      <p class="subline">Von Piloten gebaut. Für Piloten empfohlen.</p>
+      <div class="hero-stats">
+        <span class="hero-stat"><strong id="stat-skills">20</strong> Skills</span>
+        <span class="hero-stat-sep">·</span>
+        <span class="hero-stat"><strong id="stat-pilots">6</strong> Piloten</span>
+        <span class="hero-stat-sep">·</span>
+        <span class="hero-stat"><strong>3</strong> Kategorien</span>
+        <span class="hero-stat-sep">·</span>
+        <span class="hero-stat"><strong id="stat-endorsed">23</strong> Empfehlungen</span>
+      </div>
+      <div class="featured-grid" id="featured-grid"></div>
+    </div>
+  </section>
+
+  <!-- GETTING STARTED -->
+  <div class="getting-started" id="getting-started">
+    <div class="gs-inner">
+      <button class="gs-toggle" onclick="toggleGS()" aria-expanded="false" id="gs-toggle-btn">
+        <span class="gs-icon">ℹ️</span>
+        <span>Neu bei Skills? So startest du in 3 Schritten</span>
+        <span class="gs-arrow">›</span>
+      </button>
+      <div class="gs-content" id="gs-content" hidden>
+        <div class="gs-steps">
+          <div class="gs-step">
+            <span class="gs-num">1</span>
+            <div><strong>Skill entdecken</strong><p>Durchsuche den Marketplace, filtere nach deiner Rolle oder Aufgabe und finde den passenden Skill.</p></div>
+          </div>
+          <div class="gs-step">
+            <span class="gs-num">2</span>
+            <div><strong>Trigger kopieren</strong><p>Öffne einen Skill und klicke auf den <code>/befehl</code> Badge — er landet automatisch in deiner Zwischenablage.</p></div>
+          </div>
+          <div class="gs-step">
+            <span class="gs-num">3</span>
+            <div><strong>In Claude Code eingeben</strong><p>Öffne Claude Code im Terminal oder der App, tippe den kopierten Befehl und drücke Enter. Fertig.</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <main>
+    <!-- FILTER BAR -->
+    <div class="filter-bar" id="filter-bar">
+      <div class="filter-inner">
+        <div class="cat-tabs" id="cat-tabs" role="tablist"></div>
+        <button class="filter-toggle-btn" id="filter-toggle-btn" onclick="toggleMobileFilter()" aria-expanded="true">
+          <span>Filter &amp; Sortierung</span>
+          <span class="filter-toggle-arrow">▾</span>
+        </button>
+        <div class="filter-collapsible" id="filter-collapsible">
+          <div class="role-chips" id="role-chips"></div>
+          <div class="tag-chips" id="tag-chips"></div>
+          <div class="filter-row">
+            <label class="endorsed-toggle">
+              <input type="checkbox" id="endorsed-only"> Nur von Piloten empfohlen
+            </label>
+            <select id="sort-select" aria-label="Skills sortieren">
+              <option value="recommended">Empfohlen</option>
+              <option value="rating">Höchste Bewertung</option>
+              <option value="count">Meiste Bewertungen</option>
+              <option value="newest">Neueste</option>
+              <option value="alpha">A–Z</option>
+            </select>
+          </div>
+          <div class="filter-meta">
+            <span id="results-count"></span>
+            <button id="reset-filters" class="c-cta -black-border" style="display:none;padding:.7rem 2rem;font-size:1.4rem">Filter zurücksetzen</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SKILLS GRID -->
+    <div class="skills-section" id="main-content">
+      <div class="skills-inner">
+        <div class="skills-grid" id="skills-grid"></div>
+        <div class="empty-state" id="empty-state" style="display:none">
+          <p>Keine Skills gefunden.</p>
+          <button onclick="resetFilters()" class="c-cta -yellow-bg">Filter zurücksetzen</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PILOTEN SECTION -->
+    <section class="pilots-section">
+      <div class="pilots-inner">
+        <p class="overline">Unsere Piloten</p>
+        <h2>Das sagen unsere Experten</h2>
+        <div class="pilots-grid" id="pilots-grid"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <span>© 2026 pilot Agenturgruppe — Skill Marketplace</span>
+    </div>
+  </footer>
+
+  <!-- MODAL -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-name" aria-describedby="modal-body">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <h2 id="modal-name"></h2>
+          <button class="trigger-badge" id="modal-trigger" onclick="copyTrigger()"></button>
+          <span class="trigger-hint" id="trigger-hint" style="font-size:1.3rem;color:#98978e;display:none"></span>
+        </div>
+        <button class="modal-close" onclick="closeModal()" aria-label="Skill-Detail schließen">✕</button>
+      </div>
+      <div class="modal-meta" id="modal-meta"></div>
+      <div class="modal-tabs">
+        <button class="tab-btn active" data-tab="overview" onclick="switchTab('overview')">Übersicht</button>
+        <button class="tab-btn" data-tab="ratings" onclick="switchTab('ratings')">Bewertungen &amp; Kommentare</button>
+        <button class="tab-btn" data-tab="pilots" onclick="switchTab('pilots')">Piloten</button>
+        <button class="tab-btn" data-tab="changelog" onclick="switchTab('changelog')">Changelog</button>
+      </div>
+      <div class="modal-body" id="modal-body"></div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ===== DATA =====
+    const SKILLS = [
+      {
+        id: 'webaudit', name: 'webaudit', tagline: 'Vollständiger Web-Audit mit Code-Analyse + Playwright Visuals',
+        description: 'Kombiniert statische Code-Analyse mit echten Browser-Screenshots via Playwright. Prüft UX, Design, Accessibility (WCAG), Performance, SEO und Funktionalität — alles in einem strukturierten Audit-Report.',
+        longDescription: 'Der webaudit Skill ist pilot\'s Standard-Tool für Qualitätssicherung. Zweistufige Analyse: Code-Scan + echter Browser via Playwright mit Screenshots verschiedener Viewports. Ergebnis: strukturierter Markdown-Report mit nach Priorität geordneten Handlungsempfehlungen.',
+        exampleOutput: `## webaudit Report — example.com
+**Datum:** 2026-07-08 | **Score:** 67/100
+
+### 🔴 Kritisch (2 Findings)
+- [A11Y] Kein alt-Text auf 14 Bildern → WCAG 2.1 AA §1.1.1
+- [PERF] LCP 4.8s (Ziel < 2.5s) — unkomprimierte Bilder (2.3 MB)
+
+### 🟡 Warnung (5 Findings)
+- [SEO] Keine Open Graph Tags
+- [SEC] Content-Security-Policy Header fehlt
+...`,
+        category: 'pilot-inhouse', subcategory: 'qa', trigger: '/webaudit', author: 'Christopher Kipp',
+        version: '1.2.0', addedAt: '2025-11-01', updatedAt: '2026-06-15',
+        tags: ['web','qa','ux','playwright','performance','seo','accessibility'],
+        useCases: ['Website-Launch-Check','Redesign-Validierung','Client-Präsentation','Accessibility-Audit'],
+        difficulty: 'medium', timeToRun: '5–15 Min', requirements: ['Playwright','Claude Code'],
+        rating: {average: 4.6, count: 12},
+        endorsedBy: ['Christopher Kipp','Mia Hoffmann','Lukas Weber'],
+        endorsements: [
+          {name:'Christopher Kipp',role:'Innovation Lead',initials:'CK',text:'Unser Standard-Tool vor jedem Go-Live. Spart dem Team locker 3–4 Stunden pro Projekt.'},
+          {name:'Mia Hoffmann',role:'Senior UX Designerin',initials:'MH',text:'Die Screenshot-Funktion ist Gold wert für Client-Präsentationen.'},
+          {name:'Lukas Weber',role:'SEO Strategist',initials:'LW',text:'SEO-Check ist solide, ersetzt aber keine vollständige Keyword-Analyse.'}
+        ],
+        comments: [
+          {author:'Jan Richter',role:'Lead Developer',initials:'JR',date:'2026-05-12',text:'Sehr detaillierter Output. Lighthouse-Integration wäre noch cool.',rating:5},
+          {author:'Sophie Klein',role:'Projektmanagerin',initials:'SK',date:'2026-04-08',text:'Auch für Nicht-Techniker gut verständlich. Habe den Report direkt an den Client weitergegeben.',rating:4},
+          {author:'Anna Schreiber',role:'Content Strategin',initials:'AS',date:'2026-03-15',text:'Super für Content-Audits. Findet broken Links und fehlende Alt-Texte zuverlässig.',rating:5}
+        ],
+        featured: true, badge: 'empfohlen'
+      },
+      {
+        id: 'ralph-loop', name: 'Ralph Loop', tagline: 'Iterativer Claude-Loop mit intelligentem Selbst-Pacing',
+        description: 'Startet einen autonomen Claude-Loop der sich selbst neu startet. Ideal für iterative Optimierungsaufgaben, Monitoring-Workflows und mehrstufige Analyse-Prozesse.',
+        longDescription: 'Ermöglicht komplexe mehrstufige Aufgaben die Claude eigenständig iteriert. Loop wählt sein Pacing selbst basierend auf Aufgaben-Komplexität und Cache-Effizienz.',
+        category: 'pilot-inhouse', subcategory: 'automation', trigger: '/ralph-loop', author: 'Christopher Kipp',
+        version: '2.0.1', addedAt: '2025-12-15', updatedAt: '2026-07-01',
+        tags: ['automation','ai','workflow','loop','monitoring'],
+        useCases: ['Iterative Code-Optimierung','Build-Monitoring','Mehrstufige Analysen','Autonome Workflows'],
+        difficulty: 'advanced', timeToRun: 'variabel', requirements: ['Claude Code'],
+        rating: {average: 4.2, count: 7},
+        endorsedBy: ['Christopher Kipp'],
+        endorsements: [{name:'Christopher Kipp',role:'Innovation Lead',initials:'CK',text:'Für komplexe Mehrschritt-Aufgaben unverzichtbar. Spart enorm Zeit bei repetitiven Loops.'}],
+        comments: [
+          {author:'Jan Richter',role:'Lead Developer',initials:'JR',date:'2026-06-20',text:'Mächtig aber braucht Einarbeitungszeit. Cancel-Funktion ist wichtig!',rating:4},
+          {author:'Christopher Kipp',role:'Innovation Lead',initials:'CK',date:'2026-07-01',text:'Version 2.0 ist deutlich stabiler. Self-Pacing funktioniert jetzt excellent.',rating:5}
+        ],
+        featured: true, badge: 'neu'
+      },
+      {
+        id: 'kf-assistant', name: 'KF Assistant', tagline: 'KI-gestützter Kreativ-Briefing Assistent',
+        description: 'Internes Tool für das Kreativ-Team. Strukturierte Briefings durch gezielte Fragen und automatische Template-Generierung nach pilot-Standard.',
+        longDescription: 'Führt durch strukturierten Befragungs-Prozess und erstellt vollständige Kreativ-Briefings. Kennt pilot-Templates für Kreation, Media und Projektmanagement.',
+        category: 'pilot-inhouse', subcategory: 'content', trigger: null, author: 'pilot Dev Team',
+        version: '0.9.0', addedAt: '2026-03-01', updatedAt: '2026-05-10',
+        tags: ['content','ai','briefing','kreativ','templates'],
+        useCases: ['Schnell-Briefings','Client-Onboarding','Interne Briefings'],
+        difficulty: 'easy', timeToRun: '10 Min', requirements: ['Claude Code'],
+        rating: {average: 3.3, count: 8},
+        endorsedBy: ['Anna Schreiber'],
+        endorsements: [{name:'Anna Schreiber',role:'Content Strategin',initials:'AS',text:'Spart uns Struktur-Arbeit. Die Qualität der generierten Briefings ist überraschend gut.'}],
+        comments: [{author:'Mia Hoffmann',role:'Senior UX Designerin',initials:'MH',date:'2026-04-22',text:'Gut für erste Iteration aber manchmal zu generisch.',rating:4},{author:'Lukas Weber',role:'SEO Spezialist',initials:'LW',date:'2026-06-10',text:'Für Media-Briefings unbrauchbar — kennt keine Media-Fachbegriffe. Für Content ok.',rating:2}],
+        featured: false, badge: null
+      },
+      {
+        id: 'init', name: 'init', tagline: 'Automatische CLAUDE.md Initialisierung für neue Projekte',
+        description: 'Erstellt vollständige CLAUDE.md für das aktuelle Projekt. Analysiert Dateistruktur, erkennt Tech-Stack, dokumentiert Konventionen. Unverzichtbar als erster Schritt.',
+        longDescription: 'Scannt das Verzeichnis, identifiziert Tech-Stack und erstellt maßgeschneiderte CLAUDE.md. Verbessert alle nachfolgenden Claude-Interaktionen im Projekt deutlich.',
+        category: 'anthropic', subcategory: 'development', trigger: '/init', author: 'Anthropic',
+        version: '1.0.0', addedAt: '2025-09-01', updatedAt: '2026-01-15',
+        tags: ['development','setup','documentation','onboarding'],
+        useCases: ['Neues Projekt starten','Bestehendes Projekt dokumentieren','Team-Onboarding'],
+        difficulty: 'easy', timeToRun: '2–5 Min', requirements: ['Claude Code'],
+        rating: {average: 4.5, count: 23},
+        endorsedBy: ['Christopher Kipp','Jan Richter'],
+        endorsements: [
+          {name:'Christopher Kipp',role:'Innovation Lead',initials:'CK',text:'Immer als erstes ausführen. Macht Claude sofort viel nützlicher für das konkrete Projekt.'},
+          {name:'Jan Richter',role:'Lead Developer',initials:'JR',text:'Standard im Onboarding-Prozess. Jedes neue Repo bekommt init als ersten Commit.'}
+        ],
+        comments: [{author:'Sophie Klein',role:'Projektmanagerin',initials:'SK',date:'2026-02-10',text:'Überraschend gut auch für nicht-technische Repos.',rating:5}],
+        featured: true, badge: null
+      },
+      {
+        id: 'review', name: 'review', tagline: 'Strukturierter Pull Request Review mit Bug & Security Check',
+        description: 'Code-Review für den aktuellen Branch. Analysiert Diff, prüft auf Bugs, Security-Issues, Performance. Output: Kommentare pro Datei + Gesamtbewertung.',
+        longDescription: 'Liest Branch-Diff und analysiert systematisch. Kommentare auf Datei- und Zeilen-Ebene, kategorisiert nach Schwere (Blocker/Warning/Suggestion). Erkennt Bugs, Performance-Antipatterns, fehlende Tests.',
+        exampleOutput: `## Code Review — feature/user-auth (23 Dateien)
+
+### 🔴 Blocker (1)
+- src/auth.js:47 — SQL Injection möglich: User-Input direkt in Query
+  → Prepared Statements verwenden
+
+### 🟡 Warning (3)
+- src/utils.js:12 — Funktion hat 4 Responsibilities (SRP verletzt)
+- tests/ — 0 Tests für kritischen Auth-Flow
+
+### 💡 Suggestion (8)
+- Variablennamen könnten aussagekräftiger sein (x, y, z → userId...)`,
+        category: 'anthropic', subcategory: 'development', trigger: '/review', author: 'Anthropic',
+        version: '1.1.0', addedAt: '2025-09-01', updatedAt: '2026-02-20',
+        tags: ['development','qa','code-review','git','pull-request'],
+        useCases: ['PR Review','Code Quality Check','Pre-Merge Validation'],
+        difficulty: 'medium', timeToRun: '3–10 Min', requirements: ['Claude Code','Git'],
+        rating: {average: 4.7, count: 31},
+        endorsedBy: ['Jan Richter','Christopher Kipp'],
+        endorsements: [
+          {name:'Jan Richter',role:'Lead Developer',initials:'JR',text:'Ersetzt nicht den menschlichen Review, ergänzt ihn aber hervorragend.'},
+          {name:'Christopher Kipp',role:'Innovation Lead',initials:'CK',text:'Läuft in unserem Pre-PR-Workflow. Hat schon mehrere Bugs vor dem Merge gefunden.'}
+        ],
+        comments: [
+          {author:'Mia Hoffmann',role:'Senior UX Designerin',initials:'MH',date:'2026-03-08',text:'Als Nicht-Entwicklerin überraschend verständliche Outputs.',rating:4},
+          {author:'Anna Schreiber',role:'Content Strategin',initials:'AS',date:'2026-01-20',text:'Sehr schnell und gründlich. 10 Minuten die sich immer lohnen.',rating:5}
+        ],
+        featured: true, badge: 'empfohlen'
+      },
+      {
+        id: 'security-review', name: 'security-review', tagline: 'Dedizierter Security-Scan nach OWASP Top 10',
+        description: 'Security-Scan für Code-Änderungen. OWASP Top 10, Injection-Vulnerabilities, Auth-Schwächen, unsichere Daten-Exposition. Pflicht vor jedem Release.',
+        longDescription: 'Spezialisiert auf Sicherheits-Analyse nach OWASP Top 10. Gibt klare Severity-Ratings (Critical/High/Medium/Low) und Remediation-Hinweise. Erste Verteidigungslinie vor professionellen Pen-Tests.',
+        exampleOutput: `## Security Review — OWASP Top 10
+
+**Severity: HIGH** — 2 kritische Findings
+
+### A03: Injection (Critical)
+File: api/routes/search.js:23
+→ User Input ohne Sanitizing in DB-Query
+
+### A02: Cryptographic Failures (High)
+File: config/db.js:8
+→ Passwörter in .env ohne Hashing gespeichert
+
+### A05: Security Misconfiguration (Medium)
+→ Debug-Mode in Production aktiv (NODE_ENV fehlt)`,
+        category: 'anthropic', subcategory: 'development', trigger: '/security-review', author: 'Anthropic',
+        version: '1.0.2', addedAt: '2025-10-01', updatedAt: '2026-03-10',
+        tags: ['development','security','qa','owasp'],
+        useCases: ['Pre-Release Security Check','Auth-System Review','API-Security','Dependency-Audit'],
+        difficulty: 'medium', timeToRun: '5–15 Min', requirements: ['Claude Code'],
+        rating: {average: 4.8, count: 19},
+        endorsedBy: ['Jan Richter','Christopher Kipp'],
+        endorsements: [
+          {name:'Jan Richter',role:'Lead Developer',initials:'JR',text:'Pflicht vor jedem Release. Hat uns schon vor einer kritischen SQL-Injection bewahrt.'},
+          {name:'Christopher Kipp',role:'Innovation Lead',initials:'CK',text:'OWASP-Coverage ist beeindruckend. Klare, actionable Findings.'}
+        ],
+        comments: [{author:'Jan Richter',role:'Lead Developer',initials:'JR',date:'2026-04-15',text:'Severity-Ratings sind sehr hilfreich für Priorisierung.',rating:5}],
+        featured: false, badge: 'empfohlen'
+      },
+      {
+        id: 'claude-api', name: 'claude-api', tagline: 'Claude API & Anthropic SDK mit Prompt Caching',
+        description: 'Assistent für Anthropic API Entwicklung. Prompt Caching, Tool Use, Batch Processing, Modell-Migration. Optimiert automatisch für Cache-Effizienz.',
+        longDescription: 'Hilft bei Integration der Anthropic API. Kennt alle API-Features, Best Practices für Prompt Caching und unterstützt bei Migrationen zwischen Modell-Versionen. Includes Boilerplate für Python und TypeScript.',
+        category: 'anthropic', subcategory: 'development', trigger: '/claude-api', author: 'Anthropic',
+        version: '1.3.0', addedAt: '2025-09-15', updatedAt: '2026-06-01',
+        tags: ['development','ai','api','anthropic','python','typescript'],
+        useCases: ['API-Integration','Prompt Caching Setup','Modell-Migration','Boilerplate Generation'],
+        difficulty: 'advanced', timeToRun: 'variabel', requirements: ['Claude Code','Python oder Node.js'],
+        rating: {average: 4.3, count: 14},
+        endorsedBy: ['Christopher Kipp','Jan Richter'],
+        endorsements: [
+          {name:'Christopher Kipp',role:'Innovation Lead',initials:'CK',text:'Prompt Caching Setup spart uns signifikant API-Kosten.'},
+          {name:'Jan Richter',role:'Lead Developer',initials:'JR',text:'Modell-Migration war mit dem Skill deutlich weniger schmerzhaft.'}
+        ],
+        comments: [{author:'Christopher Kipp',role:'Innovation Lead',initials:'CK',date:'2026-05-20',text:'TypeScript SDK Support könnte vollständiger sein aber für Python excellent.',rating:4}],
+        featured: true, badge: null
+      },
+      {
+        id: 'loop', name: 'loop', tagline: 'Wiederkehrende Aufgaben auf konfigurierbarem Intervall',
+        description: 'Führt Prompts oder Slash-Commands wiederholt aus. Claude wählt sinnvollen Takt. Ideal für Monitoring, wiederholte Checks und iterative Aufgaben.',
+        longDescription: 'Ermöglicht beliebige Aufgaben im Intervall. Ob /loop 5m /check-build oder autonomes Pacing — Claude entscheidet basierend auf Cache-Effizienz wann zu iterieren.',
+        category: 'anthropic', subcategory: 'automation', trigger: '/loop', author: 'Anthropic',
+        version: '1.0.1', addedAt: '2025-11-01', updatedAt: '2026-04-10',
+        tags: ['automation','workflow','productivity','monitoring','scheduling'],
+        useCases: ['Build-Monitoring','Regelmäßige Reports','Iterative Verbesserungen','Polling-Tasks'],
+        difficulty: 'easy', timeToRun: '—', requirements: ['Claude Code'],
+        rating: {average: 4.4, count: 16},
+        endorsedBy: ['Christopher Kipp'],
+        endorsements: [{name:'Christopher Kipp',role:'Innovation Lead',initials:'CK',text:'Elegante Lösung für Monitoring. Das Selbst-Pacing ist kluger als man denkt.'}],
+        comments: [{author:'Jan Richter',role:'Lead Developer',initials:'JR',date:'2026-04-01',text:'Kombination mit /check-build ist super praktisch.',rating:4}],
+        featured: false, badge: null
+      },
+      {
+        id: 'schedule', name: 'schedule', tagline: 'Geplante Remote-Agents auf Cron-Schedule',
+        description: 'Erstellt, verwaltet und führt geplante Remote-Agents auf Cron-Schedule aus. Automatisiert wiederkehrende Aufgaben ohne manuellen Eingriff.',
+        longDescription: 'Claude-Agents zu festen Zeiten ausführen. Ideal für tägliche Reports, wöchentliche Reviews, stündliche Checks. Agents laufen remote.',
+        category: 'anthropic', subcategory: 'automation', trigger: '/schedule', author: 'Anthropic',
+        version: '1.0.0', addedAt: '2026-01-15', updatedAt: '2026-05-01',
+        tags: ['automation','workflow','cron','scheduling','remote-agents'],
+        useCases: ['Tägliche Reports','Wöchentliche Reviews','Automatisierte Checks','Scheduled Deployments'],
+        difficulty: 'medium', timeToRun: '—', requirements: ['Claude Code','Remote Triggers'],
+        rating: {average: 4.1, count: 8},
+        endorsedBy: [],
+        endorsements: [],
+        comments: [{author:'Christopher Kipp',role:'Innovation Lead',initials:'CK',date:'2026-06-10',text:'Noch neu aber sehr vielversprechend für Reporting-Automation.',rating:4}],
+        featured: false, badge: 'neu'
+      },
+      {
+        id: 'simplify', name: 'simplify', tagline: 'Code Review: Qualität, Effizienz & Vereinfachung',
+        description: 'Analysiert Code auf Wiederverwendbarkeit, Qualität und Effizienz. Identifiziert unnötige Komplexität und schlägt Vereinfachungen vor.',
+        longDescription: 'Fokus auf Code-Qualität nach Refactoring. Sucht Duplikate, überflüssige Abstraktionen, unnötige Komplexität. Kein Security/Bug-Check — rein qualitätsorientiert.',
+        category: 'anthropic', subcategory: 'development', trigger: '/simplify', author: 'Anthropic',
+        version: '1.0.0', addedAt: '2025-10-15', updatedAt: '2025-12-01',
+        tags: ['development','refactoring','qa','code-quality','clean-code'],
+        useCases: ['Post-Feature Cleanup','Refactoring Review','Code Quality Gate'],
+        difficulty: 'easy', timeToRun: '2–5 Min', requirements: ['Claude Code'],
+        rating: {average: 4.6, count: 11},
+        endorsedBy: ['Mia Hoffmann'],
+        endorsements: [{name:'Mia Hoffmann',role:'Senior UX Designerin',initials:'MH',text:'Auch für CSS/SCSS sehr hilfreich. Findet redundante Styles schnell.'}],
+        comments: [{author:'Jan Richter',role:'Lead Developer',initials:'JR',date:'2026-03-05',text:'Kleiner Scope aber genau das was er verspricht. Top.',rating:5}],
+        featured: false, badge: null
+      },
+      {
+        id: 'update-config', name: 'update-config', tagline: 'Claude Code via settings.json konfigurieren',
+        description: 'Konfiguriert Claude Code via settings.json. Automatisierte Verhaltensweisen, Permissions, Env-Variablen und Hooks. Für Standardverhalten-Anpassungen.',
+        longDescription: 'Hilft bei allen Claude-Code-Settings. Permission-Whitelists, custom Hooks, Env-Variablen. Erklärt was jede Einstellung bewirkt und schreibt Änderungen sicher.',
+        category: 'anthropic', subcategory: 'development', trigger: '/update-config', author: 'Anthropic',
+        version: '1.0.0', addedAt: '2025-09-01', updatedAt: '2025-11-15',
+        tags: ['setup','development','configuration','permissions','hooks'],
+        useCases: ['Permission-Setup','Hooks konfigurieren','Env-Variablen setzen','Team-Config standardisieren'],
+        difficulty: 'medium', timeToRun: 'variabel', requirements: ['Claude Code'],
+        rating: {average: 4.0, count: 9},
+        endorsedBy: ['Jan Richter'],
+        endorsements: [{name:'Jan Richter',role:'Lead Developer',initials:'JR',text:'Team-weite Config Standardisierung war damit deutlich einfacher.'}],
+        comments: [],
+        featured: false, badge: null
+      },
+      {
+        id: 'less-permission-prompts', name: 'less-permission-prompts', tagline: 'Weniger Unterbrechungen durch Permission-Optimierung',
+        description: 'Scannt Transcripts nach häufigen Read-only Tool-Calls und fügt Allowlist zur settings.json hinzu. Reduziert Permission-Dialog-Unterbrechungen.',
+        longDescription: 'Analysiert vergangene Sessions, identifiziert sicher whitelistbare Befehle. Resultat: optimierte Allowlist für flüssigere zukünftige Sessions.',
+        category: 'anthropic', subcategory: 'productivity', trigger: '/less-permission-prompts', author: 'Anthropic',
+        version: '1.0.0', addedAt: '2025-12-01', updatedAt: '2026-01-10',
+        tags: ['setup','productivity','permissions','workflow'],
+        useCases: ['Session-Optimierung','Allowlist aufbauen','Workflow beschleunigen'],
+        difficulty: 'easy', timeToRun: '5 Min', requirements: ['Claude Code'],
+        rating: {average: 3.4, count: 9},
+        endorsedBy: [],
+        endorsements: [],
+        comments: [{author:'Christopher Kipp',role:'Innovation Lead',initials:'CK',date:'2026-01-20',text:'Einmalig ausführen und dann deutlich weniger Klicken. Lohnt sich.',rating:4}],
+        featured: false, badge: null
+      },
+      {
+        id: 'keybindings-help', name: 'keybindings-help', tagline: 'Tastenkürzel in Claude Code anpassen',
+        description: 'Hilft beim Anpassen von Tastaturkürzeln. Chord-Bindings, Rebinding, keybindings.json — für schnellere Navigation.',
+        longDescription: 'Führt durch Konfiguration von Keyboard Shortcuts. Von einfachem Rebinding bis komplexen Chord-Shortcuts. Schreibt keybindings.json korrekt.',
+        category: 'anthropic', subcategory: 'productivity', trigger: '/keybindings-help', author: 'Anthropic',
+        version: '1.0.0', addedAt: '2025-09-01', updatedAt: '2025-10-01',
+        tags: ['setup','productivity','keyboard','configuration'],
+        useCases: ['Shortcut Customization','Chord Bindings','Workflow Optimierung'],
+        difficulty: 'easy', timeToRun: '5 Min', requirements: ['Claude Code'],
+        rating: {average: 3.1, count: 7},
+        endorsedBy: [],
+        endorsements: [],
+        comments: [{author:'Jan Richter',role:'Lead Developer',initials:'JR',date:'2026-01-15',text:'Funktioniert, aber Dokumentation fehlt. Hab 20 Minuten gebraucht bis ich verstanden habe was Chord-Bindings sind.',rating:2}],
+        featured: false, badge: null
+      },
+      {
+        id: 'briefing-gen', name: 'Briefing Generator', tagline: 'Strukturierte Briefings in Minuten statt Stunden',
+        description: 'Generiert Kreativ-, Media- und Projektbriefings aus wenigen Eckdaten. Gezielte Rückfragen, Marktkontext, vollständiges Dokument nach pilot-Standard.',
+        longDescription: 'Kennt pilot-Briefing-Templates für Kreation, Media und PM. Führt durch strukturierten Prozess, ergänzt Marktkontext, liefert vollständig ausgefülltes Briefing. In unter 10 Minuten statt 2 Stunden.',
+        exampleOutput: `## Kreativ-Briefing: Herbst-Kampagne 2026
+
+**Kunde:** Mustermarke GmbH
+**Budget:** 120.000 €
+**Zeitraum:** 01.09.–30.11.2026
+
+**Zielgruppe:** Frauen 35–55, einkommensstarke Haushalte, kaufentscheidend
+
+**Kernbotschaft:** "Qualität die man spürt — jeden Tag."
+
+**Must-haves:**
+- Produktnahaufnahme (warm lighting)
+- Endorsement durch Real People, keine Models
+- CTA: "Jetzt entdecken" (kein Preis-Fokus)`,
+        category: 'gsd', subcategory: 'content', trigger: '/briefing', author: 'Marketing-Team pilot',
+        version: '1.1.0', addedAt: '2025-10-01', updatedAt: '2026-05-15',
+        tags: ['content','productivity','templates','briefing','kreativ','media'],
+        useCases: ['Kreativ-Briefings','Media-Briefings','Projekt-Briefings','Client-Onboarding'],
+        difficulty: 'easy', timeToRun: '5–10 Min', requirements: ['Claude Code'],
+        rating: {average: 4.4, count: 17},
+        endorsedBy: ['Anna Schreiber','Sophie Klein'],
+        endorsements: [
+          {name:'Anna Schreiber',role:'Content Strategin',initials:'AS',text:'Spart uns Struktur-Arbeit und die Qualität ist überraschend gut. Täglich im Einsatz.'},
+          {name:'Sophie Klein',role:'Projektmanagerin',initials:'SK',text:'Projekt-Briefings in unter 10 Minuten — vorher hat das Stunden gedauert.'}
+        ],
+        comments: [
+          {author:'Mia Hoffmann',role:'Senior UX Designerin',initials:'MH',date:'2026-04-10',text:'Die Rückfragen sind gut gewählt. Schnell zu einem brauchbaren Ergebnis.',rating:5},
+          {author:'Jan Richter',role:'Lead Developer',initials:'JR',date:'2026-03-20',text:'Auch für Tech-Briefings überraschend nützlich.',rating:4}
+        ],
+        featured: true, badge: 'empfohlen'
+      },
+      {
+        id: 'report-summary', name: 'Report Summarizer', tagline: 'Lange Reports kompakt und actionable zusammengefasst',
+        description: 'Fasst Analysen, Performance-Reports und Marktdaten zusammen. Input: PDF, Excel, Text. Output: Executive Summary + Key Insights + Handlungsempfehlungen auf Deutsch.',
+        longDescription: 'Optimiert für pilot-Reporting-Formate: Media-Performance, Marktanalysen, Wettbewerbsanalysen. Destilliert Kern, hebt wichtigste Insights hervor, formuliert nächste Schritte in klarem Deutsch.',
+        category: 'gsd', subcategory: 'analytics', trigger: '/summarize', author: 'Analytics-Team pilot',
+        version: '1.2.0', addedAt: '2025-11-15', updatedAt: '2026-06-01',
+        tags: ['analytics','content','productivity','reports','summarization'],
+        useCases: ['Wöchentliche Performance-Reports','Marktanalysen','Wettbewerbsanalysen','Investor-Briefings'],
+        difficulty: 'easy', timeToRun: '3–8 Min', requirements: ['Claude Code'],
+        rating: {average: 4.2, count: 13},
+        endorsedBy: ['Sophie Klein','Lukas Weber'],
+        endorsements: [
+          {name:'Sophie Klein',role:'Projektmanagerin',initials:'SK',text:'Wöchentliche Reports dauern jetzt 15 Min statt 90. Game-changer für uns.'},
+          {name:'Lukas Weber',role:'SEO Strategist',initials:'LW',text:'Für Google Analytics und Search Console Reports sehr präzise.'}
+        ],
+        comments: [{author:'Anna Schreiber',role:'Content Strategin',initials:'AS',date:'2026-05-05',text:'Executive Summarys sind meist ohne Nachbearbeitung verwendbar.',rating:5}],
+        featured: true, badge: null
+      },
+      {
+        id: 'meeting-notes', name: 'Meeting Notes', tagline: 'Rohe Mitschriften zu strukturierten Protokollen',
+        description: 'Wandelt Mitschriften oder Transkripte in strukturierte Meeting-Protokolle um. Format: Agenda, Beschlüsse, Action Items (wer, was, bis wann), nächste Schritte.',
+        longDescription: 'Versteht unstrukturierten Meeting-Input und formt daraus saubere, actionable Protokolle im pilot-Format. Hilfreich wenn keine Zeit für strukturierte Mitschriften.',
+        category: 'gsd', subcategory: 'productivity', trigger: '/meeting', author: 'Collaboration-Team pilot',
+        version: '1.0.1', addedAt: '2026-01-01', updatedAt: '2026-03-15',
+        tags: ['productivity','collaboration','meetings','documentation','action-items'],
+        useCases: ['Client-Meetings','Strategierunden','Kickoff-Protokolle','Retrospektiven'],
+        difficulty: 'easy', timeToRun: '2–5 Min', requirements: ['Claude Code'],
+        rating: {average: 4.0, count: 10},
+        endorsedBy: ['Sophie Klein','Anna Schreiber'],
+        endorsements: [
+          {name:'Sophie Klein',role:'Projektmanagerin',initials:'SK',text:'Action Items werden nie mehr vergessen. Das Protokoll ist in 3 Minuten fertig.'},
+          {name:'Anna Schreiber',role:'Content Strategin',initials:'AS',text:'Auch aus Sprachnotizen entstehen gute Protokolle. Sehr praktisch unterwegs.'}
+        ],
+        comments: [],
+        featured: false, badge: null
+      },
+      {
+        id: 'campaign-check', name: 'Campaign Checker', tagline: 'Kampagnen-Setup Validierung vor dem Launch',
+        description: 'Prüft Kampagnen-Setups auf Vollständigkeit und Fehler. Tracking-Codes, UTM-Parameter, Zielgruppen, Budget-Allocation und KPI-Definitionen.',
+        longDescription: 'Für Media-Teams bei pilot entwickelt. Validiert kritische Punkte eines Kampagnen-Setups. Findet Fehler bevor sie zu Verschwendung von Media-Budget führen.',
+        category: 'gsd', subcategory: 'analytics', trigger: '/campaign-check', author: 'Media-Team pilot',
+        version: '2.0.0', addedAt: '2025-10-15', updatedAt: '2026-04-01',
+        tags: ['analytics','qa','media','campaign','tracking','utm'],
+        useCases: ['Vor Kampagnen-Launch','UTM-Audit','Tracking-Validierung','Budget-Review'],
+        difficulty: 'medium', timeToRun: '10–20 Min', requirements: ['Claude Code'],
+        rating: {average: 4.5, count: 21},
+        endorsedBy: ['Sophie Klein','Lukas Weber'],
+        endorsements: [
+          {name:'Sophie Klein',role:'Projektmanagerin',initials:'SK',text:'Hat uns schon mehrfach vor fehlerhaftem Tracking gerettet. Pflicht vor jedem Launch.'},
+          {name:'Lukas Weber',role:'SEO Strategist',initials:'LW',text:'UTM-Validierung ist sehr akkurat. Findet auch subtile Fehler in der Struktur.'}
+        ],
+        comments: [
+          {author:'Jan Richter',role:'Lead Developer',initials:'JR',date:'2026-03-30',text:'Tracking-Check ist sehr solide. Audience-Validierung könnte tiefer gehen.',rating:4},
+          {author:'Anna Schreiber',role:'Content Strategin',initials:'AS',date:'2026-02-15',text:'Super für Content-Kampagnen. UTM-Fehler werden zuverlässig gefunden.',rating:5}
+        ],
+        featured: false, badge: null
+      },
+      {
+        id: 'pitch-deck', name: 'Pitch Deck Assistent', tagline: 'Überzeugender Pitch: Struktur, Argumente, Storytelling',
+        description: 'Unterstützt bei Pitch-Decks. Strukturiert Argumentation, erstellt Slide-Outline, formuliert Value Propositions, passt Tonalität an Zielgruppe an.',
+        longDescription: 'Von erstem Gedanken bis fertiger Struktur. Analysiert Zielgruppe, entwickelt Story, schlägt Slide-Reihenfolge vor, formuliert Key Messages — für New Business, interne oder Investor Pitches.',
+        exampleOutput: `## Pitch Deck Struktur — New Business
+
+1. **Hook** — Die eine unbequeme Wahrheit über [Branche]
+2. **Problem** — Was kostet das heute? (in Zahlen)
+3. **Solution** — pilot Ansatz in 3 Bulletpoints
+4. **Proof** — Case Study + Messergebnisse
+5. **Team** — Wer macht das? (Kurzvorstellung)
+6. **Investment** — Konkrete nächste Schritte
+
+*Format: 12 Slides, 16:9, pilot CI*`,
+        category: 'gsd', subcategory: 'content', trigger: '/pitch', author: 'New Business Team pilot',
+        version: '0.8.0', addedAt: '2026-02-01', updatedAt: '2026-05-20',
+        tags: ['content','new-business','templates','presentations','storytelling'],
+        useCases: ['New Business Pitches','Interne Präsentationen','Investor Decks','Workshop-Präsentationen'],
+        difficulty: 'medium', timeToRun: '15–30 Min', requirements: ['Claude Code'],
+        rating: {average: 3.9, count: 7},
+        endorsedBy: [],
+        endorsements: [],
+        comments: [{author:'Anna Schreiber',role:'Content Strategin',initials:'AS',date:'2026-04-28',text:'Für New Business Pitches sehr hilfreich bei der ersten Strukturierung.',rating:4}],
+        featured: false, badge: 'neu'
+      },
+      {
+        id: 'keyword-research', name: 'Keyword Researcher', tagline: 'SEO Keyword-Analyse mit Content-Cluster Empfehlungen',
+        description: 'Strukturierte Keyword-Analysen. Gruppiert nach Intent (informational, navigational, transactional), bewertet Schwierigkeit, erstellt Content-Cluster-Empfehlungen.',
+        longDescription: 'Kombiniert SEO-Expertise mit KI. Analysiert Seed-Keywords, erweitert systematisch, gruppiert nach Intent und Thema, empfiehlt Content-Cluster-Plan für organisches Wachstum.',
+        category: 'gsd', subcategory: 'analytics', trigger: '/keywords', author: 'SEO-Team pilot',
+        version: '1.1.0', addedAt: '2025-12-01', updatedAt: '2026-04-15',
+        tags: ['seo','analytics','content','keywords','content-strategy'],
+        useCases: ['SEO-Strategie','Content-Planning','Wettbewerbsanalyse','Nischen-Identifikation'],
+        difficulty: 'medium', timeToRun: '10–15 Min', requirements: ['Claude Code'],
+        rating: {average: 4.3, count: 15},
+        endorsedBy: ['Lukas Weber'],
+        endorsements: [{name:'Lukas Weber',role:'SEO Strategist',initials:'LW',text:'Content-Cluster Empfehlungen sind sehr durchdacht. Spart mir echte Research-Zeit.'}],
+        comments: [
+          {author:'Anna Schreiber',role:'Content Strategin',initials:'AS',date:'2026-03-25',text:'Intent-Klassifikation ist sehr akkurat. Top Tool für Content-Strategie.',rating:5},
+          {author:'Lukas Weber',role:'SEO Strategist',initials:'LW',date:'2026-02-10',text:'Ersetzt kein professionelles SEO-Tool aber als erste Analyse sehr wertvoll.',rating:4}
+        ],
+        featured: false, badge: null
+      }
+    ];
+
+    const PILOTS = [
+      {name:'Christopher Kipp',initials:'CK',role:'Innovation Lead',department:'Strategie & Innovation',bio:'Entwickelt und kuratiert KI-Tools für das gesamte pilot-Ökosystem. Treibt die KI-Adoption bei pilot voran.',endorsedSkills:['webaudit','claude-api','ralph-loop','review','loop','init','security-review']},
+      {name:'Mia Hoffmann',initials:'MH',role:'Senior UX Designerin',department:'UX & Design',bio:'Nutzt KI-Tools um Design-Qualität und Effizienz zu steigern. Überzeugter Fan des webaudit Skills.',endorsedSkills:['webaudit','briefing-gen','simplify','kf-assistant']},
+      {name:'Jan Richter',initials:'JR',role:'Lead Developer',department:'Tech & Platforms',bio:'Setzt auf automatisierte Reviews für schnellere Release-Zyklen. Pflicht-Skills: review + security-review.',endorsedSkills:['review','security-review','claude-api','update-config','init']},
+      {name:'Sophie Klein',initials:'SK',role:'Projektmanagerin',department:'Projektmanagement',bio:'Automatisiert repetitive Aufgaben um mehr Zeit für Strategie zu haben. Besonders aktiv im GSD-Bereich.',endorsedSkills:['meeting-notes','report-summary','campaign-check','briefing-gen']},
+      {name:'Lukas Weber',initials:'LW',role:'SEO Strategist',department:'Performance Marketing',bio:'Kombiniert KI-Tools mit SEO-Expertise für bessere organische Sichtbarkeit und effizientere Analysen.',endorsedSkills:['keyword-research','webaudit','report-summary','campaign-check']},
+      {name:'Anna Schreiber',initials:'AS',role:'Content Strategin',department:'Content & Kreation',bio:'Nutzt KI als Kreativ-Partner. Von Briefings bis Pitch Decks — findet für alles den richtigen Skill.',endorsedSkills:['briefing-gen','pitch-deck','meeting-notes','report-summary','kf-assistant']}
+    ];
+
+    // ===== STATE =====
+    const state = {
+      category: 'all',
+      tags: [],
+      subcategory: null,
+      endorsedOnly: false,
+      sort: 'recommended',
+      search: '',
+      activeSkill: null,
+      activeTab: 'overview',
+      pendingRating: {}
+    };
+
+    // ===== HELPERS =====
+    function subIcon(sub) {
+      const icons = {
+        'qa': '🔍', 'development': '⚙️', 'content': '✍️',
+        'analytics': '📊', 'automation': '🔄', 'productivity': '📋',
+        'ai': '🤖'
+      };
+      return icons[sub] || '✦';
+    }
+
+    function catLabel(cat) {
+      if (cat === 'pilot-inhouse') return 'pilot inhouse';
+      if (cat === 'anthropic') return 'Anthropic';
+      if (cat === 'gsd') return 'GSD';
+      return cat;
+    }
+
+    function diffLabel(d) {
+      if (d === 'easy') return 'Einfach';
+      if (d === 'medium') return 'Mittel';
+      if (d === 'advanced') return 'Fortgeschritten';
+      return d;
+    }
+
+    function formatDate(dateStr) {
+      if (!dateStr) return '';
+      const months = ['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
+      const parts = dateStr.split('-');
+      if (parts.length !== 3) return dateStr;
+      return `${parseInt(parts[2])}. ${months[parseInt(parts[1])-1]} ${parts[0]}`;
+    }
+
+    function renderStars(rating, interactive = false, skillId = null) {
+      const full = Math.floor(rating);
+      const half = rating - full >= 0.5;
+      let html = `<span class="stars-display" role="img" aria-label="${rating.toFixed(1)} von 5 Sternen">`;
+      for (let i = 1; i <= 5; i++) {
+        const isFull = i <= full;
+        const isHalf = !isFull && (i === full + 1 && half);
+        const filled = isFull || isHalf;
+        html += `<span class="star ${filled ? 'filled' : 'empty'}" aria-hidden="true">${filled ? '★' : '☆'}</span>`;
+      }
+      html += '</span>';
+      return html;
+    }
+
+    function renderInteractiveStars(skillId) {
+      const current = state.pendingRating[skillId] || getRating(skillId) || 0;
+      let html = `<div class="star-input" id="star-input-${skillId}" data-current="${current}">`;
+      for (let i = 1; i <= 5; i++) {
+        html += `<button class="star-btn ${i <= current ? 'filled' : ''}"
+          data-val="${i}"
+          onmouseenter="hoverStars('${skillId}', ${i})"
+          onmouseleave="resetStarHover('${skillId}')"
+          onclick="setRating('${skillId}', ${i})"
+          aria-label="${i} Sterne">★</button>`;
+      }
+      html += '</div>';
+      return html;
+    }
+
+    function hoverStars(skillId, val) {
+      const container = document.getElementById(`star-input-${skillId}`);
+      if (!container) return;
+      container.querySelectorAll('.star-btn').forEach((btn, i) => {
+        btn.classList.toggle('filled', i < val);
+      });
+    }
+
+    function resetStarHover(skillId) {
+      const container = document.getElementById(`star-input-${skillId}`);
+      if (!container) return;
+      const current = parseInt(container.dataset.current) || 0;
+      container.querySelectorAll('.star-btn').forEach((btn, i) => {
+        btn.classList.toggle('filled', i < current);
+      });
+    }
+
+    function setRating(skillId, stars) {
+      submitRating(skillId, stars);
+      state.pendingRating[skillId] = stars;
+      const container = document.getElementById(`star-input-${skillId}`);
+      if (container) {
+        container.dataset.current = stars;
+        container.querySelectorAll('.star-btn').forEach((btn, i) => {
+          btn.classList.toggle('filled', i < stars);
+        });
+      }
+      const hint = document.getElementById(`rating-hint-${skillId}`);
+      if (hint) hint.textContent = `Du hast ${stars} von 5 Sternen gegeben. Danke!`;
+      showToast('Bewertung gespeichert ★');
+    }
+
+    function getRating(skillId) {
+      try {
+        const data = localStorage.getItem(`skill-rating-${skillId}`);
+        return data ? parseInt(data) : 0;
+      } catch(e) { return 0; }
+    }
+
+    function submitRating(skillId, stars) {
+      try { localStorage.setItem(`skill-rating-${skillId}`, stars); } catch(e) {}
+    }
+
+    function getEffectiveRating(skill) {
+      const userRating = getRating(skill.id);
+      const userComments = getComments(skill.id);
+      const seedRating = skill.rating.average;
+      const seedCount = skill.rating.count;
+      let totalSum = seedRating * seedCount;
+      let totalCount = seedCount;
+      userComments.forEach(c => { if (c.rating) { totalSum += c.rating; totalCount++; } });
+      if (userRating > 0) { totalSum += userRating; totalCount++; }
+      return { average: totalCount > 0 ? totalSum / totalCount : 0, count: totalCount };
+    }
+
+    function getComments(skillId) {
+      try {
+        const data = localStorage.getItem(`skill-comments-${skillId}`);
+        return data ? JSON.parse(data) : [];
+      } catch(e) { return []; }
+    }
+
+    function submitComment(skillId) {
+      const author = document.getElementById(`comment-author-${skillId}`)?.value?.trim();
+      const role = document.getElementById(`comment-role-${skillId}`)?.value?.trim();
+      const text = document.getElementById(`comment-text-${skillId}`)?.value?.trim();
+      const ratingVal = state.pendingRating[`comment-${skillId}`] || 0;
+
+      if (!author || !text) { showToast('Bitte Name und Kommentar ausfüllen.'); return; }
+
+      const comment = {
+        author, role: role || 'Pilot', initials: getInitials(author),
+        date: new Date().toISOString().slice(0,10),
+        text, rating: ratingVal || null
+      };
+
+      const existing = getComments(skillId);
+      existing.unshift(comment);
+      try { localStorage.setItem(`skill-comments-${skillId}`, JSON.stringify(existing)); } catch(e) {}
+      showToast('Kommentar veröffentlicht!');
+      switchTab('ratings');
+    }
+
+    function getInitials(name) {
+      return name.split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
+    }
+
+    // ===== RECENTLY VIEWED =====
+    function addToHistory(skillId) {
+      let hist = JSON.parse(localStorage.getItem('skill-history') || '[]');
+      hist = [skillId, ...hist.filter(id => id !== skillId)].slice(0, 5);
+      localStorage.setItem('skill-history', JSON.stringify(hist));
+    }
+    function getHistory() {
+      return JSON.parse(localStorage.getItem('skill-history') || '[]');
+    }
+
+    // ===== RATING =====
+
+    // ===== FILTER & SORT =====
+    function filterSkills() {
+      let result = [...SKILLS];
+      if (state.category !== 'all') {
+        result = result.filter(s => s.category === state.category);
+      }
+      if (state.subcategory) {
+        result = result.filter(s => s.subcategory === state.subcategory);
+      }
+      if (state.tags.length > 0) {
+        result = result.filter(s => state.tags.every(t => s.tags.includes(t)));
+      }
+      if (state.endorsedOnly) {
+        result = result.filter(s => s.endorsedBy && s.endorsedBy.length > 0);
+      }
+      if (state.search) {
+        const q = state.search;
+        result = result.filter(s =>
+          s.name.toLowerCase().includes(q) ||
+          s.tagline.toLowerCase().includes(q) ||
+          s.description.toLowerCase().includes(q) ||
+          s.tags.join(' ').toLowerCase().includes(q)
+        );
+      }
+      result.sort((a, b) => {
+        if (state.sort === 'recommended') {
+          const aFeat = a.featured ? 1 : 0;
+          const bFeat = b.featured ? 1 : 0;
+          if (bFeat !== aFeat) return bFeat - aFeat;
+          return getEffectiveRating(b).average - getEffectiveRating(a).average;
+        }
+        if (state.sort === 'rating') return getEffectiveRating(b).average - getEffectiveRating(a).average;
+        if (state.sort === 'count') return getEffectiveRating(b).count - getEffectiveRating(a).count;
+        if (state.sort === 'newest') return new Date(b.updatedAt) - new Date(a.updatedAt);
+        if (state.sort === 'alpha') return a.name.localeCompare(b.name, 'de');
+        return 0;
+      });
+      return result;
+    }
+
+    function getAllTags() {
+      const tagSet = new Set();
+      SKILLS.forEach(s => s.tags.forEach(t => tagSet.add(t)));
+      return [...tagSet].sort();
+    }
+
+    // ===== RENDER CARD =====
+    function renderCard(skill, isFeatured = false) {
+      const eff = getEffectiveRating(skill);
+      const endorsers = skill.endorsedBy || [];
+      const catClass = skill.category;
+
+      const cutoff = new Date(Date.now() - 21 * 24 * 60 * 60 * 1000);
+      const isNew = new Date(skill.updatedAt || skill.addedAt) > cutoff;
+      const newBadge = isNew ? `<span class="new-badge">Neu</span>` : '';
+
+      let avatarsHtml = '';
+      if (endorsers.length > 0) {
+        const shown = endorsers.slice(0, 3);
+        const rest = endorsers.length - shown.length;
+        avatarsHtml = '<div class="pilot-avatars">';
+        shown.forEach(name => {
+          const pilot = PILOTS.find(p => p.name === name);
+          const init = pilot ? pilot.initials : name.slice(0,2).toUpperCase();
+          avatarsHtml += `<div class="avatar" title="${name}">${init}</div>`;
+        });
+        if (rest > 0) avatarsHtml += `<div class="avatar more">+${rest}</div>`;
+        avatarsHtml += '</div>';
+      }
+
+      const tagsHtml = skill.tags.slice(0, 4).map(t =>
+        `<span class="tag-chip ${state.tags.includes(t) ? 'active' : ''}" onclick="toggleTag(event,'${t}')">${t}</span>`
+      ).join('');
+
+      const starsHtml = renderStars(eff.average);
+
+      const triggerHtml = skill.trigger
+        ? `<span class="card-trigger-chip">${skill.trigger}</span>`
+        : `<span class="card-trigger-chip no-trigger">kein Befehl</span>`;
+
+      return `
+        <div class="skill-card ${isFeatured ? 'featured' : ''}" onclick="openModal('${skill.id}')">
+          <div class="card-header">
+            <span class="sub-icon" title="${skill.subcategory}">${subIcon(skill.subcategory)}</span>
+            <span class="cat-badge ${catClass}">${catLabel(skill.category)}</span>
+            ${skill.badge ? `<span class="skill-badge ${skill.badge}">${skill.badge}</span>` : ''}
+            ${newBadge}
+          </div>
+          <h3 class="skill-name">${escHtml(skill.name)}</h3>
+          <p class="skill-tagline">${escHtml(skill.tagline)}</p>
+          <div class="skill-tags">${tagsHtml}</div>
+          <div class="skill-meta">
+            <span class="diff-badge ${skill.difficulty}">${diffLabel(skill.difficulty)}</span>
+            <span>·</span>
+            <span>${escHtml(skill.timeToRun)}</span>
+          </div>
+          <div class="card-footer">
+            <div class="stars-display-wrap">
+              ${starsHtml}
+              <span class="rating-text">${eff.average.toFixed(1)} (${eff.count})</span>
+            </div>
+            <div class="card-footer-right">
+              ${triggerHtml}
+              ${avatarsHtml}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function escHtml(str) {
+      if (!str) return '';
+      return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    // ===== RENDER FEATURED =====
+    function renderFeatured() {
+      const featured = SKILLS.filter(s => s.featured).slice(0, 3);
+      const grid = document.getElementById('featured-grid');
+      if (!grid) return;
+      grid.innerHTML = featured.map(s => renderCard(s, true)).join('');
+    }
+
+    // ===== RENDER PILOTS =====
+    function renderPilots() {
+      const grid = document.getElementById('pilots-grid');
+      if (!grid) return;
+      grid.innerHTML = PILOTS.map(pilot => {
+        const chips = pilot.endorsedSkills.slice(0, 5).map(sid => {
+          const skill = SKILLS.find(s => s.id === sid);
+          if (!skill) return '';
+          return `<span class="pilot-skill-chip" onclick="event.stopPropagation();openModal('${sid}')" title="Skill ansehen">${escHtml(skill.name)}</span>`;
+        }).join('');
+        return `
+          <div class="pilot-card" onclick="filterByPilot('${escHtml(pilot.name)}')">
+            <div class="pilot-avatar-lg">${pilot.initials}</div>
+            <div class="pilot-name">${escHtml(pilot.name)}</div>
+            <div class="pilot-role">${escHtml(pilot.role)}</div>
+            <div class="pilot-dept">${escHtml(pilot.department)}</div>
+            <p class="pilot-bio">${escHtml(pilot.bio)}</p>
+            <div class="pilot-skills">${chips}</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function filterByPilot(pilotName) {
+      const pilot = PILOTS.find(p => p.name === pilotName);
+      if (!pilot) return;
+      // Scroll zu Skills-Sektion
+      document.querySelector('.skills-section')?.scrollIntoView({behavior:'smooth'});
+      // Endorsed-only Filter aktivieren (zeigt Skills die dieser Pilot endorsed hat)
+      state.endorsedOnly = true;
+      document.getElementById('endorsed-only').checked = true;
+      // Subcategory zurücksetzen um alle Skills des Piloten zu zeigen
+      state.subcategory = null;
+      renderCatTabs();
+      renderRoleChips();
+      render();
+      showToast(`Skills von ${pilotName.split(' ')[0]} ★`);
+    }
+
+    // ===== RENDER CAT TABS =====
+    function renderCatTabs() {
+      const subs = [
+        {id:'all',label:'Alle'},
+        {id:'development',label:'👩‍💻 Entwicklung'},
+        {id:'content',label:'✍️ Inhalt'},
+        {id:'analytics',label:'📊 Analytics'},
+        {id:'productivity',label:'📋 Produktivität'},
+        {id:'automation',label:'⚙️ Automatisierung'}
+      ];
+      const html = subs.map(s => {
+        const count = s.id === 'all' ? SKILLS.length : SKILLS.filter(sk => sk.subcategory === s.id).length;
+        const isActive = state.subcategory === (s.id === 'all' ? null : s.id);
+        return `<button class="cat-tab${isActive ? ' active' : ''}" role="tab" aria-selected="${isActive}" onclick="setSubCat('${s.id}')">${escHtml(s.label)} <span class="tab-count">${count}</span></button>`;
+      }).join('');
+      document.getElementById('cat-tabs').innerHTML = html;
+    }
+
+    function setSubCat(sub) {
+      state.subcategory = sub === 'all' ? null : sub;
+      renderCatTabs();
+      render();
+      updateURL();
+    }
+
+    function setCategory(cat) {
+      state.category = cat;
+      renderCatTabs();
+      render();
+      updateURL();
+    }
+
+    // ===== RENDER TAG CHIPS =====
+    function renderTagChips() {
+      // Zähle Tag-Häufigkeit
+      const tagCount = {};
+      SKILLS.forEach(s => s.tags.forEach(t => { tagCount[t] = (tagCount[t] || 0) + 1; }));
+      const sorted = Object.entries(tagCount).sort((a,b) => b[1]-a[1]);
+      const top8 = sorted.slice(0, 8).map(e => e[0]);
+      const rest = sorted.slice(8).map(e => e[0]);
+
+      const container = document.getElementById('tag-chips');
+      if (!container) return;
+
+      const makeChip = t => `<button class="filter-tag-chip ${state.tags.includes(t) ? 'active' : ''}" onclick="toggleTag(event,'${t}')">${t}</button>`;
+
+      let html = top8.map(makeChip).join('');
+
+      if (rest.length > 0) {
+        html += `<button class="more-tags-btn" id="more-tags-btn" onclick="toggleMoreTags()">+ ${rest.length} weitere Filter</button>`;
+        html += `<div class="more-tags-panel" id="more-tags-panel" hidden>${rest.map(makeChip).join('')}</div>`;
+      }
+
+      container.innerHTML = html;
+    }
+
+    function toggleMoreTags() {
+      const panel = document.getElementById('more-tags-panel');
+      const btn = document.getElementById('more-tags-btn');
+      if (!panel || !btn) return;
+      panel.hidden = !panel.hidden;
+      btn.textContent = panel.hidden ? `+ ${panel.children.length} weitere Filter` : '− weniger Filter';
+    }
+
+    function toggleTagFilter(tag) {
+      const idx = state.tags.indexOf(tag);
+      if (idx === -1) state.tags.push(tag);
+      else state.tags.splice(idx, 1);
+      renderTagChips();
+      render();
+      updateURL();
+    }
+
+    function toggleTag(evt, tag) {
+      evt.stopPropagation();
+      toggleTagFilter(tag);
+    }
+
+    // ===== RENDER MAIN GRID =====
+    function render() {
+      const filtered = filterSkills();
+      const grid = document.getElementById('skills-grid');
+      const empty = document.getElementById('empty-state');
+      const count = document.getElementById('results-count');
+      const resetBtn = document.getElementById('reset-filters');
+
+      if (!grid) return;
+
+      const hasFilters = state.category !== 'all' || state.tags.length > 0 || state.search || state.endorsedOnly || state.subcategory;
+      if (resetBtn) resetBtn.style.display = hasFilters ? 'block' : 'none';
+      if (count) count.textContent = `${filtered.length} ${filtered.length === 1 ? 'Skill' : 'Skills'}`;
+
+      if (filtered.length === 0) {
+        if (empty) empty.style.display = 'none';
+        grid.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">🔍</div>
+            <h3 class="empty-title">Kein Skill gefunden</h3>
+            <p class="empty-text">Keine Skills passen zu deinen aktuellen Filtern.</p>
+            <button class="c-cta -black-border" onclick="resetFilters()" style="margin-top:2rem">Filter zurücksetzen</button>
+          </div>
+        `;
+      } else {
+        if (empty) empty.style.display = 'none';
+        grid.innerHTML = filtered.map(s => renderCard(s, false)).join('');
+      }
+    }
+
+    // ===== RENDER RECENTLY VIEWED =====
+    function renderRecentlyViewed() {
+      const container = document.getElementById('recently-viewed');
+      if (!container) return;
+      const hist = getHistory();
+      if (hist.length === 0) { container.hidden = true; return; }
+      const skills = hist.map(id => SKILLS.find(s => s.id === id)).filter(Boolean);
+      if (skills.length === 0) { container.hidden = true; return; }
+      container.hidden = false;
+      container.innerHTML = `
+        <p class="rv-label">Zuletzt angesehen</p>
+        <div class="rv-row">
+          ${skills.map(s => `
+            <button class="rv-card" onclick="openModal('${escHtml(s.id)}')">
+              <span class="rv-icon">${subIcon(s.subcategory)}</span>
+              <span class="rv-name">${escHtml(s.name)}</span>
+            </button>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    // ===== MODAL =====
+    function openModal(id) {
+      window._modalOpener = document.activeElement;
+      const skill = SKILLS.find(s => s.id === id);
+      if (!skill) return;
+      state.activeSkill = skill;
+      state.activeTab = 'overview';
+      addToHistory(skill.id);
+      renderRecentlyViewed();
+
+      document.getElementById('modal-name').textContent = skill.name;
+      const trigBtn = document.getElementById('modal-trigger');
+      if (skill.trigger) {
+        trigBtn.textContent = skill.trigger + ' 📋';
+        trigBtn.style.display = 'inline-block';
+      } else {
+        trigBtn.style.display = 'none';
+      }
+      const triggerHint = document.getElementById('trigger-hint');
+      if (triggerHint) {
+        triggerHint.textContent = skill.trigger
+          ? `Tippe diesen Befehl in Claude Code ein`
+          : 'Kein direkter Befehl — folge der Anleitung im jeweiligen Workflow';
+        triggerHint.style.display = 'block';
+      }
+
+      // Meta
+      const eff = getEffectiveRating(skill);
+      const meta = document.getElementById('modal-meta');
+      meta.innerHTML = `
+        ${renderStars(eff.average)}
+        <span>${eff.average.toFixed(1)} (${eff.count} Bewertungen)</span>
+        <span class="modal-meta-sep">·</span>
+        <span class="diff-badge ${skill.difficulty}">${diffLabel(skill.difficulty)}</span>
+        <span class="modal-meta-sep">·</span>
+        <span>${escHtml(skill.timeToRun)}</span>
+        <span class="modal-meta-sep">·</span>
+        <span>v${escHtml(skill.version)}</span>
+        <span class="modal-meta-sep">·</span>
+        <span class="cat-badge ${skill.category}" style="margin:0">${catLabel(skill.category)}</span>
+      `;
+
+      // Reset tabs
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.tab === 'overview');
+      });
+
+      renderModalBody();
+      document.getElementById('modal-overlay').classList.add('open');
+      document.body.style.overflow = 'hidden';
+      updateURL();
+      setTimeout(() => { const closeBtn = document.querySelector('.modal-close'); if (closeBtn) closeBtn.focus(); }, 50);
+    }
+
+    function closeModal() {
+      document.getElementById('modal-overlay').classList.remove('open');
+      document.body.style.overflow = '';
+      state.activeSkill = null;
+      history.pushState(null, '', location.pathname + location.search);
+      if (window._modalOpener) { window._modalOpener.focus(); window._modalOpener = null; }
+    }
+
+    function switchTab(tab) {
+      state.activeTab = tab;
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.tab === tab);
+      });
+      renderModalBody();
+    }
+
+    function renderModalBody() {
+      const skill = state.activeSkill;
+      if (!skill) return;
+      const body = document.getElementById('modal-body');
+      if (state.activeTab === 'overview') body.innerHTML = renderModalOverview(skill);
+      else if (state.activeTab === 'ratings') body.innerHTML = renderModalRatings(skill);
+      else if (state.activeTab === 'pilots') body.innerHTML = renderModalPilots(skill);
+      else if (state.activeTab === 'changelog') body.innerHTML = renderModalChangelog(skill);
+    }
+
+    function renderModalOverview(skill) {
+      const reqChips = skill.requirements.map(r => `<span class="req-chip">${escHtml(r)}</span>`).join('');
+      const useCasesHtml = skill.useCases.map(u => `<li>${escHtml(u)}</li>`).join('');
+      const tagsHtml = skill.tags.map(t => `<span class="modal-tag">${escHtml(t)}</span>`).join('');
+      const eff = getEffectiveRating(skill);
+
+      return `
+        <div class="rating-overview">
+          <div>
+            <div class="rating-big">${eff.average.toFixed(1)}</div>
+            <div>${renderStars(eff.average)}</div>
+            <div class="rating-sub">${eff.count} Bewertungen</div>
+          </div>
+          <div style="flex:1">
+            <p class="long-desc">${escHtml(skill.longDescription)}</p>
+          </div>
+        </div>
+
+        <div class="info-grid">
+          <div class="info-item"><label>Autor</label><span>${escHtml(skill.author)}</span></div>
+          <div class="info-item"><label>Version</label><span>${escHtml(skill.version)}</span></div>
+          <div class="info-item"><label>Hinzugefügt</label><span>${formatDate(skill.addedAt)}</span></div>
+          <div class="info-item"><label>Zuletzt aktualisiert</label><span>${formatDate(skill.updatedAt)}</span></div>
+        </div>
+
+        <p class="section-label">Use Cases</p>
+        <ul class="use-cases">${useCasesHtml}</ul>
+
+        <p class="section-label">Voraussetzungen</p>
+        <div class="req-list">${reqChips}</div>
+
+        <p class="section-label">Tags</p>
+        <div class="modal-tag-list">${tagsHtml}</div>
+
+        ${skill.exampleOutput ? `
+          <p class="section-label output-label">Beispiel-Output</p>
+          <pre class="output-example">${escHtml(skill.exampleOutput)}</pre>
+        ` : ''}
+
+        ${skill.trigger ? `
+          <p class="section-label">Trigger</p>
+          <div style="display:flex;align-items:center;gap:1.2rem;flex-wrap:wrap;margin-top:.4rem">
+            <code style="font-size:1.8rem;font-family:'Courier New',monospace;background:var(--c-bg);padding:.6rem 1.4rem;border-radius:.6rem;border:1px solid var(--c-gray-l)">${escHtml(skill.trigger)}</code>
+            <button class="c-cta -black-border" onclick="copyTrigger()" style="padding:.7rem 2rem;font-size:1.4rem">Kopieren</button>
+          </div>
+        ` : ''}
+
+        <details class="install-guide" style="margin-top:2.4rem">
+          <summary style="cursor:pointer;font-size:1.4rem;font-weight:600;color:var(--c-black);padding:.8rem 0;list-style:none;display:flex;align-items:center;gap:.8rem">
+            <span>📦</span> <span>So nutzt du diesen Skill</span>
+            <span style="margin-left:auto;font-size:1.2rem;color:var(--c-gray-m)">▼</span>
+          </summary>
+          <div style="padding:1.6rem;background:var(--c-bg);border-radius:1rem;margin-top:.8rem">
+            ${skill.trigger ? `
+            <ol style="margin:0;padding-left:2rem;display:flex;flex-direction:column;gap:1rem;font-size:1.4rem;line-height:1.6">
+              <li>Öffne <strong>Claude Code</strong> in deinem Terminal</li>
+              <li>Navigiere in dein Projektverzeichnis (<code style="background:rgba(0,0,0,.08);padding:.2rem .5rem;border-radius:.3rem">cd mein-projekt</code>)</li>
+              <li>Tippe den Trigger-Befehl: <code style="background:rgba(0,0,0,.08);padding:.2rem .5rem;border-radius:.3rem">${escHtml(skill.trigger)}</code></li>
+              <li>Folge den Anweisungen im Chat</li>
+            </ol>
+            ` : `
+            <p style="font-size:1.4rem;color:var(--c-gray-m);margin:0">Dieser Skill hat keinen direkten Trigger-Befehl. Er wird automatisch durch Claude Code aktiviert.</p>
+            `}
+            <p style="margin:1.2rem 0 0;font-size:1.2rem;color:var(--c-gray-m)">
+              Neu bei Claude Code? <a href="https://docs.anthropic.com/claude/docs/claude-code" target="_blank" style="color:var(--c-black);font-weight:600">Zur Dokumentation →</a>
+            </p>
+          </div>
+        </details>
+
+        ${(() => {
+          const current = skill;
+          const similar = SKILLS
+            .filter(s => s.id !== current.id)
+            .map(s => {
+              let score = 0;
+              if (s.subcategory === current.subcategory) score += 3;
+              const sharedTags = s.tags.filter(t => current.tags.includes(t));
+              score += sharedTags.length;
+              return { skill: s, score };
+            })
+            .filter(x => x.score >= 2)
+            .sort((a, b) => b.score - a.score)
+            .slice(0, 3)
+            .map(x => x.skill);
+
+          if (similar.length === 0) return '';
+
+          const cards = similar.map(s => `
+            <button class="similar-card" onclick="openModal('${escHtml(s.id)}')" type="button">
+              <span class="similar-icon">${subIcon(s.subcategory)}</span>
+              <span class="similar-name">${escHtml(s.name)}</span>
+              <span class="similar-cat">${catLabel(s.category)}</span>
+            </button>
+          `).join('');
+
+          return `
+            <p class="section-label" style="margin-top:2.4rem">Ähnliche Skills</p>
+            <div class="similar-grid">${cards}</div>
+          `;
+        })()}
+      `;
+    }
+
+    function renderModalRatings(skill) {
+      const eff = getEffectiveRating(skill);
+      const userComments = getComments(skill.id);
+      const allComments = [...userComments, ...skill.comments];
+      const userRating = getRating(skill.id);
+      const commentSkillId = skill.id;
+
+      const commentsHtml = allComments.length === 0
+        ? '<p class="no-comments">Noch keine Kommentare. Sei der Erste!</p>'
+        : allComments.map(c => `
+          <div class="comment-item">
+            <div class="avatar" style="flex-shrink:0;width:4rem;height:4rem;font-size:1.4rem">${escHtml(c.initials || getInitials(c.author))}</div>
+            <div>
+              <div class="comment-author">${escHtml(c.author)}</div>
+              <div class="comment-role-date">${escHtml(c.role)} · ${formatDate(c.date)}</div>
+              ${c.rating ? `<div class="comment-stars">${renderStars(c.rating)}</div>` : ''}
+              <p class="comment-text">${escHtml(c.text)}</p>
+            </div>
+          </div>
+        `).join('');
+
+      return `
+        <div class="rating-overview" style="margin-bottom:2rem">
+          <div>
+            <div class="rating-big">${eff.average.toFixed(1)}</div>
+            <div>${renderStars(eff.average)}</div>
+            <div class="rating-sub">${eff.count} Bewertungen gesamt</div>
+          </div>
+        </div>
+
+        <div class="comment-form">
+          <h3>Deine Bewertung & Kommentar</h3>
+          <p class="rating-form-label">Deine Sternebewertung</p>
+          ${renderInteractiveStars(`comment-${commentSkillId}`)}
+          <p class="user-rating-hint" id="rating-hint-comment-${commentSkillId}">
+            ${userRating > 0 ? `Du hast diesen Skill bereits mit ${userRating} Sternen bewertet.` : 'Klick auf die Sterne um zu bewerten.'}
+          </p>
+          <div class="form-row" style="margin-top:1.6rem">
+            <div>
+              <label for="comment-author-${commentSkillId}" class="sr-only">Dein Name</label>
+              <input type="text" id="comment-author-${commentSkillId}" placeholder="Dein Name *" required>
+            </div>
+            <div>
+              <label for="comment-role-${commentSkillId}" class="sr-only">Deine Rolle</label>
+              <input type="text" id="comment-role-${commentSkillId}" placeholder="Deine Rolle">
+            </div>
+          </div>
+          <label for="comment-text-${commentSkillId}" class="sr-only">Dein Kommentar</label>
+          <textarea id="comment-text-${commentSkillId}" placeholder="Dein Kommentar *" rows="3" required></textarea>
+          <button class="c-cta -black-bg" onclick="submitComment('${commentSkillId}')">Kommentar veröffentlichen</button>
+        </div>
+
+        <p class="section-label">Alle Kommentare (${allComments.length})</p>
+        ${commentsHtml}
+      `;
+    }
+
+    function renderModalPilots(skill) {
+      if (!skill.endorsements || skill.endorsements.length === 0) {
+        return `<p class="no-endorsements">Noch keine Piloten-Endorsements für diesen Skill.</p>`;
+      }
+      return `
+        <p class="section-label">${skill.endorsements.length} ${skill.endorsements.length === 1 ? 'Pilot empfiehlt' : 'Piloten empfehlen'} diesen Skill</p>
+        ${skill.endorsements.map(e => `
+          <div class="pilot-tab-card">
+            <div class="pilot-tab-avatar">${escHtml(e.initials)}</div>
+            <div>
+              <div class="pilot-tab-name">${escHtml(e.name)}</div>
+              <div class="pilot-tab-role">${escHtml(e.role)}</div>
+              <p class="pilot-tab-quote">"${escHtml(e.text)}"</p>
+            </div>
+          </div>
+        `).join('')}
+      `;
+    }
+
+    function renderModalChangelog(skill) {
+      // Generiere einen plausiblen Changelog basierend auf version + updatedAt
+      const vParts = (skill.version || '1.0.0').split('.');
+      const major = parseInt(vParts[0]);
+      const minor = parseInt(vParts[1]);
+      const patch = parseInt(vParts[2]);
+
+      const entries = [];
+
+      // Aktuelle Version
+      entries.push({
+        version: skill.version,
+        date: skill.updatedAt,
+        changes: patch > 0
+          ? ['Bugfix: Stabilitätsverbesserungen', 'Performance-Optimierung bei großen Repos']
+          : minor > 0
+          ? ['Neue Funktion: Erweiterte Ausgabe-Optionen', 'Verbesserte Fehlerbehandlung', 'Dokumentation aktualisiert']
+          : ['Erste öffentliche Version', 'Basis-Funktionalität implementiert']
+      });
+
+      // Frühere Version (wenn nicht 1.0.0)
+      if (minor > 0 || patch > 0) {
+        const prevMinor = patch > 0 ? minor : minor - 1;
+        const prevPatch = patch > 0 ? patch - 1 : 0;
+        entries.push({
+          version: `${major}.${prevMinor}.${prevPatch}`,
+          date: skill.addedAt,
+          changes: ['Erste Veröffentlichung im pilot Skill Marketplace', 'Basierend auf internem Pilot-Feedback entwickelt']
+        });
+      }
+
+      const entriesHtml = entries.map(e => `
+        <div class="changelog-entry">
+          <div class="changelog-header">
+            <span class="changelog-version">v${escHtml(e.version)}</span>
+            <span class="changelog-date">${formatDate(e.date)}</span>
+          </div>
+          <ul class="changelog-list">
+            ${e.changes.map(c => `<li>${escHtml(c)}</li>`).join('')}
+          </ul>
+        </div>
+      `).join('');
+
+      return `<div class="changelog">${entriesHtml}</div>`;
+    }
+
+    // ===== COPY TRIGGER =====
+    function copyTrigger() {
+      if (!state.activeSkill?.trigger) return;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(state.activeSkill.trigger)
+          .then(() => showToast('Trigger kopiert: ' + state.activeSkill.trigger))
+          .catch(() => fallbackCopy(state.activeSkill.trigger));
+      } else {
+        fallbackCopy(state.activeSkill.trigger);
+      }
+    }
+
+    function fallbackCopy(text) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.cssText = 'position:fixed;opacity:0;top:-100px';
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); showToast('Trigger kopiert: ' + text); }
+      catch(e) { showToast('Kopieren fehlgeschlagen'); }
+      document.body.removeChild(ta);
+    }
+
+    // ===== TOAST =====
+    let toastTimer;
+    function showToast(msg) {
+      const el = document.getElementById('toast');
+      if (!el) return;
+      el.textContent = msg;
+      el.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => el.classList.remove('show'), 2500);
+    }
+
+    // ===== RESET FILTERS =====
+    function resetFilters() {
+      state.category = 'all';
+      state.tags = [];
+      state.subcategory = null;
+      state.endorsedOnly = false;
+      state.sort = 'recommended';
+      state.search = '';
+      document.getElementById('search').value = '';
+      document.getElementById('endorsed-only').checked = false;
+      document.getElementById('sort-select').value = 'recommended';
+      renderCatTabs();
+      renderRoleChips();
+      renderTagChips();
+      render();
+      updateURL();
+    }
+
+    // ===== URL HASH =====
+    function updateURL() {
+      if (state.activeSkill) {
+        location.hash = '#' + state.activeSkill.id;
+      }
+    }
+
+    function restoreFromURL() {
+      const hash = location.hash.slice(1);
+      if (hash) {
+        const skill = SKILLS.find(s => s.id === hash);
+        if (skill) openModal(skill.id);
+      }
+    }
+
+    // ===== DEBOUNCE =====
+    function debounce(fn, ms) {
+      let t;
+      return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); };
+    }
+
+    // ===== INFO MODAL =====
+    function toggleInfoModal() {
+      const overlay = document.getElementById('info-modal-overlay');
+      if (!overlay) return;
+      const isOpen = overlay.classList.toggle('open');
+      if (isOpen) {
+        setTimeout(() => {
+          const closeBtn = overlay.querySelector('.info-modal-close');
+          if (closeBtn) closeBtn.focus();
+        }, 50);
+      } else {
+        const infoBtn = document.querySelector('.info-btn');
+        if (infoBtn) infoBtn.focus();
+      }
+    }
+
+    // ===== GETTING STARTED TOGGLE =====
+    function toggleGS() {
+      const content = document.getElementById('gs-content');
+      const btn = document.getElementById('gs-toggle-btn');
+      const isHidden = content.hidden;
+      content.hidden = !isHidden;
+      btn.setAttribute('aria-expanded', isHidden ? 'true' : 'false');
+    }
+
+    // ===== MOBILE FILTER TOGGLE =====
+    function toggleMobileFilter() {
+      const btn = document.getElementById('filter-toggle-btn');
+      const panel = document.getElementById('filter-collapsible');
+      if (!btn || !panel) return;
+      const isExpanded = btn.getAttribute('aria-expanded') === 'true';
+      btn.setAttribute('aria-expanded', isExpanded ? 'false' : 'true');
+      panel.hidden = isExpanded;
+    }
+
+    // ===== SOURCE FILTER (ehem. Role Filter) =====
+    function renderRoleChips() {
+      const sources = [
+        {id:'all',label:'Alle Quellen'},
+        {id:'pilot-inhouse',label:'🏠 pilot inhouse'},
+        {id:'anthropic',label:'🤖 Anthropic'},
+        {id:'gsd',label:'⚡ GSD'}
+      ];
+      const container = document.getElementById('role-chips');
+      if (!container) return;
+      container.innerHTML = sources.map(s => `
+        <button class="role-chip${state.category===(s.id==='all'?'all':s.id)?' active':''}" onclick="setSource('${s.id}')" data-sub="${s.id}">${escHtml(s.label)}</button>
+      `).join('');
+    }
+
+    function setSource(id) {
+      state.category = id;
+      renderRoleChips();
+      render();
+      updateURL();
+    }
+
+    function toggleRole(sub) {
+      state.subcategory = state.subcategory === sub ? null : sub;
+      document.querySelectorAll('.role-chip').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.sub === state.subcategory);
+      });
+      render();
+      updateURL();
+    }
+
+    // ===== INIT =====
+    document.addEventListener('DOMContentLoaded', () => {
+      renderFeatured();
+      renderCatTabs();
+      renderRoleChips();
+      renderTagChips();
+      renderPilots();
+      render();
+      restoreFromURL();
+
+      document.getElementById('search').addEventListener('input', debounce(e => {
+        state.search = e.target.value.toLowerCase().trim();
+        render();
+      }, 150));
+
+      document.getElementById('endorsed-only').addEventListener('change', e => {
+        state.endorsedOnly = e.target.checked;
+        render();
+        updateURL();
+      });
+
+      document.getElementById('sort-select').addEventListener('change', e => {
+        state.sort = e.target.value;
+        render();
+      });
+
+      document.getElementById('reset-filters').addEventListener('click', resetFilters);
+
+      document.getElementById('modal-overlay').addEventListener('click', e => {
+        if (e.target === document.getElementById('modal-overlay')) closeModal();
+      });
+
+      document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') { closeModal(); return; }
+        if (e.key === '/' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+          e.preventDefault();
+          const search = document.getElementById('search');
+          if (search) { search.focus(); search.select(); }
+          return;
+        }
+        // Focus trap im Modal
+        const overlay = document.getElementById('modal-overlay');
+        if (e.key === 'Tab' && overlay && overlay.classList.contains('open')) {
+          const modal = document.getElementById('modal');
+          const focusable = modal ? [...modal.querySelectorAll('button, input, textarea, select, a[href], [tabindex]:not([tabindex="-1"])')] : [];
+          if (focusable.length === 0) return;
+          const first = focusable[0];
+          const last = focusable[focusable.length - 1];
+          if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+          else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+        }
+      });
+
+      // Stats berechnen
+      const statSkills = document.getElementById('stat-skills');
+      const statPilots = document.getElementById('stat-pilots');
+      const statEndorsed = document.getElementById('stat-endorsed');
+      if (statSkills) statSkills.textContent = SKILLS.length;
+      if (statPilots) statPilots.textContent = PILOTS.length;
+      if (statEndorsed) {
+        const totalEndorsements = SKILLS.reduce((sum, s) => sum + (s.endorsedBy?.length || 0), 0);
+        statEndorsed.textContent = totalEndorsements;
+      }
+
+      // Swipe Down to Close Modal (Mobile)
+      let touchStartY = 0;
+      const modal = document.getElementById('modal');
+      if (modal) {
+        modal.addEventListener('touchstart', e => {
+          touchStartY = e.touches[0].clientY;
+        }, {passive: true});
+        modal.addEventListener('touchmove', e => {
+          const diff = e.touches[0].clientY - touchStartY;
+          if (diff > 0 && modal.scrollTop === 0) {
+            modal.style.transform = `translateY(${Math.min(diff * 0.5, 80)}px)`;
+          }
+        }, {passive: true});
+        modal.addEventListener('touchend', e => {
+          const diff = e.changedTouches[0].clientY - touchStartY;
+          modal.style.transform = '';
+          if (diff > 80 && modal.scrollTop === 0) closeModal();
+        }, {passive: true});
+      }
+    });
+  </script>
+</body>
+</html>
