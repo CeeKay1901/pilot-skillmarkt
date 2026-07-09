@@ -11,13 +11,22 @@ const ROOT = path.dirname(new URL(import.meta.url).pathname);
 const DIR = path.join(ROOT, 'skills');
 const IGNORE_TOP = new Set(['manifest.json', 'README.md', '.DS_Store']);
 
+// Nur lesbare Textdateien im Viewer listen (Binärdateien wie Beispiel-Office-
+// Dokumente, Bilder oder Fonts bleiben im Repo, werden aber nicht angezeigt).
+const TEXT_EXT = new Set([
+  'md','markdown','txt','py','js','mjs','cjs','ts','tsx','jsx','json','jsonc',
+  'yaml','yml','toml','ini','cfg','csv','tsv','html','htm','css','scss',
+  'sh','bash','zsh','xml','svg','sql','env'
+]);
+const isText = name => TEXT_EXT.has((name.split('.').pop() || '').toLowerCase());
+
 function listFiles(base, rel = '') {
   const out = [];
   for (const entry of fs.readdirSync(path.join(base, rel), { withFileTypes: true })) {
-    if (entry.name === '.DS_Store') continue;
+    if (entry.name === '.DS_Store' || entry.name === '.git') continue;
     const r = rel ? rel + '/' + entry.name : entry.name;
     if (entry.isDirectory()) out.push(...listFiles(base, r));
-    else out.push(r);
+    else if (isText(entry.name)) out.push(r);
   }
   return out;
 }

@@ -1,6 +1,7 @@
 {
- "artifact-design": [
-  "SKILL.md"
+ "brand-guidelines": [
+  "SKILL.md",
+  "LICENSE.txt"
  ],
  "briefing-gen": [
   "SKILL.md",
@@ -12,26 +13,38 @@
   "references/beispiel.md",
   "references/checkliste.md"
  ],
- "code-check": [
-  "SKILL.md",
-  "references/beispiel.md"
- ],
  "content-recycling": [
   "SKILL.md",
   "references/beispiel.md",
   "references/kanaele.md"
  ],
- "dataviz": [
-  "SKILL.md",
-  "references/palette.md"
- ],
  "daten-aufbereiten": [
   "SKILL.md",
   "references/beispiel.md"
  ],
- "deep-research": [
+ "docx": [
   "SKILL.md",
-  "references/report-template.md"
+  "LICENSE.txt",
+  "scripts/__init__.py",
+  "scripts/accept_changes.py",
+  "scripts/comment.py",
+  "scripts/office/helpers/__init__.py",
+  "scripts/office/helpers/merge_runs.py",
+  "scripts/office/helpers/simplify_redlines.py",
+  "scripts/office/pack.py",
+  "scripts/office/soffice.py",
+  "scripts/office/unpack.py",
+  "scripts/office/validate.py",
+  "scripts/office/validators/__init__.py",
+  "scripts/office/validators/base.py",
+  "scripts/office/validators/docx.py",
+  "scripts/office/validators/pptx.py",
+  "scripts/office/validators/redlining.py",
+  "scripts/templates/comments.xml",
+  "scripts/templates/commentsExtended.xml",
+  "scripts/templates/commentsExtensible.xml",
+  "scripts/templates/commentsIds.xml",
+  "scripts/templates/people.xml"
  ],
  "erste-automation": [
   "SKILL.md",
@@ -41,14 +54,15 @@
   "SKILL.md",
   "references/beispiel.md"
  ],
- "init": [
-  "SKILL.md"
+ "internal-comms": [
+  "SKILL.md",
+  "examples/3p-updates.md",
+  "examples/company-newsletter.md",
+  "examples/faq-answers.md",
+  "examples/general-comms.md",
+  "LICENSE.txt"
  ],
  "keyword-research": [
-  "SKILL.md",
-  "references/beispiel.md"
- ],
- "loop": [
   "SKILL.md",
   "references/beispiel.md"
  ],
@@ -67,6 +81,20 @@
  "moodboard": [
   "SKILL.md"
  ],
+ "pdf": [
+  "SKILL.md",
+  "forms.md",
+  "LICENSE.txt",
+  "reference.md",
+  "scripts/check_bounding_boxes.py",
+  "scripts/check_fillable_fields.py",
+  "scripts/convert_pdf_to_images.py",
+  "scripts/create_validation_image.py",
+  "scripts/extract_form_field_info.py",
+  "scripts/extract_form_structure.py",
+  "scripts/fill_fillable_fields.py",
+  "scripts/fill_pdf_form_with_annotations.py"
+ ],
  "persona-builder": [
   "SKILL.md",
   "references/beispiel.md",
@@ -76,27 +104,56 @@
   "SKILL.md",
   "references/beispiel.md"
  ],
+ "pptx": [
+  "SKILL.md",
+  "editing.md",
+  "LICENSE.txt",
+  "pptxgenjs.md",
+  "scripts/__init__.py",
+  "scripts/add_slide.py",
+  "scripts/clean.py",
+  "scripts/office/helpers/__init__.py",
+  "scripts/office/helpers/merge_runs.py",
+  "scripts/office/helpers/simplify_redlines.py",
+  "scripts/office/pack.py",
+  "scripts/office/soffice.py",
+  "scripts/office/unpack.py",
+  "scripts/office/validate.py",
+  "scripts/office/validators/__init__.py",
+  "scripts/office/validators/base.py",
+  "scripts/office/validators/docx.py",
+  "scripts/office/validators/pptx.py",
+  "scripts/office/validators/redlining.py",
+  "scripts/thumbnail.py"
+ ],
  "prototyp-bauen": [
   "SKILL.md",
   "references/muster.md",
   "scripts/berechnung.js"
  ],
- "report-automat": [
-  "SKILL.md",
-  "references/beispiel.md"
- ],
  "report-summary": [
   "SKILL.md",
   "references/beispiel.md"
  ],
- "review": [
-  "SKILL.md"
- ],
- "security-review": [
-  "SKILL.md"
- ],
- "simplify": [
-  "SKILL.md"
+ "skill-creator": [
+  "SKILL.md",
+  "agents/analyzer.md",
+  "agents/comparator.md",
+  "agents/grader.md",
+  "assets/eval_review.html",
+  "eval-viewer/generate_review.py",
+  "eval-viewer/viewer.html",
+  "LICENSE.txt",
+  "references/schemas.md",
+  "scripts/__init__.py",
+  "scripts/aggregate_benchmark.py",
+  "scripts/generate_report.py",
+  "scripts/improve_description.py",
+  "scripts/package_skill.py",
+  "scripts/quick_validate.py",
+  "scripts/run_eval.py",
+  "scripts/run_loop.py",
+  "scripts/utils.py"
  ],
  "slides-aus-daten": [
   "SKILL.md"
@@ -118,13 +175,19 @@
   "SKILL.md",
   "references/beispiel.md"
  ],
- "verify": [
-  "SKILL.md"
+ "web-artifacts-builder": [
+  "SKILL.md",
+  "LICENSE.txt",
+  "scripts/bundle-artifact.sh",
+  "scripts/init-artifact.sh"
  ],
  "webaudit": [
   "SKILL.md",
-  "references/beispiel.md",
-  "references/checkliste.md"
+  "references/checklist-code.md",
+  "references/checklist-ux-design.md",
+  "references/checklist-visual.md",
+  "references/playwright-setup.md",
+  "scripts/playwright-audit.js"
  ],
  "webseite-bauen": [
   "SKILL.md",
@@ -134,5 +197,22 @@
  "wettbewerbs-monitor": [
   "SKILL.md",
   "references/beispiel.md"
+ ],
+ "xlsx": [
+  "SKILL.md",
+  "LICENSE.txt",
+  "scripts/office/helpers/__init__.py",
+  "scripts/office/helpers/merge_runs.py",
+  "scripts/office/helpers/simplify_redlines.py",
+  "scripts/office/pack.py",
+  "scripts/office/soffice.py",
+  "scripts/office/unpack.py",
+  "scripts/office/validate.py",
+  "scripts/office/validators/__init__.py",
+  "scripts/office/validators/base.py",
+  "scripts/office/validators/docx.py",
+  "scripts/office/validators/pptx.py",
+  "scripts/office/validators/redlining.py",
+  "scripts/recalc.py"
  ]
 }
