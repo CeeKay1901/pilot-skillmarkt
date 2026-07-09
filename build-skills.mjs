@@ -19,6 +19,8 @@ const TEXT_EXT = new Set([
   'sh','bash','zsh','xml','svg','sql','env'
 ]);
 const isText = name => TEXT_EXT.has((name.split('.').pop() || '').toLowerCase());
+// Juristische Boilerplate nicht im Skill-Viewer zeigen
+const isBoilerplate = name => /^(LICENSE|LICENCE|NOTICE|COPYING|THIRD_PARTY_NOTICES)(\.|$)/i.test(name);
 
 function listFiles(base, rel = '') {
   const out = [];
@@ -26,7 +28,7 @@ function listFiles(base, rel = '') {
     if (entry.name === '.DS_Store' || entry.name === '.git') continue;
     const r = rel ? rel + '/' + entry.name : entry.name;
     if (entry.isDirectory()) out.push(...listFiles(base, r));
-    else if (isText(entry.name)) out.push(r);
+    else if (isText(entry.name) && !isBoilerplate(entry.name)) out.push(r);
   }
   return out;
 }

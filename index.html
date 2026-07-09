@@ -3526,24 +3526,24 @@ Gib einen priorisierten Report aus:
         "id": "web-artifacts-builder",
         "name": "web-artifacts-builder",
         "subcategory": "bauen",
-        "difficulty": "medium",
-        "timeToRun": "10–30 Min",
+        "difficulty": "advanced",
+        "timeToRun": "20–60 Min",
         "featured": false,
-        "tagline": "Interaktive Web-Artefakte & Mini-Apps bauen",
-        "description": "Offizieller Anthropic-Skill zum Bauen eigenständiger, interaktiver Web-Artefakte (Tools, Mini-Apps) mit sauberem Setup.",
-        "longDescription": "Der offizielle Claude-Code-Skill für Web-Artefakte: gerüstet und gebündelt entstehen eigenständige, interaktive HTML/JS-Tools. Perfekt für Citizen Coding — vom Rechner bis zum kleinen Dashboard.",
+        "tagline": "Anspruchsvolle interaktive Web-Apps (React, Tailwind, shadcn/ui)",
+        "description": "Offizieller Anthropic-Skill für aufwändigere Web-Artefakte: mehrteilige React-Apps mit State, Routing und UI-Komponenten (React 18, TypeScript, Vite, Tailwind, shadcn/ui). Für einfache Ein-Datei-Tools eignet sich eher /prototyp.",
+        "longDescription": "Der offizielle Claude-Code-Skill für komplexere Web-Anwendungen. Richtet ein React-Setup (TypeScript, Vite, Tailwind, shadcn/ui) ein und baut mehrteilige, interaktive Apps mit Zustand und Komponenten. Bewusst NICHT für simple Rechner/Ein-Datei-Seiten gedacht — dafür ist der pilot-Skill /prototyp gemacht.",
         "tags": [
           "bauen",
           "web",
-          "artefakt",
-          "citizen-coding",
-          "tools"
+          "react",
+          "app",
+          "artefakt"
         ],
         "useCases": [
-          "Interaktives Tool bauen",
-          "Mini-App",
-          "Prototyp mit Logik",
-          "Teilbares Web-Artefakt"
+          "Mehrseitige interaktive Web-App",
+          "Dashboard mit mehreren Ansichten",
+          "Tool mit Zustand & UI-Komponenten",
+          "Aufwändigeres Web-Artefakt"
         ],
         "rating": {
           "average": 4.6,
@@ -4550,7 +4550,8 @@ Gib einen priorisierten Report aus:
               <span class="files-view-path">${escHtml(cur.path)}</span>
               <div class="files-view-actions">${gh}<button class="files-copy" onclick="quickCopy(event, getFileContent(${active}))">Kopieren</button></div>
             </div>
-            <pre class="files-code">${highlightCode(cur.content, fileLang(cur.path))}</pre>
+            <pre class="files-code">
+${highlightCode(cur.content, fileLang(cur.path))}</pre>
           </div>
         </div>`;
     }
@@ -5089,7 +5090,7 @@ Gib einen priorisierten Report aus:
     // Animierte Terminal-Demo
     // ===== DEMO-MATRIX: mehrere Skills × Anwendungen, mit Output & echtem Artefakt =====
     const DEMOS = [
-      { id:'prototyp', name:'Prototyp bauen', trigger:'/prototyp', cases:[
+      { id:'prototyp-bauen', name:'Prototyp bauen', trigger:'/prototyp', cases:[
         { label:'TKP-Rechner bauen', script:[
           {t:'user',text:'/prototyp Tool: aus Reichweite & TKP den Kontaktpreis rechnen'},
           {t:'sys',text:'Verstanden. Ich baue dir einen TKP-Rechner …',pause:400},

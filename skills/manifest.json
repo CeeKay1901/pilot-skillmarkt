@@ -1,7 +1,6 @@
 {
  "brand-guidelines": [
-  "SKILL.md",
-  "LICENSE.txt"
+  "SKILL.md"
  ],
  "briefing-gen": [
   "SKILL.md",
@@ -24,7 +23,6 @@
  ],
  "docx": [
   "SKILL.md",
-  "LICENSE.txt",
   "scripts/__init__.py",
   "scripts/accept_changes.py",
   "scripts/comment.py",
@@ -59,8 +57,7 @@
   "examples/3p-updates.md",
   "examples/company-newsletter.md",
   "examples/faq-answers.md",
-  "examples/general-comms.md",
-  "LICENSE.txt"
+  "examples/general-comms.md"
  ],
  "keyword-research": [
   "SKILL.md",
@@ -84,7 +81,6 @@
  "pdf": [
   "SKILL.md",
   "forms.md",
-  "LICENSE.txt",
   "reference.md",
   "scripts/check_bounding_boxes.py",
   "scripts/check_fillable_fields.py",
@@ -107,7 +103,6 @@
  "pptx": [
   "SKILL.md",
   "editing.md",
-  "LICENSE.txt",
   "pptxgenjs.md",
   "scripts/__init__.py",
   "scripts/add_slide.py",
@@ -143,7 +138,6 @@
   "assets/eval_review.html",
   "eval-viewer/generate_review.py",
   "eval-viewer/viewer.html",
-  "LICENSE.txt",
   "references/schemas.md",
   "scripts/__init__.py",
   "scripts/aggregate_benchmark.py",
@@ -177,7 +171,6 @@
  ],
  "web-artifacts-builder": [
   "SKILL.md",
-  "LICENSE.txt",
   "scripts/bundle-artifact.sh",
   "scripts/init-artifact.sh"
  ],
@@ -200,7 +193,6 @@
  ],
  "xlsx": [
   "SKILL.md",
-  "LICENSE.txt",
   "scripts/office/helpers/__init__.py",
   "scripts/office/helpers/merge_runs.py",
   "scripts/office/helpers/simplify_redlines.py",
