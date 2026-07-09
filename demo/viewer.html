@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skill-Ergebnis · pilot</title>
+<meta name="description" content="Ergebnis eines Skills aus dem pilot Skill Marketplace.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{--black:#262626;--yellow:#ffe05e;--bg:#eeede5;--paper:#fbfbf7;--line:#e4e2d6;--gray:#66655d}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{font-size:62.5%}
+  body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--black);line-height:1.6;padding:4rem 2rem}
+  .wrap{max-width:86rem;margin:0 auto}
+  .top{display:flex;align-items:center;justify-content:space-between;gap:1.6rem;flex-wrap:wrap;margin-bottom:2rem}
+  .badge{font-family:'JetBrains Mono',monospace;font-size:1.2rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gray);display:flex;align-items:center;gap:.8rem}
+  .badge::before{content:'';width:.8rem;height:.8rem;border-radius:50%;background:#2d8a4e}
+  .actions{display:flex;gap:.8rem}
+  .btn{font-family:'JetBrains Mono',monospace;font-size:1.25rem;text-decoration:none;padding:.7rem 1.4rem;border-radius:3rem;border:1px solid var(--line);color:var(--black);background:var(--paper)}
+  .btn:hover{background:var(--yellow);border-color:var(--yellow)}
+  .btn-p{background:var(--black);color:#fcfcfc;border-color:var(--black)}
+  .src{font-family:'JetBrains Mono',monospace;font-size:1.3rem;color:var(--gray);margin-bottom:2.4rem;word-break:break-all}
+  article{background:var(--paper);border:1px solid var(--line);border-radius:1.6rem;padding:3.6rem 4rem;box-shadow:0 8px 24px -12px rgba(38,38,38,.14)}
+  @media(max-width:620px){article{padding:2.4rem 1.8rem}body{padding:2rem 1rem}}
+  article h1{font-size:3.4rem;font-weight:300;letter-spacing:-.02em;margin:0 0 1.6rem}
+  article h2{font-size:2.2rem;font-weight:700;margin:3rem 0 1rem;padding-top:1.4rem;border-top:1px solid var(--line)}
+  article h2:first-of-type{border-top:none;padding-top:0}
+  article h3{font-size:1.8rem;font-weight:700;margin:2rem 0 .8rem}
+  article p{font-size:1.65rem;margin:1rem 0}
+  article ul,article ol{margin:1rem 0 1rem 2.2rem}
+  article li{font-size:1.6rem;margin:.5rem 0}
+  article strong{font-weight:700}
+  article em{font-style:italic;color:var(--gray)}
+  article hr{border:none;border-top:1px solid var(--line);margin:2.4rem 0}
+  article blockquote{border-left:3px solid var(--yellow);background:#fff;padding:1.2rem 1.8rem;margin:1.4rem 0;border-radius:0 .8rem .8rem 0}
+  article blockquote p{margin:.4rem 0;font-size:1.55rem}
+  article code{font-family:'JetBrains Mono',monospace;font-size:.9em;background:var(--bg);border:1px solid var(--line);border-radius:.4rem;padding:.1rem .5rem}
+  article pre{background:#14140f;color:#cfcfc7;border-radius:1rem;padding:1.8rem;overflow:auto;margin:1.4rem 0}
+  article pre code{background:none;border:none;padding:0;color:inherit;font-size:1.35rem;line-height:1.7}
+  article table{width:100%;border-collapse:collapse;margin:1.4rem 0;font-size:1.5rem;display:block;overflow-x:auto}
+  article th,article td{border:1px solid var(--line);padding:.9rem 1.2rem;text-align:left}
+  article th{background:var(--bg);font-weight:700}
+  .err{color:#8a3b12;font-size:1.6rem}
+  footer{text-align:center;font-size:1.3rem;color:var(--gray);margin-top:2.4rem}
+  footer a{color:var(--black)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <span class="badge">Echtes Skill-Ergebnis</span>
+    <div class="actions">
+      <a class="btn" id="raw" href="#">Rohdatei</a>
+      <a class="btn btn-p" id="dl" href="#" download>⬇ Herunterladen</a>
+    </div>
+  </div>
+  <p class="src" id="src"></p>
+  <article id="out"><p>Lade …</p></article>
+  <footer><a href="../index.html">← zurück zum Skill Marketplace</a></footer>
+</div>
+<script>
+// Sehr kompakter, sicherer Markdown-Renderer (nur was wir brauchen).
+const esc = s => s.replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+function inline(s){
+  return esc(s)
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+    .replace(/(^|[^*])\*([^*\n]+)\*/g, '$1<em>$2</em>')
+    .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, '<a href="$2">$1</a>');
+}
+function render(md){
+  const out = [];
+  const lines = md.replace(/\r\n/g,'\n').split('\n');
+  let i = 0;
+  while (i < lines.length) {
+    const l = lines[i];
+    if (/^```/.test(l)) { const buf=[]; i++; while(i<lines.length && !/^```/.test(lines[i])) buf.push(lines[i++]); i++;
+      out.push('<pre><code>'+esc(buf.join('\n'))+'</code></pre>'); continue; }
+    if (/^\s*\|/.test(l) && /^\s*\|[\s:-]+\|/.test(lines[i+1]||'')) {
+      const cells = r => r.trim().replace(/^\||\|$/g,'').split('|').map(c=>c.trim());
+      const head = cells(l); i += 2; const rows=[];
+      while (i<lines.length && /^\s*\|/.test(lines[i])) rows.push(cells(lines[i++]));
+      out.push('<table><thead><tr>'+head.map(h=>'<th>'+inline(h)+'</th>').join('')+'</tr></thead><tbody>'+
+        rows.map(r=>'<tr>'+r.map(c=>'<td>'+inline(c)+'</td>').join('')+'</tr>').join('')+'</tbody></table>'); continue; }
+    if (/^>\s?/.test(l)) { const buf=[]; while(i<lines.length && /^>\s?/.test(lines[i])) buf.push(lines[i++].replace(/^>\s?/,''));
+      out.push('<blockquote>'+buf.filter(Boolean).map(x=>'<p>'+inline(x)+'</p>').join('')+'</blockquote>'); continue; }
+    if (/^\s*[-*]\s+/.test(l)) { const buf=[]; while(i<lines.length && /^\s*[-*]\s+/.test(lines[i])) buf.push(lines[i++].replace(/^\s*[-*]\s+/,''));
+      out.push('<ul>'+buf.map(x=>'<li>'+inline(x)+'</li>').join('')+'</ul>'); continue; }
+    if (/^\s*\d+\.\s+/.test(l)) { const buf=[]; while(i<lines.length && /^\s*\d+\.\s+/.test(lines[i])) buf.push(lines[i++].replace(/^\s*\d+\.\s+/,''));
+      out.push('<ol>'+buf.map(x=>'<li>'+inline(x)+'</li>').join('')+'</ol>'); continue; }
+    const h = l.match(/^(#{1,3})\s+(.*)$/);
+    if (h) { const n=h[1].length; out.push(`<h${n}>`+inline(h[2])+`</h${n}>`); i++; continue; }
+    if (/^\s*---\s*$/.test(l)) { out.push('<hr>'); i++; continue; }
+    if (!l.trim()) { i++; continue; }
+    const buf=[]; while(i<lines.length && lines[i].trim() && !/^(#{1,3}\s|>|\s*[-*]\s|\s*\d+\.\s|```|\s*\|)/.test(lines[i])) buf.push(lines[i++]);
+    out.push('<p>'+inline(buf.join(' '))+'</p>');
+  }
+  return out.join('\n');
+}
+(async () => {
+  const p = new URLSearchParams(location.search);
+  const f = p.get('f') || '';
+  const outEl = document.getElementById('out');
+  // nur relative Pfade innerhalb von demo/ zulassen
+  if (!/^[\w./-]+$/.test(f) || f.includes('..') || !f.endsWith('.md')) {
+    outEl.innerHTML = '<p class="err">Ungültiger oder fehlender Dateiparameter (<code>?f=…</code>).</p>'; return;
+  }
+  document.getElementById('src').textContent = 'demo/' + f;
+  document.getElementById('raw').href = f;
+  document.getElementById('dl').href = f;
+  document.getElementById('dl').setAttribute('download', f.split('/').pop());
+  try {
+    const r = await fetch(f, { cache: 'no-cache' });
+    if (!r.ok) throw new Error(r.status);
+    const md = await r.text();
+    outEl.innerHTML = render(md);
+    const h1 = outEl.querySelector('h1');
+    if (h1) document.title = h1.textContent + ' · pilot';
+  } catch (e) {
+    outEl.innerHTML = '<p class="err">Datei konnte nicht geladen werden (' + e.message + ').</p>';
+  }
+})();
+</script>
+</body>
+</html>

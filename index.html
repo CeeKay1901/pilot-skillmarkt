@@ -1180,9 +1180,9 @@
     .ex-terminal-bar { position: relative; }
     .demo-replay { position: absolute; right: 1.4rem; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,.1); border: none; color: rgba(252,252,252,.8); width: 2.8rem; height: 2.8rem; border-radius: 50%; cursor: pointer; font-size: 1.5rem; transition: var(--trans); }
     .demo-replay:hover { background: var(--c-yellow); color: var(--c-black); }
-    .demo-actions { min-height: 3rem; margin-top: 1.6rem; display: flex; align-items: center; gap: 1.6rem; flex-wrap: wrap; }
+    .demo-actions { min-height: 3rem; margin-top: 1.6rem; display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
     .demo-artifact { padding: 1rem 2rem; font-size: 1.5rem; animation: cardIn .4s ease both; }
-    .demo-artifact-note { font-size: 1.35rem; color: rgba(252,252,252,.6); animation: cardIn .5s ease both; }
+    .demo-artifact-note { flex-basis: 100%; font-size: 1.35rem; color: rgba(252,252,252,.6); animation: cardIn .5s ease both; }
     .demo-stage .ex-terminal-body { min-height: 26rem; }
     @media (max-width: 900px) { .demo-stage { position: static; } }
 
@@ -1906,7 +1906,7 @@ Gib einen priorisierten Report aus:
       <div class="ex-wrap">
         <p class="ex-eyebrow" style="color:var(--c-yellow)">Live ausprobiert</p>
         <h2 class="ex-h2" style="color:var(--c-white)">Skills in Aktion</h2>
-        <p class="ex-body ex-body-light">Wähl links einen Skill und eine konkrete Anwendung — rechts läuft die Demo. Manche Ergebnisse kannst du direkt öffnen.</p>
+        <p class="ex-body ex-body-light">Wähl links einen Skill und eine konkrete Anwendung — rechts läuft die Demo. <strong>Jedes Ergebnis kannst du direkt öffnen</strong>: die gebaute Webseite, den echten Report, die bereinigte Datei.</p>
         <div class="demo-layout">
           <div class="demo-matrix" id="demo-matrix"></div>
           <div class="demo-stage">
@@ -5733,8 +5733,8 @@ Gib einen priorisierten Report aus:
       }).join('');
     }
 
-    // Animierte Terminal-Demo
-    // ===== DEMO-MATRIX: mehrere Skills × Anwendungen, mit Output & echtem Artefakt =====
+    // ===== DEMO-MATRIX: jeder Fall verweist auf ein ECHTES, abrufbares Ergebnis =====
+    // Alle Zahlen unten stammen aus den tatsächlichen Läufen der Generator-Skripte in demo/.
     const DEMOS = [
       { id:'prototyp-bauen', name:'Prototyp bauen', trigger:'/prototyp', cases:[
         { label:'TKP-Rechner bauen', script:[
@@ -5744,7 +5744,9 @@ Gib einen priorisierten Report aus:
           {t:'ok',text:'✓ Berechnungslogik + Live-Update'},
           {t:'ok',text:'✓ pilot-Design angewendet'},
           {t:'hl',text:'→ tkp-rechner.html erstellt · im Browser geöffnet'},
-        ], artifact:{label:'Gebauten TKP-Rechner öffnen', href:'./tkp-rechner.html'} },
+        ], artifacts:[
+          {label:'Gebautes Tool öffnen', href:'./tkp-rechner.html', kind:'open'},
+        ], note:'Echtes Tool — rechnet live.' },
         { label:'Umfrage-Auswerter', script:[
           {t:'user',text:'/prototyp Tool, das eine Umfrage-CSV auswertet und Balken zeigt'},
           {t:'sys',text:'Alles klar — kleiner Auswerter …',pause:400},
@@ -5752,60 +5754,72 @@ Gib einen priorisierten Report aus:
           {t:'ok',text:'✓ Antworten gruppiert, Prozente berechnet'},
           {t:'ok',text:'✓ Balkendiagramm gerendert'},
           {t:'hl',text:'→ umfrage-auswertung.html erstellt'},
-        ], artifact:{label:'Gebauten Umfrage-Auswerter öffnen', href:'./umfrage-auswertung.html'} },
+        ], artifacts:[
+          {label:'Gebautes Tool öffnen', href:'./umfrage-auswertung.html', kind:'open'},
+        ], note:'Echtes Tool — CSV bearbeitbar.' },
       ]},
       { id:'webaudit', name:'webaudit', trigger:'/webaudit', cases:[
-        { label:'Landingpage prüfen', script:[
-          {t:'user',text:'/webaudit herbst-kampagne.html'},
+        { label:'Gebautes Tool prüfen', script:[
+          {t:'user',text:'/webaudit tkp-rechner.html'},
           {t:'sys',text:'Scanne Code + öffne echten Browser …',pause:400},
-          {t:'ok',text:'✓ Code-Scan · Screenshots (Desktop/Mobil)'},
-          {t:'sys',text:'Score: 78/100'},
-          {t:'hl',text:'🔴 6 Bilder ohne Alt-Text (Barrierefreiheit)'},
-          {t:'hl',text:'🟡 Ladezeit mobil 3,1s — Bilder komprimieren'},
-        ] },
-        { label:'SEO-Check', script:[
-          {t:'user',text:'/webaudit --fokus seo pilot.de'},
-          {t:'sys',text:'Prüfe Meta-Tags, Struktur, Ladezeit …',pause:400},
-          {t:'ok',text:'✓ Title & Description vorhanden'},
-          {t:'hl',text:'🟡 Kein Open-Graph-Bild fürs Teilen'},
-          {t:'hl',text:'🟡 H1 doppelt vergeben'},
-        ] },
+          {t:'ok',text:'✓ Screenshots erstellt (Desktop 1280 · Mobil 390)'},
+          {t:'ok',text:'✓ Funktionstest: 500.000 × 12 € → 6.000,00 € korrekt'},
+          {t:'ok',text:'✓ Kontrast, Labels, Struktur, Konsole geprüft'},
+          {t:'hl',text:'→ Score 95/100 · 0 kritisch · 1 Empfehlung'},
+        ], artifacts:[
+          {label:'Echten Report öffnen', href:'./demo/webaudit/report.html', kind:'open'},
+        ], note:'Report aus echtem Browser-Lauf, inkl. Screenshots. Der erste Lauf fand 1 WCAG-Fehler — der ist im Tool behoben.' },
       ]},
       { id:'pptx', name:'pptx', trigger:null, cases:[
         { label:'Pitch-Deck bauen', script:[
           {t:'user',text:'Bau ein Pitch-Deck aus diesem Konzept (konzept.md)'},
           {t:'sys',text:'Erstelle Präsentation mit pptx-Skill …',pause:400},
-          {t:'ok',text:'✓ 12 Folien angelegt (Hook → Lösung → Proof → CTA)'},
-          {t:'ok',text:'✓ Layout & Sprechernotizen gesetzt'},
-          {t:'hl',text:'→ pitch-deck.pptx erstellt'},
-        ] },
+          {t:'ok',text:'✓ 7 Folien angelegt (Hook → Problem → Lösung → Proof → CTA)'},
+          {t:'ok',text:'✓ Sprechernotizen je Folie übernommen'},
+          {t:'ok',text:'✓ pilot-Farben & 16:9-Layout gesetzt'},
+          {t:'hl',text:'→ pitch-deck.pptx erstellt (7 Folien, 7 Notizen)'},
+        ], artifacts:[
+          {label:'Deck herunterladen (.pptx)', href:'./demo/pptx/pitch-deck.pptx', kind:'file'},
+          {label:'Konzept ansehen (Quelle)', href:'./demo/viewer.html?f=pptx/konzept.md', kind:'open'},
+        ], note:'Echte OOXML-Datei — öffnet in PowerPoint & Keynote.' },
       ]},
       { id:'daten-aufbereiten', name:'Daten aufbereiten', trigger:'/daten-aufbereiten', cases:[
-        { label:'GA-Export bereinigen', script:[
+        { label:'Export bereinigen', script:[
           {t:'user',text:'/daten-aufbereiten export_roh.csv'},
-          {t:'sys',text:'Prüfe & bereinige 4.812 Zeilen …',pause:400},
-          {t:'ok',text:'✓ 214 Duplikate entfernt'},
-          {t:'ok',text:'✓ Datums-/Währungsformate vereinheitlicht'},
-          {t:'hl',text:'→ daten_clean.csv · analysefertig'},
-        ] },
+          {t:'sys',text:'Prüfe & bereinige 9 Zeilen …',pause:400},
+          {t:'ok',text:'✓ 2 Duplikate entfernt (auch nach Normalisierung)'},
+          {t:'ok',text:'✓ Datums- & Währungsformate vereinheitlicht'},
+          {t:'ok',text:'✓ 2 Lücken markiert statt geraten'},
+          {t:'hl',text:'→ daten_clean.csv · 7 Zeilen · Summe 8.495,70 €'},
+        ], artifacts:[
+          {label:'Änderungs-Log lesen', href:'./demo/viewer.html?f=daten/aenderungen.md', kind:'open'},
+          {label:'Bereinigte Daten (.csv)', href:'./demo/daten/daten_clean.csv', kind:'file'},
+          {label:'Rohdaten (.csv)', href:'./demo/daten/export_roh.csv', kind:'file'},
+        ], note:'Zahlen vom Skript gezählt, nicht geschätzt.' },
       ]},
       { id:'content-recycling', name:'Content Recycling', trigger:'/content-recycling', cases:[
         { label:'Case → 4 Kanäle', script:[
           {t:'user',text:'/content-recycling case-study.md'},
-          {t:'sys',text:'Erzeuge kanalgerechte Varianten …',pause:400},
+          {t:'sys',text:'Kernbotschaft extrahiert, erzeuge Varianten …',pause:400},
           {t:'ok',text:'✓ LinkedIn-Post · Instagram-Caption'},
-          {t:'ok',text:'✓ Newsletter-Teaser · Kurzvideo-Skript'},
-          {t:'hl',text:'→ 4 Formate, konsistente Kernbotschaft'},
+          {t:'ok',text:'✓ Newsletter-Teaser · Kurzvideo-Skript (5 Szenen)'},
+          {t:'hl',text:'→ varianten.md · 4 Formate, identische Kernbotschaft'},
+        ], artifacts:[
+          {label:'Ergebnis lesen', href:'./demo/viewer.html?f=content-recycling/varianten.md', kind:'open'},
+          {label:'Quell-Case ansehen', href:'./demo/viewer.html?f=content-recycling/case-study.md', kind:'open'},
         ] },
       ]},
       { id:'campaign-check', name:'Campaign Checker', trigger:'/campaign-check', cases:[
         { label:'Setup vor Launch', script:[
-          {t:'user',text:'/campaign-check Herbst-Kampagne 2026'},
-          {t:'sys',text:'Validiere Tracking, UTM, Budget …',pause:400},
-          {t:'ok',text:'✓ UTM vollständig (12/12) · Tracking aktiv'},
-          {t:'hl',text:'⚠ Zielgruppen-Overlap 34% (Ziel <20%)'},
-          {t:'hl',text:'✗ Landingpage 404 bei "Retargeting-B"'},
-        ] },
+          {t:'user',text:'/campaign-check kampagne.csv'},
+          {t:'sys',text:'Validiere UTM, Landingpages, Budget-Caps …',pause:400},
+          {t:'ok',text:'✓ 6 Anzeigen geprüft · 3 vollständig getaggt'},
+          {t:'hl',text:'⚠ 3 Warnungen (Casing, fehlender Budget-Cap)'},
+          {t:'hl',text:'✗ 3 Fehler — u. a. utm_medium fehlt, Landingpage per http://'},
+        ], artifacts:[
+          {label:'Echten Report lesen', href:'./demo/viewer.html?f=campaign-check/report.md', kind:'open'},
+          {label:'Geprüfte Kampagne (.csv)', href:'./demo/campaign-check/kampagne.csv', kind:'file'},
+        ], note:'Findings kommen aus einem echten Validator-Lauf.' },
       ]},
     ];
 
@@ -5829,8 +5843,8 @@ Gib einen priorisierten Report aus:
       renderDemoMatrix();
       const d = DEMOS[si], c = d.cases[ci];
       const title = document.getElementById('demo-term-title');
-      if (title) title.textContent = 'claude code — ' + d.trigger;
-      playScript(c.script, c.artifact);
+      if (title) title.textContent = 'claude code — ' + (d.trigger || d.name);
+      playScript(c.script, { artifacts: c.artifacts, note: c.note });
     }
     function replayDemo() { playCase(_demoSel.s, _demoSel.c); }
     function playTerminal() { renderDemoMatrix(); playCase(_demoSel.s, _demoSel.c); }
@@ -5843,7 +5857,17 @@ Gib einen priorisierten Report aus:
       const actions = document.getElementById('demo-actions');
       if (actions) actions.innerHTML = '';
       const showArtifact = () => {
-        if (actions && artifact) actions.innerHTML = `<a class="c-cta -yellow-bg demo-artifact" href="${artifact.href}" target="_blank" rel="noopener">▸ ${escHtml(artifact.label)}</a><span class="demo-artifact-note">Echtes Ergebnis — genau dieses Tool hat der Skill gebaut.</span>`;
+        if (!actions) return;
+        const list = (artifact && artifact.artifacts) || [];
+        if (!list.length) { actions.innerHTML = ''; return; }
+        const btns = list.map(a => {
+          const isFile = a.kind === 'file';
+          const cls = isFile ? 'c-cta -yellow-border demo-artifact' : 'c-cta -yellow-bg demo-artifact';
+          const dl = isFile ? ' download' : ' target="_blank" rel="noopener"';
+          return `<a class="${cls}" href="${a.href}"${dl}>${isFile ? '⬇' : '▸'} ${escHtml(a.label)}</a>`;
+        }).join('');
+        const note = artifact.note ? `<span class="demo-artifact-note">${escHtml(artifact.note)}</span>` : '';
+        actions.innerHTML = btns + note;
       };
       const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       if (reduce) { script.forEach(l => appendTermLine(body, l, l.text)); showArtifact(); return; }

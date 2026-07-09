@@ -1,0 +1,7 @@
+anzeige;landingpage;utm_source;utm_medium;utm_campaign;budget_cap
+Herbst_A;https://example.com/herbst;meta;cpc;herbst_2026;500
+Herbst_B;https://example.com/herbst;Meta;cpc;Herbst_2026;500
+Retargeting_A;https://example.com/herbst;meta;cpc;herbst_2026;
+Retargeting_B;http://example.com/404;meta;;herbst_2026;300
+Search_A;https://example.com/herbst;google;cpc;herbst_2026;800
+Search_B;https://example.com/herbst;google;cpc;;800
