@@ -48,6 +48,7 @@ const facts = await page.evaluate(() => {
     contrastSamples: texts.map(e => ({ tag: e.tagName.toLowerCase(), fg: cs(e).color, bg: bgOf(e), size: parseFloat(cs(e).fontSize), text: e.textContent.trim().slice(0, 30) })),
     linksTotal: q('a').length,
     linksNoHref: q('a').filter(a => !a.getAttribute('href')).length,
+    extStyles: q('link[rel="stylesheet"]').map(l => l.href).filter(h => !h.startsWith('file:')),
   };
 });
 
@@ -86,15 +87,21 @@ else if (facts.h1 === 0) fail.push('Keine `<h1>` vorhanden');
 else warn.push(facts.h1 + ' `<h1>`-Elemente — es sollte genau eine geben');
 facts.imgsNoAlt ? fail.push(`${facts.imgsNoAlt} von ${facts.imgs} Bildern ohne \`alt\`-Text (WCAG 1.1.1)`) : pass.push(facts.imgs ? `Alle ${facts.imgs} Bilder haben alt-Text` : 'Keine Bilder auf der Seite');
 facts.inputsNoLabel ? fail.push(`${facts.inputsNoLabel} von ${facts.inputs} Eingabefeldern ohne Label (WCAG 3.3.2)`) : pass.push(`Alle ${facts.inputs} Eingabefelder haben ein Label`);
-facts.linksNoHref ? warn.push(`${facts.linksNoHref} Links ohne \`href\``) : pass.push(`Alle ${facts.linksTotal} Links haben ein Ziel`);
+facts.linksNoHref ? warn.push(`${facts.linksNoHref} Links ohne \`href\``) : pass.push(facts.linksTotal === 1 ? 'Der einzige Link hat ein Ziel' : `Alle ${facts.linksTotal} Links haben ein Ziel`);
 contrastFails.length ? contrastFails.slice(0, 4).forEach(c => warn.push(`Kontrast ${c.ratio.toFixed(2)}:1 zu niedrig bei „${c.text}…" (${c.size}px, min. ${c.size >= 24 ? '3' : '4.5'}:1)`)) : pass.push(`Textkontrast: alle ${facts.contrastSamples.length} geprüften Elemente bestehen WCAG AA`);
 consoleErrors.length ? fail.push(`${consoleErrors.length} JavaScript-Fehler in der Konsole`) : pass.push('Keine JavaScript-Fehler');
-loadMs < 1500 ? pass.push(`Ladezeit ${loadMs} ms`) : warn.push(`Ladezeit ${loadMs} ms`);
+// Ladezeit ist umgebungsabhängig (Netz, Rechner) — sie steht als Messwert im Kopf, nicht als Bewertung.
+// Bewertbar ist die Ursache: render-blockierende Stylesheets von fremden Servern.
+facts.extStyles.length
+  ? warn.push(`${facts.extStyles.length} render-blockierendes Stylesheet von einem fremden Server (\`${new URL(facts.extStyles[0]).host}\`) — verzögert die erste Anzeige und überträgt die IP der Nutzer:innen`)
+  : pass.push('Keine externen, render-blockierenden Stylesheets');
 calcOk ? pass.push('Funktionstest: 500.000 Reichweite × 12 € TKP → 6.000,00 € / Netto-TKP 17,14 € — korrekt') : fail.push('Funktionstest fehlgeschlagen: Berechnung stimmt nicht');
 emptyOk ? pass.push('Grenzfall leere Eingabe: keine `NaN`-Ausgabe') : warn.push('Grenzfall leere Eingabe erzeugt `NaN` statt einer Meldung');
 
 const score = Math.max(0, Math.round(100 - fail.length * 15 - warn.length * 5));
-const li = a => a.length ? a.map(x => `<li>${x.replace(/`([^`]+)`/g, '<code>$1</code>')}</li>`).join('') : '<li class="none">keine</li>';
+// Findings enthalten Text wie `<h1>` oder `<title>` — erst escapen, dann Backticks zu <code>
+const escH = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const li = a => a.length ? a.map(x => `<li>${escH(x).replace(/`([^`]+)`/g, '<code>$1</code>')}</li>`).join('') : '<li class="none">keine</li>';
 
 const html = `<!DOCTYPE html><html lang="de"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -145,7 +152,7 @@ footer a{color:var(--black)}
 <figure class="shot"><img alt="Mobile Ansicht von ${TARGET_NAME}" src="data:image/png;base64,${shotMobile}"><figcaption>Mobil · 390×844</figcaption></figure>
 </div></section>
 
-<section><h2>Struktur</h2><ul class="pass">${facts.headings.map(h => `<li>${h}</li>`).join('')}</ul></section>
+<section><h2>Struktur</h2><ul class="pass">${facts.headings.map(h => `<li>${escH(h)}</li>`).join('')}</ul></section>
 
 <footer>Dieser Report wurde von <code>demo/build-webaudit-report.mjs</code> erzeugt — jeder Wert stammt aus dem tatsächlichen Browser-Lauf.<br><a href="../../index.html">← zurück zum Skill Marketplace</a></footer>
 </div></body></html>`;

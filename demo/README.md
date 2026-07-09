@@ -27,9 +27,11 @@ npm i pptxgenjs && node demo/build-pptx.mjs # echtes .pptx
 
 - Der **webaudit-Report** stammt aus einem echten Chromium-Lauf: Screenshots,
   Ladezeit, Kontrastwerte und der Funktionstest (500.000 × 12 € → 6.000,00 €)
-  sind gemessen, nicht geschrieben. Der erste Lauf fand einen **echten
+  sind gemessen, nicht geschrieben. Die Ladezeit steht als Messwert im Kopf und
+  wird nicht bewertet — sie hängt am Netz, nicht am Tool. Der erste Lauf fand einen **echten
   WCAG-Fehler** im TKP-Rechner (Eingabefelder ohne Label-Verknüpfung) — der
-  wurde im Tool behoben, danach Score 95/100.
+  wurde im Tool behoben. Es bleiben 2 Empfehlungen (fehlende Open-Graph-Tags,
+  render-blockierender Webfont) → Score 90/100.
 - Die Zahlen im **Änderungs-Log** (2 Duplikate, 7 von 9 Zeilen, 8.495,70 €)
   zählt das Skript, es schätzt sie nicht.
 - Der **Campaign-Validator** meldet genau die Fehler, die in `kampagne.csv`
