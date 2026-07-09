@@ -1489,6 +1489,43 @@
     .cat-reveal.in { opacity: 1; transform: none; }
     @media (prefers-reduced-motion: reduce) { .cat-reveal { opacity: 1; transform: none; } }
 
+    /* ===================== SKILL-BUILDER ===================== */
+    .bld-hero { background: radial-gradient(120% 120% at 80% 0%, #333330 0%, var(--c-black) 55%); padding: 8rem 0 5rem; }
+    .bld-h1 { font-size: 6.4rem; font-weight: 300; line-height: 1; letter-spacing: -.03em; color: var(--c-white); margin: 1.2rem 0 2.4rem; }
+    .bld-lead { font-size: 1.9rem; line-height: 1.55; color: rgba(252,252,252,.78); max-width: 68rem; font-weight: 300; }
+    .bld-lead code { font-family: var(--font-mono); font-size: .9em; background: rgba(255,224,94,.12); color: var(--c-yellow); padding: .1rem .6rem; border-radius: .4rem; }
+    .bld-section { padding: 5rem 0 8rem; }
+    .bld-hero .ex-hl { color: var(--c-yellow); background: none; }
+    .bld-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 3rem; align-items: start; }
+    .bld-grid > * { min-width: 0; }
+    @media (max-width: 1023px) { .bld-grid { grid-template-columns: minmax(0, 1fr); } .bld-h1 { font-size: 4.4rem; } }
+    .bld-form { display: flex; flex-direction: column; gap: 2rem; }
+    .bld-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.6rem; }
+    @media (max-width: 600px) { .bld-row { grid-template-columns: 1fr; } }
+    .bld-field { display: flex; flex-direction: column; gap: .6rem; }
+    .bld-label { font-size: 1.45rem; font-weight: 700; color: var(--c-black); }
+    .bld-label em { color: #b3541e; font-style: normal; }
+    .bld-field input, .bld-field textarea { width: 100%; font-family: inherit; font-size: 1.5rem; line-height: 1.5; border: 1px solid var(--c-gray-l); border-radius: .8rem; padding: 1rem 1.2rem; background: var(--c-white); resize: vertical; }
+    .bld-field input:focus, .bld-field textarea:focus { outline: none; border-color: var(--c-black); }
+    .bld-hint { font-size: 1.3rem; color: var(--c-gray-m); line-height: 1.45; }
+    .bld-hint code { font-family: var(--font-mono); background: var(--c-bg); border: 1px solid var(--c-gray-l); border-radius: .4rem; padding: 0 .5rem; color: var(--c-black); }
+    .bld-err { background: #fdece5; border: 1px solid #e8b9a3; color: #8a3b12; border-radius: .8rem; padding: 1rem 1.4rem; font-size: 1.4rem; }
+    .bld-preview { position: sticky; top: calc(var(--header-h) + 2rem); }
+    .bld-preview-bar { display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,.05); border: 1px solid var(--c-gray-l); border-bottom: none; border-radius: 1rem 1rem 0 0; padding: 1rem 1.4rem; background: #1e1e1a; }
+    .bld-preview-path { font-family: var(--font-mono); font-size: 1.25rem; color: rgba(252,252,252,.55); }
+    .bld-live { font-family: var(--font-mono); font-size: 1.15rem; color: #7ac59a; }
+    .bld-code { margin:0; font-family: var(--font-mono); font-size: 1.35rem; line-height: 1.75; color: #cfcfc7; tab-size: 2; background: #14140f; border-radius: 0 0 1rem 1rem; padding: 1.8rem; white-space: pre-wrap; word-break: break-word; max-height: 52rem; overflow: auto; }
+    .bld-code .tk-fence { color: #6a6a60; }
+    .bld-code .tk-h { color: var(--c-yellow); font-weight: 700; }
+    .bld-code .tk-k { color: #6aa9e8; }
+    .bld-code .tk-b { color: var(--c-yellow); }
+    .bld-code .tk-code { color: #7ac59a; }
+    .bld-actions { display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; margin-top: 2rem; }
+    .bld-actions .c-cta { padding: 1rem 1.8rem; font-size: 1.45rem; }
+    .bld-actions-hint { font-size: 1.35rem; color: var(--c-gray-m); line-height: 1.6; margin-top: 1.4rem; }
+    .bld-actions-hint code { font-family: var(--font-mono); background: var(--c-bg); border: 1px solid var(--c-gray-l); border-radius: .4rem; padding: 0 .5rem; color: var(--c-black); }
+    @media (max-width: 1023px) { .bld-preview { position: static; } }
+
     /* Auslöser-Anzeige im Skill-Modal */
     .trigger-ways { display: flex; flex-direction: column; gap: 1rem; margin-top: .8rem; }
     .tway { display: flex; gap: 1.2rem; align-items: flex-start; background: var(--c-bg); border: 1px solid var(--line); border-radius: 1rem; padding: 1.4rem 1.6rem; font-size: 1.5rem; line-height: 1.5; color: #55534b; }
@@ -1510,6 +1547,7 @@
       <nav class="main-nav" aria-label="Hauptnavigation">
         <button class="nav-link active" id="nav-catalog" onclick="showView('catalog')">Skill-Katalog</button>
         <button class="nav-link" id="nav-explainer" onclick="showView('explainer')">Was sind Skills?</button>
+        <button class="nav-link" id="nav-builder" onclick="showView('builder')">Skill bauen</button>
       </nav>
       <div class="search-wrap">
         <input type="search" id="search" aria-label="Skills suchen" placeholder="Skills suchen..." autocomplete="off">
@@ -1560,7 +1598,7 @@
         <div class="gs-steps">
           <div class="gs-step">
             <span class="gs-num">1</span>
-            <div><strong>Skill entdecken</strong><p>Durchsuche den Marketplace, filtere nach deiner Rolle oder Aufgabe und finde den passenden Skill.</p></div>
+            <div><strong>Skill entdecken</strong><p>Durchsuche den Marketplace, filtere nach Aufgabe, Quelle oder Thema und finde den passenden Skill.</p></div>
           </div>
           <div class="gs-step">
             <span class="gs-num">2</span>
@@ -1923,6 +1961,96 @@ Gib einen priorisierten Report aus:
     </section>
 
   </div><!-- /view-explainer -->
+
+  <!-- ===================== VIEW: SKILL BAUEN ===================== -->
+  <div id="view-builder" hidden>
+    <section class="bld-hero">
+      <div class="ex-wrap">
+        <p class="overline" style="color:var(--c-yellow)">Beitragen</p>
+        <h1 class="bld-h1">Bau deinen<br><span class="ex-hl">eigenen Skill</span>.</h1>
+        <p class="bld-lead">Ein Skill ist nur ein Ordner mit einer <code>SKILL.md</code>. Füll das Formular aus — rechts entsteht die Datei live. Danach lädst du sie als fertigen Skill herunter oder reichst sie mit einem Klick ein.</p>
+      </div>
+    </section>
+
+    <section class="bld-section">
+      <div class="ex-wrap">
+        <div class="bld-grid">
+          <!-- Formular -->
+          <form class="bld-form" id="bld-form" onsubmit="return false">
+            <label class="bld-field">
+              <span class="bld-label">Name des Skills <em>*</em></span>
+              <input id="bld-name" placeholder="z. B. Newsletter-Check" maxlength="60">
+              <span class="bld-hint">Ordnername wird daraus: <code id="bld-id">mein-skill</code></span>
+            </label>
+
+            <label class="bld-field">
+              <span class="bld-label">Kurzbeschreibung <em>*</em></span>
+              <textarea id="bld-desc" rows="3" placeholder="Was macht der Skill — und wann soll Claude ihn einsetzen? z. B. „Prüft Newsletter-Texte auf Länge, Betreffzeile und CTA. Nutze diesen Skill, wenn ein Newsletter vor dem Versand geprüft werden soll.""></textarea>
+              <span class="bld-hint">⚡ <strong>Wichtigstes Feld:</strong> Daran erkennt Claude <em>automatisch</em>, wann der Skill passt. Schreib rein, wann er genutzt werden soll.</span>
+            </label>
+
+            <div class="bld-row">
+              <label class="bld-field">
+                <span class="bld-label">Befehl (optional)</span>
+                <input id="bld-trigger" placeholder="/newsletter-check">
+              </label>
+              <label class="bld-field">
+                <span class="bld-label">Erlaubte Tools (optional)</span>
+                <input id="bld-tools" placeholder="Read, Write, Bash">
+              </label>
+            </div>
+
+            <label class="bld-field">
+              <span class="bld-label">Wann einsetzen (eine Zeile pro Fall)</span>
+              <textarea id="bld-usecases" rows="3" placeholder="Vor dem Newsletter-Versand&#10;Bei Betreffzeilen-Tests"></textarea>
+            </label>
+
+            <label class="bld-field">
+              <span class="bld-label">Vorgehen (eine Zeile pro Schritt)</span>
+              <textarea id="bld-steps" rows="4" placeholder="Text einlesen&#10;Betreffzeile auf Länge prüfen (< 50 Zeichen)&#10;CTA vorhanden? Genau einer?&#10;Findings mit Empfehlung ausgeben"></textarea>
+            </label>
+
+            <label class="bld-field">
+              <span class="bld-label">Ausgabe</span>
+              <textarea id="bld-output" rows="2" placeholder="Ampel-Report (✓ / ⚠ / ✗) mit konkreter Empfehlung je Punkt."></textarea>
+            </label>
+
+            <label class="bld-field">
+              <span class="bld-label">Regeln / Guardrails (eine Zeile pro Regel)</span>
+              <textarea id="bld-rules" rows="3" placeholder="Verständlich bleiben, kein Fachjargon&#10;Nichts erfinden — nur was im Text steht&#10;Bei Unklarheit nachfragen"></textarea>
+            </label>
+
+            <label class="bld-field">
+              <span class="bld-label">Beispiel-Ausgabe (optional)</span>
+              <textarea id="bld-example" rows="3" placeholder="Newsletter-Check — „Herbst-Angebot“&#10;✓ Betreff 42 Zeichen&#10;⚠ Zwei CTAs — auf einen reduzieren"></textarea>
+            </label>
+
+            <p class="bld-err" id="bld-err" hidden></p>
+          </form>
+
+          <!-- Live-Vorschau -->
+          <div class="bld-preview">
+            <div class="bld-preview-bar">
+              <span class="bld-preview-path" id="bld-path">mein-skill/SKILL.md</span>
+              <span class="bld-live">● live</span>
+            </div>
+            <pre class="bld-code" id="bld-code"></pre>
+
+            <div class="bld-actions">
+              <button class="c-cta -black-bg" onclick="builderDownloadZip(this)">⬇ Als Skill herunterladen (.zip)</button>
+              <button class="c-cta -black-border" onclick="builderCopy()">📋 SKILL.md kopieren</button>
+              <button class="c-cta -yellow-bg" onclick="builderSubmitGitHub()">🚀 Einreichen</button>
+              <button class="ann-cancel" onclick="builderReset()">Formular leeren</button>
+            </div>
+            <p class="bld-actions-hint">
+              <strong>Herunterladen</strong> → entpacken nach <code>.claude/skills/</code>, sofort nutzbar.<br>
+              <strong>Einreichen</strong> → öffnet ein vorbefülltes GitHub-Issue mit deiner SKILL.md; das KI-Enablement-Team übernimmt sie ins Repo. Kein GitHub-Konto? Dann lade das ZIP herunter und schick es per Mail.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div><!-- /view-builder -->
 
   <footer>
     <div class="footer-inner">
@@ -5560,22 +5688,14 @@ Gib einen priorisierten Report aus:
 
     // ===================== EXPLAINER: WAS SIND SKILLS =====================
     function showView(view) {
-      const cat = document.getElementById('view-catalog');
-      const ex = document.getElementById('view-explainer');
-      const navCat = document.getElementById('nav-catalog');
-      const navEx = document.getElementById('nav-explainer');
-      if (!cat || !ex) return;
-      const isEx = view === 'explainer';
-      cat.hidden = isEx;
-      ex.hidden = !isEx;
-      navCat.classList.toggle('active', !isEx);
-      navEx.classList.toggle('active', isEx);
+      const views = { catalog: 'view-catalog', explainer: 'view-explainer', builder: 'view-builder' };
+      const navs  = { catalog: 'nav-catalog',  explainer: 'nav-explainer',  builder: 'nav-builder' };
+      if (!views[view]) view = 'catalog';
+      Object.entries(views).forEach(([k, id]) => { const el = document.getElementById(id); if (el) el.hidden = (k !== view); });
+      Object.entries(navs).forEach(([k, id]) => { const el = document.getElementById(id); if (el) el.classList.toggle('active', k === view); });
       window.scrollTo({ top: 0, behavior: 'auto' });
-      if (isEx) {
-        renderStarterCards();
-        initReveal();
-        playTerminal();
-      }
+      if (view === 'explainer') { renderStarterCards(); initReveal(); playTerminal(); }
+      if (view === 'builder') initBuilder();
     }
 
     function exScrollTo(id) {
@@ -5759,6 +5879,99 @@ Gib einen priorisierten Report aus:
       if (idx > full.length) { done(); return; }
       el.innerHTML = `<span class="ex-term-prompt">›</span>${escHtml(full.slice(0, idx))}<span class="ex-cursor"></span>`;
       _termTimer = setTimeout(() => typeText(el, line, full, idx + 1, done), 28);
+    }
+
+    // ===================== SKILL-BUILDER =====================
+    const BLD_FIELDS = ['name', 'desc', 'trigger', 'tools', 'usecases', 'steps', 'output', 'rules', 'example'];
+    const REPO_ISSUES = 'https://github.com/CeeKay1901/pilot-skillmarkt/issues/new';
+    let _bldInit = false;
+
+    function bldSlug(s) {
+      return (s || '').toLowerCase().trim()
+        .replace(/ä/g, 'ae').replace(/ö/g, 'oe').replace(/ü/g, 'ue').replace(/ß/g, 'ss')
+        .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40) || 'mein-skill';
+    }
+    function bldVal(k) { return (document.getElementById('bld-' + k)?.value || '').trim(); }
+    function bldLines(k) { return bldVal(k).split('\n').map(l => l.trim()).filter(Boolean); }
+    function builderData() {
+      const name = bldVal('name');
+      return {
+        name, id: bldSlug(name), desc: bldVal('desc').replace(/\s*\n\s*/g, ' '),
+        trigger: bldVal('trigger'), tools: bldVal('tools'),
+        usecases: bldLines('usecases'), steps: bldLines('steps'),
+        output: bldVal('output'), rules: bldLines('rules'), example: bldVal('example')
+      };
+    }
+    function buildBuilderMd(d) {
+      const fm = ['---', `name: ${d.id}`, `description: ${d.desc || '<Was macht der Skill — und wann soll Claude ihn einsetzen?>'}`];
+      if (d.trigger) fm.push(`trigger: ${d.trigger.startsWith('/') ? d.trigger : '/' + d.trigger}`);
+      if (d.tools) fm.push(`allowed-tools: ${d.tools}`);
+      fm.push('---');
+      const b = [fm.join('\n'), '', `# ${d.name || 'Mein Skill'}`, ''];
+      if (d.usecases.length) b.push('## Wann einsetzen', ...d.usecases.map(u => '- ' + u), '');
+      if (d.steps.length) b.push('## Vorgehen', ...d.steps.map((s, i) => `${i + 1}. ${s}`), '');
+      if (d.output) b.push('## Ausgabe', d.output, '');
+      if (d.rules.length) b.push('## Regeln', ...d.rules.map(r => '- ' + r), '');
+      if (d.example) b.push('## Beispiel-Ausgabe', '```', d.example, '```', '');
+      return b.join('\n').replace(/\n{3,}/g, '\n\n').trimEnd() + '\n';
+    }
+    function renderBuilderPreview() {
+      const d = builderData();
+      const md = buildBuilderMd(d);
+      const idEl = document.getElementById('bld-id'); if (idEl) idEl.textContent = d.id;
+      const pathEl = document.getElementById('bld-path'); if (pathEl) pathEl.textContent = d.id + '/SKILL.md';
+      const code = document.getElementById('bld-code'); if (code) code.innerHTML = highlightCode(md, 'markdown');
+      try { localStorage.setItem('skill-builder-draft', JSON.stringify(BLD_FIELDS.reduce((o, k) => (o[k] = bldVal(k), o), {}))); } catch (e) {}
+    }
+    function initBuilder() {
+      if (!_bldInit) {
+        BLD_FIELDS.forEach(k => document.getElementById('bld-' + k)?.addEventListener('input', renderBuilderPreview));
+        try {
+          const d = JSON.parse(localStorage.getItem('skill-builder-draft') || '{}');
+          BLD_FIELDS.forEach(k => { const el = document.getElementById('bld-' + k); if (el && d[k]) el.value = d[k]; });
+        } catch (e) {}
+        _bldInit = true;
+      }
+      renderBuilderPreview();
+    }
+    function builderValidate() {
+      const d = builderData();
+      const err = document.getElementById('bld-err');
+      let msg = '';
+      if (!d.name) msg = 'Bitte gib dem Skill einen Namen.';
+      else if (!d.desc) msg = 'Bitte beschreibe kurz, was der Skill tut und wann Claude ihn einsetzen soll.';
+      if (err) { err.hidden = !msg; err.textContent = msg; }
+      if (msg) { showToast(msg); return null; }
+      return d;
+    }
+    function builderCopy() {
+      const d = builderValidate(); if (!d) return;
+      quickCopy(null, buildBuilderMd(d));
+      showToast('SKILL.md kopiert 📋');
+    }
+    async function builderDownloadZip(btn) {
+      const d = builderValidate(); if (!d) return;
+      const enc = new TextEncoder();
+      const entries = [{ name: d.id + '/SKILL.md', data: enc.encode(buildBuilderMd(d)) }];
+      if (d.example) entries.push({ name: d.id + '/references/beispiel.md', data: enc.encode(`# Beispiel-Ausgabe\n\n\`\`\`\n${d.example}\n\`\`\`\n`) });
+      triggerDownload(makeZip(entries), d.id + '.zip');
+      showToast(`${d.id}.zip heruntergeladen ⬇`);
+    }
+    function builderSubmitGitHub() {
+      const d = builderValidate(); if (!d) return;
+      const md = buildBuilderMd(d);
+      const MAXB = 5800;
+      let body = `**Neuer Skill-Vorschlag: \`${d.id}\`**\n\nEingereicht über den Skill-Builder auf der Marketplace-Seite.\n\n### Vorgeschlagene \`skills/${d.id}/SKILL.md\`\n\n~~~markdown\n${md}\n~~~\n`;
+      if (body.length > MAXB) body = body.slice(0, MAXB) + '\n…\n\n_(gekürzt — bitte ZIP anhängen)_\n';
+      const url = `${REPO_ISSUES}?title=${encodeURIComponent('Skill-Einreichung: ' + d.name)}&labels=${encodeURIComponent('skill-einreichung')}&body=${encodeURIComponent(body)}`;
+      window.open(url, '_blank', 'noopener');
+      showToast('GitHub-Issue vorbefüllt geöffnet 🚀');
+    }
+    function builderReset() {
+      if (!confirm('Formular wirklich leeren?')) return;
+      BLD_FIELDS.forEach(k => { const el = document.getElementById('bld-' + k); if (el) el.value = ''; });
+      try { localStorage.removeItem('skill-builder-draft'); } catch (e) {}
+      renderBuilderPreview();
     }
 
     // ===== INIT =====
