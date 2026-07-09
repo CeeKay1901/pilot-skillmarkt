@@ -8,11 +8,17 @@ const norm = s => (s ?? '').replace(/\r\n/g, '\n').replace(/\s+$/,''); // traili
 const cb = () => '?cb=' + Date.now() + Math.random();
 
 async function rawText(rel) {
-  // Retry gegen gelegentliche leere raw-Antworten (Rate-Limit)
+  // Retry gegen gelegentliche leere raw-Antworten (Rate-Limit).
+  // Achtung: eine wirklich leere Datei (z. B. pptx/scripts/__init__.py) liefert
+  // legitim "" — die erkennen wir an Content-Length: 0 und akzeptieren sie.
   for (let attempt = 0; attempt < 4; attempt++) {
     try {
       const r = await fetch(RAW + '/' + rel + cb(), { cache: 'no-store' });
-      if (r.ok) { const t = await r.text(); if (t.length) return t; }
+      if (r.ok) {
+        const empty = r.headers.get('content-length') === '0';
+        const t = await r.text();
+        if (t.length || empty) return t;
+      }
     } catch (e) {}
     await new Promise(res => setTimeout(res, 400 * (attempt + 1)));
   }
