@@ -3737,25 +3737,33 @@ Eine Slide = eine Botschaft.`}
     }
 
     // ===== ECHTE SKILL-DATEIEN (1:1 aus dem Repo gespiegelt) =====
+    // Rohinhalt direkt aus dem Repo (unabhängig von Jekyll/Pages-Build,
+    // immer der aktuelle main-Stand). Fallback: Pages-relativer Pfad.
+    const REPO_RAW  = 'https://raw.githubusercontent.com/CeeKay1901/pilot-skillmarkt/main/skills';
     const REPO_BLOB = 'https://github.com/CeeKay1901/pilot-skillmarkt/blob/main/skills';
     let _manifest = null;
+    async function fetchText(pathRel) {
+      // erst Repo-Roh, dann relativer Pages-Pfad
+      for (const url of [REPO_RAW + '/' + pathRel, 'skills/' + pathRel]) {
+        try { const r = await fetch(url, { cache: 'no-cache' }); if (r.ok) return await r.text(); } catch (e) {}
+      }
+      return null;
+    }
     async function getManifest() {
       if (_manifest) return _manifest;
-      try { const r = await fetch('skills/manifest.json', { cache: 'no-cache' }); if (!r.ok) throw 0; _manifest = await r.json(); }
-      catch (e) { _manifest = {}; }
+      const txt = await fetchText('manifest.json');
+      try { _manifest = txt ? JSON.parse(txt) : {}; } catch (e) { _manifest = {}; }
       return _manifest;
     }
     async function loadSkillFilesReal(skill) {
       const man = await getManifest();
       const rel = man[skill.id];
       if (!rel || !rel.length) return null;
-      try {
-        return await Promise.all(rel.map(async pth => {
-          const r = await fetch('skills/' + skill.id + '/' + pth, { cache: 'no-cache' });
-          if (!r.ok) throw 0;
-          return { path: skill.id + '/' + pth, content: await r.text() };
-        }));
-      } catch (e) { return null; }
+      const files = await Promise.all(rel.map(async pth => {
+        const content = await fetchText(skill.id + '/' + pth);
+        return content === null ? null : { path: skill.id + '/' + pth, content };
+      }));
+      return files.every(Boolean) ? files : null;
     }
 
     // Loading-Shell + asynchrones Laden der echten Dateien
