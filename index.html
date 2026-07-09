@@ -5779,9 +5779,9 @@ Gib einen priorisierten Report aus:
           {t:'ok',text:'✓ pilot-Farben & 16:9-Layout gesetzt'},
           {t:'hl',text:'→ pitch-deck.pptx erstellt (7 Folien, 7 Notizen)'},
         ], artifacts:[
+          {label:'Folien ansehen', href:'./demo/pptx/preview.html', kind:'open'},
           {label:'Deck herunterladen (.pptx)', href:'./demo/pptx/pitch-deck.pptx', kind:'file'},
-          {label:'Konzept ansehen (Quelle)', href:'./demo/viewer.html?f=pptx/konzept.md', kind:'open'},
-        ], note:'Echte OOXML-Datei — öffnet in PowerPoint & Keynote.' },
+        ], note:'Echte OOXML-Datei — die Folien-Ansicht wird direkt aus der .pptx extrahiert.' },
       ]},
       { id:'daten-aufbereiten', name:'Daten aufbereiten', trigger:'/daten-aufbereiten', cases:[
         { label:'Export bereinigen', script:[
@@ -5793,8 +5793,8 @@ Gib einen priorisierten Report aus:
           {t:'hl',text:'→ daten_clean.csv · 7 Zeilen · Summe 8.495,70 €'},
         ], artifacts:[
           {label:'Änderungs-Log lesen', href:'./demo/viewer.html?f=daten/aenderungen.md', kind:'open'},
-          {label:'Bereinigte Daten (.csv)', href:'./demo/daten/daten_clean.csv', kind:'file'},
-          {label:'Rohdaten (.csv)', href:'./demo/daten/export_roh.csv', kind:'file'},
+          {label:'Nachher: saubere Daten', href:'./demo/viewer.html?f=daten/daten_clean.csv', kind:'open'},
+          {label:'Vorher: Roh-Export', href:'./demo/viewer.html?f=daten/export_roh.csv', kind:'open'},
         ], note:'Zahlen vom Skript gezählt, nicht geschätzt.' },
       ]},
       { id:'content-recycling', name:'Content Recycling', trigger:'/content-recycling', cases:[
@@ -5818,7 +5818,7 @@ Gib einen priorisierten Report aus:
           {t:'hl',text:'✗ 3 Fehler — u. a. utm_medium fehlt, Landingpage per http://'},
         ], artifacts:[
           {label:'Echten Report lesen', href:'./demo/viewer.html?f=campaign-check/report.md', kind:'open'},
-          {label:'Geprüfte Kampagne (.csv)', href:'./demo/campaign-check/kampagne.csv', kind:'file'},
+          {label:'Geprüfte Kampagne ansehen', href:'./demo/viewer.html?f=campaign-check/kampagne.csv', kind:'open'},
         ], note:'Findings kommen aus einem echten Validator-Lauf.' },
       ]},
     ];

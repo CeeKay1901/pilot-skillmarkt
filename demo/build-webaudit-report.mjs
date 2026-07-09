@@ -52,10 +52,10 @@ const facts = await page.evaluate(() => {
   };
 });
 
-// Kontrast wirklich berechnen
-const contrastFails = facts.contrastSamples
-  .map(s => ({ ...s, ratio: contrast(s.fg, s.bg) }))
-  .filter(s => s.ratio < (s.size >= 24 ? 3 : 4.5));
+// Kontrast wirklich berechnen — alle Messwerte behalten, sie kommen als Tabelle in den Report
+const contrastMeasured = facts.contrastSamples
+  .map(s => ({ ...s, ratio: contrast(s.fg, s.bg), min: s.size >= 24 ? 3 : 4.5 }));
+const contrastFails = contrastMeasured.filter(s => s.ratio < s.min);
 
 // echte Screenshots
 const shotDesktop = (await page.screenshot({ fullPage: true })).toString('base64');
@@ -129,6 +129,15 @@ li:before{position:absolute;left:0}
 .pass li:before{content:'✓';color:#2d8a4e;font-weight:700}
 li.none{opacity:.55;font-style:italic}li.none:before{content:'–';color:var(--gray)}
 code{font-family:'JetBrains Mono',monospace;font-size:.9em;background:var(--bg);border:1px solid var(--line);border-radius:.4rem;padding:0 .4rem}
+.hint{font-size:1.45rem;color:var(--gray);margin-bottom:1.2rem}
+.tblwrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:1.45rem}
+th,td{border:1px solid var(--line);padding:.7rem 1rem;text-align:left;white-space:nowrap}
+td:nth-child(2){white-space:normal}
+th{background:var(--bg);font-weight:700}
+td{font-variant-numeric:tabular-nums}
+td.y{color:#2d8a4e;font-weight:700;text-align:center}
+td.n{color:#c0392b;font-weight:700;text-align:center}
 .shots{display:grid;grid-template-columns:2fr 1fr;gap:1.6rem}
 @media(max-width:720px){.shots{grid-template-columns:1fr}}
 .shot{border:1px solid var(--line);border-radius:1rem;overflow:hidden;background:#fff}
@@ -146,6 +155,21 @@ footer a{color:var(--black)}
 <section class="fail"><h2>🔴 Kritisch (${fail.length})</h2><ul>${li(fail)}</ul></section>
 <section class="warn"><h2>🟡 Empfehlung (${warn.length})</h2><ul>${li(warn)}</ul></section>
 <section class="pass"><h2>🟢 Bestanden (${pass.length})</h2><ul>${li(pass)}</ul></section>
+
+<section><h2>Messwerte — Textkontrast</h2>
+<p class="hint">Für jedes Element wurden Vorder- und Hintergrundfarbe aus dem gerenderten DOM gelesen und das
+Kontrastverhältnis nach WCAG berechnet. Grenzwert: 4,5:1 (unter 24 px) bzw. 3:1.</p>
+<div class="tblwrap"><table><thead><tr><th>Element</th><th>Text</th><th>Größe</th><th>gemessen</th><th>Grenzwert</th><th></th></tr></thead><tbody>
+${contrastMeasured.map(s => `<tr><td><code>${escH(s.tag)}</code></td><td>${escH(s.text)}…</td><td>${s.size} px</td><td><b>${s.ratio.toFixed(2)}:1</b></td><td>${s.min}:1</td><td class="${s.ratio >= s.min ? 'y' : 'n'}">${s.ratio >= s.min ? '✓' : '✗'}</td></tr>`).join('')}
+</tbody></table></div></section>
+
+<section><h2>Messwerte — Funktionstest</h2>
+<p class="hint">Der Browser hat die Felder wirklich ausgefüllt und die Ausgabe gelesen — kein Blick in den Code, sondern Verhalten.</p>
+<div class="tblwrap"><table><thead><tr><th>Eingabe</th><th>erwartet</th><th>gemessen</th><th></th></tr></thead><tbody>
+<tr><td>Reichweite 500.000 · TKP 12 € · Streuverlust 30 %</td><td>Kosten 6.000,00 €</td><td>${escH(calc.cost.trim())}</td><td class="${calcOk ? 'y' : 'n'}">${calcOk ? '✓' : '✗'}</td></tr>
+<tr><td>dito</td><td>Netto-TKP 17,14 €</td><td>${escH(calc.ntkp.trim())}</td><td class="${calcOk ? 'y' : 'n'}">${calcOk ? '✓' : '✗'}</td></tr>
+<tr><td>Reichweite leer</td><td>keine NaN-Ausgabe</td><td>${escH(emptyCost.trim())}</td><td class="${emptyOk ? 'y' : 'n'}">${emptyOk ? '✓' : '✗'}</td></tr>
+</tbody></table></div></section>
 
 <section><h2>Screenshots (echt, aus dem Lauf)</h2><div class="shots">
 <figure class="shot"><img alt="Desktop-Ansicht von ${TARGET_NAME}" src="data:image/png;base64,${shotDesktop}"><figcaption>Desktop · 1280×900</figcaption></figure>

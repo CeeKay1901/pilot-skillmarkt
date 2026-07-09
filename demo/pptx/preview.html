@@ -1,0 +1,117 @@
+<!DOCTYPE html><html lang="de"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Folien-Vorschau — pitch-deck.pptx</title>
+<meta name="description" content="Vorschau der echten pitch-deck.pptx, extrahiert aus der OOXML-Datei selbst.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--black:#262626;--yellow:#ffe05e;--bg:#eeede5;--paper:#fbfbf7;--line:#e4e2d6;--gray:#66655d}
+*{box-sizing:border-box;margin:0;padding:0}html{font-size:62.5%}
+body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--black);line-height:1.55;padding:4rem 2rem}
+.wrap{max-width:86rem;margin:0 auto}
+.badge{font-family:'JetBrains Mono',monospace;font-size:1.2rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gray);display:flex;align-items:center;gap:.8rem}
+.badge::before{content:'';width:.8rem;height:.8rem;border-radius:50%;background:#2d8a4e}
+h1{font-size:3.6rem;font-weight:300;letter-spacing:-.02em;margin:.8rem 0 .6rem}
+h1 b{font-weight:600}
+.lead{font-size:1.6rem;color:var(--gray);max-width:64rem;margin-bottom:1.2rem}
+.lead code{font-family:'JetBrains Mono',monospace;font-size:.9em;background:var(--paper);border:1px solid var(--line);border-radius:.4rem;padding:.1rem .5rem}
+.actions{display:flex;gap:.8rem;margin:1.6rem 0 3.2rem;flex-wrap:wrap}
+.btn{font-family:'JetBrains Mono',monospace;font-size:1.3rem;text-decoration:none;padding:.9rem 1.8rem;border-radius:3rem;border:1px solid var(--line);color:var(--black);background:var(--paper)}
+.btn:hover{background:var(--yellow);border-color:var(--yellow)}
+.btn-p{background:var(--black);color:#fcfcfc;border-color:var(--black)}
+.slide-wrap{margin-bottom:2.8rem}
+.slide{position:relative;aspect-ratio:16/9;background:var(--paper);border:1px solid var(--line);border-radius:1.2rem;padding:4rem 4.4rem;display:flex;flex-direction:column;justify-content:center;box-shadow:0 10px 30px -14px rgba(38,38,38,.18);overflow:hidden}
+.slide::before{content:'';position:absolute;inset:0 auto 0 0;width:.8rem;background:var(--yellow)}
+.kicker{font-family:'JetBrains Mono',monospace;font-size:1.25rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gray);margin-bottom:.8rem}
+.num{position:absolute;top:1.6rem;right:2rem;font-family:'JetBrains Mono',monospace;font-size:1.3rem;color:var(--gray)}
+.slide h2{font-size:clamp(2rem,3.4vw,3rem);font-weight:700;letter-spacing:-.01em;margin-bottom:1.4rem}
+.slide ul{list-style:none;display:flex;flex-direction:column;gap:.8rem}
+.slide li{font-size:clamp(1.4rem,1.9vw,1.7rem);padding-left:2rem;position:relative}
+.slide li::before{content:'—';position:absolute;left:0;color:var(--gray)}
+.notes{background:#fff;border:1px dashed var(--line);border-radius:0 0 1rem 1rem;margin:0 1.6rem;padding:1.2rem 1.8rem}
+.notes b{font-family:'JetBrains Mono',monospace;font-size:1.1rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gray);display:block;margin-bottom:.4rem}
+.notes p{font-size:1.45rem;color:#4a4942}
+footer{text-align:center;font-size:1.3rem;color:var(--gray);margin-top:3rem}
+footer a{color:var(--black)}
+@media(max-width:620px){.slide{padding:2.4rem 2rem;aspect-ratio:auto}body{padding:2rem 1rem}}
+</style></head><body><div class="wrap">
+<p class="badge">Extrahiert aus der echten Datei</p>
+<h1>Folien-Vorschau — <b>pitch-deck.pptx</b></h1>
+<p class="lead">Diese Vorschau ist keine Nacherzählung: <code>build-pptx-preview.mjs</code> entpackt die
+<code>.pptx</code> (90 KB OOXML) und liest Titel, Inhalte und Sprechernotizen
+direkt aus dem Folien-XML. 7 Folien, 7 mit Notizen.</p>
+<div class="actions">
+<a class="btn btn-p" href="pitch-deck.pptx" download>⬇ pitch-deck.pptx herunterladen</a>
+<a class="btn" href="../viewer.html?f=pptx/konzept.md">Quell-Konzept ansehen</a>
+</div>
+
+<article class="slide-wrap">
+  <div class="slide">
+    <span class="num">1</span>
+    <p class="kicker">PITCH DECK</p>
+    <h2>Herbst-Kampagne 2026 — Mustermarke</h2>
+    <ul><li>pilot</li><li>Erzeugt mit dem Skill pptx aus konzept.md</li></ul>
+  </div>
+  <div class="notes"><b>Sprechernotiz</b><p>Titelfolie. Erzeugt aus dem Konzept-Markdown durch den pptx-Skill.</p></div>
+</article>
+
+<article class="slide-wrap">
+  <div class="slide">
+    <span class="num">2</span>
+    <p class="kicker">01</p>
+    <h2>Die unbequeme Wahrheit</h2>
+    <ul><li>68 % der Herbst-Kampagnen im Segment sehen austauschbar aus</li><li>Preisrabatt ist der einzige Hebel, den fast alle ziehen</li><li>Die Zielgruppe erinnert sich an keine einzige Marke</li></ul>
+  </div>
+  <div class="notes"><b>Sprechernotiz</b><p>Einstieg hart setzen: Wir reden nicht über Media, wir reden über Wiedererkennbarkeit.</p></div>
+</article>
+
+<article class="slide-wrap">
+  <div class="slide">
+    <span class="num">3</span>
+    <p class="kicker">02</p>
+    <h2>Das Problem in Zahlen</h2>
+    <ul><li>Ø Erinnerungswert der Kategorie: 11 %</li><li>Streuverlust bei reiner Preis-Kommunikation: 34 %</li><li>Kosten pro erinnerter Kontakt steigen seit 2024 um 22 %</li></ul>
+  </div>
+  <div class="notes"><b>Sprechernotiz</b><p>Die Zahlen kommen aus der Kategorie-Analyse, nicht aus einer Umfrage. Kurz halten.</p></div>
+</article>
+
+<article class="slide-wrap">
+  <div class="slide">
+    <span class="num">4</span>
+    <p class="kicker">03</p>
+    <h2>Unser Ansatz</h2>
+    <ul><li>Eine Botschaft, konsequent über alle Kanäle</li><li>Real People statt Models — Glaubwürdigkeit vor Hochglanz</li><li>Kein Preis im Hero, Preis erst in der Conversion-Stufe</li></ul>
+  </div>
+  <div class="notes"><b>Sprechernotiz</b><p>Hier bewusst langsam sprechen. Das ist der Kern.</p></div>
+</article>
+
+<article class="slide-wrap">
+  <div class="slide">
+    <span class="num">5</span>
+    <p class="kicker">04</p>
+    <h2>Der Beweis</h2>
+    <ul><li>Case „Frühjahr 2026": +34 % CTR nach Creative-Refresh</li><li>ROAS Paid Social 4,2 bei gleichem Budget</li><li>Erinnerungswert von 11 % auf 19 % gestiegen</li></ul>
+  </div>
+  <div class="notes"><b>Sprechernotiz</b><p>Zahlen aus dem Q2-Report. Falls Nachfrage: Messung über Brand-Lift-Study.</p></div>
+</article>
+
+<article class="slide-wrap">
+  <div class="slide">
+    <span class="num">6</span>
+    <p class="kicker">05</p>
+    <h2>Wer das macht</h2>
+    <ul><li>Strategie: pilot Hamburg, Team Mustermarke</li><li>Kreation &amp; Media aus einer Hand</li><li>Feste Ansprechpartnerin über die gesamte Laufzeit</li></ul>
+  </div>
+  <div class="notes"><b>Sprechernotiz</b><p>Namen nennen, Gesichter zeigen. Vertrauen entsteht über Personen.</p></div>
+</article>
+
+<article class="slide-wrap">
+  <div class="slide">
+    <span class="num">7</span>
+    <p class="kicker">06</p>
+    <h2>Nächste Schritte</h2>
+    <ul><li>Kick-off-Workshop in KW 34</li><li>Kreativ-Briefing bis 15.08.</li><li>Mediaplan v1 bis 22.08., Go-Live 01.09.</li></ul>
+  </div>
+  <div class="notes"><b>Sprechernotiz</b><p>Klar mit einem konkreten Datum enden. Kein „melden Sie sich gern".</p></div>
+</article>
+<footer>Erzeugt von <code style="font-family:'JetBrains Mono',monospace">demo/build-pptx-preview.mjs</code> — direkt aus der .pptx, nicht aus dem Konzept.<br><a href="../index.html">← zurück zum Skill Marketplace</a></footer>
+</div></body></html>

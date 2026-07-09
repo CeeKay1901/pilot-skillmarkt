@@ -6,6 +6,7 @@ hier im Ordner liegt. Wer will, kann es nachrechnen.
 
 | Demo-Fall | Artefakt | Erzeugt von |
 |---|---|---|
+| pptx → Folien-Vorschau | `pptx/preview.html` | `build-pptx-preview.mjs` — liest die echte `.pptx` (OOXML) aus |
 | Prototyp bauen → TKP-Rechner | `../tkp-rechner.html` | Claude Code (`/prototyp`) — echtes, rechnendes Tool |
 | Prototyp bauen → Umfrage-Auswerter | `../umfrage-auswertung.html` | Claude Code (`/prototyp`) — parst echtes CSV |
 | webaudit → Gebautes Tool prüfen | `webaudit/report.html` | `build-webaudit-report.mjs` (echter Browser-Lauf) |
@@ -21,6 +22,7 @@ node demo/build-data-artifacts.mjs          # Daten + Campaign-Check
 PLAYWRIGHT_BROWSERS_PATH=$HOME/.cache/ms-playwright \
   node demo/build-webaudit-report.mjs       # echter Audit + Screenshots
 npm i pptxgenjs && node demo/build-pptx.mjs # echtes .pptx
+node demo/build-pptx-preview.mjs            # Folien-Vorschau AUS der .pptx
 ```
 
 ## Anmerkungen
@@ -37,5 +39,8 @@ npm i pptxgenjs && node demo/build-pptx.mjs # echtes .pptx
 - Der **Campaign-Validator** meldet genau die Fehler, die in `kampagne.csv`
   tatsächlich stecken (fehlendes `utm_medium`, `http://`-Landingpage, fehlende
   `utm_campaign`).
-- `viewer.html` rendert die Markdown-Ergebnisse direkt auf der Seite
-  (`viewer.html?f=<pfad>.md`).
+- `viewer.html` rendert Markdown **und CSV** direkt auf der Seite
+  (`viewer.html?f=<pfad>.md|.csv`) — CSVs als Tabelle, leere Zellen markiert.
+- `pptx/preview.html` ist keine Nacherzählung des Konzepts: das Skript entpackt
+  die `.pptx` und liest Titel, Bullets und Sprechernotizen aus dem Folien-XML.
+  Was dort steht, steckt beweisbar in der Datei.
