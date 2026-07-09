@@ -1283,18 +1283,68 @@
     .files-real-badge { color: #2d8a4e; font-family: var(--font-mono); font-weight: 700; letter-spacing: 0; text-transform: none; font-size: 1.3rem; }
     .files-copy { background: rgba(255,255,255,.1); border: none; color: rgba(252,252,252,.8); font-family: inherit; font-size: 1.2rem; padding: .4rem 1rem; border-radius: .5rem; cursor: pointer; transition: var(--trans); }
     .files-copy:hover { background: var(--c-yellow); color: var(--c-black); }
-    .files-code { margin: 0; padding: 1.8rem; font-family: var(--font-mono); font-size: 1.35rem; line-height: 1.75; color: #cfcfc7; overflow-x: auto; white-space: pre; tab-size: 2; }
+    .files-code { margin: 0; padding: 1.2rem 0; font-family: var(--font-mono); font-size: 1.35rem; line-height: 1.75; color: #cfcfc7; overflow-x: auto; tab-size: 2; counter-reset: none; }
     .files-code .tk-fence { color: #6a6a60; }
     .files-code .tk-h { color: var(--c-yellow); font-weight: 700; }
     .files-code .tk-k { color: #6aa9e8; }
     .files-code .tk-b { color: var(--c-yellow); }
     .files-code .tk-code { color: #7ac59a; }
+
+    /* Zeilenbasierter Code-View mit Kommentar-Gutter */
+    .code-line { display: flex; align-items: flex-start; min-height: 2.35rem; position: relative; }
+    .code-line:hover { background: rgba(255,255,255,.045); }
+    .code-line.has-ann { background: rgba(255,224,94,.06); box-shadow: inset 3px 0 0 var(--c-yellow); }
+    .code-line.cl-flash { animation: clFlash 1.6s ease; }
+    @keyframes clFlash { 0%,100% { background: transparent; } 15% { background: rgba(255,224,94,.28); } }
+    .ln-gutter { flex-shrink: 0; width: 5rem; display: inline-flex; align-items: center; justify-content: flex-end; gap: .4rem; padding: 0 1rem 0 .6rem; position: relative; user-select: none; }
+    .ln-n { color: rgba(255,255,255,.28); font-size: 1.2rem; }
+    .ln-add { position: absolute; left: .3rem; top: 50%; transform: translateY(-50%); width: 1.7rem; height: 1.7rem; border-radius: .4rem; border: none; background: var(--c-yellow); color: var(--c-black); font-weight: 700; font-size: 1.4rem; line-height: 1; cursor: pointer; opacity: 0; transition: opacity .12s; display: flex; align-items: center; justify-content: center; padding: 0; }
+    .code-line:hover .ln-add { opacity: 1; }
+    .ln-code { white-space: pre; flex: 1; padding-right: 1.4rem; }
+    .ln-badge { flex-shrink: 0; align-self: center; margin: 0 1rem 0 .4rem; background: var(--c-yellow); color: var(--c-black); border: none; border-radius: 2rem; font-family: var(--font-mono); font-size: 1.1rem; font-weight: 700; padding: .1rem .7rem; cursor: pointer; }
+
+    /* Datei-Knoten mit Kommentar-Button */
+    .file-node-row { display: flex; align-items: center; gap: .2rem; }
+    .file-node-row .file-node { flex: 1; }
+    .node-badge { background: var(--c-yellow); color: var(--c-black); border-radius: 2rem; font-size: 1.05rem; font-weight: 700; padding: 0 .6rem; margin-left: .6rem; }
+    .node-annotate { background: none; border: none; cursor: pointer; font-size: 1.35rem; opacity: .35; padding: .4rem; border-radius: .5rem; transition: var(--trans); flex-shrink: 0; }
+    .node-annotate:hover { opacity: 1; background: rgba(0,0,0,.05); }
+
+    /* Annotations-Panel */
+    .ann-panel { margin-top: 2rem; border-top: 1px solid var(--c-gray-l); padding-top: 1.6rem; }
+    .ann-panel-head { display: flex; align-items: center; gap: 1rem; font-size: 1.5rem; font-weight: 700; margin-bottom: 1.2rem; }
+    .ann-count { background: var(--c-black); color: var(--c-white); border-radius: 2rem; font-size: 1.2rem; padding: .1rem .9rem; font-family: var(--font-mono); }
+    .ann-composer { background: var(--c-bg); border: 1px solid var(--c-gray-l); border-radius: 1rem; padding: 1.6rem; margin-bottom: 1.6rem; }
+    .ann-anchor { font-size: 1.35rem; color: var(--c-gray-m); margin-bottom: 1rem; }
+    .ann-anchor code { font-family: var(--font-mono); background: var(--c-black); color: var(--c-yellow); padding: .1rem .6rem; border-radius: .4rem; }
+    .ann-anchor-snip { font-family: var(--font-mono); color: var(--c-black); background: rgba(255,224,94,.35); padding: .1rem .5rem; border-radius: .3rem; }
+    .ann-text-input, .ann-author-input { width: 100%; font-family: inherit; font-size: 1.5rem; border: 1px solid var(--c-gray-l); border-radius: .8rem; padding: 1rem 1.2rem; background: var(--c-white); }
+    .ann-text-input { resize: vertical; margin-bottom: 1rem; display: block; }
+    .ann-composer-row { display: flex; gap: 1rem; align-items: center; }
+    .ann-author-input { flex: 1; }
+    .ann-save { padding: .9rem 2rem; font-size: 1.4rem; }
+    .ann-cancel { background: none; border: none; color: var(--c-gray-m); cursor: pointer; font-family: inherit; font-size: 1.4rem; text-decoration: underline; }
+    .ann-list { display: flex; flex-direction: column; gap: 1rem; }
+    .ann-empty { font-size: 1.45rem; color: var(--c-gray-m); font-style: italic; }
+    .ann-item { display: flex; gap: 1.2rem; align-items: flex-start; background: var(--c-bg); border: 1px solid var(--c-gray-l); border-radius: 1rem; padding: 1.4rem 1.6rem; }
+    .ann-jump { flex-shrink: 0; background: var(--c-black); color: var(--c-white); border: none; border-radius: var(--radius-pill); font-family: var(--font-mono); font-size: 1.2rem; padding: .5rem 1.1rem; cursor: pointer; transition: var(--trans); white-space: nowrap; }
+    .ann-jump:hover { background: var(--c-yellow); color: var(--c-black); }
+    .ann-body { flex: 1; min-width: 0; }
+    .ann-ref { font-family: var(--font-mono); font-size: 1.25rem; color: var(--c-gray-m); }
+    .ann-snippet { margin: .5rem 0; }
+    .ann-snippet code { font-family: var(--font-mono); font-size: 1.25rem; background: var(--c-black); color: #cfcfc7; padding: .3rem .8rem; border-radius: .5rem; display: inline-block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .ann-text { font-size: 1.55rem; line-height: 1.5; color: var(--c-black); margin: .5rem 0; }
+    .ann-meta { font-size: 1.25rem; color: var(--c-gray-m); }
+    .ann-del { background: none; border: none; color: var(--c-gray-m); cursor: pointer; font-family: inherit; font-size: 1.25rem; text-decoration: underline; }
+    .ann-del:hover { color: #c0392b; }
+
     @media (max-width: 640px) {
       .files-browser { grid-template-columns: 1fr; }
       .files-tree { flex-direction: row; overflow-x: auto; border-right: none; border-bottom: 1px solid var(--c-gray-l); }
       .files-folder { display: none; }
       .file-node { white-space: nowrap; }
       .files-code { font-size: 1.2rem; }
+      .ann-item { flex-direction: column; gap: .8rem; }
     }
 
     /* Explainer responsive */
@@ -4528,16 +4578,41 @@ Gib einen priorisierten Report aus:
       const real = state._filesReal;
       const active = Math.min(state.activeFile || 0, files.length - 1);
       const icon = p => /\.md$/.test(p) ? '≡' : /\.(js|mjs|py)$/.test(p) ? '{}' : /\.json$/.test(p) ? '{}' : '·';
+      const anns = getAnnotations(skill.id);
+      const shortP = p => p.split('/').slice(1).join('/') || p;
+
       const tree = files.map((f, i) => {
-        const name = f.path.split('/').slice(1).join('/') || f.path;
-        return `<button class="file-node ${i === active ? 'active' : ''}" onclick="selectFile(${i})"><span class="file-ic">${icon(f.path)}</span>${escHtml(name)}</button>`;
+        const name = shortP(f.path);
+        const c = anns.filter(a => a.file === f.path).length;
+        return `<div class="file-node-row">
+          <button class="file-node ${i === active ? 'active' : ''}" onclick="selectFile(${i})"><span class="file-ic">${icon(f.path)}</span>${escHtml(name)}${c ? `<span class="node-badge" title="${c} Anmerkung(en)">${c}</span>` : ''}</button>
+          <button class="node-annotate" title="Diese Datei kommentieren" onclick="startAnnotateFile(event, ${i})">💬</button>
+        </div>`;
       }).join('');
+
       const cur = files[active];
       const folder = cur.path.split('/')[0] + '/';
       const intro = real
-        ? `<div class="files-intro"><p class="section-label" style="margin-top:0"><span class="files-real-badge">● Echte Datei im Repo</span></p><p class="files-intro-text">Diese Dateien liegen wirklich im Repo unter <code>skills/${escHtml(skill.id)}/</code> und werden hier <strong>1:1 gespiegelt</strong>. Ein Skill ist genau das: ein Ordner mit einer <code>SKILL.md</code>. Bau dir davon eigene.</p></div>`
+        ? `<div class="files-intro"><p class="section-label" style="margin-top:0"><span class="files-real-badge">● Echte Datei im Repo</span></p><p class="files-intro-text">Diese Dateien liegen wirklich im Repo unter <code>skills/${escHtml(skill.id)}/</code> und werden hier <strong>1:1 gespiegelt</strong>. Klick auf das <strong>+</strong> an einer Zeile oder auf <strong>💬</strong> an einer Datei, um die Stelle zu kommentieren.</p></div>`
         : `<div class="files-intro"><p class="section-label" style="margin-top:0">Aufbau</p><p class="files-intro-text">Vorschau des Aufbaus (echte Dateien erscheinen auf der Live-Seite unter <code>skills/${escHtml(skill.id)}/</code>).</p></div>`;
       const gh = real ? `<a class="files-gh" href="${REPO_BLOB}/${encodeURI(cur.path)}" target="_blank" rel="noopener">Auf GitHub ansehen ↗</a>` : '';
+
+      // Zeilenbasiertes Code-Rendering mit Kommentar-Gutter
+      const lineAnn = {};
+      anns.forEach(a => { if (a.file === cur.path && a.line) lineAnn[a.line] = (lineAnn[a.line] || 0) + 1; });
+      const codeHtml = highlightCode(cur.content, fileLang(cur.path)).split('\n').map((h, idx) => {
+        const n = idx + 1; const c = lineAnn[n] || 0;
+        return `<div class="code-line${c ? ' has-ann' : ''}" id="cl-${n}" data-line="${n}">`
+          + `<span class="ln-gutter"><button class="ln-add" title="Zeile ${n} kommentieren" onclick="startAnnotate(event, ${n})">+</button><span class="ln-n">${n}</span></span>`
+          + `<span class="ln-code">${h || ''}</span>`
+          + (c ? `<button class="ln-badge" title="${c} Anmerkung(en) — anzeigen" onclick="scrollToAnnList(event)">${c}</button>` : '')
+          + `</div>`;
+      }).join('');
+
+      const annList = anns.length
+        ? anns.map(a => renderAnnItem(a, shortP)).join('')
+        : '<p class="ann-empty">Noch keine Anmerkungen zu diesem Skill.</p>';
+
       body.innerHTML = `
         ${intro}
         <div class="files-browser">
@@ -4550,10 +4625,35 @@ Gib einen priorisierten Report aus:
               <span class="files-view-path">${escHtml(cur.path)}</span>
               <div class="files-view-actions">${gh}<button class="files-copy" onclick="quickCopy(event, getFileContent(${active}))">Kopieren</button></div>
             </div>
-            <pre class="files-code">
-${highlightCode(cur.content, fileLang(cur.path))}</pre>
+            <div class="files-code code-view">${codeHtml}</div>
           </div>
+        </div>
+        <div class="ann-panel" id="ann-panel">
+          <div class="ann-panel-head"><span>Anmerkungen</span><span class="ann-count">${anns.length}</span></div>
+          <div class="ann-composer" id="ann-composer" hidden>
+            <div class="ann-anchor" id="ann-anchor"></div>
+            <textarea id="ann-text" class="ann-text-input" rows="2" placeholder="Deine Anmerkung zu dieser Stelle …"></textarea>
+            <div class="ann-composer-row">
+              <input id="ann-author" class="ann-author-input" placeholder="Dein Name" value="${escHtml(getAnnAuthor())}">
+              <button class="c-cta -black-bg ann-save" onclick="submitAnnotation()">Speichern</button>
+              <button class="ann-cancel" onclick="cancelAnnotate()">Abbrechen</button>
+            </div>
+          </div>
+          <div class="ann-list" id="ann-list">${annList}</div>
         </div>`;
+    }
+
+    function renderAnnItem(a, shortP) {
+      const ref = a.line ? `${shortP(a.file)} · Zeile ${a.line}` : `Datei: ${shortP(a.file)}`;
+      return `<div class="ann-item" id="ann-${a.id}">
+        <button class="ann-jump" title="Zur referenzierten Stelle springen" onclick="jumpToAnnotation('${a.id}')">↩ Zur Stelle</button>
+        <div class="ann-body">
+          <div class="ann-ref">${escHtml(ref)}</div>
+          ${a.snippet ? `<div class="ann-snippet"><code>${escHtml(a.snippet)}</code></div>` : ''}
+          <div class="ann-text">${escHtml(a.text)}</div>
+          <div class="ann-meta">${escHtml(a.author || 'Anonym')} · ${escHtml(a.date)} · <button class="ann-del" onclick="deleteAnnotation('${a.id}')">löschen</button></div>
+        </div>
+      </div>`;
     }
 
     function getFileContent(i) {
@@ -4564,6 +4664,94 @@ ${highlightCode(cur.content, fileLang(cur.path))}</pre>
     function selectFile(i) {
       state.activeFile = i;
       renderFilesInto(state.activeSkill);
+    }
+
+    // ===== ANNOTATIONEN (Kommentare am Datei-/Zeilen-Objekt) =====
+    function getAnnotations(id) {
+      try { return JSON.parse(localStorage.getItem('skill-annotations-' + id) || '[]'); } catch (e) { return []; }
+    }
+    function saveAnnotations(id, arr) {
+      try { localStorage.setItem('skill-annotations-' + id, JSON.stringify(arr)); } catch (e) {}
+    }
+    function getAnnAuthor() { try { return localStorage.getItem('skill-ann-author') || ''; } catch (e) { return ''; } }
+
+    function startAnnotate(evt, lineNo) {
+      if (evt) evt.stopPropagation();
+      const files = state._files || [];
+      const cur = files[Math.min(state.activeFile || 0, files.length - 1)];
+      if (!cur) return;
+      const snippet = (cur.content.split('\n')[lineNo - 1] || '').trim().slice(0, 90);
+      state._pendingAnn = { file: cur.path, line: lineNo, snippet };
+      showComposer();
+    }
+    function startAnnotateFile(evt, i) {
+      if (evt) evt.stopPropagation();
+      const files = state._files || [];
+      const f = files[i]; if (!f) return;
+      state._pendingAnn = { file: f.path, line: null, snippet: '' };
+      showComposer();
+    }
+    function showComposer() {
+      const comp = document.getElementById('ann-composer');
+      const anchor = document.getElementById('ann-anchor');
+      const pa = state._pendingAnn;
+      if (!comp || !anchor || !pa) return;
+      const short = pa.file.split('/').slice(1).join('/') || pa.file;
+      anchor.innerHTML = pa.line
+        ? `Anmerkung zu <code>${escHtml(short)}</code> · Zeile ${pa.line}` + (pa.snippet ? ` <span class="ann-anchor-snip">${escHtml(pa.snippet)}</span>` : '')
+        : `Anmerkung zur Datei <code>${escHtml(short)}</code>`;
+      comp.hidden = false;
+      comp.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      const t = document.getElementById('ann-text'); if (t) t.focus();
+    }
+    function cancelAnnotate() {
+      state._pendingAnn = null;
+      const comp = document.getElementById('ann-composer'); if (comp) comp.hidden = true;
+    }
+    function submitAnnotation() {
+      const pa = state._pendingAnn;
+      const skill = state.activeSkill;
+      if (!pa || !skill) return;
+      const text = (document.getElementById('ann-text')?.value || '').trim();
+      const author = (document.getElementById('ann-author')?.value || '').trim();
+      if (!text) { showToast('Bitte eine Anmerkung eingeben.'); return; }
+      try { localStorage.setItem('skill-ann-author', author); } catch (e) {}
+      const anns = getAnnotations(skill.id);
+      anns.unshift({
+        id: 'a' + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36),
+        file: pa.file, line: pa.line, snippet: pa.snippet,
+        author: author || 'Anonym', text,
+        date: new Date().toISOString().slice(0, 10)
+      });
+      saveAnnotations(skill.id, anns);
+      state._pendingAnn = null;
+      showToast('Anmerkung gespeichert ✎');
+      renderFilesInto(skill);
+    }
+    function deleteAnnotation(annId) {
+      const skill = state.activeSkill; if (!skill) return;
+      saveAnnotations(skill.id, getAnnotations(skill.id).filter(a => a.id !== annId));
+      renderFilesInto(skill);
+    }
+    function scrollToAnnList(evt) {
+      if (evt) evt.stopPropagation();
+      document.getElementById('ann-panel')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    function jumpToAnnotation(annId) {
+      const skill = state.activeSkill; if (!skill) return;
+      const a = getAnnotations(skill.id).find(x => x.id === annId); if (!a) return;
+      const files = state._files || [];
+      const idx = files.findIndex(f => f.path === a.file);
+      if (idx < 0) return;
+      if (idx !== state.activeFile) { state.activeFile = idx; renderFilesInto(skill); }
+      requestAnimationFrame(() => {
+        const target = a.line ? document.getElementById('cl-' + a.line) : document.querySelector('.files-view-bar');
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          target.classList.add('cl-flash');
+          setTimeout(() => target.classList.remove('cl-flash'), 1600);
+        }
+      });
     }
 
     // sehr leichte Syntax-Hervorhebung für die Code-Ansicht

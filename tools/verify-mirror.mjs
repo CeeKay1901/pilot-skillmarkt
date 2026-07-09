@@ -60,7 +60,7 @@ for (const id of siteIds) {
     const shown = await page.evaluate(idx => {
       selectFile(idx);
       const path = document.querySelector('.files-view-path')?.textContent || '';
-      const code = document.querySelector('.files-code')?.textContent || '';
+      const code = [...document.querySelectorAll('.files-code .ln-code')].map(e => e.textContent).join('\n');
       const gh = document.querySelector('.files-gh')?.getAttribute('href') || '';
       return { path, code, gh };
     }, i);
