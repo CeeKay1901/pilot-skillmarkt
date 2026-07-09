@@ -33,6 +33,18 @@ function listFiles(base, rel = '') {
   return out;
 }
 
+// Vollständige Dateiliste (inkl. Binär-Assets & LICENSE) für den ZIP-Download
+function listAll(base, rel = '') {
+  const out = [];
+  for (const entry of fs.readdirSync(path.join(base, rel), { withFileTypes: true })) {
+    if (entry.name === '.DS_Store' || entry.name === '.git') continue;
+    const r = rel ? rel + '/' + entry.name : entry.name;
+    if (entry.isDirectory()) out.push(...listAll(base, r));
+    else out.push(r);
+  }
+  return out;
+}
+
 // SKILL.md immer zuerst, danach alphabetisch
 function order(files) {
   return files.sort((a, b) => {
@@ -43,14 +55,17 @@ function order(files) {
 }
 
 const manifest = {};
-let fileCount = 0;
+const filesAll = {};
+let fileCount = 0, allCount = 0;
 for (const entry of fs.readdirSync(DIR, { withFileTypes: true })) {
   if (!entry.isDirectory() || IGNORE_TOP.has(entry.name)) continue;
   const files = order(listFiles(path.join(DIR, entry.name)));
-  if (!files.length) continue;
-  manifest[entry.name] = files;
-  fileCount += files.length;
+  if (files.length) { manifest[entry.name] = files; fileCount += files.length; }
+  const all = order(listAll(path.join(DIR, entry.name)));
+  if (all.length) { filesAll[entry.name] = all; allCount += all.length; }
 }
 
 fs.writeFileSync(path.join(DIR, 'manifest.json'), JSON.stringify(manifest, null, 1) + '\n');
-console.log(`manifest.json: ${Object.keys(manifest).length} Skills, ${fileCount} Dateien.`);
+fs.writeFileSync(path.join(DIR, 'files-all.json'), JSON.stringify(filesAll, null, 1) + '\n');
+console.log(`manifest.json: ${Object.keys(manifest).length} Skills, ${fileCount} Text-Dateien (Viewer).`);
+console.log(`files-all.json: ${Object.keys(filesAll).length} Skills, ${allCount} Dateien gesamt (Download).`);
