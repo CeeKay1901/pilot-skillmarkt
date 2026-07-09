@@ -8,9 +8,15 @@ const norm = s => (s ?? '').replace(/\r\n/g, '\n').replace(/\s+$/,''); // traili
 const cb = () => '?cb=' + Date.now() + Math.random();
 
 async function rawText(rel) {
-  const r = await fetch(RAW + '/' + rel + cb(), { cache: 'no-store' });
-  if (!r.ok) throw new Error('raw ' + r.status + ' ' + rel);
-  return await r.text();
+  // Retry gegen gelegentliche leere raw-Antworten (Rate-Limit)
+  for (let attempt = 0; attempt < 4; attempt++) {
+    try {
+      const r = await fetch(RAW + '/' + rel + cb(), { cache: 'no-store' });
+      if (r.ok) { const t = await r.text(); if (t.length) return t; }
+    } catch (e) {}
+    await new Promise(res => setTimeout(res, 400 * (attempt + 1)));
+  }
+  throw new Error('raw leer/Fehler: ' + rel);
 }
 
 const browser = await chromium.launch({ args: ['--no-sandbox','--disable-setuid-sandbox','--disable-dev-shm-usage'] });
