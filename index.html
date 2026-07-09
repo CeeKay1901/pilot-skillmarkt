@@ -74,25 +74,71 @@
     #search::placeholder { color: var(--c-gray-l); }
     #search:focus { outline: none; border-color: var(--c-yellow); background: rgba(252,252,252,.15); }
 
-    /* ===== HERO ===== */
+    /* ===== HERO (inszeniert) ===== */
     .hero {
       background: var(--c-black);
-      padding: 8rem 0 10rem;
+      padding: 8rem 0 9rem;
+      position: relative; overflow: hidden;
+    }
+    .hero-glow {
+      position: absolute; inset: 0; pointer-events: none;
+      background:
+        radial-gradient(45rem 30rem at 82% 12%, rgba(255,224,94,.16), transparent 60%),
+        radial-gradient(40rem 40rem at 8% 90%, rgba(255,224,94,.06), transparent 60%);
+    }
+    .hero::after {
+      content: ''; position: absolute; inset: 0; pointer-events: none; opacity: .5;
+      background-image: radial-gradient(rgba(255,255,255,.05) 1px, transparent 1px);
+      background-size: 3.2rem 3.2rem;
+      mask-image: linear-gradient(180deg, #000 0%, transparent 55%);
+      -webkit-mask-image: linear-gradient(180deg, #000 0%, transparent 55%);
     }
     .hero-inner {
       max-width: var(--max-w);
       margin: 0 auto;
       padding: 0 var(--pad-d);
+      position: relative; z-index: 1;
     }
-    .hero h1 {
-      font-size: 7.2rem; font-weight: 300; color: var(--c-white);
-      margin: .8rem 0 1.2rem;
-      letter-spacing: -.02em;
-      line-height: 1;
+    .hero-h1 {
+      font-size: 8.4rem; font-weight: 300; color: var(--c-white);
+      margin: 1.2rem 0 1.6rem;
+      letter-spacing: -.035em;
+      line-height: .98;
     }
+    .hero-rotator {
+      display: inline-block; color: var(--c-yellow); font-weight: 500;
+      position: relative;
+    }
+    .hero-rotator.swap { animation: heroRot .5s var(--trans); }
+    @keyframes heroRot { 0% { opacity: 0; transform: translateY(14px); } 100% { opacity: 1; transform: none; } }
     .hero .subline {
-      font-size: 2.4rem; font-weight: 400; color: var(--c-gray-l);
-      margin-bottom: 5rem;
+      font-size: 2.2rem; font-weight: 300; color: var(--c-gray-l);
+      margin-bottom: 4rem; max-width: 56rem; line-height: 1.4;
+    }
+    .hero-stats { display: flex; gap: 4rem; flex-wrap: wrap; margin-bottom: 4rem; }
+    .hero-stat-box { display: flex; flex-direction: column; gap: .2rem; }
+    .hero-stat-num { font-size: 4.4rem; font-weight: 700; color: var(--c-yellow); line-height: 1; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+    .hero-stat-label { font-size: 1.4rem; color: rgba(252,252,252,.55); text-transform: uppercase; letter-spacing: .1em; }
+    .hero-cta { display: flex; gap: 1.4rem; flex-wrap: wrap; }
+    /* Skill-Ticker */
+    .hero-ticker { margin: 6rem 0 5rem; position: relative; z-index: 1; -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent); mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent); }
+    .hero-ticker-track { display: flex; gap: 1rem; width: max-content; animation: ticker 42s linear infinite; }
+    .hero:hover .hero-ticker-track { animation-play-state: paused; }
+    @keyframes ticker { to { transform: translateX(-50%); } }
+    .ticker-chip {
+      display: inline-flex; align-items: center; gap: .8rem; white-space: nowrap;
+      border: 1px solid rgba(255,255,255,.16); border-radius: var(--radius-pill);
+      padding: .7rem 1.6rem; font-size: 1.4rem; color: rgba(252,252,252,.85);
+    }
+    .ticker-chip code { font-family: 'Courier New', monospace; color: var(--c-yellow); font-size: 1.3rem; }
+    .ticker-chip .ticker-dot { width: .6rem; height: .6rem; border-radius: 50%; background: var(--c-yellow); opacity: .6; }
+    .hero-spotlight-label { font-size: 1.4rem; font-weight: 700; text-transform: uppercase; letter-spacing: .14em; color: rgba(252,252,252,.5); margin-bottom: 2rem; }
+    @media (prefers-reduced-motion: reduce) { .hero-ticker-track { animation: none; } .hero-rotator.swap { animation: none; } }
+    @media (max-width: 1023px) {
+      .hero-h1 { font-size: 5rem; }
+      .hero-stats { gap: 2.4rem; }
+      .hero-stat-num { font-size: 3.4rem; }
+      .hero-ticker { margin: 4rem 0 3.5rem; }
     }
     .featured-grid {
       display: grid;
@@ -1098,10 +1144,61 @@
     .ex-starter-desc { font-size: 1.5rem; color: var(--c-gray-m); line-height: 1.5; margin-bottom: 1.6rem; }
     .ex-starter-cmd { font-family: 'Courier New', monospace; font-size: 1.4rem; color: var(--c-black); background: var(--c-bg); border: 1px solid var(--c-gray-l); border-radius: var(--radius-pill); padding: .4rem 1.2rem; display: inline-block; }
 
+    /* Anatomie eines Skills */
+    .ex-anatomy { display: grid; grid-template-columns: 26rem 1fr; gap: 2rem; margin-top: 4rem; align-items: start; }
+    @media (max-width: 900px) { .ex-anatomy { grid-template-columns: 1fr; } }
+    .ex-anatomy-tree { background: var(--c-bg); border: 1px solid var(--c-gray-l); border-radius: 1.4rem; padding: 2rem; }
+    .ex-atree-folder { font-size: 1.6rem; font-weight: 700; margin-bottom: 1rem; }
+    .ex-atree-file { font-family: 'Courier New', monospace; font-size: 1.5rem; padding: .8rem 1.2rem; border-radius: .6rem; margin-bottom: .4rem; color: var(--c-gray-m); }
+    .ex-atree-file.active { background: var(--c-black); color: var(--c-white); }
+    .ex-atree-file.active::first-letter { color: var(--c-yellow); }
+    .ex-atree-file.sub { margin-left: 1.6rem; font-size: 1.35rem; opacity: .8; }
+    .ex-atree-hint { font-size: 1.35rem; color: var(--c-gray-m); line-height: 1.5; margin-top: 1.6rem; padding-top: 1.6rem; border-top: 1px solid var(--c-gray-l); }
+    .ex-atree-hint code { background: var(--c-white); border: 1px solid var(--c-gray-l); border-radius: .4rem; padding: 0 .5rem; font-size: 1.2rem; }
+    .ex-anatomy-file { background: #14140f; border-radius: 1.4rem; overflow: hidden; border: 1px solid rgba(255,255,255,.1); }
+    .ex-afile-part { padding: 2rem 2.4rem; }
+    .ex-afile-fm { border-bottom: 1px solid rgba(255,255,255,.08); background: rgba(255,224,94,.05); }
+    .ex-afile-tag { font-size: 1.2rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--c-yellow); margin-bottom: 1rem; }
+    .ex-afile-code { margin: 0; font-family: 'Courier New', monospace; font-size: 1.45rem; line-height: 1.7; color: #cfcfc7; white-space: pre-wrap; }
+    .ex-afile-code .tk-fence { color: #6a6a60; } .ex-afile-code .tk-k { color: #6aa9e8; } .ex-afile-code .tk-h { color: var(--c-yellow); font-weight: 700; } .ex-afile-code .tk-b { color: var(--c-yellow); }
+    .ex-anatomy-cta { font-size: 1.6rem; color: var(--c-gray-m); margin-top: 2.4rem; text-align: center; }
+    .ex-anatomy-cta strong { color: var(--c-black); }
+
     /* Reveal on scroll */
     .reveal { opacity: 0; transform: translateY(28px); transition: opacity .7s var(--ex-ease), transform .7s var(--ex-ease); }
     .reveal.in { opacity: 1; transform: none; }
     @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; transition: none; } .ex-arrow-down { animation: none; } }
+
+    /* ===== TRANSPARENZ: AUFBAU & DATEIEN ===== */
+    .files-intro { margin-bottom: 2rem; }
+    .files-intro-text { font-size: 1.5rem; line-height: 1.6; color: var(--c-gray-m); }
+    .files-intro-text code { background: var(--c-bg); border: 1px solid var(--c-gray-l); border-radius: .4rem; padding: .1rem .6rem; font-family: 'Courier New', monospace; font-size: 1.3rem; color: var(--c-black); }
+    .files-browser { display: grid; grid-template-columns: 20rem 1fr; gap: 1.2rem; border: 1px solid var(--c-gray-l); border-radius: 1rem; overflow: hidden; }
+    .files-tree { background: var(--c-bg); border-right: 1px solid var(--c-gray-l); padding: 1.2rem; display: flex; flex-direction: column; gap: .3rem; }
+    .files-folder { font-size: 1.3rem; font-weight: 700; color: var(--c-gray-m); padding: .6rem .4rem; }
+    .file-node { display: flex; align-items: center; gap: .8rem; text-align: left; background: none; border: none; font-family: inherit; cursor: pointer; font-size: 1.4rem; color: var(--c-black); padding: .7rem 1rem; border-radius: .6rem; transition: var(--trans); width: 100%; }
+    .file-node:hover { background: rgba(0,0,0,.05); }
+    .file-node.active { background: var(--c-black); color: var(--c-white); }
+    .file-ic { font-family: 'Courier New', monospace; font-size: 1.3rem; opacity: .7; flex-shrink: 0; }
+    .file-node.active .file-ic { opacity: 1; color: var(--c-yellow); }
+    .files-view { background: #14140f; display: flex; flex-direction: column; min-width: 0; }
+    .files-view-bar { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.4rem; border-bottom: 1px solid rgba(255,255,255,.1); }
+    .files-view-path { font-family: 'Courier New', monospace; font-size: 1.25rem; color: rgba(252,252,252,.5); }
+    .files-copy { background: rgba(255,255,255,.1); border: none; color: rgba(252,252,252,.8); font-family: inherit; font-size: 1.2rem; padding: .4rem 1rem; border-radius: .5rem; cursor: pointer; transition: var(--trans); }
+    .files-copy:hover { background: var(--c-yellow); color: var(--c-black); }
+    .files-code { margin: 0; padding: 1.8rem; font-family: 'Courier New', Courier, monospace; font-size: 1.35rem; line-height: 1.75; color: #cfcfc7; overflow-x: auto; white-space: pre; tab-size: 2; }
+    .files-code .tk-fence { color: #6a6a60; }
+    .files-code .tk-h { color: var(--c-yellow); font-weight: 700; }
+    .files-code .tk-k { color: #6aa9e8; }
+    .files-code .tk-b { color: var(--c-yellow); }
+    .files-code .tk-code { color: #7ac59a; }
+    @media (max-width: 640px) {
+      .files-browser { grid-template-columns: 1fr; }
+      .files-tree { flex-direction: row; overflow-x: auto; border-right: none; border-bottom: 1px solid var(--c-gray-l); }
+      .files-folder { display: none; }
+      .file-node { white-space: nowrap; }
+      .files-code { font-size: 1.2rem; }
+    }
 
     /* Explainer responsive */
     @media (max-width: 1023px) {
@@ -1145,19 +1242,25 @@
 
   <!-- HERO -->
   <section class="hero">
-    <div class="hero-inner">
-      <p class="overline" style="color:#ffe05e">Entdecken &amp; teilen</p>
-      <h1>Unsere Skills.</h1>
-      <p class="subline">Von Piloten gebaut. Für Piloten empfohlen.</p>
-      <div class="hero-stats">
-        <span class="hero-stat"><strong id="stat-skills">20</strong> Skills</span>
-        <span class="hero-stat-sep">·</span>
-        <span class="hero-stat"><strong id="stat-pilots">6</strong> Piloten</span>
-        <span class="hero-stat-sep">·</span>
-        <span class="hero-stat"><strong>3</strong> Kategorien</span>
-        <span class="hero-stat-sep">·</span>
-        <span class="hero-stat"><strong id="stat-endorsed">23</strong> Empfehlungen</span>
+    <div class="hero-glow" aria-hidden="true"></div>
+    <div class="hero-inner hero-top">
+      <p class="overline" style="color:#ffe05e">pilot · Citizen Coding</p>
+      <h1 class="hero-h1">Skills, die<br><span class="hero-rotator" id="hero-rotator" aria-live="polite">Tools bauen.</span></h1>
+      <p class="subline">Von Piloten gebaut, für Piloten empfohlen — euer Werkzeugkasten für Claude&nbsp;Code.</p>
+      <div class="hero-stats" id="hero-stats">
+        <div class="hero-stat-box"><span class="hero-stat-num" data-count="34" id="stat-skills">0</span><span class="hero-stat-label">Skills</span></div>
+        <div class="hero-stat-box"><span class="hero-stat-num" data-count="6" id="stat-pilots">0</span><span class="hero-stat-label">Piloten</span></div>
+        <div class="hero-stat-box"><span class="hero-stat-num" data-count="7">0</span><span class="hero-stat-label">Kategorien</span></div>
+        <div class="hero-stat-box"><span class="hero-stat-num" data-count="23" id="stat-endorsed">0</span><span class="hero-stat-label">Empfehlungen</span></div>
       </div>
+      <div class="hero-cta">
+        <button class="c-cta -yellow-bg" onclick="document.getElementById('main-content').scrollIntoView({behavior:'smooth'})">Katalog durchstöbern</button>
+        <button class="c-cta -yellow-border" onclick="showView('explainer')">Was sind Skills?</button>
+      </div>
+    </div>
+    <div class="hero-ticker" aria-hidden="true"><div class="hero-ticker-track" id="hero-ticker"></div></div>
+    <div class="hero-inner">
+      <p class="hero-spotlight-label">Im Spotlight</p>
       <div class="featured-grid" id="featured-grid"></div>
     </div>
   </section>
@@ -1390,6 +1493,45 @@
       </div>
     </section>
 
+    <!-- Anatomie eines Skills -->
+    <section class="ex-section reveal">
+      <div class="ex-wrap">
+        <p class="ex-eyebrow">Volle Transparenz</p>
+        <h2 class="ex-h2">Was steckt <span class="ex-hl">drin</span>?</h2>
+        <p class="ex-body">Kein Blackbox-Zauber. Ein Skill ist einfach ein <strong>Ordner mit einer Textdatei</strong> — der <code>SKILL.md</code>. Darin steht ein kurzer Steckbrief und die Anleitung, die Claude Code befolgt. Du kannst bei jedem Skill reinschauen, ihn verstehen und als Vorlage für eigene nehmen.</p>
+        <div class="ex-anatomy">
+          <div class="ex-anatomy-tree">
+            <div class="ex-atree-folder">📁 webaudit/</div>
+            <div class="ex-atree-file active">≡ SKILL.md</div>
+            <div class="ex-atree-file sub">≡ references/checkliste.md</div>
+            <div class="ex-atree-hint">Ordner = Skill.<br>Die <code>SKILL.md</code> ist das Herz.</div>
+          </div>
+          <div class="ex-anatomy-file">
+            <div class="ex-afile-part ex-afile-fm">
+              <div class="ex-afile-tag">Steckbrief (Frontmatter)</div>
+              <pre class="ex-afile-code"><span class="tk-fence">---</span>
+<span class="tk-k">name</span>: webaudit
+<span class="tk-k">description</span>: Website-Check — UX, Speed, SEO, A11y
+<span class="tk-k">trigger</span>: /webaudit
+<span class="tk-fence">---</span></pre>
+            </div>
+            <div class="ex-afile-part">
+              <div class="ex-afile-tag">Anleitung (was Claude tut)</div>
+              <pre class="ex-afile-code"><span class="tk-h"># webaudit</span>
+
+Prüfe die Seite in zwei Stufen:
+<span class="tk-b">1.</span> Code scannen (SEO-Tags, Alt-Texte, Links)
+<span class="tk-b">2.</span> Im echten Browser öffnen, Screenshots machen
+
+Gib einen priorisierten Report aus:
+<span class="tk-b">-</span> 🔴 Kritisch  <span class="tk-b">-</span> 🟡 Empfehlung</pre>
+            </div>
+          </div>
+        </div>
+        <p class="ex-anatomy-cta">In jedem Skill findest du den Tab <strong>„Aufbau &amp; Dateien"</strong> — schau rein.</p>
+      </div>
+    </section>
+
     <!-- Animated Terminal Demo -->
     <section class="ex-section ex-dark reveal" id="ex-demo">
       <div class="ex-wrap">
@@ -1465,6 +1607,7 @@
       <div class="modal-meta" id="modal-meta"></div>
       <div class="modal-tabs">
         <button class="tab-btn active" data-tab="overview" onclick="switchTab('overview')">Übersicht</button>
+        <button class="tab-btn" data-tab="files" onclick="switchTab('files')">Aufbau &amp; Dateien</button>
         <button class="tab-btn" data-tab="ratings" onclick="switchTab('ratings')">Bewertungen &amp; Kommentare</button>
         <button class="tab-btn" data-tab="pilots" onclick="switchTab('pilots')">Piloten</button>
         <button class="tab-btn" data-tab="changelog" onclick="switchTab('changelog')">Changelog</button>
@@ -2082,6 +2225,455 @@ Nächster Lauf: Mo, 13.07. · /schedule zum Verwalten`,
         comments: [{author:'Jan Richter',role:'Tech Lead & Citizen-Coding-Mentor',initials:'JR',date:'2026-04-01',text:'Guter Einstieg in kontinuierliche Automatisierung.',rating:4}],
         featured: false, badge: null
       }
+      ,
+      // ===== CLAUDE CODE (offizielle Anthropic-Skills, filterbar) =====
+      {
+        id: 'deep-research', name: 'deep-research', tagline: 'Tiefe Multi-Quellen-Recherche mit geprüftem, zitiertem Report',
+        description: 'Fächert eine Frage in viele Web-Recherchen auf, liest Quellen, prüft Behauptungen gegen und liefert einen strukturierten, zitierten Report — statt 30 offener Tabs.',
+        longDescription: 'Der Research-Kraftprotz von Claude Code. Aus einer Fragestellung werden parallele Recherchen, die Ergebnisse werden gelesen, gegengeprüft und zu einem belastbaren Report mit Quellenangaben verdichtet. Ideal für Pitch-Vorbereitung, Markt- und Wettbewerbsanalysen — jede Aussage ist nachvollziehbar belegt.',
+        exampleOutput: `Deep Research: "Markt für Refill-Kosmetik in DACH"
+
+▸ 14 Quellen recherchiert · 9 nach Prüfung übernommen
+▸ 3 Behauptungen adversarial gegengeprüft
+▸ Report: Marktgröße, Treiber, Wettbewerb, Chancen
+▸ Vollständige Quellenliste mit Links
+
+→ research-refill-kosmetik.md erstellt (6 Seiten)`,
+        category: 'anthropic', subcategory: 'strategy', trigger: '/deep-research', author: 'Anthropic · Claude Code',
+        version: '1.0.0', addedAt: '2026-03-01', updatedAt: '2026-06-20',
+        tags: ['strategy','research','insights','web','markt'],
+        useCases: ['Pitch-Recherche','Marktanalyse','Wettbewerbsanalyse','Themen-Deepdive'],
+        difficulty: 'medium', timeToRun: '5–20 Min', requirements: ['Claude Code','Internetzugang'],
+        rating: {average: 4.7, count: 20},
+        endorsedBy: ['Christopher Kipp','Lukas Weber'],
+        endorsements: [
+          {name:'Christopher Kipp',role:'Innovation Lead',initials:'CK',text:'Für Pitch-Recherchen unschlagbar. Die Quellenprüfung macht die Ergebnisse belastbar.'},
+          {name:'Lukas Weber',role:'SEO Strategist',initials:'LW',text:'Spart die halbe Vorrecherche — und man kann jede Zahl belegen.'}
+        ],
+        comments: [{author:'Anna Schreiber',role:'Content Strategin',initials:'AS',date:'2026-06-01',text:'Nutze ich vor jedem größeren Konzept. Sehr gründlich.',rating:5}],
+        featured: true, badge: 'empfohlen',
+        files: [
+          {path:'deep-research/SKILL.md', lang:'markdown', content:`---
+name: deep-research
+description: Fan-out web searches, fetch sources, adversarially verify claims, synthesize a cited report.
+trigger: /deep-research
+---
+
+# Deep Research
+
+Erzeuge einen tief recherchierten, faktengeprüften Report zu einer Frage.
+
+## Ablauf
+1. **Scope** — Frage schärfen; bei Bedarf 2–3 Rückfragen stellen.
+2. **Fan-out** — mehrere parallele Web-Suchen aus verschiedenen Blickwinkeln.
+3. **Fetch & Read** — die besten Quellen abrufen und lesen.
+4. **Verify** — zentrale Behauptungen adversarial gegenprüfen (mehrere Quellen).
+5. **Synthesize** — Report mit Zitaten schreiben.
+
+## Ausgabe
+Markdown-Report mit Executive Summary, Abschnitten, und einer Quellenliste
+(jede Kernaussage referenziert).
+
+## Regeln
+- Keine unbelegten Zahlen.
+- Widersprüche zwischen Quellen kennzeichnen.
+- Unsicherheiten offen benennen.`},
+          {path:'deep-research/references/report-template.md', lang:'markdown', content:`# {{Titel}}
+
+**Frage:** {{frage}}
+**Stand:** {{datum}} · **Quellen:** {{n}}
+
+## Executive Summary
+…
+
+## Ergebnisse
+### {{Abschnitt}}
+… [Quelle N]
+
+## Quellen
+1. {{titel}} — {{url}}`}
+        ]
+      },
+      {
+        id: 'dataviz', name: 'dataviz', tagline: 'Aus deinen Zahlen elegante Charts & Dashboards',
+        description: 'Erstellt aus Tabellen oder CSV saubere, barrierefreie Visualisierungen — als teilbares HTML-Dashboard oder Chart-Bild, konsistent in Licht & Dunkel.',
+        longDescription: 'Verwandelt Rohdaten in Visualisierungen, die man wirklich zeigen kann: passende Diagrammtypen, eine geprüfte, barrierefreie Farbpalette und ein aufgeräumtes Layout. Ausgabe als eigenständiges HTML-Dashboard oder als Bild für Slides — ohne Design-Tool.',
+        exampleOutput: `Eingabe: kampagnen_performance.csv (6 Kanäle × 12 Wochen)
+
+✓ Chart-Typ gewählt: gruppiertes Balken + Trendlinie
+✓ Barrierefreie Palette angewendet (Kontrast geprüft)
+✓ Licht-/Dunkel-Variante erzeugt
+
+→ dashboard.html erstellt · im Browser geöffnet`,
+        category: 'anthropic', subcategory: 'data', trigger: '/dataviz', author: 'Anthropic · Claude Code',
+        version: '1.0.0', addedAt: '2026-02-15', updatedAt: '2026-06-10',
+        tags: ['data','analytics','charts','dashboard','visualisierung'],
+        useCases: ['Performance-Dashboard','Report-Grafiken','Slides-Charts','Datenexploration'],
+        difficulty: 'easy', timeToRun: '5–10 Min', requirements: ['Claude Code'],
+        rating: {average: 4.6, count: 18},
+        endorsedBy: ['Jan Richter','Sophie Klein'],
+        endorsements: [
+          {name:'Jan Richter',role:'Tech Lead & Citizen-Coding-Mentor',initials:'JR',text:'Die Charts sehen aus wie vom Designer. Und sie sind barrierefrei — top.'},
+          {name:'Sophie Klein',role:'Projektmanagerin',initials:'SK',text:'Endlich Grafiken für Reports, die konsistent aussehen.'}
+        ],
+        comments: [{author:'Lukas Weber',role:'SEO Strategist',initials:'LW',date:'2026-05-28',text:'Perfekt für schnelle Performance-Dashboards.',rating:5}],
+        featured: false, badge: null,
+        files: [
+          {path:'dataviz/SKILL.md', lang:'markdown', content:`---
+name: dataviz
+description: Erzeuge elegante, barrierefreie Datenvisualisierungen (Charts, Dashboards) in Licht & Dunkel.
+trigger: /dataviz
+---
+
+# dataviz
+
+Lies BEVOR du die erste Chart-Zeile schreibst \`references/palette.md\`.
+
+## Ablauf
+1. Daten verstehen (Spalten, Typen, Größenordnung).
+2. Passende Darstellungsform wählen (Heuristik unten).
+3. Farben nach Palette + Kontrast-Validator setzen.
+4. Als eigenständiges HTML (inline CSS/JS) oder Bild ausgeben.
+
+## Form-Heuristik
+- Vergleich → Balken · Zeitverlauf → Linie · Anteil → gestapelt/Donut
+- Verteilung → Histogramm · Zusammenhang → Scatter`},
+          {path:'dataviz/references/palette.md', lang:'markdown', content:`# Palette (validiert)
+
+Kategorisch (max. 6):
+--c1 #ffe05e  --c2 #262626  --c3 #7ac59a
+--c4 #e8888e  --c5 #6aa9e8  --c6 #bab8ab
+
+Regeln:
+- Kontrast Text/Hintergrund ≥ 4.5:1
+- In Dunkel-Modus Sättigung leicht senken
+- Nie Bedeutung allein über Farbe transportieren`}
+        ]
+      },
+      {
+        id: 'review', name: 'review', tagline: 'Strukturierter Code-Review für deine selbstgebauten Tools',
+        description: 'Prüft deinen Code oder deine Website auf Bugs, unsaubere Stellen und Verbesserungen — kategorisiert nach Schwere, verständlich erklärt.',
+        longDescription: 'Der offizielle Review-Skill von Claude Code — beim Citizen Coding dein Sicherheitsnetz. Liest deine Änderungen, findet Fehler und Schwachstellen und erklärt sie mit klarer Priorität (Blocker / Warnung / Idee). So gibst du nur frei, was wirklich funktioniert.',
+        exampleOutput: `Review — mein-tool/ (4 Dateien)
+
+🔴 Blocker (1)
+- index.html:52 — Division durch 0 möglich bei leerem Feld
+🟡 Warnung (2)
+- Formular ohne Pflichtfeld-Prüfung
+💡 Idee (3)
+- Ergebnis als PDF exportierbar machen`,
+        category: 'anthropic', subcategory: 'bauen', trigger: '/review', author: 'Anthropic · Claude Code',
+        version: '1.1.0', addedAt: '2025-09-01', updatedAt: '2026-02-20',
+        tags: ['bauen','qa','code-review','citizen-coding'],
+        useCases: ['Eigenes Tool prüfen','Vor dem Teilen','Qualität sichern'],
+        difficulty: 'easy', timeToRun: '3–10 Min', requirements: ['Claude Code'],
+        rating: {average: 4.7, count: 31},
+        endorsedBy: ['Jan Richter'],
+        endorsements: [{name:'Jan Richter',role:'Tech Lead & Citizen-Coding-Mentor',initials:'JR',text:'Ergänzt den menschlichen Review hervorragend. Für die Testgruppe Pflicht.'}],
+        comments: [{author:'Mia Hoffmann',role:'Senior UX Designerin',initials:'MH',date:'2026-03-08',text:'Als Nicht-Entwicklerin überraschend verständliche Outputs.',rating:4}],
+        featured: false, badge: null,
+        files: [
+          {path:'review/SKILL.md', lang:'markdown', content:`---
+name: review
+description: Review the current diff for correctness bugs and cleanups.
+trigger: /review
+---
+
+# review
+
+Prüfe die aktuellen Änderungen strukturiert.
+
+## Kategorien
+- 🔴 **Blocker** — führt zu falschem Verhalten oder Absturz
+- 🟡 **Warnung** — riskant, sollte adressiert werden
+- 💡 **Idee** — optionale Verbesserung
+
+## Regeln
+- Konkrete Datei:Zeile nennen.
+- Für Nicht-Entwickler:innen verständlich erklären.
+- Nur echte Findings — kein Rauschen.`}
+        ]
+      },
+      {
+        id: 'security-review', name: 'security-review', tagline: 'Sicherheits-Check nach OWASP — bevor etwas online geht',
+        description: 'Prüft Code auf typische Sicherheitslücken (OWASP Top 10): unsichere Eingaben, offengelegte Daten, Fehlkonfiguration. Mit Schweregrad und Fix-Hinweis.',
+        longDescription: 'Wenn ein selbstgebautes Tool oder eine Seite online geht, prüft dieser Skill vorher auf Sicherheitsrisiken nach OWASP Top 10 — klar bewertet (Kritisch/Hoch/Mittel) und mit konkreten Empfehlungen. Deine erste Verteidigungslinie.',
+        exampleOutput: `Security Review — OWASP Top 10
+
+Schweregrad: HOCH — 1 kritischer Fund
+🔴 A03 Injection: Nutzereingabe ungefiltert in Anfrage
+🟡 A05 Misconfiguration: Debug-Modus aktiv
+✓ Keine offengelegten Zugangsdaten gefunden`,
+        category: 'anthropic', subcategory: 'bauen', trigger: '/security-review', author: 'Anthropic · Claude Code',
+        version: '1.0.2', addedAt: '2025-10-01', updatedAt: '2026-03-10',
+        tags: ['bauen','security','qa','owasp'],
+        useCases: ['Vor dem Online-Stellen','Formular-Sicherheit','Daten-Schutz'],
+        difficulty: 'medium', timeToRun: '5–15 Min', requirements: ['Claude Code'],
+        rating: {average: 4.8, count: 19},
+        endorsedBy: ['Jan Richter'],
+        endorsements: [{name:'Jan Richter',role:'Tech Lead & Citizen-Coding-Mentor',initials:'JR',text:'Bevor etwas das interne Netz verlässt: einmal drüberlaufen lassen. Immer.'}],
+        comments: [],
+        featured: false, badge: 'empfohlen',
+        files: [
+          {path:'security-review/SKILL.md', lang:'markdown', content:`---
+name: security-review
+description: Security review der Änderungen nach OWASP Top 10.
+trigger: /security-review
+---
+
+# security-review
+
+Prüfe auf Sicherheitslücken und bewerte nach Schweregrad.
+
+## Fokus (OWASP Top 10)
+- A01 Access Control · A02 Krypto · A03 Injection
+- A05 Fehlkonfiguration · A07 Auth · A08 Integrität
+
+## Ausgabe
+Pro Fund: Kategorie, Schweregrad, Datei:Zeile, Fix-Empfehlung.`}
+        ]
+      },
+      {
+        id: 'verify', name: 'verify', tagline: 'Prüfen, ob deine Änderung wirklich funktioniert — end to end',
+        description: 'Fährt den betroffenen Ablauf tatsächlich durch und beobachtet das Verhalten — statt nur zu behaupten, dass es klappt. Dein Realitäts-Check vor dem Teilen.',
+        longDescription: 'Gerade als Einsteiger:in willst du sicher sein, dass dein Tool wirklich tut, was es soll. verify treibt den echten Ablauf durch — klickt, rechnet, lädt — und meldet, was tatsächlich passiert. Kein „müsste gehen", sondern „getestet, funktioniert".',
+        exampleOutput: `verify — tkp-rechner.html
+
+▸ Öffne Tool im Browser
+▸ Eingabe: Reichweite 500.000 · TKP 12 €
+✓ Ergebnis 6.000 € — korrekt
+▸ Eingabe: leeres Feld
+✗ zeigt "NaN" statt Hinweis → 1 Problem gefunden`,
+        category: 'anthropic', subcategory: 'bauen', trigger: '/verify', author: 'Anthropic · Claude Code',
+        version: '1.0.0', addedAt: '2026-01-10', updatedAt: '2026-05-05',
+        tags: ['bauen','qa','testen','citizen-coding'],
+        useCases: ['Tool testen','Vor dem Teilen prüfen','Realitäts-Check'],
+        difficulty: 'easy', timeToRun: '3–8 Min', requirements: ['Claude Code'],
+        rating: {average: 4.5, count: 12},
+        endorsedBy: ['Jan Richter'],
+        endorsements: [{name:'Jan Richter',role:'Tech Lead & Citizen-Coding-Mentor',initials:'JR',text:'Der Unterschied zwischen „sollte gehen" und „getestet". Wichtig für Vertrauen.'}],
+        comments: [],
+        featured: false, badge: null,
+        files: [
+          {path:'verify/SKILL.md', lang:'markdown', content:`---
+name: verify
+description: Verifiziere, dass eine Änderung wirklich funktioniert — durch echtes Ausführen.
+trigger: /verify
+---
+
+# verify
+
+Treibe den betroffenen Ablauf end-to-end durch und beobachte das Verhalten.
+
+## Prinzip
+- Nicht nur Tests/Typecheck — den echten Flow ausführen.
+- Konkrete Eingaben verwenden, Ergebnis prüfen.
+- Auch Grenzfälle (leere Eingabe, Extremwerte) testen.
+
+## Ausgabe
+Was getestet wurde, was passiert ist, welche Probleme gefunden wurden.`}
+        ]
+      },
+      {
+        id: 'artifact-design', name: 'artifact-design', tagline: 'Aus deiner Idee ein schönes, teilbares Web-Artefakt',
+        description: 'Gestaltet aus Inhalt ein poliertes, eigenständiges HTML-Artefakt (Onepager, Rechner, kleines Dashboard) — responsiv, hell/dunkel, sofort teilbar.',
+        longDescription: 'Der Design-Skill hinter guten Web-Artefakten. Er sorgt dafür, dass dein selbstgebautes Ergebnis nicht nur funktioniert, sondern auch professionell aussieht: durchdachtes Layout, Typografie, Hell-/Dunkelmodus, responsiv. Perfekt, wenn du etwas zeigen oder teilen willst.',
+        exampleOutput: `artifact-design — "ROI-Rechner"
+
+✓ Layout & Typo-Hierarchie gesetzt
+✓ Hell-/Dunkelmodus + responsiv
+✓ pilot-Akzente dezent eingesetzt
+✓ Alles inline (eine teilbare Datei)
+
+→ roi-rechner.html — sieht aus wie gemacht.`,
+        category: 'anthropic', subcategory: 'bauen', trigger: '/artifact-design', author: 'Anthropic · Claude Code',
+        version: '1.0.0', addedAt: '2026-02-01', updatedAt: '2026-06-01',
+        tags: ['bauen','design','web','artefakt','citizen-coding'],
+        useCases: ['Onepager gestalten','Tool aufhübschen','Teilbares Ergebnis','Prototyp-Politur'],
+        difficulty: 'easy', timeToRun: '10–20 Min', requirements: ['Claude Code'],
+        rating: {average: 4.4, count: 13},
+        endorsedBy: ['Mia Hoffmann'],
+        endorsements: [{name:'Mia Hoffmann',role:'Senior UX Designerin',initials:'MH',text:'Hebt selbstgebaute Tools optisch auf ein Level, das man zeigen kann.'}],
+        comments: [],
+        featured: false, badge: null,
+        files: [
+          {path:'artifact-design/SKILL.md', lang:'markdown', content:`---
+name: artifact-design
+description: Gestalte polierte, eigenständige, responsive Web-Artefakte in Hell & Dunkel.
+trigger: /artifact-design
+---
+
+# artifact-design
+
+Gib selbstgebauten HTML-Ergebnissen ein professionelles Aussehen.
+
+## Prinzipien
+- Klare Typo-Hierarchie, großzügiger Weißraum.
+- Hell- UND Dunkelmodus (prefers-color-scheme).
+- Responsiv; nichts läuft horizontal über.
+- Alles inline → eine teilbare Datei.
+
+## Investitionsgrad
+Erst den Aufwand zum Anlass kalibrieren, dann gestalten.`}
+        ]
+      },
+      {
+        id: 'simplify', name: 'simplify', tagline: 'Code aufräumen & vereinfachen — ohne die Funktion zu ändern',
+        description: 'Findet unnötige Komplexität und Wiederholungen in deinem Code und schlägt einfachere, klarere Varianten vor. Reine Qualität, keine neuen Funktionen.',
+        longDescription: 'Wenn dein selbstgebautes Tool wächst, wird es schnell unübersichtlich. simplify räumt auf: findet Duplikate, überflüssige Umwege und macht Vorschläge, die den Code klarer und wartbarer machen — ohne das Verhalten zu ändern.',
+        category: 'anthropic', subcategory: 'bauen', trigger: '/simplify', author: 'Anthropic · Claude Code',
+        version: '1.0.0', addedAt: '2025-10-15', updatedAt: '2025-12-01',
+        tags: ['bauen','refactoring','qa','clean-code'],
+        useCases: ['Code aufräumen','Nach dem Bauen','Wartbarkeit'],
+        difficulty: 'easy', timeToRun: '2–5 Min', requirements: ['Claude Code'],
+        rating: {average: 4.6, count: 11},
+        endorsedBy: [],
+        endorsements: [],
+        comments: [{author:'Jan Richter',role:'Tech Lead & Citizen-Coding-Mentor',initials:'JR',date:'2026-03-05',text:'Kleiner Scope, genau das was er verspricht. Top.',rating:5}],
+        featured: false, badge: null,
+        files: [
+          {path:'simplify/SKILL.md', lang:'markdown', content:`---
+name: simplify
+description: Vereinfache kürzlich geänderten Code (Reuse, Klarheit, Effizienz) ohne Verhaltensänderung.
+trigger: /simplify
+---
+
+# simplify
+
+Nur Qualität — keine Bugfixes, keine neuen Features.
+
+## Sucht nach
+- Duplikaten und überflüssigen Abstraktionen
+- unnötiger Komplexität / totem Code
+- klareren Benennungen
+
+## Regel
+Verhalten bleibt identisch.`}
+        ]
+      },
+      {
+        id: 'init', name: 'init', tagline: 'Projekt für Claude Code einrichten (CLAUDE.md anlegen)',
+        description: 'Legt eine CLAUDE.md an, die dein Projekt beschreibt — damit Claude Code Kontext, Konventionen und Befehle kennt. Der saubere Start jedes Projekts.',
+        longDescription: 'Bevor du richtig loslegst: init analysiert deinen Ordner und schreibt eine CLAUDE.md — eine kurze Projekt-Beschreibung, die Claude Code bei jeder weiteren Aufgabe nutzt. Dadurch werden alle folgenden Ergebnisse präziser und passender.',
+        category: 'anthropic', subcategory: 'einstieg', trigger: '/init', author: 'Anthropic · Claude Code',
+        version: '1.0.0', addedAt: '2025-09-01', updatedAt: '2026-01-15',
+        tags: ['einstieg','setup','grundlagen','onboarding'],
+        useCases: ['Neues Projekt starten','Ordner einrichten','Besseren Kontext geben'],
+        difficulty: 'easy', timeToRun: '2–5 Min', requirements: ['Claude Code'],
+        rating: {average: 4.5, count: 23},
+        endorsedBy: ['Christopher Kipp','Jan Richter'],
+        endorsements: [
+          {name:'Christopher Kipp',role:'Innovation Lead',initials:'CK',text:'Immer als erstes ausführen. Macht Claude sofort viel nützlicher fürs konkrete Projekt.'},
+          {name:'Jan Richter',role:'Tech Lead & Citizen-Coding-Mentor',initials:'JR',text:'Gehört in jedes neue Projekt der Testgruppe.'}
+        ],
+        comments: [{author:'Sophie Klein',role:'Projektmanagerin',initials:'SK',date:'2026-02-10',text:'Überraschend gut auch für nicht-technische Ordner.',rating:5}],
+        featured: false, badge: null,
+        files: [
+          {path:'init/SKILL.md', lang:'markdown', content:`---
+name: init
+description: Initialisiere eine CLAUDE.md mit Projekt-Kontext.
+trigger: /init
+---
+
+# init
+
+Analysiere den Ordner und erstelle eine CLAUDE.md.
+
+## Inhalt der CLAUDE.md
+- Was ist dieses Projekt?
+- Wichtige Ordner/Dateien
+- Befehle (bauen, testen, starten)
+- Konventionen
+
+## Ergebnis
+Eine kurze, präzise CLAUDE.md — Basis für alle weiteren Aufgaben.`}
+        ]
+      },
+
+      // ===== COOLE pilot-SKILLS =====
+      {
+        id: 'moodboard', name: 'Moodboard-Generator', tagline: 'Visuelle Richtung & Moodboard-Struktur aus dem Briefing',
+        description: 'Aus Briefing oder Kampagnen-Idee entsteht eine visuelle Richtung: Stil-Achsen, Farbwelten, Bildsprache, Referenz-Stichworte — als strukturiertes Moodboard-Gerüst.',
+        longDescription: 'Der schnelle Start in die visuelle Konzeption: Aus deinem Briefing leitet der Skill eine kohärente visuelle Richtung ab — Stimmung, Farbwelten, Bildsprache, Typo-Gefühl und konkrete Referenz-Stichworte zum Suchen. Kein fertiges Design, aber ein starkes Gerüst, das Kreation und Kunde ausrichtet.',
+        exampleOutput: `Moodboard — "Refill-Kosmetik, Gen Z"
+
+Stimmung: frisch, ehrlich, unperfekt-nahbar
+Farbwelt: warmes Beige · Salbeigrün · Terrakotta
+Bildsprache: echte Haut, Tageslicht, keine Studio-Optik
+Typo: humanistisch, leicht, viel Luft
+Referenz-Stichworte: "clean beauty editorial", "refill ritual"`,
+        category: 'pilot-inhouse', subcategory: 'content', trigger: '/moodboard', author: 'Creation-Team pilot',
+        version: '1.0.0', addedAt: '2026-06-05', updatedAt: '2026-07-02',
+        tags: ['content','kreativ','design','moodboard','konzept'],
+        useCases: ['Visuelle Konzeption','Kreativ-Kickoff','Kunden-Ausrichtung','Design-Briefing'],
+        difficulty: 'easy', timeToRun: '5–10 Min', requirements: ['Claude Code'],
+        rating: {average: 4.3, count: 9},
+        endorsedBy: ['Mia Hoffmann','Anna Schreiber'],
+        endorsements: [
+          {name:'Mia Hoffmann',role:'Senior UX Designerin',initials:'MH',text:'Gibt der ersten Design-Runde eine klare Richtung. Spart Leerlauf.'},
+          {name:'Anna Schreiber',role:'Content Strategin',initials:'AS',text:'Richtet Kreation und Kunde früh auf dieselbe Vision aus.'}
+        ],
+        comments: [],
+        featured: false, badge: 'neu',
+        files: [
+          {path:'moodboard/SKILL.md', lang:'markdown', content:`---
+name: moodboard
+description: Leite aus einem Briefing eine kohärente visuelle Richtung + Moodboard-Struktur ab.
+trigger: /moodboard
+---
+
+# Moodboard-Generator
+
+## Ablauf
+1. Briefing lesen: Marke, Zielgruppe, Botschaft.
+2. Stimmung in 3–5 Adjektiven verankern.
+3. Farbwelt, Bildsprache, Typo-Gefühl ableiten.
+4. Konkrete Referenz-Stichworte zum Suchen liefern.
+
+## Wichtig
+Kein fertiges Design — ein Gerüst, das ausrichtet.`}
+        ]
+      },
+      {
+        id: 'slides-aus-daten', name: 'Slides aus Daten', tagline: 'Aus Zahlen eine präsentationsreife Story',
+        description: 'Nimmt eine Datentabelle und macht daraus eine Slide-Struktur mit Kernaussagen, passenden Chart-Vorschlägen und Sprechernotizen — bereit für die Präsentation.',
+        longDescription: 'Der Weg von der Excel-Tabelle zur Story: Der Skill analysiert deine Zahlen, findet die Kernaussagen und baut daraus eine schlüssige Slide-Struktur — pro Slide eine Botschaft, ein Chart-Vorschlag und eine kurze Sprechernotiz. Ideal für Performance-Reviews und Ergebnis-Präsentationen.',
+        exampleOutput: `Slides aus "q2_ergebnisse.csv"
+
+Slide 1 · Titel: "Q2 über Plan — +18%"
+Slide 2 · "Paid Social treibt den Erfolg" (Balkenchart)
+Slide 3 · "YouTube-CPM steigt — Handlungsbedarf" (Linie)
+Slide 4 · Empfehlung & nächste Schritte
++ Sprechernotizen je Slide`,
+        category: 'gsd', subcategory: 'data', trigger: '/slides', author: 'Analytics-Team pilot',
+        version: '1.0.0', addedAt: '2026-06-12', updatedAt: '2026-07-03',
+        tags: ['data','analytics','presentations','reporting','storytelling'],
+        useCases: ['Ergebnis-Präsentation','Performance-Review','Management-Update','Kunden-Report'],
+        difficulty: 'medium', timeToRun: '8–15 Min', requirements: ['Claude Code'],
+        rating: {average: 4.2, count: 8},
+        endorsedBy: ['Sophie Klein'],
+        endorsements: [{name:'Sophie Klein',role:'Projektmanagerin',initials:'SK',text:'Aus Zahlen wird eine Story mit rotem Faden — genau das, was in Präsentationen zählt.'}],
+        comments: [],
+        featured: false, badge: 'neu',
+        files: [
+          {path:'slides-aus-daten/SKILL.md', lang:'markdown', content:`---
+name: slides-aus-daten
+description: Verwandle eine Datentabelle in eine präsentationsreife Slide-Struktur mit Story.
+trigger: /slides
+---
+
+# Slides aus Daten
+
+## Ablauf
+1. Daten einlesen, Kernaussagen finden (2–5).
+2. Pro Aussage eine Slide: Botschaft + Chart-Vorschlag.
+3. Roter Faden: Situation → Erkenntnis → Empfehlung.
+4. Kurze Sprechernotiz je Slide.
+
+## Prinzip
+Eine Slide = eine Botschaft.`}
+        ]
+      }
     ];
 
     const PILOTS = [
@@ -2104,6 +2696,7 @@ Nächster Lauf: Mo, 13.07. · /schedule zum Verwalten`,
       search: '',
       activeSkill: null,
       activeTab: 'overview',
+      activeFile: 0,
       pendingRating: {}
     };
 
@@ -2674,6 +3267,7 @@ Nächster Lauf: Mo, 13.07. · /schedule zum Verwalten`,
       if (!skill) return;
       state.activeSkill = skill;
       state.activeTab = 'overview';
+      state.activeFile = 0;
       addToHistory(skill.id);
       renderRecentlyViewed();
 
@@ -2742,9 +3336,115 @@ Nächster Lauf: Mo, 13.07. · /schedule zum Verwalten`,
       if (!skill) return;
       const body = document.getElementById('modal-body');
       if (state.activeTab === 'overview') body.innerHTML = renderModalOverview(skill);
+      else if (state.activeTab === 'files') body.innerHTML = renderModalFiles(skill);
       else if (state.activeTab === 'ratings') body.innerHTML = renderModalRatings(skill);
       else if (state.activeTab === 'pilots') body.innerHTML = renderModalPilots(skill);
       else if (state.activeTab === 'changelog') body.innerHTML = renderModalChangelog(skill);
+    }
+
+    // ===== TRANSPARENZ: AUFBAU & DATEIEN =====
+    // Liefert die Dateien eines Skills. Falls keine hinterlegt: generiert eine realistische SKILL.md.
+    function skillFiles(skill) {
+      if (skill.files && skill.files.length) return skill.files;
+      const fm = [
+        '---',
+        'name: ' + skill.id,
+        'description: ' + (skill.description || '').replace(/\n/g,' '),
+        'trigger: ' + (skill.trigger || '—'),
+        'difficulty: ' + diffLabel(skill.difficulty),
+        'author: ' + skill.author,
+        'version: ' + skill.version,
+        '---'
+      ].join('\n');
+      const uc = (skill.useCases || []).map(u => '- ' + u).join('\n');
+      const req = (skill.requirements || []).map(r => '- ' + r).join('\n');
+      const body = [
+        '# ' + skill.name,
+        '',
+        skill.longDescription || skill.description || '',
+        '',
+        '## Wann einsetzen',
+        uc || '- (siehe Beschreibung)',
+        '',
+        '## Voraussetzungen',
+        req || '- Claude Code',
+        '',
+        '## Ablauf',
+        '1. Skill mit `' + (skill.trigger || 'dem Workflow') + '` starten',
+        '2. Claude arbeitet die hinterlegten Schritte ab',
+        '3. Ergebnis prüfen und freigeben',
+        skill.exampleOutput ? '\n## Beispiel-Output\n```\n' + skill.exampleOutput + '\n```' : ''
+      ].join('\n');
+      return [{ path: skill.id + '/SKILL.md', lang: 'markdown', content: fm + '\n\n' + body }];
+    }
+
+    function fileLang(path) {
+      if (/\.md$/.test(path)) return 'markdown';
+      if (/\.(js|mjs)$/.test(path)) return 'javascript';
+      if (/\.(py)$/.test(path)) return 'python';
+      if (/\.(json)$/.test(path)) return 'json';
+      return 'text';
+    }
+
+    function renderModalFiles(skill) {
+      const files = skillFiles(skill);
+      const active = Math.min(state.activeFile || 0, files.length - 1);
+      const tree = files.map((f, i) => {
+        const name = f.path.split('/').slice(1).join('/') || f.path;
+        return `<button class="file-node ${i === active ? 'active' : ''}" onclick="selectFile(${i})">
+          <span class="file-ic">${/\.md$/.test(f.path) ? '≡' : '{}'}</span>${escHtml(name)}
+        </button>`;
+      }).join('');
+      const cur = files[active];
+      const folder = (skill.files && skill.files.length ? cur.path.split('/')[0] : skill.id) + '/';
+      return `
+        <div class="files-intro">
+          <p class="section-label" style="margin-top:0">Volle Transparenz</p>
+          <p class="files-intro-text">So ist dieser Skill aufgebaut. Ein Skill ist einfach ein Ordner mit einer <code>SKILL.md</code> — der Anleitung, die Claude Code befolgt. Schau rein, versteh ihn, bau eigene.</p>
+        </div>
+        <div class="files-browser">
+          <div class="files-tree">
+            <div class="files-folder">📁 ${escHtml(folder)}</div>
+            ${tree}
+          </div>
+          <div class="files-view">
+            <div class="files-view-bar">
+              <span class="files-view-path">${escHtml(cur.path)}</span>
+              <button class="files-copy" onclick="quickCopy(event, getFileContent(${active}))">Kopieren</button>
+            </div>
+            <pre class="files-code">${highlightCode(cur.content, fileLang(cur.path))}</pre>
+          </div>
+        </div>
+      `;
+    }
+
+    function getFileContent(i) {
+      const files = skillFiles(state.activeSkill);
+      return (files[i] || files[0]).content;
+    }
+
+    function selectFile(i) {
+      state.activeFile = i;
+      renderModalBody();
+    }
+
+    // sehr leichte Syntax-Hervorhebung für die Code-Ansicht
+    function highlightCode(code, lang) {
+      let h = escHtml(code);
+      if (lang === 'markdown') {
+        h = h.split('\n').map(line => {
+          if (/^---$/.test(line)) return `<span class="tk-fence">${line}</span>`;
+          if (/^#{1,6}\s/.test(line)) return `<span class="tk-h">${line}</span>`;
+          if (/^\s*[-*]\s/.test(line)) return line.replace(/^(\s*[-*]\s)/, '<span class="tk-b">$1</span>');
+          if (/^\s*\d+\.\s/.test(line)) return line.replace(/^(\s*\d+\.\s)/, '<span class="tk-b">$1</span>');
+          if (/^[a-zA-Z_]+:\s/.test(line)) return line.replace(/^([a-zA-Z_]+)(:)/, '<span class="tk-k">$1</span>$2');
+          if (/^```/.test(line)) return `<span class="tk-fence">${line}</span>`;
+          return line;
+        }).join('\n');
+        // inline code + bold
+        h = h.replace(/`([^`\n]+)`/g, '<span class="tk-code">`$1`</span>');
+      }
+      return h;
     }
 
     function renderModalOverview(skill) {
@@ -3123,6 +3823,56 @@ Nächster Lauf: Mo, 13.07. · /schedule zum Verwalten`,
       updateURL();
     }
 
+    // ===================== HERO-INSZENIERUNG =====================
+    function initHero() {
+      // echte Werte in die Zähler
+      const totalEndorsements = SKILLS.reduce((sum, s) => sum + (s.endorsedBy?.length || 0), 0);
+      const sk = document.getElementById('stat-skills'); if (sk) sk.dataset.count = SKILLS.length;
+      const pl = document.getElementById('stat-pilots'); if (pl) pl.dataset.count = PILOTS.length;
+      const en = document.getElementById('stat-endorsed'); if (en) en.dataset.count = totalEndorsements;
+
+      const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      document.querySelectorAll('.hero-stat-num').forEach(el => {
+        const target = parseInt(el.dataset.count) || 0;
+        if (reduce) { el.textContent = target; return; }
+        animateCount(el, target, 1100);
+      });
+
+      // Wort-Rotator
+      const words = ['Tools bauen.', 'Websites bauen.', 'Reports schreiben.', 'Kampagnen prüfen.', 'Daten aufräumen.', 'Recherchen liefern.'];
+      const rot = document.getElementById('hero-rotator');
+      if (rot && !reduce) {
+        let wi = 0;
+        setInterval(() => {
+          wi = (wi + 1) % words.length;
+          rot.classList.remove('swap'); void rot.offsetWidth;
+          rot.textContent = words[wi];
+          rot.classList.add('swap');
+        }, 2400);
+      }
+
+      // Skill-Ticker
+      const track = document.getElementById('hero-ticker');
+      if (track) {
+        const pool = SKILLS.slice().sort((a,b)=>a.name.localeCompare(b.name,'de'));
+        const chip = s => `<span class="ticker-chip"><span class="ticker-dot"></span>${escHtml(s.name)}${s.trigger ? ` <code>${escHtml(s.trigger)}</code>` : ''}</span>`;
+        const html = pool.map(chip).join('');
+        track.innerHTML = html + html; // doppelt für nahtlose Schleife
+      }
+    }
+
+    function animateCount(el, target, dur) {
+      const start = performance && performance.now ? performance.now() : Date.now();
+      function frame(now) {
+        const t = Math.min(1, ((now || Date.now()) - start) / dur);
+        const eased = 1 - Math.pow(1 - t, 3);
+        el.textContent = Math.round(eased * target);
+        if (t < 1) requestAnimationFrame(frame);
+        else el.textContent = target;
+      }
+      requestAnimationFrame(frame);
+    }
+
     // ===================== EXPLAINER: WAS SIND SKILLS =====================
     function showView(view) {
       const cat = document.getElementById('view-catalog');
@@ -3286,16 +4036,7 @@ Nächster Lauf: Mo, 13.07. · /schedule zum Verwalten`,
         }
       });
 
-      // Stats berechnen
-      const statSkills = document.getElementById('stat-skills');
-      const statPilots = document.getElementById('stat-pilots');
-      const statEndorsed = document.getElementById('stat-endorsed');
-      if (statSkills) statSkills.textContent = SKILLS.length;
-      if (statPilots) statPilots.textContent = PILOTS.length;
-      if (statEndorsed) {
-        const totalEndorsements = SKILLS.reduce((sum, s) => sum + (s.endorsedBy?.length || 0), 0);
-        statEndorsed.textContent = totalEndorsements;
-      }
+      initHero();
 
       // Swipe Down to Close Modal (Mobile)
       let touchStartY = 0;
