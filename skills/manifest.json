@@ -1,0 +1,131 @@
+{
+ "artifact-design": [
+  "SKILL.md"
+ ],
+ "briefing-gen": [
+  "SKILL.md",
+  "references/beispiel.md"
+ ],
+ "campaign-check": [
+  "SKILL.md",
+  "references/beispiel.md"
+ ],
+ "code-check": [
+  "SKILL.md",
+  "references/beispiel.md"
+ ],
+ "content-recycling": [
+  "SKILL.md",
+  "references/beispiel.md"
+ ],
+ "dataviz": [
+  "SKILL.md",
+  "references/palette.md"
+ ],
+ "daten-aufbereiten": [
+  "SKILL.md",
+  "references/beispiel.md"
+ ],
+ "deep-research": [
+  "SKILL.md",
+  "references/report-template.md"
+ ],
+ "erste-automation": [
+  "SKILL.md",
+  "references/beispiel.md"
+ ],
+ "erste-schritte": [
+  "SKILL.md",
+  "references/beispiel.md"
+ ],
+ "init": [
+  "SKILL.md"
+ ],
+ "keyword-research": [
+  "SKILL.md",
+  "references/beispiel.md"
+ ],
+ "loop": [
+  "SKILL.md",
+  "references/beispiel.md"
+ ],
+ "markt-research": [
+  "SKILL.md",
+  "references/beispiel.md"
+ ],
+ "mediaplan-audit": [
+  "SKILL.md",
+  "references/beispiel.md"
+ ],
+ "meeting-notes": [
+  "SKILL.md",
+  "references/beispiel.md"
+ ],
+ "moodboard": [
+  "SKILL.md"
+ ],
+ "persona-builder": [
+  "SKILL.md",
+  "references/beispiel.md"
+ ],
+ "pitch-deck": [
+  "SKILL.md",
+  "references/beispiel.md"
+ ],
+ "prototyp-bauen": [
+  "SKILL.md",
+  "references/muster.md",
+  "scripts/berechnung.js"
+ ],
+ "report-automat": [
+  "SKILL.md",
+  "references/beispiel.md"
+ ],
+ "report-summary": [
+  "SKILL.md",
+  "references/beispiel.md"
+ ],
+ "review": [
+  "SKILL.md"
+ ],
+ "security-review": [
+  "SKILL.md"
+ ],
+ "simplify": [
+  "SKILL.md"
+ ],
+ "slides-aus-daten": [
+  "SKILL.md"
+ ],
+ "social-kalender": [
+  "SKILL.md",
+  "references/beispiel.md"
+ ],
+ "tonalitaets-check": [
+  "SKILL.md",
+  "references/beispiel.md"
+ ],
+ "tool-teilen": [
+  "SKILL.md",
+  "references/beispiel.md"
+ ],
+ "tracking-audit": [
+  "SKILL.md",
+  "references/beispiel.md"
+ ],
+ "verify": [
+  "SKILL.md"
+ ],
+ "webaudit": [
+  "SKILL.md",
+  "references/beispiel.md"
+ ],
+ "webseite-bauen": [
+  "SKILL.md",
+  "references/beispiel.md"
+ ],
+ "wettbewerbs-monitor": [
+  "SKILL.md",
+  "references/beispiel.md"
+ ]
+}
