@@ -1218,6 +1218,44 @@
     .ex-anatomy-cta { font-size: 1.6rem; color: var(--c-gray-m); margin-top: 2.4rem; text-align: center; }
     .ex-anatomy-cta strong { color: var(--c-black); }
 
+    /* Auslöser: manuell vs. automatisch */
+    .trg-paths { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 4rem; }
+    @media (max-width: 767px) { .trg-paths { grid-template-columns: 1fr; } }
+    .trg-card { position: relative; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.12); border-radius: 1.6rem; padding: 3rem 2.6rem 2.6rem; }
+    .trg-card-hl { background: rgba(255,224,94,.07); border-color: rgba(255,224,94,.4); }
+    .trg-num { position: absolute; top: -1.6rem; left: 2.6rem; width: 3.2rem; height: 3.2rem; border-radius: 50%; background: rgba(255,255,255,.14); color: var(--c-white); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.6rem; }
+    .trg-card-hl .trg-num { background: var(--c-yellow); color: var(--c-black); }
+    .trg-tag { font-size: 1.3rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: rgba(252,252,252,.7); margin-bottom: 1rem; font-family: var(--font-mono); }
+    .trg-tag.-yellow { color: var(--c-yellow); }
+    .trg-text { font-size: 1.6rem; line-height: 1.5; color: rgba(252,252,252,.8); margin-bottom: 1.8rem; }
+    .trg-mono { font-family: var(--font-mono); font-size: 1.5rem; color: var(--c-white); background: rgba(0,0,0,.3); border-radius: .8rem; padding: 1.2rem 1.6rem; }
+    .trg-mono .ex-term-prompt { color: var(--c-yellow); }
+    .trg-mono-nat { color: rgba(252,252,252,.85); font-family: 'Inter', sans-serif; font-style: italic; }
+
+    .trg-match { margin-top: 4rem; background: rgba(0,0,0,.25); border: 1px solid rgba(255,255,255,.1); border-radius: 1.6rem; padding: 3rem; text-align: center; }
+    .trg-match-req { font-size: 1.9rem; color: var(--c-white); font-style: italic; max-width: 56rem; margin: 0 auto; }
+    .trg-match-label { display: block; font-family: var(--font-mono); font-size: 1.2rem; font-style: normal; text-transform: uppercase; letter-spacing: .1em; color: rgba(252,252,252,.45); margin-bottom: .8rem; }
+    .trg-match-arrow { font-family: var(--font-mono); font-size: 1.35rem; color: rgba(252,252,252,.5); margin: 1.8rem 0; }
+    .trg-menu { display: flex; flex-direction: column; gap: .8rem; max-width: 60rem; margin: 0 auto; text-align: left; }
+    .trg-menu-item { display: flex; align-items: center; gap: 1.4rem; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.1); border-radius: 1rem; padding: 1.4rem 1.8rem; transition: var(--trans); }
+    .trg-menu-item code { font-family: var(--font-mono); font-size: 1.5rem; color: rgba(252,252,252,.85); flex-shrink: 0; min-width: 14rem; }
+    .trg-menu-item span:not(.trg-menu-hit) { font-size: 1.45rem; color: rgba(252,252,252,.6); flex: 1; }
+    .trg-menu-item.is-match { background: rgba(255,224,94,.12); border-color: var(--c-yellow); box-shadow: 0 0 0 3px rgba(255,224,94,.12); animation: trgPulse 2.4s ease-in-out infinite; }
+    .trg-menu-item.is-match code { color: var(--c-yellow); }
+    .trg-menu-item.is-match span:not(.trg-menu-hit) { color: rgba(252,252,252,.85); }
+    .trg-menu-hit { font-family: var(--font-mono); font-size: 1.15rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; background: var(--c-yellow); color: var(--c-black); padding: .3rem .9rem; border-radius: 2rem; flex-shrink: 0; }
+    @keyframes trgPulse { 0%,100% { box-shadow: 0 0 0 3px rgba(255,224,94,.1); } 50% { box-shadow: 0 0 0 6px rgba(255,224,94,.22); } }
+    @media (prefers-reduced-motion: reduce) { .trg-menu-item.is-match { animation: none; } }
+    .trg-match-out { font-size: 1.7rem; color: rgba(252,252,252,.9); margin-top: 1.4rem; }
+    .trg-match-out strong { color: var(--c-yellow); }
+    .trg-match-out code, .trg-brain-note code, .trg-brain-body code { font-family: var(--font-mono); font-size: .92em; color: var(--c-yellow); background: rgba(255,224,94,.1); padding: .1rem .5rem; border-radius: .4rem; }
+
+    .trg-brain { display: grid; grid-template-columns: 20rem 1fr; gap: 2rem; margin-top: 3rem; align-items: start; }
+    @media (max-width: 767px) { .trg-brain { grid-template-columns: 1fr; gap: 1rem; } }
+    .trg-brain-k { font-family: var(--font-mono); font-size: 1.3rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--c-yellow); padding-top: .4rem; }
+    .trg-brain-body p { font-size: 1.65rem; line-height: 1.6; color: rgba(252,252,252,.8); }
+    .trg-brain-note { margin-top: 1.4rem; font-size: 1.5rem !important; color: rgba(252,252,252,.6) !important; }
+
     /* Reveal on scroll */
     .reveal { opacity: 0; transform: translateY(28px); transition: opacity .7s var(--ex-ease), transform .7s var(--ex-ease); }
     .reveal.in { opacity: 1; transform: none; }
@@ -1355,6 +1393,13 @@
     .cat-reveal { opacity: 0; transform: translateY(24px); transition: opacity .7s cubic-bezier(.16,.84,.44,1), transform .7s cubic-bezier(.16,.84,.44,1); }
     .cat-reveal.in { opacity: 1; transform: none; }
     @media (prefers-reduced-motion: reduce) { .cat-reveal { opacity: 1; transform: none; } }
+
+    /* Auslöser-Anzeige im Skill-Modal */
+    .trigger-ways { display: flex; flex-direction: column; gap: 1rem; margin-top: .8rem; }
+    .tway { display: flex; gap: 1.2rem; align-items: flex-start; background: var(--c-bg); border: 1px solid var(--line); border-radius: 1rem; padding: 1.4rem 1.6rem; font-size: 1.5rem; line-height: 1.5; color: #55534b; }
+    .tway strong { color: var(--c-black); }
+    .tway code { font-family: var(--font-mono); font-size: 1.35rem; background: var(--c-black); color: var(--c-yellow); padding: .2rem .7rem; border-radius: .4rem; }
+    .tway-ic { flex-shrink: 0; width: 2.8rem; height: 2.8rem; border-radius: .8rem; background: var(--c-black); color: var(--c-yellow); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
   </style>
 </head>
 <body>
@@ -1667,6 +1712,59 @@ Gib einen priorisierten Report aus:
           </div>
         </div>
         <p class="ex-anatomy-cta">In jedem Skill findest du den Tab <strong>„Aufbau &amp; Dateien"</strong> — schau rein.</p>
+      </div>
+    </section>
+
+    <!-- Auslöser: manuell vs. automatisch -->
+    <section class="ex-section ex-dark reveal" id="ex-trigger">
+      <div class="ex-wrap">
+        <p class="ex-eyebrow" style="color:var(--c-yellow)">Auslöser</p>
+        <h2 class="ex-h2" style="color:var(--c-white)">Zwei Wege, wie ein Skill <span class="ex-hl">startet</span></h2>
+        <p class="ex-body ex-body-light">Du musst den Befehl gar nicht kennen. Ein Skill kann auf zwei Arten anspringen — beides gleichzeitig möglich.</p>
+        <div class="trg-paths">
+          <div class="trg-card">
+            <div class="trg-num">1</div>
+            <div class="trg-tag">Manuell — du rufst ihn</div>
+            <p class="trg-text">Du tippst den Befehl direkt. Klar und bewusst.</p>
+            <div class="trg-mono"><span class="ex-term-prompt">›</span> /webaudit</div>
+          </div>
+          <div class="trg-card trg-card-hl">
+            <div class="trg-num">2</div>
+            <div class="trg-tag -yellow">Automatisch — Claude erkennt ihn</div>
+            <p class="trg-text">Du schreibst ganz normal, was du brauchst. Claude erkennt selbst, welcher Skill passt — und startet ihn ohne Befehl.</p>
+            <div class="trg-mono trg-mono-nat">„Prüf mal, ob mit unserer Landingpage alles stimmt."</div>
+          </div>
+        </div>
+
+        <!-- Auto-Match-Visual -->
+        <div class="trg-match">
+          <div class="trg-match-req">
+            <span class="trg-match-label">Deine Anfrage</span>
+            „Prüf mal, ob mit unserer Landingpage alles stimmt."
+          </div>
+          <div class="trg-match-arrow">Claude vergleicht mit der Skill-Liste ↓</div>
+          <div class="trg-menu">
+            <div class="trg-menu-item is-match">
+              <code>webaudit</code><span>prüft Websites auf UX, Speed, SEO &amp; Barrierefreiheit</span><span class="trg-menu-hit">Match</span>
+            </div>
+            <div class="trg-menu-item">
+              <code>briefing-gen</code><span>erstellt strukturierte Briefings</span>
+            </div>
+            <div class="trg-menu-item">
+              <code>daten-aufbereiten</code><span>bereinigt Excel- &amp; CSV-Dateien</span>
+            </div>
+          </div>
+          <div class="trg-match-arrow">↓</div>
+          <div class="trg-match-out"><strong>webaudit</strong> startet automatisch — ganz ohne <code>/befehl</code>.</div>
+        </div>
+
+        <div class="trg-brain">
+          <div class="trg-brain-k">So entscheidet Claude</div>
+          <div class="trg-brain-body">
+            <p>Claude hat von <em>allen</em> Skills immer nur den Namen und die eine <code>description</code>-Zeile im Kopf — wie eine Speisekarte. Passt deine Aufgabe dazu, lädt es den kompletten Skill und wendet ihn an. Das hält alles schnell, auch bei vielen Skills.</p>
+            <p class="trg-brain-note">Darum ist die <code>description</code> in der SKILL.md so wichtig: Sie ist das Erkennungsmerkmal. Für heikle Aktionen (z.&nbsp;B. etwas veröffentlichen) lässt sich der Automatik-Start bewusst abschalten — dann zählt nur der Befehl.</p>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -3484,8 +3582,8 @@ Eine Slide = eine Botschaft.`}
       const triggerHint = document.getElementById('trigger-hint');
       if (triggerHint) {
         triggerHint.textContent = skill.trigger
-          ? `Tippe diesen Befehl in Claude Code ein`
-          : 'Kein direkter Befehl — folge der Anleitung im jeweiligen Workflow';
+          ? `Befehl kopieren — oder Claude startet ihn automatisch`
+          : 'Kein Befehl — startet automatisch im passenden Workflow';
         triggerHint.style.display = 'block';
       }
 
@@ -3725,6 +3823,18 @@ Eine Slide = eine Botschaft.`}
           <div class="info-item"><label>Version</label><span>${escHtml(skill.version)}</span></div>
           <div class="info-item"><label>Hinzugefügt</label><span>${formatDate(skill.addedAt)}</span></div>
           <div class="info-item"><label>Zuletzt aktualisiert</label><span>${formatDate(skill.updatedAt)}</span></div>
+        </div>
+
+        <p class="section-label">So startet dieser Skill</p>
+        <div class="trigger-ways">
+          <div class="tway">
+            <span class="tway-ic">✦</span>
+            <div><strong>Automatisch</strong> — Claude startet ihn von selbst, wenn deine Anfrage dazu passt. Kein Befehl nötig.</div>
+          </div>
+          <div class="tway">
+            <span class="tway-ic">⌘</span>
+            <div><strong>Manuell</strong> — ${skill.trigger ? `du tippst <code>${escHtml(skill.trigger)}</code> in Claude Code.` : `dieser Skill hat keinen eigenen Befehl — er läuft automatisch im passenden Workflow.`}</div>
+          </div>
         </div>
 
         <p class="section-label">Use Cases</p>
