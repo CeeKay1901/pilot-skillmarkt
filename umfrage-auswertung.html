@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Umfrage-Auswerter · pilot</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--black:#262626;--white:#fcfcfc;--yellow:#ffe05e;--bg:#f1f1ec;--gray:#7b7a71;--gray-l:#bab8ab}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{font-size:62.5%}
+  body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--black);min-height:100vh;padding:3rem 2rem;line-height:1.5}
+  .wrap{max-width:72rem;margin:0 auto}
+  .badge{font-size:1.2rem;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--gray);margin-bottom:1rem;display:flex;align-items:center;gap:.8rem}
+  .badge::before{content:'';width:.8rem;height:.8rem;border-radius:50%;background:var(--yellow)}
+  h1{font-size:3.2rem;font-weight:700;letter-spacing:-.02em;margin-bottom:.6rem}
+  .sub{font-size:1.6rem;color:var(--gray);margin-bottom:2.4rem}
+  .panel{background:var(--white);border:1px solid var(--gray-l);border-radius:1.4rem;padding:2.4rem;margin-bottom:2rem}
+  label{display:block;font-size:1.4rem;font-weight:600;margin-bottom:.8rem}
+  textarea{width:100%;min-height:14rem;padding:1.4rem;font-family:'Courier New',monospace;font-size:1.4rem;border:1px solid var(--gray-l);border-radius:.8rem;background:var(--bg);resize:vertical}
+  textarea:focus{outline:none;border-color:var(--black);background:var(--white)}
+  .row{display:flex;gap:1rem;flex-wrap:wrap;margin-top:1.2rem}
+  button{font-family:inherit;font-size:1.4rem;font-weight:500;padding:.9rem 1.8rem;border-radius:3rem;border:.2rem solid var(--black);cursor:pointer;transition:.15s}
+  .btn-p{background:var(--black);color:var(--white)}.btn-p:hover{background:#3d3d3d}
+  .btn-s{background:transparent;color:var(--black)}.btn-s:hover{background:rgba(0,0,0,.06)}
+  .q{margin-bottom:2.8rem}
+  .q:last-child{margin-bottom:0}
+  .q-title{font-size:1.8rem;font-weight:700;margin-bottom:.4rem}
+  .q-meta{font-size:1.3rem;color:var(--gray);margin-bottom:1.4rem}
+  .bar-row{display:grid;grid-template-columns:14rem 1fr 6rem;gap:1.2rem;align-items:center;margin-bottom:.9rem}
+  .bar-label{font-size:1.45rem;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .bar-track{background:var(--bg);border-radius:.6rem;height:2.6rem;overflow:hidden}
+  .bar-fill{height:100%;background:var(--yellow);border-radius:.6rem;transition:width .6s cubic-bezier(.17,.67,.35,1);min-width:.3rem}
+  .bar-val{font-size:1.4rem;font-weight:700;font-variant-numeric:tabular-nums}
+  .empty{color:var(--gray);font-size:1.5rem;font-style:italic}
+  .foot{font-size:1.3rem;color:var(--gray);margin-top:1rem}
+  .foot b{color:var(--black)}
+  @media(max-width:560px){.bar-row{grid-template-columns:9rem 1fr 5rem;gap:.8rem}.bar-label{font-size:1.3rem}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="badge">Von „Prototyp bauen" erstellt · echtes Tool</div>
+  <h1>Umfrage-Auswerter</h1>
+  <p class="sub">CSV einfügen → Antwortverteilung als Balken. Erste Spalte = Frage, weitere Spalten = Antworten.</p>
+
+  <div class="panel">
+    <label for="csv">Umfrage-Daten (CSV)</label>
+    <textarea id="csv" spellcheck="false"></textarea>
+    <div class="row">
+      <button class="btn-p" onclick="run()">Auswerten</button>
+      <button class="btn-s" onclick="loadSample()">Beispieldaten laden</button>
+      <button class="btn-s" onclick="document.getElementById('csv').value='';run()">Leeren</button>
+    </div>
+    <p class="foot">Format je Zeile: <b>Frage;Antwort</b> — eine Zeile pro abgegebener Antwort. Trennzeichen <b>;</b> oder <b>,</b>.</p>
+  </div>
+
+  <div class="panel" id="result"><p class="empty">Noch keine Daten. Lade Beispieldaten oder füge eigene ein.</p></div>
+  <p class="foot" style="text-align:center">Gebaut mit <b>/prototyp</b> · <a href="./index.html" style="color:var(--black)">zurück zum Katalog</a></p>
+</div>
+<script>
+  const SAMPLE = `Wie zufrieden bist du mit dem Tool?;Sehr zufrieden
+Wie zufrieden bist du mit dem Tool?;Zufrieden
+Wie zufrieden bist du mit dem Tool?;Sehr zufrieden
+Wie zufrieden bist du mit dem Tool?;Neutral
+Wie zufrieden bist du mit dem Tool?;Zufrieden
+Wie zufrieden bist du mit dem Tool?;Sehr zufrieden
+Wie zufrieden bist du mit dem Tool?;Unzufrieden
+Wie zufrieden bist du mit dem Tool?;Zufrieden
+Welchen Kanal nutzt du am meisten?;LinkedIn
+Welchen Kanal nutzt du am meisten?;Instagram
+Welchen Kanal nutzt du am meisten?;LinkedIn
+Welchen Kanal nutzt du am meisten?;TikTok
+Welchen Kanal nutzt du am meisten?;LinkedIn
+Welchen Kanal nutzt du am meisten?;Instagram`;
+
+  function parse(text){
+    const map={};
+    text.trim().split(/\r?\n/).forEach(line=>{
+      if(!line.trim())return;
+      const parts=line.split(/[;,]/).map(s=>s.trim());
+      const q=parts[0], a=parts.slice(1).join(', ')||'(leer)';
+      if(!q)return;
+      (map[q]=map[q]||{})[a]=(map[q][a]||0)+1;
+    });
+    return map;
+  }
+  function esc(s){return s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+  function run(){
+    const map=parse(document.getElementById('csv').value);
+    const el=document.getElementById('result');
+    const qs=Object.keys(map);
+    if(!qs.length){el.innerHTML='<p class="empty">Keine gültigen Zeilen erkannt. Format: Frage;Antwort</p>';return;}
+    el.innerHTML=qs.map(q=>{
+      const ans=map[q], total=Object.values(ans).reduce((a,b)=>a+b,0);
+      const rows=Object.entries(ans).sort((a,b)=>b[1]-a[1]).map(([a,n])=>{
+        const pct=Math.round(n/total*100);
+        return `<div class="bar-row"><div class="bar-label" title="${esc(a)}">${esc(a)}</div><div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div><div class="bar-val">${pct}%</div></div>`;
+      }).join('');
+      return `<div class="q"><div class="q-title">${esc(q)}</div><div class="q-meta">${total} Antworten</div>${rows}</div>`;
+    }).join('');
+  }
+  function loadSample(){document.getElementById('csv').value=SAMPLE;run();}
+  loadSample();
+</script>
+</body>
+</html>

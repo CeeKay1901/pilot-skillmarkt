@@ -1079,6 +1079,36 @@
     .ex-term-prompt { color: var(--c-yellow); font-weight: 700; margin-right: .6rem; }
     .ex-term-out { color: #7ac59a; font-size: 1.4rem; }
 
+    /* Vergleichsmatrix Langdock & Claude Code */
+    .cmp { margin-top: 4rem; border: 1px solid rgba(255,255,255,.12); border-radius: 1.6rem; overflow: hidden; }
+    .cmp-row { display: grid; grid-template-columns: 1.1fr 1fr 1fr; align-items: stretch; }
+    .cmp-row + .cmp-row { border-top: 1px solid rgba(255,255,255,.1); }
+    .cmp-head { background: rgba(255,255,255,.03); }
+    .cmp-dim { padding: 2rem 2.4rem; font-size: 1.5rem; font-weight: 600; color: rgba(252,252,252,.55); display: flex; align-items: center; }
+    .cmp-tool { padding: 2.2rem 2.4rem; display: flex; flex-direction: column; gap: .3rem; border-left: 1px solid rgba(255,255,255,.1); }
+    .cmp-tool-hl { background: rgba(255,224,94,.07); }
+    .cmp-tool-name { font-size: 2.2rem; font-weight: 700; color: var(--c-white); letter-spacing: -.01em; }
+    .cmp-tool-hl .cmp-tool-name { color: var(--c-yellow); }
+    .cmp-tool-kind { font-size: 1.3rem; color: rgba(252,252,252,.5); text-transform: uppercase; letter-spacing: .06em; }
+    .cmp-cell { padding: 2rem 2.4rem; font-size: 1.6rem; line-height: 1.45; color: rgba(252,252,252,.82); border-left: 1px solid rgba(255,255,255,.1); display: flex; align-items: center; }
+    .cmp-cell.cmp-hl { background: rgba(255,224,94,.07); color: var(--c-white); }
+    .cmp-cell em { font-style: italic; color: rgba(252,252,252,.7); }
+    .cmp-cell.cmp-hl em { color: var(--c-yellow); font-style: normal; font-family: 'Courier New', monospace; font-size: 1.45rem; }
+    .cmp-rule { margin-top: 2.4rem; display: flex; align-items: center; gap: 1.6rem; background: rgba(255,224,94,.1); border: 1px solid rgba(255,224,94,.3); border-radius: 1.2rem; padding: 1.8rem 2.4rem; flex-wrap: wrap; }
+    .cmp-rule-k { font-size: 1.2rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--c-black); background: var(--c-yellow); padding: .4rem 1.2rem; border-radius: 2rem; flex-shrink: 0; }
+    .cmp-rule span:last-child { font-size: 1.6rem; color: rgba(252,252,252,.85); line-height: 1.5; }
+    .cmp-rule strong { color: var(--c-white); }
+    @media (max-width: 767px) {
+      .cmp-row { grid-template-columns: 1fr; }
+      .cmp-tool, .cmp-cell { border-left: none; border-top: 1px solid rgba(255,255,255,.08); }
+      .cmp-dim { padding-bottom: .4rem; color: var(--c-yellow); font-size: 1.3rem; text-transform: uppercase; letter-spacing: .08em; }
+      .cmp-head { display: none; }
+      .cmp-cell.cmp-hl::after { content: 'Claude Code'; }
+      .cmp-cell:not(.cmp-hl)::after { content: 'Langdock'; }
+      .cmp-cell::after { display: block; font-size: 1.1rem; color: rgba(252,252,252,.4); text-transform: uppercase; letter-spacing: .08em; margin-top: .4rem; }
+      .cmp-cell { flex-direction: column; align-items: flex-start; gap: 0; }
+    }
+
     /* Ohne/Mit Skill */
     .ex-vs { display: flex; gap: 2rem; margin-top: 4rem; flex-wrap: wrap; }
     .ex-vs-card { flex: 1; min-width: 28rem; border-radius: 1.6rem; padding: 3rem; display: flex; flex-direction: column; }
@@ -1119,6 +1149,29 @@
     .ex-t-hl { color: var(--c-yellow); }
     .ex-cursor { display: inline-block; width: .9rem; height: 1.6rem; background: var(--c-yellow); vertical-align: text-bottom; animation: exBlink 1s steps(2) infinite; }
     @keyframes exBlink { 50% { opacity: 0; } }
+
+    /* Demo-Matrix */
+    .demo-layout { display: grid; grid-template-columns: 30rem 1fr; gap: 2rem; margin-top: 4rem; align-items: start; }
+    @media (max-width: 900px) { .demo-layout { grid-template-columns: 1fr; } }
+    .demo-matrix { display: flex; flex-direction: column; gap: 1rem; }
+    .demo-skill { background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.1); border-radius: 1.2rem; padding: 1.6rem; }
+    .demo-skill-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
+    .demo-skill-name { font-size: 1.6rem; font-weight: 700; color: var(--c-white); }
+    .demo-skill-trig { font-family: 'Courier New', monospace; font-size: 1.25rem; color: var(--c-yellow); }
+    .demo-cases { display: flex; flex-wrap: wrap; gap: .6rem; }
+    .demo-case { background: transparent; border: 1px solid rgba(255,255,255,.2); color: rgba(252,252,252,.8); font-family: inherit; font-size: 1.35rem; padding: .6rem 1.2rem; border-radius: var(--radius-pill); cursor: pointer; transition: var(--trans); }
+    .demo-case:hover { border-color: var(--c-yellow); color: var(--c-white); }
+    .demo-case.active { background: var(--c-yellow); border-color: var(--c-yellow); color: var(--c-black); font-weight: 600; }
+    .demo-stage { position: sticky; top: calc(var(--header-h) + 2rem); }
+    .demo-stage .ex-terminal { margin: 0; }
+    .ex-terminal-bar { position: relative; }
+    .demo-replay { position: absolute; right: 1.4rem; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,.1); border: none; color: rgba(252,252,252,.8); width: 2.8rem; height: 2.8rem; border-radius: 50%; cursor: pointer; font-size: 1.5rem; transition: var(--trans); }
+    .demo-replay:hover { background: var(--c-yellow); color: var(--c-black); }
+    .demo-actions { min-height: 3rem; margin-top: 1.6rem; display: flex; align-items: center; gap: 1.6rem; flex-wrap: wrap; }
+    .demo-artifact { padding: 1rem 2rem; font-size: 1.5rem; animation: cardIn .4s ease both; }
+    .demo-artifact-note { font-size: 1.35rem; color: rgba(252,252,252,.6); animation: cardIn .5s ease both; }
+    .demo-stage .ex-terminal-body { min-height: 26rem; }
+    @media (max-width: 900px) { .demo-stage { position: static; } }
 
     /* Journey */
     .ex-journey { margin-top: 4rem; display: flex; flex-direction: column; gap: 0; }
@@ -1397,48 +1450,42 @@
       </div>
     </section>
 
-    <!-- Langdock vs Claude Code -->
+    <!-- Langdock & Claude Code -->
     <section class="ex-section ex-dark reveal">
       <div class="ex-wrap">
-        <p class="ex-eyebrow" style="color:var(--c-yellow)">Der Unterschied, der zählt</p>
-        <h2 class="ex-h2" style="color:var(--c-white)">Vom <span class="ex-hl">Chatten</span> zum <span class="ex-hl">Bauen</span></h2>
-        <p class="ex-body ex-body-light">Ihr arbeitet mit <strong>Langdock</strong> — perfekt zum Schreiben, Fragen, Ideen entwickeln. <strong>Claude Code</strong> ersetzt das nicht, sondern ergänzt es um etwas Neues: Es arbeitet direkt in euren Dateien und kann Dinge <em>bauen</em>. Kein Entweder-oder — beides zusammen.</p>
-        <div class="ex-compare">
-          <div class="ex-compare-col">
-            <div class="ex-compare-head">
-              <span class="ex-compare-badge">bisher</span>
-              <h3>Langdock <span class="ex-compare-tag">Chat</span></h3>
-            </div>
-            <div class="ex-chat-demo">
-              <div class="ex-chat-bubble ex-user">Schreib mir 3 Betreffzeilen für den Newsletter.</div>
-              <div class="ex-chat-bubble ex-ai">Klar! Hier sind 3 Vorschläge: …</div>
-              <div class="ex-chat-note">Du kopierst die Antwort und arbeitest selbst weiter.</div>
-            </div>
-            <ul class="ex-list">
-              <li><span>✓</span> Texte, Ideen, Zusammenfassungen</li>
-              <li><span>✓</span> Fragen &amp; Recherche im Gespräch</li>
-              <li><span>✓</span> DSGVO-konform, EU-gehostet</li>
-              <li class="ex-list-muted"><span>–</span> arbeitet nicht direkt in deinen Dateien</li>
-            </ul>
+        <p class="ex-eyebrow" style="color:var(--c-yellow)">Langdock &amp; Claude Code</p>
+        <h2 class="ex-h2" style="color:var(--c-white)">Zwei Werkzeuge,<br>zwei <span class="ex-hl">Stärken</span></h2>
+        <p class="ex-body ex-body-light">Langdock bleibt euer Ort zum Denken, Schreiben und Fragen — stark, sicher, im Alltag angekommen. Claude Code kommt dazu, wenn etwas <em>entstehen</em> soll: eine Datei, ein Tool, eine Automation. Sie konkurrieren nicht — sie ergänzen sich.</p>
+        <div class="cmp">
+          <div class="cmp-row cmp-head">
+            <div class="cmp-dim"></div>
+            <div class="cmp-tool"><span class="cmp-tool-name">Langdock</span><span class="cmp-tool-kind">KI-Chat · euer Alltag</span></div>
+            <div class="cmp-tool cmp-tool-hl"><span class="cmp-tool-name">Claude&nbsp;Code</span><span class="cmp-tool-kind">KI-Agent · neu dazu</span></div>
           </div>
-          <div class="ex-compare-vs">+</div>
-          <div class="ex-compare-col ex-compare-hero">
-            <div class="ex-compare-head">
-              <span class="ex-compare-badge -yellow">neu</span>
-              <h3>Claude Code <span class="ex-compare-tag -yellow">Agent</span></h3>
-            </div>
-            <div class="ex-term-mini">
-              <div class="ex-term-line"><span class="ex-term-prompt">›</span> /prototyp Budget-Rechner</div>
-              <div class="ex-term-out">✓ Tool gebaut · im Browser geöffnet</div>
-              <div class="ex-term-out">✓ budget-rechner.html erstellt</div>
-            </div>
-            <ul class="ex-list">
-              <li><span>✓</span> arbeitet <strong>direkt</strong> in deinen Dateien</li>
-              <li><span>✓</span> <strong>baut</strong> Tools, Seiten &amp; Automationen</li>
-              <li><span>✓</span> führt ganze Abläufe aus, nicht nur Text</li>
-              <li><span>✓</span> nutzt <strong>Skills</strong> für erprobte Aufgaben</li>
-            </ul>
+          <div class="cmp-row">
+            <div class="cmp-dim">So arbeitest du</div>
+            <div class="cmp-cell">Im Chat — du fragst, es antwortet.</div>
+            <div class="cmp-cell cmp-hl">Per Auftrag — es arbeitet direkt in deinen Dateien.</div>
           </div>
+          <div class="cmp-row">
+            <div class="cmp-dim">Was rauskommt</div>
+            <div class="cmp-cell">Text zum Kopieren.</div>
+            <div class="cmp-cell cmp-hl">Fertige Dateien, Tools &amp; Websites.</div>
+          </div>
+          <div class="cmp-row">
+            <div class="cmp-dim">Am stärksten bei</div>
+            <div class="cmp-cell">Schreiben, Ideen, Recherche, Zusammenfassen.</div>
+            <div class="cmp-cell cmp-hl">Bauen, Automatisieren, Daten &amp; Reports.</div>
+          </div>
+          <div class="cmp-row">
+            <div class="cmp-dim">Ein Beispiel</div>
+            <div class="cmp-cell"><em>„Formuliere diesen Absatz um."</em></div>
+            <div class="cmp-cell cmp-hl"><em>„Bau mir einen TKP-Rechner."</em></div>
+          </div>
+        </div>
+        <div class="cmp-rule">
+          <span class="cmp-rule-k">Faustregel</span>
+          <span><strong>Denken &amp; Texten</strong> → Langdock. <strong>Bauen &amp; Machen</strong> → Claude Code. Das Beste: beides kombinieren.</span>
         </div>
       </div>
     </section>
@@ -1532,20 +1579,26 @@ Gib einen priorisierten Report aus:
       </div>
     </section>
 
-    <!-- Animated Terminal Demo -->
+    <!-- Demo-Matrix -->
     <section class="ex-section ex-dark reveal" id="ex-demo">
       <div class="ex-wrap">
-        <p class="ex-eyebrow" style="color:var(--c-yellow)">Live gesehen</p>
-        <h2 class="ex-h2" style="color:var(--c-white)">Ein Skill in Aktion</h2>
-        <p class="ex-body ex-body-light">So sieht es aus, wenn eine Kollegin sich in Minuten ein eigenes Tool baut — ganz ohne Programmierkenntnisse.</p>
-        <div class="ex-terminal" id="ex-terminal" aria-label="Terminal-Demo">
-          <div class="ex-terminal-bar">
-            <span class="ex-dot"></span><span class="ex-dot"></span><span class="ex-dot"></span>
-            <span class="ex-terminal-title">claude code — pilot</span>
+        <p class="ex-eyebrow" style="color:var(--c-yellow)">Live ausprobiert</p>
+        <h2 class="ex-h2" style="color:var(--c-white)">Skills in Aktion</h2>
+        <p class="ex-body ex-body-light">Wähl links einen Skill und eine konkrete Anwendung — rechts läuft die Demo. Manche Ergebnisse kannst du direkt öffnen.</p>
+        <div class="demo-layout">
+          <div class="demo-matrix" id="demo-matrix"></div>
+          <div class="demo-stage">
+            <div class="ex-terminal">
+              <div class="ex-terminal-bar">
+                <span class="ex-dot"></span><span class="ex-dot"></span><span class="ex-dot"></span>
+                <span class="ex-terminal-title" id="demo-term-title">claude code — pilot</span>
+                <button class="demo-replay" id="demo-replay" onclick="replayDemo()" title="Erneut abspielen">↻</button>
+              </div>
+              <div class="ex-terminal-body" id="ex-terminal-body"></div>
+            </div>
+            <div class="demo-actions" id="demo-actions"></div>
           </div>
-          <div class="ex-terminal-body" id="ex-terminal-body"></div>
         </div>
-        <button class="c-cta -yellow-border ex-replay" id="ex-replay" onclick="playTerminal()" style="margin-top:2.4rem">▸ Demo erneut abspielen</button>
       </div>
     </section>
 
@@ -1676,7 +1729,65 @@ TKP den Netto-Kontaktpreis rechnet"
           {name:'Mia Hoffmann',role:'Senior UX Designerin',initials:'MH',text:'Perfekt um Ideen schnell greifbar zu machen, bevor wir groß investieren.'}
         ],
         comments: [{author:'Lukas Weber',role:'SEO Strategist',initials:'LW',date:'2026-06-28',text:'Habe mir einen kleinen Ranking-Tracker gebaut. Hätte ich nie für möglich gehalten.',rating:5},{author:'Sophie Klein',role:'Projektmanagerin',initials:'SK',date:'2026-06-12',text:'Für größere Projekte braucht es dann doch Begleitung, aber der Einstieg ist genial.',rating:4}],
-        featured: true, badge: 'empfohlen'
+        featured: true, badge: 'empfohlen',
+        files: [
+          {path:'prototyp-bauen/SKILL.md', lang:'markdown', content:`---
+name: prototyp-bauen
+description: Beschreibe ein kleines internes Tool — ich baue einen lauffähigen Prototyp.
+trigger: /prototyp
+tags: [citizen-coding, bauen, prototyp, tools, no-code]
+difficulty: einfach
+---
+
+# Prototyp bauen
+
+Für Kolleg:innen ohne Programmier-Vorkenntnisse: aus einer Idee wird ein
+lauffähiges Tool, das sofort im Browser läuft.
+
+## Vorgehen
+1. **Verstehen** — Was soll das Tool tun? Welche Eingaben, welches Ergebnis?
+   Bei Unklarheit 1–2 gezielte Rückfragen stellen.
+2. **Bauen** — eine eigenständige HTML-Datei (inline CSS/JS), im pilot-Design.
+3. **Öffnen** — Datei im Browser anzeigen, damit man es sofort sieht.
+4. **Iterieren** — "Was soll anders sein?" → anpassen, bis es passt.
+
+## Regeln
+- Alles in **einer** Datei → per Doppelklick teilbar.
+- Reduziert & bedienbar, kein Fachjargon in der Oberfläche.
+- Realistisch bleiben: kleine Tools, keine komplexen Systeme.
+
+## Bausteine
+Siehe \`references/muster.md\` für erprobte Muster (Rechner, Formular,
+Tabelle) und \`scripts/berechnung.js\` als Vorlage für Live-Berechnung.`},
+          {path:'prototyp-bauen/references/muster.md', lang:'markdown', content:`# Erprobte Muster
+
+## Rechner
+Eingabefelder + Live-Ergebnis. Ergebnis bei jeder Eingabe neu berechnen.
+
+## Formular
+Felder + Validierung + "Absenden" → Zusammenfassung anzeigen.
+
+## Tabelle / Vergleich
+Zeilen dynamisch hinzufügen, Spalten summieren, sortierbar.
+
+## Design
+pilot-Farben (Schwarz #262626, Gelb #ffe05e, Beige #f1f1ec),
+großzügiger Weißraum, klare Hierarchie, mobil bedienbar.`},
+          {path:'prototyp-bauen/scripts/berechnung.js', lang:'javascript', content:`// Vorlage: Live-Berechnung an Eingabefelder hängen
+function bindLiveCalc(inputIds, compute, outEl) {
+  const read = () => inputIds.map(id =>
+    parseFloat(document.getElementById(id).value) || 0
+  );
+  const update = () => { outEl.textContent = compute(...read()); };
+  inputIds.forEach(id =>
+    document.getElementById(id).addEventListener('input', update)
+  );
+  update(); // initial
+}
+
+// Beispiel TKP-Rechner:
+// bindLiveCalc(['reach','tkp'], (r, t) => (r/1000*t).toFixed(2) + ' €', out);`}
+        ]
       },
       {
         id: 'webseite-bauen', name: 'Webseite bauen', tagline: 'Landingpage oder Mini-Website — ganz ohne Programmieren',
@@ -2712,7 +2823,7 @@ Eine Slide = eine Botschaft.`}
 
     function catLabel(cat) {
       if (cat === 'pilot-inhouse') return 'pilot inhouse';
-      if (cat === 'anthropic') return 'Claude Code';
+      if (cat === 'anthropic') return 'Anthropic';
       if (cat === 'gsd') return 'pilot Workflows';
       return cat;
     }
@@ -3346,36 +3457,80 @@ Eine Slide = eine Botschaft.`}
     // Liefert die Dateien eines Skills. Falls keine hinterlegt: generiert eine realistische SKILL.md.
     function skillFiles(skill) {
       if (skill.files && skill.files.length) return skill.files;
+      const tags = (skill.tags || []).join(', ');
       const fm = [
         '---',
         'name: ' + skill.id,
         'description: ' + (skill.description || '').replace(/\n/g,' '),
         'trigger: ' + (skill.trigger || '—'),
+        'tags: [' + tags + ']',
         'difficulty: ' + diffLabel(skill.difficulty),
+        'time: ' + (skill.timeToRun || '—'),
         'author: ' + skill.author,
         'version: ' + skill.version,
         '---'
       ].join('\n');
-      const uc = (skill.useCases || []).map(u => '- ' + u).join('\n');
       const req = (skill.requirements || []).map(r => '- ' + r).join('\n');
+      const trigLabel = skill.trigger || 'dem Workflow';
       const body = [
         '# ' + skill.name,
         '',
         skill.longDescription || skill.description || '',
         '',
-        '## Wann einsetzen',
-        uc || '- (siehe Beschreibung)',
+        '## Auslöser — wann ich genutzt werde',
+        'Nutze diesen Skill für: ' + (skill.useCases || []).join(' · ') + '.',
+        'Stichworte: ' + tags + '.',
+        '',
+        '## Vorgehen',
+        '1. Eingabe/Kontext erfassen (Datei, Text oder Auftrag).',
+        '2. ' + firstStep(skill),
+        '3. Ergebnis strukturiert erzeugen (siehe Ausgabe).',
+        '4. Kurz zusammenfassen, was getan wurde.',
+        '',
+        '## Ausgabe',
+        outputHint(skill),
+        '',
+        '## Regeln',
+        '- Klar und für Nicht-Techniker:innen verständlich bleiben.',
+        '- Nichts erfinden — nur, was aus der Eingabe hervorgeht.',
+        '- Bei Unklarheit kurz nachfragen statt raten.',
         '',
         '## Voraussetzungen',
         req || '- Claude Code',
         '',
-        '## Ablauf',
-        '1. Skill mit `' + (skill.trigger || 'dem Workflow') + '` starten',
-        '2. Claude arbeitet die hinterlegten Schritte ab',
-        '3. Ergebnis prüfen und freigeben',
-        skill.exampleOutput ? '\n## Beispiel-Output\n```\n' + skill.exampleOutput + '\n```' : ''
+        '_Beispiel-Ausgabe siehe `references/beispiel.md`._'
       ].join('\n');
-      return [{ path: skill.id + '/SKILL.md', lang: 'markdown', content: fm + '\n\n' + body }];
+      const files = [{ path: skill.id + '/SKILL.md', lang: 'markdown', content: fm + '\n\n' + body }];
+      const ex = skill.exampleOutput
+        ? '# Beispiel-Ausgabe\n\nSo sieht ein typisches Ergebnis von `' + trigLabel + '` aus:\n\n```\n' + skill.exampleOutput + '\n```'
+        : '# Beispiel-Ausgabe\n\n' + (skill.useCases || []).map(u => '- ' + u).join('\n');
+      files.push({ path: skill.id + '/references/beispiel.md', lang: 'markdown', content: ex });
+      return files;
+    }
+
+    function firstStep(skill) {
+      const m = {
+        media: 'Gegen Konventionen & Best Practices prüfen, Abweichungen finden.',
+        data: 'Daten lesen, bereinigen und die relevanten Muster herausarbeiten.',
+        content: 'Kernbotschaft und Zielgruppe bestimmen, dann formulieren.',
+        strategy: 'Recherchieren bzw. Annahmen strukturieren und einordnen.',
+        bauen: 'Die Anforderung in kleine Schritte zerlegen und umsetzen.',
+        einstieg: 'In einfacher Sprache erklären und Schritt für Schritt begleiten.',
+        automation: 'Den Ablauf als wiederholbare Schritte definieren.'
+      };
+      return m[skill.subcategory] || 'Die Aufgabe in nachvollziehbaren Schritten bearbeiten.';
+    }
+    function outputHint(skill) {
+      const m = {
+        media: 'Ampel-Report (✓ / ⚠ / ✗) mit konkreten Fundstellen und Empfehlung.',
+        data: 'Bereinigte Datei bzw. kompakte Auswertung mit Kernzahlen.',
+        content: 'Fertiger Text/Struktur im passenden Format, direkt verwendbar.',
+        strategy: 'Verdichtetes Briefing mit Kernaussagen — bei Recherche mit Quellen.',
+        bauen: 'Lauffähige Datei (HTML/Tool), die du direkt öffnen und prüfen kannst.',
+        einstieg: 'Verständliche Anleitung + ein erstes greifbares Ergebnis.',
+        automation: 'Eingerichteter Ablauf, der sich wiederholt ausführen lässt.'
+      };
+      return m[skill.subcategory] || 'Strukturiertes, direkt verwendbares Ergebnis.';
     }
 
     function fileLang(path) {
@@ -3443,6 +3598,15 @@ Eine Slide = eine Botschaft.`}
         }).join('\n');
         // inline code + bold
         h = h.replace(/`([^`\n]+)`/g, '<span class="tk-code">`$1`</span>');
+      } else if (lang === 'javascript' || lang === 'python') {
+        h = h.split('\n').map(line => {
+          const cm = line.match(/^(\s*)(\/\/.*|#.*)$/);
+          if (cm) return `${cm[1]}<span class="tk-fence">${cm[2]}</span>`;
+          let l = line.replace(/(\/\/.*$)/, '<span class="tk-fence">$1</span>');
+          l = l.replace(/&#039;[^&]*?&#039;|&quot;[^&]*?&quot;/g, m => `<span class="tk-code">${m}</span>`);
+          l = l.replace(/\b(function|const|let|var|return|if|else|for|forEach|def|import|from|new|null|true|false)\b/g, '<span class="tk-k">$1</span>');
+          return l;
+        }).join('\n');
       }
       return h;
     }
@@ -3789,7 +3953,7 @@ Eine Slide = eine Botschaft.`}
         {id:'all',label:'Alle Quellen'},
         {id:'pilot-inhouse',label:'pilot inhouse'},
         {id:'gsd',label:'pilot Workflows'},
-        {id:'anthropic',label:'Claude Code'}
+        {id:'anthropic',label:'Anthropic'}
       ];
       const container = document.getElementById('role-chips');
       if (!container) return;
@@ -3929,39 +4093,132 @@ Eine Slide = eine Botschaft.`}
     }
 
     // Animierte Terminal-Demo
-    const EX_TERMINAL_SCRIPT = [
-      { t: 'user', text: '/prototyp Ein Tool, das aus Reichweite und TKP den Kontaktpreis rechnet' },
-      { t: 'sys',  text: '', pause: 400 },
-      { t: 'sys',  text: 'Verstanden. Ich baue dir einen TKP-Rechner …' },
-      { t: 'ok',   text: '✓ Eingabefelder erstellt (Reichweite, TKP, Streuverlust)' },
-      { t: 'ok',   text: '✓ Berechnungslogik implementiert' },
-      { t: 'ok',   text: '✓ pilot-Design angewendet' },
-      { t: 'hl',   text: '→ tkp-rechner.html erstellt · im Browser geöffnet' },
-      { t: 'sys',  text: 'Sag mir, was du noch anpassen möchtest.' }
+    // ===== DEMO-MATRIX: mehrere Skills × Anwendungen, mit Output & echtem Artefakt =====
+    const DEMOS = [
+      { id:'prototyp', name:'Prototyp bauen', trigger:'/prototyp', cases:[
+        { label:'TKP-Rechner bauen', script:[
+          {t:'user',text:'/prototyp Tool: aus Reichweite & TKP den Kontaktpreis rechnen'},
+          {t:'sys',text:'Verstanden. Ich baue dir einen TKP-Rechner …',pause:400},
+          {t:'ok',text:'✓ Eingabefelder: Reichweite, TKP, Streuverlust'},
+          {t:'ok',text:'✓ Berechnungslogik + Live-Update'},
+          {t:'ok',text:'✓ pilot-Design angewendet'},
+          {t:'hl',text:'→ tkp-rechner.html erstellt · im Browser geöffnet'},
+        ], artifact:{label:'Gebauten TKP-Rechner öffnen', href:'./tkp-rechner.html'} },
+        { label:'Umfrage-Auswerter', script:[
+          {t:'user',text:'/prototyp Tool, das eine Umfrage-CSV auswertet und Balken zeigt'},
+          {t:'sys',text:'Alles klar — kleiner Auswerter …',pause:400},
+          {t:'ok',text:'✓ CSV-Upload + Parsing'},
+          {t:'ok',text:'✓ Antworten gruppiert, Prozente berechnet'},
+          {t:'ok',text:'✓ Balkendiagramm gerendert'},
+          {t:'hl',text:'→ umfrage-auswertung.html erstellt'},
+        ], artifact:{label:'Gebauten Umfrage-Auswerter öffnen', href:'./umfrage-auswertung.html'} },
+      ]},
+      { id:'webaudit', name:'webaudit', trigger:'/webaudit', cases:[
+        { label:'Landingpage prüfen', script:[
+          {t:'user',text:'/webaudit herbst-kampagne.html'},
+          {t:'sys',text:'Scanne Code + öffne echten Browser …',pause:400},
+          {t:'ok',text:'✓ Code-Scan · Screenshots (Desktop/Mobil)'},
+          {t:'sys',text:'Score: 78/100'},
+          {t:'hl',text:'🔴 6 Bilder ohne Alt-Text (Barrierefreiheit)'},
+          {t:'hl',text:'🟡 Ladezeit mobil 3,1s — Bilder komprimieren'},
+        ] },
+        { label:'SEO-Check', script:[
+          {t:'user',text:'/webaudit --fokus seo pilot.de'},
+          {t:'sys',text:'Prüfe Meta-Tags, Struktur, Ladezeit …',pause:400},
+          {t:'ok',text:'✓ Title & Description vorhanden'},
+          {t:'hl',text:'🟡 Kein Open-Graph-Bild fürs Teilen'},
+          {t:'hl',text:'🟡 H1 doppelt vergeben'},
+        ] },
+      ]},
+      { id:'deep-research', name:'deep-research', trigger:'/deep-research', cases:[
+        { label:'Markt recherchieren', script:[
+          {t:'user',text:'/deep-research Markt für Refill-Kosmetik in DACH'},
+          {t:'sys',text:'Starte Fächer-Recherche …',pause:400},
+          {t:'ok',text:'✓ 14 Quellen · 9 nach Prüfung übernommen'},
+          {t:'ok',text:'✓ 3 Kernaussagen gegengeprüft'},
+          {t:'hl',text:'→ research-refill.md · Markt ~1,4 Mrd €, +8% p.a.'},
+        ] },
+      ]},
+      { id:'daten-aufbereiten', name:'Daten aufbereiten', trigger:'/daten-aufbereiten', cases:[
+        { label:'GA-Export bereinigen', script:[
+          {t:'user',text:'/daten-aufbereiten export_roh.csv'},
+          {t:'sys',text:'Prüfe & bereinige 4.812 Zeilen …',pause:400},
+          {t:'ok',text:'✓ 214 Duplikate entfernt'},
+          {t:'ok',text:'✓ Datums-/Währungsformate vereinheitlicht'},
+          {t:'hl',text:'→ daten_clean.csv · analysefertig'},
+        ] },
+      ]},
+      { id:'content-recycling', name:'Content Recycling', trigger:'/content-recycling', cases:[
+        { label:'Case → 4 Kanäle', script:[
+          {t:'user',text:'/content-recycling case-study.md'},
+          {t:'sys',text:'Erzeuge kanalgerechte Varianten …',pause:400},
+          {t:'ok',text:'✓ LinkedIn-Post · Instagram-Caption'},
+          {t:'ok',text:'✓ Newsletter-Teaser · Kurzvideo-Skript'},
+          {t:'hl',text:'→ 4 Formate, konsistente Kernbotschaft'},
+        ] },
+      ]},
+      { id:'campaign-check', name:'Campaign Checker', trigger:'/campaign-check', cases:[
+        { label:'Setup vor Launch', script:[
+          {t:'user',text:'/campaign-check Herbst-Kampagne 2026'},
+          {t:'sys',text:'Validiere Tracking, UTM, Budget …',pause:400},
+          {t:'ok',text:'✓ UTM vollständig (12/12) · Tracking aktiv'},
+          {t:'hl',text:'⚠ Zielgruppen-Overlap 34% (Ziel <20%)'},
+          {t:'hl',text:'✗ Landingpage 404 bei "Retargeting-B"'},
+        ] },
+      ]},
     ];
+
+    let _demoSel = { s: 0, c: 0 };
     let _termTimer = null;
-    function playTerminal() {
+
+    function renderDemoMatrix() {
+      const host = document.getElementById('demo-matrix');
+      if (!host) return;
+      host.innerHTML = DEMOS.map((d, si) => `
+        <div class="demo-skill">
+          <div class="demo-skill-head"><span class="demo-skill-name">${escHtml(d.name)}</span><code class="demo-skill-trig">${escHtml(d.trigger)}</code></div>
+          <div class="demo-cases">
+            ${d.cases.map((c, ci) => `<button class="demo-case ${si===_demoSel.s&&ci===_demoSel.c?'active':''}" onclick="playCase(${si},${ci})">${escHtml(c.label)}</button>`).join('')}
+          </div>
+        </div>`).join('');
+    }
+
+    function playCase(si, ci) {
+      _demoSel = { s: si, c: ci };
+      renderDemoMatrix();
+      const d = DEMOS[si], c = d.cases[ci];
+      const title = document.getElementById('demo-term-title');
+      if (title) title.textContent = 'claude code — ' + d.trigger;
+      playScript(c.script, c.artifact);
+    }
+    function replayDemo() { playCase(_demoSel.s, _demoSel.c); }
+    function playTerminal() { renderDemoMatrix(); playCase(_demoSel.s, _demoSel.c); }
+
+    function playScript(script, artifact) {
       const body = document.getElementById('ex-terminal-body');
       if (!body) return;
       if (_termTimer) { clearTimeout(_termTimer); _termTimer = null; }
       body.innerHTML = '';
+      const actions = document.getElementById('demo-actions');
+      if (actions) actions.innerHTML = '';
+      const showArtifact = () => {
+        if (actions && artifact) actions.innerHTML = `<a class="c-cta -yellow-bg demo-artifact" href="${artifact.href}" target="_blank" rel="noopener">▸ ${escHtml(artifact.label)}</a><span class="demo-artifact-note">Echtes Ergebnis — genau dieses Tool hat der Skill gebaut.</span>`;
+      };
       const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      if (reduce) { EX_TERMINAL_SCRIPT.forEach(l => appendTermLine(body, l, l.text)); return; }
+      if (reduce) { script.forEach(l => appendTermLine(body, l, l.text)); showArtifact(); return; }
       let i = 0;
-      function nextLine() {
-        if (i >= EX_TERMINAL_SCRIPT.length) return;
-        const line = EX_TERMINAL_SCRIPT[i];
+      (function next() {
+        if (i >= script.length) { _termTimer = setTimeout(showArtifact, 250); return; }
+        const line = script[i];
         const el = appendTermLine(body, line, '');
+        body.scrollTop = body.scrollHeight;
         if (line.t === 'user') {
-          typeText(el, line, line.text, 0, () => { i++; _termTimer = setTimeout(nextLine, 500); });
+          typeText(el, line, line.text, 0, () => { i++; _termTimer = setTimeout(next, 450); });
         } else {
-          // system/output lines erscheinen als Ganzes, leicht verzögert
-          setTermContent(el, line, line.text);
-          i++;
-          _termTimer = setTimeout(nextLine, line.pause || (line.text ? 550 : 200));
+          setTermContent(el, line, line.text); i++;
+          _termTimer = setTimeout(next, line.pause || (line.text ? 520 : 180));
         }
-      }
-      nextLine();
+      })();
     }
     function appendTermLine(body, line, initial) {
       const el = document.createElement('div');

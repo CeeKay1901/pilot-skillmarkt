@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TKP-Rechner · pilot</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--black:#262626;--white:#fcfcfc;--yellow:#ffe05e;--bg:#f1f1ec;--gray:#7b7a71;--gray-l:#bab8ab}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{font-size:62.5%}
+  body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--black);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;line-height:1.5}
+  .badge{font-size:1.2rem;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--gray);margin-bottom:1rem;display:flex;align-items:center;gap:.8rem}
+  .badge::before{content:'';width:.8rem;height:.8rem;border-radius:50%;background:var(--yellow)}
+  .card{background:var(--white);border:1px solid var(--gray-l);border-radius:1.6rem;box-shadow:0 24px 60px rgba(38,38,38,.08);width:100%;max-width:52rem;overflow:hidden}
+  .head{background:var(--black);color:var(--white);padding:2.8rem 3rem}
+  .head h1{font-size:2.8rem;font-weight:700;letter-spacing:-.01em}
+  .head p{font-size:1.5rem;color:rgba(252,252,252,.65);margin-top:.4rem}
+  .body{padding:3rem}
+  .field{margin-bottom:2rem}
+  .field label{display:block;font-size:1.4rem;font-weight:600;margin-bottom:.8rem}
+  .field .unit{color:var(--gray);font-weight:400}
+  .field input{width:100%;padding:1.2rem 1.6rem;font-size:1.8rem;font-family:inherit;border:1px solid var(--gray-l);border-radius:.8rem;background:var(--bg);transition:.15s}
+  .field input:focus{outline:none;border-color:var(--black);background:var(--white)}
+  .out{background:var(--black);color:var(--white);border-radius:1.2rem;padding:2.4rem;margin-top:2.4rem}
+  .out-row{display:flex;justify-content:space-between;align-items:baseline;padding:1rem 0;border-bottom:1px solid rgba(255,255,255,.1)}
+  .out-row:last-child{border-bottom:none}
+  .out-label{font-size:1.5rem;color:rgba(252,252,252,.7)}
+  .out-val{font-size:2rem;font-weight:700;font-variant-numeric:tabular-nums}
+  .out-hero .out-val{color:var(--yellow);font-size:2.8rem}
+  .foot{text-align:center;margin-top:2rem;font-size:1.3rem;color:var(--gray)}
+  .foot strong{color:var(--black)}
+  .pilot-tag{margin-top:2.4rem;font-size:1.3rem;color:var(--gray)}
+  .pilot-tag b{color:var(--black)}
+</style>
+</head>
+<body>
+  <div class="badge">Von „Prototyp bauen" erstellt · echtes Ergebnis</div>
+  <div class="card">
+    <div class="head">
+      <h1>TKP-Rechner</h1>
+      <p>Reichweite &amp; TKP → Kosten und Netto-Kontaktpreis</p>
+    </div>
+    <div class="body">
+      <div class="field">
+        <label>Brutto-Reichweite <span class="unit">(Kontakte)</span></label>
+        <input id="reach" type="number" value="500000" min="0" step="10000">
+      </div>
+      <div class="field">
+        <label>TKP <span class="unit">(€ pro 1.000 Kontakte)</span></label>
+        <input id="tkp" type="number" value="12" min="0" step="0.5">
+      </div>
+      <div class="field">
+        <label>Streuverlust <span class="unit">(% außerhalb Zielgruppe)</span></label>
+        <input id="waste" type="number" value="30" min="0" max="100" step="5">
+      </div>
+      <div class="out">
+        <div class="out-row"><span class="out-label">Gesamtkosten</span><span class="out-val" id="cost">–</span></div>
+        <div class="out-row"><span class="out-label">Netto-Kontakte (Zielgruppe)</span><span class="out-val" id="net">–</span></div>
+        <div class="out-row out-hero"><span class="out-label">Netto-Kontaktpreis</span><span class="out-val" id="ntkp">–</span></div>
+      </div>
+      <p class="foot">Kosten = Reichweite ÷ 1.000 × TKP · Netto-TKP bezieht die Zielgruppe ein.</p>
+    </div>
+  </div>
+  <p class="pilot-tag">Gebaut mit <b>/prototyp</b> im pilot Skill Marketplace · <a href="./index.html" style="color:var(--black)">zurück zum Katalog</a></p>
+<script>
+  const fmtE=n=>isFinite(n)?n.toLocaleString('de-DE',{style:'currency',currency:'EUR',maximumFractionDigits:2}):'–';
+  const fmtN=n=>isFinite(n)?Math.round(n).toLocaleString('de-DE'):'–';
+  function calc(){
+    const reach=+document.getElementById('reach').value||0;
+    const tkp=+document.getElementById('tkp').value||0;
+    const waste=Math.min(100,Math.max(0,+document.getElementById('waste').value||0));
+    const cost=reach/1000*tkp;
+    const net=reach*(1-waste/100);
+    const ntkp=net>0?cost/(net/1000):NaN;
+    document.getElementById('cost').textContent=fmtE(cost);
+    document.getElementById('net').textContent=fmtN(net);
+    document.getElementById('ntkp').textContent=fmtE(ntkp);
+  }
+  document.querySelectorAll('input').forEach(i=>i.addEventListener('input',calc));
+  calc();
+</script>
+</body>
+</html>
