@@ -1318,7 +1318,9 @@
 
     /* Annotations-Panel */
     .ann-panel { margin-top: 2rem; border-top: 1px solid var(--c-gray-l); padding-top: 1.6rem; }
-    .ann-panel-head { display: flex; align-items: center; gap: 1rem; font-size: 1.5rem; font-weight: 700; margin-bottom: 1.2rem; }
+    .ann-panel-head { display: flex; align-items: center; gap: 1rem; font-size: 1.5rem; font-weight: 700; margin-bottom: 1.2rem; flex-wrap: wrap; }
+    .ann-export { margin-left: auto; background: var(--c-black); color: var(--c-white); border: none; border-radius: var(--radius-pill); font-family: var(--font-mono); font-size: 1.2rem; font-weight: 500; padding: .6rem 1.4rem; cursor: pointer; transition: var(--trans); }
+    .ann-export:hover { background: var(--c-yellow); color: var(--c-black); }
     .ann-count { background: var(--c-black); color: var(--c-white); border-radius: 2rem; font-size: 1.2rem; padding: .1rem .9rem; font-family: var(--font-mono); }
     .ann-composer { background: var(--c-bg); border: 1px solid var(--c-gray-l); border-radius: 1rem; padding: 1.6rem; margin-bottom: 1.6rem; }
     .ann-anchor { font-size: 1.35rem; color: var(--c-gray-m); margin-bottom: 1rem; }
@@ -4610,11 +4612,63 @@ Gib einen priorisierten Report aus:
         if (data) entries.push({ name: id + '/' + list[i], data });
       }
       if (!entries.length) { showToast('Download fehlgeschlagen.'); if (btn) { btn.disabled = false; btn.textContent = label; } return; }
+      // Eigene Anmerkungen als ANMERKUNGEN.md beilegen (für Weiterentwicklung)
+      const annCount = getAnnotations(id).length;
+      if (annCount) entries.push({ name: id + '/ANMERKUNGEN.md', data: new TextEncoder().encode(buildAnnotationsMarkdown(id)) });
       const blob = makeZip(entries);
       triggerDownload(blob, id + '.zip');
-      showToast(`${id}.zip heruntergeladen (${entries.length} Dateien) ⬇`);
+      showToast(`${id}.zip heruntergeladen (${entries.length} Dateien${annCount ? ', inkl. Anmerkungen' : ''}) ⬇`);
       if (btn) { btn.disabled = false; btn.textContent = label; }
     }
+    // ===== ANMERKUNGEN EXPORTIEREN (für Weiterentwicklung in Claude Code) =====
+    function _fence(text) {
+      let max = 0, run = 0;
+      for (const ch of text) { if (ch === '`') { run++; if (run > max) max = run; } else run = 0; }
+      return '`'.repeat(Math.max(3, max + 1));
+    }
+    function buildAnnotationsMarkdown(skillId) {
+      const anns = getAnnotations(skillId);
+      const files = state._files || [];
+      const byPath = {}; files.forEach(f => byPath[f.path] = f.content);
+      const short = p => p.split('/').slice(1).join('/') || p;
+      const today = new Date().toISOString().slice(0, 10);
+      let md = `# Anmerkungen zu \`${skillId}\`\n\n`;
+      md += `Exportiert am ${today} · ${anns.length} Anmerkung${anns.length === 1 ? '' : 'en'} · Quelle: pilot Skill Marketplace\n\n`;
+      md += `> Review-Anmerkungen zum Skill \`${skillId}\`. Jede Anmerkung referenziert eine konkrete Stelle\n`;
+      md += `> (Datei + Zeile) mit Code-Kontext. Die referenzierten Zeilen sind mit \`>\` markiert.\n`;
+      md += `> Nutze diese Datei, um den Skill gezielt weiterzuentwickeln.\n\n`;
+      if (!anns.length) { md += `_Keine Anmerkungen vorhanden._\n`; return md; }
+      const sorted = anns.slice().sort((a, b) => a.file === b.file ? ((a.line || 0) - (b.line || 0)) : a.file.localeCompare(b.file));
+      sorted.forEach((a, i) => {
+        const loc = a.line
+          ? `\`${short(a.file)}\` · Zeile ${a.lineEnd && a.lineEnd > a.line ? a.line + '–' + a.lineEnd : a.line}`
+          : `\`${short(a.file)}\` (ganze Datei)`;
+        md += `---\n\n## ${i + 1}. ${loc}\n\n`;
+        md += `**Von:** ${a.author || 'Anonym'} · ${a.date}\n\n`;
+        md += `**Anmerkung:** ${a.text}\n\n`;
+        if (a.line && byPath[a.file] !== undefined) {
+          const lines = byPath[a.file].split('\n');
+          const s = a.line, e = a.lineEnd || a.line;
+          const from = Math.max(1, s - 2), to = Math.min(lines.length, e + 2);
+          let block = '';
+          for (let L = from; L <= to; L++) block += `${L >= s && L <= e ? '>' : ' '} ${String(L).padStart(4)} | ${lines[L - 1] ?? ''}\n`;
+          const f = _fence(block);
+          md += `**Referenzierte Stelle** (mit Kontext):\n\n${f}\n${block}${f}\n\n`;
+        }
+      });
+      const json = JSON.stringify(sorted.map(a => ({ file: a.file, line: a.line, lineEnd: a.lineEnd || a.line, author: a.author, date: a.date, text: a.text })), null, 2);
+      md += `---\n\n## Rohdaten (JSON)\n\n${_fence(json)}json\n${json}\n${_fence(json)}\n`;
+      return md;
+    }
+    function exportAnnotations() {
+      const skill = state.activeSkill; if (!skill) return;
+      const anns = getAnnotations(skill.id);
+      if (!anns.length) { showToast('Keine Anmerkungen zum Exportieren.'); return; }
+      const md = buildAnnotationsMarkdown(skill.id);
+      triggerDownload(new Blob([md], { type: 'text/markdown;charset=utf-8' }), skill.id + '-anmerkungen.md');
+      showToast(`${anns.length} Anmerkung(en) exportiert ⬇`);
+    }
+
     function downloadCurrentFile() {
       const files = state._files || [];
       const cur = files[Math.min(state.activeFile || 0, files.length - 1)];
@@ -4698,7 +4752,7 @@ Gib einen priorisierten Report aus:
         ${intro}
         ${real ? `<div class="skill-dl-bar">
           <button class="c-cta -black-bg skill-dl-btn" onclick="downloadSkill('${escHtml(skill.id)}', this)">⬇ Skill herunterladen (.zip)</button>
-          <span class="skill-dl-hint">Enthält alle Dateien des Skills — entpacken nach <code>.claude/skills/</code> und loslegen.</span>
+          <span class="skill-dl-hint">Enthält alle Dateien des Skills — entpacken nach <code>.claude/skills/</code> und loslegen. Deine Anmerkungen kommen als <code>ANMERKUNGEN.md</code> mit.</span>
         </div>` : ''}
         <div class="files-browser">
           <div class="files-tree">
@@ -4714,7 +4768,10 @@ Gib einen priorisierten Report aus:
           </div>
         </div>
         <div class="ann-panel" id="ann-panel">
-          <div class="ann-panel-head"><span>Anmerkungen</span><span class="ann-count">${anns.length}</span></div>
+          <div class="ann-panel-head">
+            <span>Anmerkungen</span><span class="ann-count">${anns.length}</span>
+            ${anns.length ? `<button class="ann-export" onclick="exportAnnotations()" title="Anmerkungen mit Referenzen als Markdown herunterladen">⬇ Als .md exportieren</button>` : ''}
+          </div>
           <div class="ann-composer" id="ann-composer" hidden>
             <div class="ann-anchor" id="ann-anchor"></div>
             <textarea id="ann-text" class="ann-text-input" rows="2" placeholder="Deine Anmerkung zu dieser Stelle …"></textarea>
