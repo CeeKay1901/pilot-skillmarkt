@@ -6,8 +6,6 @@ allowed-tools: Read, Bash, Glob, Grep
 
 # webaudit
 
-> PROOF-1783592237-verified-mirror
-
 Zweistufiger Qualitäts-Check einer Website. Ergebnis: ein priorisierter,
 auch für Nicht-Techniker:innen verständlicher Report.
 

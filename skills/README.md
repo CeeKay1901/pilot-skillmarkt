@@ -31,3 +31,20 @@ Anleitung, die Claude Code befolgt …
 
 > Hinweis: Die pilot-eigenen Skills sind einsatzfähige Vorlagen. Die
 > Anthropic/Claude-Code-Skills sind an ihrem offiziellen Verhalten orientiert.
+
+## Beweis: 1:1-Spiegelung selbst prüfen
+
+Der Tab „Aufbau & Dateien" zeigt **byte-genau** die Dateien aus diesem Ordner.
+Nachprüfbar mit:
+
+```
+node tools/verify-mirror.mjs
+```
+
+Das Skript öffnet die Live-Seite in einem echten Browser, liest für **jede**
+Datei den angezeigten Inhalt aus und vergleicht ihn Zeichen für Zeichen mit dem
+Repo-Rohinhalt (`raw.githubusercontent.com/.../main/skills/…`) — inklusive Pfad
+und GitHub-Link. Erwartetes Ergebnis: **68/68 Dateien identisch, 0 Abweichungen.**
+
+Manueller Gegencheck: Skill öffnen → „Auf GitHub ansehen" klicken → die dort
+gezeigte Datei ist exakt die im Viewer.
