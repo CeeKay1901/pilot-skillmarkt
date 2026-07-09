@@ -1,37 +1,29 @@
 ---
 name: wettbewerbs-monitor
-description: Fasst öffentlich sichtbare Wettbewerbsaktivitäten zusammen: Kampagnen, Botschaften, Kanäle und Tonalität — als kompakter Überblick mit Handlungsimpulsen.
-trigger: /wettbewerb
-tags: [strategy, wettbewerb, monitoring, insights, markt]
-difficulty: Mittel
-time: —
-author: Strategie-Team pilot
-version: 1.0.0
+description: Erstellt einen kompakten Überblick über öffentlich sichtbare Wettbewerbsaktivitäten (Kampagnen, Botschaften, Kanäle, Tonalität) mit Handlungsimpulsen. Nutze diesen Skill für regelmäßige Wettbewerbs-Snapshots, Positionierung oder Pitch-Vorbereitung.
+allowed-tools: WebSearch, WebFetch, Write
 ---
 
 # Wettbewerbs-Monitor
 
-Behalte den Markt im Blick, ohne täglich manuell zu recherchieren. Der Skill verdichtet, was Wettbewerber öffentlich tun — Kampagnen, Claims, Kanal-Mix, Tonalität — und leitet daraus Impulse für die eigene Positionierung ab. Ideal als regelmäßiger Wettbewerbs-Snapshot.
-
-## Auslöser — wann ich genutzt werde
-Nutze diesen Skill für: Wettbewerbs-Monitoring · Positionierung · Pitch-Vorbereitung · Markt-Snapshot.
-Stichworte: strategy, wettbewerb, monitoring, insights, markt.
+Behalte den Markt im Blick, ohne täglich manuell zu recherchieren.
 
 ## Vorgehen
-1. Eingabe/Kontext erfassen (Datei, Text oder Auftrag).
-2. Recherchieren bzw. Annahmen strukturieren und einordnen.
-3. Ergebnis strukturiert erzeugen (siehe Ausgabe).
-4. Kurz zusammenfassen, was getan wurde.
+1. **Wettbewerber festlegen** (2–5 Marken) + Betrachtungszeitraum.
+2. Je Marke öffentlich sichtbare Aktivitäten sammeln: aktuelle Kampagnen,
+   Kernbotschaften, genutzte Kanäle, Tonalität, Auffälligkeiten.
+3. **Vergleichen**: Muster, Lücken, Differenzierungspotenziale erkennen.
+4. **Impulse ableiten**: Wo ist Weißraum? Worauf sollte die eigene Marke reagieren?
 
 ## Ausgabe
-Verdichtetes Briefing mit Kernaussagen — bei Recherche mit Quellen.
+```
+# Wettbewerbs-Snapshot — <Zeitraum>
+## <Marke A> — Aktivität, Botschaft, Kanäle
+## <Marke B> — …
+## Muster & Lücken
+## 💡 Impulse für uns
+```
 
 ## Regeln
-- Klar und für Nicht-Techniker:innen verständlich bleiben.
-- Nichts erfinden — nur, was aus der Eingabe hervorgeht.
-- Bei Unklarheit kurz nachfragen statt raten.
-
-## Voraussetzungen
-- Claude Code
-
-_Beispiel-Ausgabe siehe `references/beispiel.md`._
+- Nur öffentlich Sichtbares; nichts erfinden oder unterstellen.
+- Beobachtung von Bewertung trennen; Impulse klar als Empfehlung markieren.

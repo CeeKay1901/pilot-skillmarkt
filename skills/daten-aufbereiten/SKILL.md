@@ -1,37 +1,27 @@
 ---
 name: daten-aufbereiten
-description: Lädt eine unordentliche Tabelle und macht sie sauber: Duplikate raus, Formate vereinheitlicht, Spalten sortiert, Pivot-fertig — inklusive kurzer Zusammenfassung.
-trigger: /daten-aufbereiten
-tags: [data, analytics, excel, csv, datenqualität, productivity]
-difficulty: Einfach
-time: —
-author: Analytics-Team pilot
-version: 1.0.0
+description: Bereinigt unordentliche Tabellen (Excel/CSV) – entfernt Duplikate, vereinheitlicht Formate, markiert Lücken – und macht sie analysefertig, auf Wunsch mit erster Auswertung. Nutze diesen Skill vor jeder Analyse oder zum Aufräumen von Export-Dateien.
+allowed-tools: Read, Write, Bash, Glob
 ---
 
 # Daten aufbereiten
 
-Die undankbarste Arbeit vor jeder Analyse: Daten putzen. Dieser Skill übernimmt das. Er erkennt Duplikate, vereinheitlicht Datums- und Zahlenformate, füllt oder markiert Lücken und bringt die Tabelle in eine analysefertige Struktur. Auf Wunsch gleich mit erster Auswertung. Perfekt für alle, die viel mit Export-Dateien hantieren.
-
-## Auslöser — wann ich genutzt werde
-Nutze diesen Skill für: Rohdaten bereinigen · Vor der Analyse · Export-Dateien aufräumen · Reporting-Vorbereitung.
-Stichworte: data, analytics, excel, csv, datenqualität, productivity.
+Die undankbarste Arbeit vor jeder Analyse — übernommen.
 
 ## Vorgehen
-1. Eingabe/Kontext erfassen (Datei, Text oder Auftrag).
-2. Daten lesen, bereinigen und die relevanten Muster herausarbeiten.
-3. Ergebnis strukturiert erzeugen (siehe Ausgabe).
-4. Kurz zusammenfassen, was getan wurde.
+1. **Datei einlesen** (CSV/Excel). Struktur, Spalten, Zeilenzahl erfassen.
+2. **Bereinigen**:
+   - Duplikate erkennen und entfernen (Regel nennen).
+   - Datums-/Zahlen-/Währungsformate vereinheitlichen.
+   - Leere Pflichtfelder markieren (nicht raten).
+   - Offensichtliche Tippfehler in Kategorien angleichen (nach Rückfrage).
+3. **Analysefertig strukturieren** (konsistente Spalten, saubere Typen).
+4. **Zusammenfassen**, was geändert wurde; auf Wunsch erste Kennzahlen.
 
 ## Ausgabe
-Bereinigte Datei bzw. kompakte Auswertung mit Kernzahlen.
+Bereinigte Datei (`*_clean.csv`) + Änderungs-Log
+(z. B. "214 Duplikate entfernt, Datumsformate vereinheitlicht").
 
 ## Regeln
-- Klar und für Nicht-Techniker:innen verständlich bleiben.
-- Nichts erfinden — nur, was aus der Eingabe hervorgeht.
-- Bei Unklarheit kurz nachfragen statt raten.
-
-## Voraussetzungen
-- Claude Code
-
-_Beispiel-Ausgabe siehe `references/beispiel.md`._
+- Originaldatei nie überschreiben — neue `_clean`-Datei anlegen.
+- Nichts stillschweigend löschen/ändern, was Bedeutung tragen könnte — markieren & melden.

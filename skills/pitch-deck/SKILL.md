@@ -1,37 +1,26 @@
 ---
 name: pitch-deck
-description: Unterstützt bei Pitch-Decks: strukturiert Argumentation, erstellt Slide-Outline, formuliert Value Propositions, passt Tonalität an die Zielgruppe an.
-trigger: /pitch
-tags: [content, new-business, templates, presentations, storytelling]
-difficulty: Mittel
-time: —
-author: New Business Team pilot
-version: 0.8.0
+description: Unterstützt beim Aufbau eines überzeugenden Pitch-Decks – Argumentation, Slide-Outline, Value Proposition und zielgruppengerechte Tonalität. Nutze diesen Skill für New-Business-Pitches, interne oder Investoren-Präsentationen.
+allowed-tools: Read, Write
 ---
 
 # Pitch Deck Assistent
 
-Vom ersten Gedanken bis zur fertigen Struktur: analysiert die Zielgruppe, entwickelt die Story, schlägt eine Slide-Reihenfolge vor und formuliert Key Messages — für New Business, interne oder Investoren-Pitches.
-
-## Auslöser — wann ich genutzt werde
-Nutze diesen Skill für: New-Business-Pitches · Interne Präsentationen · Investor Decks · Workshop-Präsentationen.
-Stichworte: content, new-business, templates, presentations, storytelling.
+Vom ersten Gedanken zur überzeugenden Struktur.
 
 ## Vorgehen
-1. Eingabe/Kontext erfassen (Datei, Text oder Auftrag).
-2. Recherchieren bzw. Annahmen strukturieren und einordnen.
-3. Ergebnis strukturiert erzeugen (siehe Ausgabe).
-4. Kurz zusammenfassen, was getan wurde.
+1. **Kontext klären**: Zielgruppe, Anlass, Kernangebot, gewünschte Wirkung.
+2. **Story entwickeln**: roter Faden Problem → Lösung → Beweis → Angebot.
+3. **Slide-Outline** vorschlagen (siehe Standard unten), je Slide eine Botschaft.
+4. **Key Messages** formulieren, Tonalität an Zielgruppe anpassen.
+
+## Standard-Outline
+1. Hook (unbequeme Wahrheit) · 2. Problem (in Zahlen) · 3. Lösung (3 Punkte)
+· 4. Proof (Case/Ergebnisse) · 5. Team · 6. Nächste Schritte
 
 ## Ausgabe
-Verdichtetes Briefing mit Kernaussagen — bei Recherche mit Quellen.
+Slide-für-Slide-Struktur mit Botschaft + Stichpunkten je Slide.
 
 ## Regeln
-- Klar und für Nicht-Techniker:innen verständlich bleiben.
-- Nichts erfinden — nur, was aus der Eingabe hervorgeht.
-- Bei Unklarheit kurz nachfragen statt raten.
-
-## Voraussetzungen
-- Claude Code
-
-_Beispiel-Ausgabe siehe `references/beispiel.md`._
+- Eine Slide = eine Botschaft.
+- Konkret und beweisgestützt statt Buzzwords.

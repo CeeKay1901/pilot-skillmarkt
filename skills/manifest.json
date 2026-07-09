@@ -4,11 +4,13 @@
  ],
  "briefing-gen": [
   "SKILL.md",
-  "references/beispiel.md"
+  "references/beispiel.md",
+  "references/template.md"
  ],
  "campaign-check": [
   "SKILL.md",
-  "references/beispiel.md"
+  "references/beispiel.md",
+  "references/checkliste.md"
  ],
  "code-check": [
   "SKILL.md",
@@ -16,7 +18,8 @@
  ],
  "content-recycling": [
   "SKILL.md",
-  "references/beispiel.md"
+  "references/beispiel.md",
+  "references/kanaele.md"
  ],
  "dataviz": [
   "SKILL.md",
@@ -66,7 +69,8 @@
  ],
  "persona-builder": [
   "SKILL.md",
-  "references/beispiel.md"
+  "references/beispiel.md",
+  "references/template.md"
  ],
  "pitch-deck": [
   "SKILL.md",
@@ -103,7 +107,8 @@
  ],
  "tonalitaets-check": [
   "SKILL.md",
-  "references/beispiel.md"
+  "references/beispiel.md",
+  "references/styleguide.md"
  ],
  "tool-teilen": [
   "SKILL.md",
@@ -118,11 +123,13 @@
  ],
  "webaudit": [
   "SKILL.md",
-  "references/beispiel.md"
+  "references/beispiel.md",
+  "references/checkliste.md"
  ],
  "webseite-bauen": [
   "SKILL.md",
-  "references/beispiel.md"
+  "references/beispiel.md",
+  "references/design.md"
  ],
  "wettbewerbs-monitor": [
   "SKILL.md",

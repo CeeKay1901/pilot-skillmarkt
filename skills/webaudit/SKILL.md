@@ -1,38 +1,36 @@
 ---
 name: webaudit
-description: Kombiniert Code-Analyse mit echten Browser-Screenshots via Playwright. Prüft UX, Design, Barrierefreiheit (WCAG), Performance, SEO — als strukturierter Report mit Handlungsempfehlungen.
-trigger: /webaudit
-tags: [web, qa, ux, playwright, performance, seo, accessibility]
-difficulty: Mittel
-time: —
-author: Christopher Kipp
-version: 1.2.0
+description: Vollständiger Website-Check aus Code-Analyse und echten Browser-Screenshots (Playwright). Prüft UX, Design, Barrierefreiheit (WCAG), Performance und SEO. Nutze diesen Skill vor jedem Launch, für Redesign-Reviews, Client-Präsentationen oder um eine selbstgebaute Seite zu prüfen.
+allowed-tools: Read, Bash, Glob, Grep
 ---
 
 # webaudit
 
-Ob selbstgebaute Landingpage oder Kunden-Website: webaudit ist pilot's Standard-Check für Qualität. Zweistufige Analyse — Code-Scan plus echter Browser mit Screenshots verschiedener Bildschirmgrößen. Ergebnis: ein klar priorisierter Report, den auch Nicht-Techniker:innen verstehen. Ideal vor jedem Launch und für Client-Reviews.
+Zweistufiger Qualitäts-Check einer Website. Ergebnis: ein priorisierter,
+auch für Nicht-Techniker:innen verständlicher Report.
 
-## Auslöser — wann ich genutzt werde
-Nutze diesen Skill für: Website-Launch-Check · Eigene Landingpage prüfen · Client-Präsentation · Accessibility-Audit.
-Stichworte: web, qa, ux, playwright, performance, seo, accessibility.
+## Wann ich starte
+"Prüf mal diese Seite", "ist die Landingpage okay?", vor Go-Live, Redesign-Check.
 
 ## Vorgehen
-1. Eingabe/Kontext erfassen (Datei, Text oder Auftrag).
-2. Die Anforderung in kleine Schritte zerlegen und umsetzen.
-3. Ergebnis strukturiert erzeugen (siehe Ausgabe).
-4. Kurz zusammenfassen, was getan wurde.
+1. **Ziel bestimmen**: lokale Datei oder URL. Fokus klären (alles / SEO / A11y / Speed).
+2. **Code-Scan** (siehe `references/checkliste.md`): Meta-/OG-Tags, Alt-Texte,
+   Überschriften-Hierarchie, Kontraste, Links, sichtbare Performance-Killer.
+3. **Echter Browser** via Playwright: Seite öffnen, Screenshots in mehreren
+   Viewports (Desktop/Tablet/Mobil), Konsolenfehler und Ladeverhalten prüfen.
+4. **Bewerten & priorisieren**: Findings nach Schwere ordnen.
+5. **Report schreiben** mit Score und konkreten Handlungsempfehlungen.
 
 ## Ausgabe
-Lauffähige Datei (HTML/Tool), die du direkt öffnen und prüfen kannst.
+```
+## webaudit Report — <ziel>
+Score: NN/100
+### 🔴 Kritisch    – <finding> → <fix>
+### 🟡 Empfehlung  – <finding> → <fix>
+### 🟢 Gut         – <was passt>
+```
 
 ## Regeln
-- Klar und für Nicht-Techniker:innen verständlich bleiben.
-- Nichts erfinden — nur, was aus der Eingabe hervorgeht.
-- Bei Unklarheit kurz nachfragen statt raten.
-
-## Voraussetzungen
-- Playwright
-- Claude Code
-
-_Beispiel-Ausgabe siehe `references/beispiel.md`._
+- Jedes Finding mit konkretem, umsetzbarem Fix.
+- In verständlicher Sprache erklären (kein reiner Entwickler-Jargon).
+- Screenshots referenzieren, wo hilfreich.

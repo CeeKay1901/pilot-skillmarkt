@@ -1,37 +1,25 @@
 ---
 name: loop
-description: Führt einen Auftrag wiederholt auf einem gewählten Intervall aus. Ideal für Monitoring, wiederkehrende Checks und iterative Aufgaben. Claude wählt bei Bedarf den Takt selbst.
-trigger: /loop
-tags: [automation, workflow, monitoring, productivity, scheduling]
-difficulty: Einfach
-time: —
-author: Claude Code
-version: 1.0.1
+description: Führt eine Aufgabe wiederholt in einem gewählten Intervall aus – ideal für Monitoring, wiederkehrende Checks und Status-Überwachung. Nutze diesen Skill, wenn etwas regelmäßig geprüft werden soll und bei Änderungen eine Meldung kommen soll.
+allowed-tools: Bash, Read
 ---
 
 # loop
 
-Manche Dinge muss man regelmäßig prüfen — ob eine Seite noch online ist, ob neue Daten da sind, ob ein Wert im grünen Bereich liegt. Mit loop läuft ein Auftrag automatisch im Intervall und meldet sich, wenn etwas passiert. Einfacher Einstieg in kontinuierliche Automatisierung.
+Wiederhole einen Auftrag im Intervall und melde dich bei relevanten Änderungen.
 
-## Auslöser — wann ich genutzt werde
-Nutze diesen Skill für: Website-Monitoring · Regelmäßige Checks · Status-Überwachung · Iterative Aufgaben.
-Stichworte: automation, workflow, monitoring, productivity, scheduling.
+## Wann ich starte
+"Prüf alle X Minuten …", "überwache …", "sag Bescheid, wenn sich … ändert".
 
 ## Vorgehen
-1. Eingabe/Kontext erfassen (Datei, Text oder Auftrag).
-2. Den Ablauf als wiederholbare Schritte definieren.
-3. Ergebnis strukturiert erzeugen (siehe Ausgabe).
-4. Kurz zusammenfassen, was getan wurde.
+1. **Auftrag + Intervall** klären (was prüfen, wie oft, was ist die Meldebedingung).
+2. Die Aufgabe je Durchlauf ausführen und Ergebnis protokollieren.
+3. **Nur bei relevanter Änderung** melden (nicht bei jedem Durchlauf spammen).
+4. Auf Wunsch pausieren/stoppen.
 
 ## Ausgabe
-Eingerichteter Ablauf, der sich wiederholt ausführen lässt.
+Kompaktes Log je Durchlauf + klare Meldung, wenn die Bedingung eintritt.
 
 ## Regeln
-- Klar und für Nicht-Techniker:innen verständlich bleiben.
-- Nichts erfinden — nur, was aus der Eingabe hervorgeht.
-- Bei Unklarheit kurz nachfragen statt raten.
-
-## Voraussetzungen
-- Claude Code
-
-_Beispiel-Ausgabe siehe `references/beispiel.md`._
+- Sinnvolles Intervall wählen (nicht unnötig oft).
+- Klar sagen, wann und warum gemeldet wird.

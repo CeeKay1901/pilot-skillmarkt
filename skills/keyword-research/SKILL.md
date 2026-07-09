@@ -1,37 +1,28 @@
 ---
 name: keyword-research
-description: Strukturierte Keyword-Analysen: gruppiert nach Suchintention, bewertet Schwierigkeit und erstellt Content-Cluster-Empfehlungen für organisches Wachstum.
-trigger: /keywords
-tags: [seo, analytics, content, keywords, content-strategy]
-difficulty: Mittel
-time: —
-author: SEO-Team pilot
-version: 1.1.0
+description: Strukturierte SEO-Keyword-Analyse – gruppiert nach Suchintention, mit Schwierigkeits-Einschätzung und Content-Cluster-Empfehlungen. Nutze diesen Skill für SEO-Strategie, Content-Planung oder Nischen-Identifikation.
+allowed-tools: WebSearch, WebFetch, Write
 ---
 
 # Keyword Researcher
 
-Kombiniert SEO-Expertise mit KI. Analysiert Seed-Keywords, erweitert sie systematisch, gruppiert nach Intent und Thema und empfiehlt einen Content-Cluster-Plan. Als erste, schnelle Analyse sehr wertvoll — ersetzt kein professionelles SEO-Tool, beschleunigt aber die Strategie.
-
-## Auslöser — wann ich genutzt werde
-Nutze diesen Skill für: SEO-Strategie · Content-Planning · Wettbewerbsanalyse · Nischen-Identifikation.
-Stichworte: seo, analytics, content, keywords, content-strategy.
+Schnelle, strukturierte Keyword-Analyse als Basis für Content-Strategie.
 
 ## Vorgehen
-1. Eingabe/Kontext erfassen (Datei, Text oder Auftrag).
-2. Gegen Konventionen & Best Practices prüfen, Abweichungen finden.
-3. Ergebnis strukturiert erzeugen (siehe Ausgabe).
-4. Kurz zusammenfassen, was getan wurde.
+1. **Seed-Keywords & Ziel** klären (Thema, Zielgruppe, Markt).
+2. **Erweitern**: verwandte Begriffe, Fragen, Long-Tail systematisch sammeln.
+3. **Nach Intent gruppieren**: informational / navigational / transaktional.
+4. **Einschätzen**: grobe Wettbewerbs-/Schwierigkeitsindikation je Cluster.
+5. **Content-Cluster empfehlen**: Pillar + unterstützende Themen.
 
 ## Ausgabe
-Ampel-Report (✓ / ⚠ / ✗) mit konkreten Fundstellen und Empfehlung.
+```
+# Keyword-Analyse: <Thema>
+## Cluster 1: <Name> (Intent: …)
+   - keyword — Intent — Schwierigkeit (niedrig/mittel/hoch)
+## Content-Empfehlung: Pillar + Support-Artikel
+```
 
 ## Regeln
-- Klar und für Nicht-Techniker:innen verständlich bleiben.
-- Nichts erfinden — nur, was aus der Eingabe hervorgeht.
-- Bei Unklarheit kurz nachfragen statt raten.
-
-## Voraussetzungen
-- Claude Code
-
-_Beispiel-Ausgabe siehe `references/beispiel.md`._
+- Ehrlich einordnen: ersetzt kein professionelles SEO-Tool, ist die schnelle Erst-Analyse.
+- Intent-Zuordnung nachvollziehbar begründen.

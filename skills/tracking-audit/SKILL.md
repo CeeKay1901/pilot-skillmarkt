@@ -1,37 +1,28 @@
 ---
 name: tracking-audit
-description: Prüft deine Tracking-Konfiguration: UTM-Konventionen, GA4-Events, Meta/LinkedIn Pixel und Consent. Findet fehlende oder inkonsistente Tags, bevor Daten verloren gehen.
-trigger: /tracking-check
-tags: [media, analytics, tracking, ga4, pixel, utm]
-difficulty: Mittel
-time: —
-author: Media-Team pilot
-version: 1.0.0
+description: Validiert die Tracking-Konfiguration einer Kampagne oder Website – UTM-Konventionen, GA4-Events, Meta/LinkedIn-Pixel und Consent – und findet fehlende oder inkonsistente Tags. Nutze diesen Skill vor dem Launch oder wenn Daten fehlen/unplausibel wirken.
+allowed-tools: Read, Bash, Grep, Glob
 ---
 
 # Tracking-Audit
 
-Kaputtes Tracking merkt man oft erst, wenn die Kampagne schon läuft und Daten fehlen. Dieser Skill prüft deine Tracking-Landschaft gegen die pilot-Namenskonventionen und gängige Best Practices — inklusive Consent-Mode und Event-Vollständigkeit. So startest du mit sauberer Datenbasis.
-
-## Auslöser — wann ich genutzt werde
-Nutze diesen Skill für: Vor Kampagnen-Launch · Tracking-Setup prüfen · Consent-Check · Datenqualität sichern.
-Stichworte: media, analytics, tracking, ga4, pixel, utm.
+Sichere eine saubere Datenbasis, bevor die Kampagne startet.
 
 ## Vorgehen
-1. Eingabe/Kontext erfassen (Datei, Text oder Auftrag).
-2. Gegen Konventionen & Best Practices prüfen, Abweichungen finden.
-3. Ergebnis strukturiert erzeugen (siehe Ausgabe).
-4. Kurz zusammenfassen, was getan wurde.
+1. **Bestand erfassen**: UTM-Liste, Tag-/GTM-Export, Pixel-IDs, Consent-Setup.
+2. **UTM prüfen**: Konvention (source/medium/campaign), Vollständigkeit, Konsistenz.
+3. **Events prüfen**: definierte GA4-/Pixel-Events vorhanden, feuern einmalig, korrekt benannt.
+4. **Consent prüfen**: Tracking startet erst nach Einwilligung (Consent-Mode).
+5. **Report** mit Ampel + Fix je Fund.
 
 ## Ausgabe
-Ampel-Report (✓ / ⚠ / ✗) mit konkreten Fundstellen und Empfehlung.
+```
+Tracking-Audit — "<Kampagne>"
+✓ UTM-Konvention eingehalten
+⚠ <Event doppelt / uneinheitlich> → <Fix>
+✗ <Consent fehlt / Event feuert nicht> → <Fix>
+```
 
 ## Regeln
-- Klar und für Nicht-Techniker:innen verständlich bleiben.
-- Nichts erfinden — nur, was aus der Eingabe hervorgeht.
-- Bei Unklarheit kurz nachfragen statt raten.
-
-## Voraussetzungen
-- Claude Code
-
-_Beispiel-Ausgabe siehe `references/beispiel.md`._
+- Klar sagen, was blockt (✗) und was nur Optimierung ist (⚠).
+- Für tiefes Debugging auf GTM/Tag-Assistant verweisen — hier: strukturierte Erstprüfung.

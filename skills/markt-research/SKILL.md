@@ -1,37 +1,38 @@
 ---
 name: markt-research
-description: Recherchiert strukturiert zu Markt, Wettbewerb und Zielgruppe — mit nachvollziehbaren Quellen. Ergebnis: verdichtetes Briefing statt 20 offener Tabs.
-trigger: /markt-research
-tags: [strategy, research, insights, markt, wettbewerb]
-difficulty: Mittel
-time: —
-author: Strategie-Team pilot
-version: 1.1.0
+description: Strukturierte Markt-, Wettbewerbs- und Zielgruppen-Recherche mit geprüften Quellen. Nutze diesen Skill für New-Business-Vorbereitung, Marktanalysen, Pitch-Recherche oder wenn belastbare, belegte Fakten zu einem Thema gebraucht werden.
+allowed-tools: WebSearch, WebFetch, Write
 ---
 
 # Markt-Research
 
-Statt stundenlang selbst zu googeln, gibst du das Thema vor — Claude recherchiert strukturiert, prüft mehrere Quellen und verdichtet die Erkenntnisse zu einem klaren Research-Briefing: Marktgröße, Trends, Wettbewerber, Zielgruppen-Insights. Jede Aussage mit Quellenangabe, damit du sie belegen kannst.
+Liefere ein verdichtetes, belegtes Research-Briefing statt 20 offener Tabs.
 
-## Auslöser — wann ich genutzt werde
-Nutze diesen Skill für: New-Business-Recherche · Marktanalyse · Zielgruppen-Insights · Pitch-Vorbereitung.
-Stichworte: strategy, research, insights, markt, wettbewerb.
+## Wann ich starte
+"Recherchier mal den Markt für …", Pitch-/Konzept-Vorbereitung, "was gibt es zu … ?".
 
 ## Vorgehen
-1. Eingabe/Kontext erfassen (Datei, Text oder Auftrag).
-2. Recherchieren bzw. Annahmen strukturieren und einordnen.
-3. Ergebnis strukturiert erzeugen (siehe Ausgabe).
-4. Kurz zusammenfassen, was getan wurde.
+1. **Scope schärfen**: Thema, Markt/Region, Zeithorizont, Zweck. Bei Bedarf 1–2 Rückfragen.
+2. **Breit recherchieren**: mehrere Suchen aus verschiedenen Blickwinkeln
+   (Marktgröße, Trends, Wettbewerb, Zielgruppe, Regulatorik).
+3. **Quellen prüfen**: bevorzugt aktuelle, seriöse Quellen; Datum & Herkunft beachten;
+   sich widersprechende Angaben kennzeichnen.
+4. **Verdichten** zu einem Briefing (siehe Struktur unten).
+5. **Belegen**: jede Kernaussage mit Quelle (Nummer + Link am Ende).
 
 ## Ausgabe
-Verdichtetes Briefing mit Kernaussagen — bei Recherche mit Quellen.
+```
+# Research-Briefing: <Thema>
+## Executive Summary (3–5 Sätze)
+## Marktgröße & Wachstum        [Quelle]
+## Trends & Treiber              [Quelle]
+## Wettbewerb                    [Quelle]
+## Zielgruppen-Insights          [Quelle]
+## Chancen / Risiken
+## Quellen (nummeriert, mit Link + Datum)
+```
 
 ## Regeln
-- Klar und für Nicht-Techniker:innen verständlich bleiben.
-- Nichts erfinden — nur, was aus der Eingabe hervorgeht.
-- Bei Unklarheit kurz nachfragen statt raten.
-
-## Voraussetzungen
-- Claude Code
-
-_Beispiel-Ausgabe siehe `references/beispiel.md`._
+- Keine unbelegten Zahlen. Unsicherheiten offen benennen.
+- Quellen nachvollziehbar machen (kein "das weiß man").
+- Deutsch, präsentationsfähig.

@@ -1,37 +1,29 @@
 ---
 name: meeting-notes
-description: Wandelt Mitschriften oder Transkripte in strukturierte Protokolle: Agenda, Beschlüsse, Action Items (wer, was, bis wann), nächste Schritte.
-trigger: /meeting
-tags: [productivity, collaboration, meetings, documentation, action-items]
-difficulty: Einfach
-time: —
-author: Collaboration-Team pilot
-version: 1.0.1
+description: Wandelt rohe Mitschriften oder Transkripte in strukturierte Protokolle mit Agenda, Beschlüssen und Action Items (wer, was, bis wann). Nutze diesen Skill nach Meetings, für Kickoff-Protokolle oder aus Sprachnotizen.
+allowed-tools: Read, Write
 ---
 
 # Meeting Notes
 
-Versteht unstrukturierten Meeting-Input — auch aus Sprachnotizen — und formt daraus saubere, actionable Protokolle im pilot-Format. Hilfreich immer dann, wenn während des Meetings keine Zeit für strukturierte Notizen bleibt.
-
-## Auslöser — wann ich genutzt werde
-Nutze diesen Skill für: Client-Meetings · Strategierunden · Kickoff-Protokolle · Retrospektiven.
-Stichworte: productivity, collaboration, meetings, documentation, action-items.
+Aus unstrukturiertem Input ein sauberes, actionable Protokoll.
 
 ## Vorgehen
-1. Eingabe/Kontext erfassen (Datei, Text oder Auftrag).
-2. Kernbotschaft und Zielgruppe bestimmen, dann formulieren.
-3. Ergebnis strukturiert erzeugen (siehe Ausgabe).
-4. Kurz zusammenfassen, was getan wurde.
+1. **Input lesen** (Mitschrift, Transkript, Sprachnotiz-Text).
+2. **Strukturieren** nach Format: Teilnehmer, Agenda, Beschlüsse, Action Items, nächste Schritte.
+3. **Action Items schärfen**: je Aufgabe Verantwortliche:r + Frist. Fehlt Info → `[?]`.
+4. Knapp und klar formulieren.
 
 ## Ausgabe
-Fertiger Text/Struktur im passenden Format, direkt verwendbar.
+```
+## Protokoll — <Anlass> (<Datum>)
+Teilnehmer: …
+Beschlüsse: …
+Action Items:
+- [ ] <wer>: <was> (bis <wann>)
+Nächste Schritte: …
+```
 
 ## Regeln
-- Klar und für Nicht-Techniker:innen verständlich bleiben.
-- Nichts erfinden — nur, was aus der Eingabe hervorgeht.
-- Bei Unklarheit kurz nachfragen statt raten.
-
-## Voraussetzungen
-- Claude Code
-
-_Beispiel-Ausgabe siehe `references/beispiel.md`._
+- Nichts hinzudichten — nur, was im Input steht. Unklares als `[?]` markieren.
+- Action Items niemals ohne Verantwortliche:n lassen (sonst `[?]`).

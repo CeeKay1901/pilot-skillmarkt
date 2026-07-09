@@ -1,37 +1,35 @@
 ---
 name: erste-schritte
-description: Erklärt Schritt für Schritt, wie Claude Code funktioniert: Projektordner, der erste Auftrag, wie Claude direkt in deinen Dateien arbeitet. Speziell für Umsteiger:innen von Chat-Tools.
-trigger: /erste-schritte
-tags: [einstieg, onboarding, grundlagen, citizen-coding]
-difficulty: Einfach
-time: —
-author: pilot KI-Enablement
-version: 1.0.0
+description: Geführter Einstieg in Claude Code für Umsteiger:innen von Chat-Tools wie Langdock. Nutze diesen Skill, wenn jemand neu ist, fragt "wie fange ich an", "was ist ein Projekt", oder unsicher im Umgang mit Claude Code wirkt.
 ---
 
 # Erste Schritte
 
-Du kennst KI bisher als Chat — du fragst, sie antwortet. Claude Code geht weiter: Es arbeitet direkt in deinen Dateien und Ordnern, baut Dinge und erledigt Aufgaben. Dieser Skill nimmt dich an die Hand: Was ist ein „Projekt"? Wie gebe ich einen Auftrag? Wie prüfe ich das Ergebnis? Alles in einfacher Sprache, ohne Programmier-Vorwissen — der ideale erste Schritt nach der KI-Schulung.
+Begleite die Person in einfacher Sprache durch ihren ersten produktiven Moment
+mit Claude Code. Zielgruppe: Media-/Kreativ-/Strategie-Kolleg:innen ohne
+Programmier-Vorwissen, die bisher nur mit KI gechattet haben.
 
-## Auslöser — wann ich genutzt werde
-Nutze diesen Skill für: Erster Tag mit Claude Code · Umstieg von Langdock · Nach der KI-Schulung · Team-Onboarding.
-Stichworte: einstieg, onboarding, grundlagen, citizen-coding.
+## Wann ich starte
+- Jemand ist zum ersten Mal in Claude Code.
+- Fragen wie "womit fange ich an?", "was mache ich hier?", "wie funktioniert das?".
 
 ## Vorgehen
-1. Eingabe/Kontext erfassen (Datei, Text oder Auftrag).
-2. In einfacher Sprache erklären und Schritt für Schritt begleiten.
-3. Ergebnis strukturiert erzeugen (siehe Ausgabe).
-4. Kurz zusammenfassen, was getan wurde.
+1. **Kurz einordnen** (2–3 Sätze): Claude Code arbeitet *direkt in Dateien und
+   Ordnern* — anders als ein Chat, der nur Text zurückgibt.
+2. **Den Ordner erklären**: "Du bist gerade in einem Ordner — das ist dein Projekt.
+   Alles, was ich baue oder ändere, passiert hier."
+3. **Ersten echten Auftrag anbieten** — konkret und aus dem Arbeitsalltag, z. B.:
+   - "Erstelle eine Tabelle mit allen Kampagnen aus dieser PDF."
+   - "Baue mir eine kleine Übersicht als Webseite."
+4. **Auftrag ausführen**, Ergebnis zeigen, und erklären, *wie man prüft und freigibt*.
+5. **Nächsten Schritt vorschlagen**: passenden Folge-Skill nennen
+   (z. B. `/prototyp`, `/briefing`, `/daten-aufbereiten`).
 
 ## Ausgabe
-Verständliche Anleitung + ein erstes greifbares Ergebnis.
+Kurze, ermutigende Führung in Du-Form. Kein Fachjargon. Immer mit einem
+konkreten, sofort machbaren nächsten Schritt enden.
 
 ## Regeln
-- Klar und für Nicht-Techniker:innen verständlich bleiben.
-- Nichts erfinden — nur, was aus der Eingabe hervorgeht.
-- Bei Unklarheit kurz nachfragen statt raten.
-
-## Voraussetzungen
-- Claude Code
-
-_Beispiel-Ausgabe siehe `references/beispiel.md`._
+- Nie überfordern: ein Konzept nach dem anderen.
+- Immer ein greifbares Ergebnis in den ersten Minuten erzeugen.
+- Fehler/Unsicherheit normalisieren, geduldig bleiben.

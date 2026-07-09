@@ -1,37 +1,32 @@
 ---
 name: tonalitaets-check
-description: Prüft einen Text gegen definierte Marken-Tonalität und Sprachregeln (Duz/Siez, Claims, No-Gos) und schlägt konkrete Umformulierungen vor.
-trigger: /tonalitaet
-tags: [content, copywriting, branding, ci, qa]
-difficulty: Einfach
-time: —
-author: Content-Team pilot
-version: 1.0.0
+description: Prüft einen Text gegen die Marken-Tonalität und Sprachregeln (Anrede, Claims, No-Go-Wörter) und schlägt markengerechte Umformulierungen vor. Nutze diesen Skill vor Text-Freigaben, für Social-Copy, Newsletter oder um Konsistenz über mehrere Autor:innen zu sichern.
+allowed-tools: Read
 ---
 
 # Tonalitäts-Check
 
-Jede Marke hat ihre Stimme — und die soll über alle Texte konsistent bleiben. Dieser Skill kennt die Tonalitäts-Vorgaben (aus deinem Style-Guide) und prüft Texte darauf: Anrede, Satzlänge, verbotene Begriffe, Claim-Konformität. Findet Abweichungen und liefert markengerechte Alternativen.
+Prüfe Texte gegen den Marken-Styleguide und mach sie markengerecht.
 
-## Auslöser — wann ich genutzt werde
-Nutze diesen Skill für: Text-Freigabe · Marken-Konsistenz · Style-Guide-Check · Social-Copy prüfen.
-Stichworte: content, copywriting, branding, ci, qa.
+## Wann ich starte
+"Passt das zu unserer Tonalität?", "check mal diesen Text", vor Freigabe.
+
+## Was ich brauche
+Den Text + die Marken-Regeln. Liegt ein Styleguide vor (z. B.
+`references/styleguide.md` oder eine Kundendatei), diesen nutzen; sonst nach
+den wichtigsten Regeln fragen (Anrede, Ton, No-Go-Wörter, Claim).
 
 ## Vorgehen
-1. Eingabe/Kontext erfassen (Datei, Text oder Auftrag).
-2. Kernbotschaft und Zielgruppe bestimmen, dann formulieren.
-3. Ergebnis strukturiert erzeugen (siehe Ausgabe).
-4. Kurz zusammenfassen, was getan wurde.
+1. Regeln laden/erfragen.
+2. Text Zeile für Zeile prüfen: Anrede (Du/Sie), Tonalität, Satzlänge,
+   verbotene Begriffe, Claim-Konformität.
+3. Abweichungen markieren (⚠) und je Fall eine konkrete Alternative vorschlagen.
+4. Kurzes Gesamturteil: passt / kleinere Anpassungen / überarbeiten.
 
 ## Ausgabe
-Fertiger Text/Struktur im passenden Format, direkt verwendbar.
+Liste der Findings mit Fundstelle + Vorschlag, dann 1-Satz-Fazit.
+Auf Wunsch: die überarbeitete Fassung.
 
 ## Regeln
-- Klar und für Nicht-Techniker:innen verständlich bleiben.
-- Nichts erfinden — nur, was aus der Eingabe hervorgeht.
-- Bei Unklarheit kurz nachfragen statt raten.
-
-## Voraussetzungen
-- Claude Code
-
-_Beispiel-Ausgabe siehe `references/beispiel.md`._
+- Nur an den definierten Regeln messen — keine eigenen Stil-Vorlieben aufdrängen.
+- Inhaltliche Kernaussage nie verändern, nur Ton/Form.

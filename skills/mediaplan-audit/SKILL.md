@@ -1,37 +1,31 @@
 ---
 name: mediaplan-audit
-description: Lädt deinen Mediaplan (Excel/CSV) und prüft ihn auf Rechenfehler, Budget-Abweichungen, Lücken im Flighting und unplausible KPIs — bevor er zum Kunden geht.
-trigger: /mediaplan-check
-tags: [media, analytics, qa, mediaplan, excel, budget]
-difficulty: Mittel
-time: —
-author: Media-Team pilot
-version: 1.0.0
+description: Prüft einen Mediaplan (Excel/CSV) auf Rechenfehler, Budget-Abweichungen, Flighting-Lücken und unplausible KPIs. Nutze diesen Skill vor der Kunden-Freigabe eines Mediaplans oder für ein Vier-Augen-Review.
+allowed-tools: Read, Bash, Glob
 ---
 
 # Mediaplan-Audit
 
-Media-Pläne sind komplex und Flüchtigkeitsfehler teuer. Dieser Skill liest deinen Plan ein und prüft systematisch: Summiert sich das Budget korrekt? Passen Reichweite und TKP zusammen? Gibt es Lücken oder Overlaps im Timing? Ergebnis: eine klare Fehlerliste, priorisiert nach Relevanz.
-
-## Auslöser — wann ich genutzt werde
-Nutze diesen Skill für: Mediaplan-Review · Budget-Kontrolle · Flighting-Check · Vor Kunden-Freigabe.
-Stichworte: media, analytics, qa, mediaplan, excel, budget.
+Fange Flüchtigkeitsfehler im Mediaplan ab, bevor er zum Kunden geht.
 
 ## Vorgehen
-1. Eingabe/Kontext erfassen (Datei, Text oder Auftrag).
-2. Gegen Konventionen & Best Practices prüfen, Abweichungen finden.
-3. Ergebnis strukturiert erzeugen (siehe Ausgabe).
-4. Kurz zusammenfassen, was getan wurde.
+1. **Plan einlesen** (Excel/CSV). Spalten identifizieren: Kanal, Reichweite, TKP,
+   Kosten, Zeitraum, Ziel-KPI.
+2. **Rechnen prüfen**: Kosten = Reichweite/1000 × TKP; Summen = Σ Kanäle;
+   Prozentwerte konsistent.
+3. **Plausibilität**: TKPs im Marktrahmen? Reichweiten realistisch? Budgetverteilung sinnvoll?
+4. **Flighting**: Lücken oder Overlaps im Timing? Kampagnenzeitraum abgedeckt?
+5. **Report** mit priorisierten Findings (Zeilenbezug).
 
 ## Ausgabe
-Ampel-Report (✓ / ⚠ / ✗) mit konkreten Fundstellen und Empfehlung.
+```
+Mediaplan-Audit — "<Datei>"
+✓ Summen korrekt (Gesamt … = Σ Kanäle)
+⚠ <Plausibilität> — bitte prüfen
+✗ Rechenfehler Zeile N: <Detail>
+```
 
 ## Regeln
-- Klar und für Nicht-Techniker:innen verständlich bleiben.
-- Nichts erfinden — nur, was aus der Eingabe hervorgeht.
-- Bei Unklarheit kurz nachfragen statt raten.
-
-## Voraussetzungen
-- Claude Code
-
-_Beispiel-Ausgabe siehe `references/beispiel.md`._
+- Immer konkreten Zeilen-/Zellbezug angeben.
+- Rechnerische Fehler (✗) von Plausibilitäts-Hinweisen (⚠) trennen.
+- Nichts am Plan ändern ohne Auftrag — nur prüfen und melden.

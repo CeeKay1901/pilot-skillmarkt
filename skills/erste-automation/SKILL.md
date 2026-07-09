@@ -1,37 +1,32 @@
 ---
 name: erste-automation
-description: Nenne eine wiederkehrende manuelle Aufgabe — Claude Code baut daraus einen wiederverwendbaren Ablauf, den du immer wieder starten kannst.
-trigger: /erste-automation
-tags: [einstieg, citizen-coding, automation, produktivität]
-difficulty: Einfach
-time: —
-author: pilot KI-Enablement
-version: 1.0.0
+description: Verwandelt eine wiederkehrende manuelle Routine in einen wiederholbaren Ablauf. Nutze diesen Skill, wenn jemand eine Aufgabe "jede Woche von Hand" macht, "immer das Gleiche" tut, oder etwas automatisieren möchte.
+allowed-tools: Read, Write, Bash, Glob
 ---
 
 # Erste Automation
 
-Jede:r hat diese eine Aufgabe, die man jede Woche stumpf von Hand macht: Dateien umbenennen, Daten aus Mails ziehen, immer denselben Report-Aufbau. Dieser Skill hilft dir, genau diese Routine einmal zu beschreiben und in einen wiederholbaren Ablauf zu verwandeln — dein erster echter Automations-Erfolg im Citizen Coding.
+Hilf einer Person, ihre erste kleine Automation zu bauen — den ersten echten
+Citizen-Coding-Erfolg. Fokus: eine konkrete, wiederkehrende Routine.
 
-## Auslöser — wann ich genutzt werde
-Nutze diesen Skill für: Wiederkehrende Aufgabe automatisieren · Dateien sortieren · Erste Automation.
-Stichworte: einstieg, citizen-coding, automation, produktivität.
+## Wann ich starte
+Anzeichen: "das mache ich jede Woche", "immer dieselben Schritte",
+"kann man das automatisieren?".
 
 ## Vorgehen
-1. Eingabe/Kontext erfassen (Datei, Text oder Auftrag).
-2. In einfacher Sprache erklären und Schritt für Schritt begleiten.
-3. Ergebnis strukturiert erzeugen (siehe Ausgabe).
-4. Kurz zusammenfassen, was getan wurde.
+1. **Routine einfangen**: Lass die Person die Aufgabe in eigenen Worten beschreiben.
+   Frage gezielt nach: Auslöser, Eingaben, Schritte, Ergebnis, wie oft.
+2. **In klare Schritte zerlegen** und der Person zur Bestätigung zeigen.
+3. **Umsetzen** als kleines Skript oder wiederholbaren Ablauf. Nur benötigte
+   Dateien/Ordner anfassen. Nichts löschen ohne Rückfrage.
+4. **Testen** an einem echten Beispiel und Ergebnis zeigen.
+5. **Speichern & erklären**, wie man es beim nächsten Mal erneut startet.
 
 ## Ausgabe
-Verständliche Anleitung + ein erstes greifbares Ergebnis.
+Ein funktionierender, wiederholbarer Ablauf + eine 1-Satz-Anleitung
+"So startest du es wieder".
 
 ## Regeln
-- Klar und für Nicht-Techniker:innen verständlich bleiben.
-- Nichts erfinden — nur, was aus der Eingabe hervorgeht.
-- Bei Unklarheit kurz nachfragen statt raten.
-
-## Voraussetzungen
-- Claude Code
-
-_Beispiel-Ausgabe siehe `references/beispiel.md`._
+- Klein anfangen: eine Routine, sauber gelöst.
+- Destruktive Schritte (löschen, überschreiben) immer vorher bestätigen lassen.
+- Verständlich erklären, was passiert — keine Blackbox.

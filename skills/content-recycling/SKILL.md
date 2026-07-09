@@ -1,37 +1,25 @@
 ---
 name: content-recycling
-description: Aus einem bestehenden Inhalt (Artikel, Case, Whitepaper) macht der Skill kanalgerechte Varianten: LinkedIn-Post, Instagram-Caption, Newsletter-Teaser, Kurzvideo-Skript.
-trigger: /content-recycling
-tags: [content, social-media, repurposing, kreativ, productivity]
-difficulty: Einfach
-time: —
-author: Content-Team pilot
-version: 1.0.0
+description: Macht aus einem bestehenden Inhalt (Artikel, Case, Whitepaper) kanalgerechte Varianten – LinkedIn, Instagram, Newsletter, Kurzvideo-Skript – mit passender Länge, Tonalität und Hashtags. Nutze diesen Skill für Multichannel-Content und Social-Media-Planung.
+allowed-tools: Read, Write
 ---
 
 # Content Recycling
 
-Guter Content ist teuer — also hol das Maximum raus. Du gibst ein bestehendes Asset, Claude erzeugt daraus kanalgerechte Formate mit passender Länge, Tonalität und Hashtags. Von einem Case entstehen so in Minuten Posts für alle relevanten Kanäle, konsistent in der Botschaft.
+Hol aus einem Asset das Maximum: kanalgerechte Formate in Minuten.
 
-## Auslöser — wann ich genutzt werde
-Nutze diesen Skill für: Multichannel-Content · Social-Media-Planung · Content aus Case Studies · Newsletter.
-Stichworte: content, social-media, repurposing, kreativ, productivity.
+## Wann ich starte
+"Mach aus diesem Case Social-Posts", "adaptiere den Artikel für LinkedIn/IG …".
 
 ## Vorgehen
-1. Eingabe/Kontext erfassen (Datei, Text oder Auftrag).
-2. Kernbotschaft und Zielgruppe bestimmen, dann formulieren.
-3. Ergebnis strukturiert erzeugen (siehe Ausgabe).
-4. Kurz zusammenfassen, was getan wurde.
+1. **Quelle lesen** und die Kernbotschaft in einem Satz festhalten.
+2. **Zielkanäle klären** (Default: LinkedIn, Instagram, Newsletter, Kurzvideo).
+3. Je Kanal eine Variante nach `references/kanaele.md` (Länge, Ton, CTA, Hashtags).
+4. **Konsistenz sichern**: dieselbe Kernbotschaft, kanalgerecht verpackt.
 
 ## Ausgabe
-Fertiger Text/Struktur im passenden Format, direkt verwendbar.
+Pro Kanal ein fertiger, direkt verwendbarer Text-Block, klar beschriftet.
 
 ## Regeln
-- Klar und für Nicht-Techniker:innen verständlich bleiben.
-- Nichts erfinden — nur, was aus der Eingabe hervorgeht.
-- Bei Unklarheit kurz nachfragen statt raten.
-
-## Voraussetzungen
-- Claude Code
-
-_Beispiel-Ausgabe siehe `references/beispiel.md`._
+- Kein plumpes Copy-Paste — echte Anpassung an Kanal & Publikum.
+- Kernbotschaft bleibt über alle Formate identisch.

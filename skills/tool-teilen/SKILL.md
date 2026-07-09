@@ -1,37 +1,25 @@
 ---
 name: tool-teilen
-description: Bring dein selbstgebautes Tool zu den Kolleg:innen: als teilbare Datei, im internen Netz oder als Link. Claude erklärt und macht die passenden Schritte.
-trigger: /tool-teilen
-tags: [bauen, citizen-coding, teilen, collaboration]
-difficulty: Einfach
-time: —
-author: pilot KI-Enablement
-version: 0.9.0
+description: Bereitet ein selbstgebautes Tool oder eine Seite zum Teilen mit dem Team auf – als eigenständige Datei, im Team-Ordner oder als interner Link. Nutze diesen Skill, wenn jemand sein fertiges Tool weitergeben oder "online stellen" will.
+allowed-tools: Read, Write, Bash, Glob
 ---
 
 # Tool teilen
 
-Ein Tool nützt erst, wenn andere es nutzen können. Dieser Skill hilft dir, deinen Prototyp oder deine Seite so aufzubereiten, dass du sie einfach weitergeben kannst — als eigenständige Datei zum Doppelklicken, im gemeinsamen Laufwerk oder als interner Link. Inklusive kurzer „So benutzt du es"-Anleitung für deine Kolleg:innen.
-
-## Auslöser — wann ich genutzt werde
-Nutze diesen Skill für: Tool ans Team geben · Datei zum Weitergeben · Kurzanleitung erstellen.
-Stichworte: bauen, citizen-coding, teilen, collaboration.
+Mach ein selbstgebautes Ergebnis für Kolleg:innen nutzbar.
 
 ## Vorgehen
-1. Eingabe/Kontext erfassen (Datei, Text oder Auftrag).
-2. Die Anforderung in kleine Schritte zerlegen und umsetzen.
-3. Ergebnis strukturiert erzeugen (siehe Ausgabe).
-4. Kurz zusammenfassen, was getan wurde.
+1. **Prüfen**, ob das Tool eigenständig läuft (alles inline, keine fehlenden Dateien).
+   Falls nicht: fehlende Teile einbetten.
+2. **Verpacken**: als eine `.html`-Datei, die per Doppelklick öffnet.
+3. **Kurzanleitung** "So nutzt du das Tool" (3–5 Sätze) daneben legen.
+4. **Ablegen** im gewünschten Team-Ordner; Pfad nennen.
+5. **Hosting-Hinweis**: Für eine echte Web-Adresse an das Tech-Team / internes
+   Hosting verweisen (nichts ungefragt veröffentlichen).
 
 ## Ausgabe
-Lauffähige Datei (HTML/Tool), die du direkt öffnen und prüfen kannst.
+Teilbare Datei + Kurzanleitung + klarer Ablageort.
 
 ## Regeln
-- Klar und für Nicht-Techniker:innen verständlich bleiben.
-- Nichts erfinden — nur, was aus der Eingabe hervorgeht.
-- Bei Unklarheit kurz nachfragen statt raten.
-
-## Voraussetzungen
-- Claude Code
-
-_Beispiel-Ausgabe siehe `references/beispiel.md`._
+- Nichts ins öffentliche Internet stellen ohne ausdrückliche Freigabe.
+- Keine sensiblen Daten mit einbetten.

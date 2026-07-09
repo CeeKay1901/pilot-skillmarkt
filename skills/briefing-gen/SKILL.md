@@ -1,37 +1,26 @@
 ---
 name: briefing-gen
-description: Generiert Kreativ-, Media- und Projektbriefings aus wenigen Eckdaten. Gezielte Rückfragen, Marktkontext, vollständiges Dokument nach pilot-Standard.
-trigger: /briefing
-tags: [content, productivity, templates, briefing, kreativ, media]
-difficulty: Einfach
-time: —
-author: Marketing-Team pilot
-version: 1.1.0
+description: Erstellt strukturierte Kreativ-, Media- und Projektbriefings aus wenigen Eckdaten, mit gezielten Rückfragen und Marktkontext. Nutze diesen Skill, wenn ein Briefing gebraucht wird, für Client-Onboarding oder um schnell ein sauberes Briefing-Gerüst zu erhalten.
+allowed-tools: Read, Write
 ---
 
 # Briefing Generator
 
-Kennt die pilot-Briefing-Templates für Kreation, Media und PM. Führt dich mit gezielten Fragen durch den Prozess, ergänzt Marktkontext und liefert ein vollständig ausgefülltes Briefing — in unter 10 Minuten statt 2 Stunden.
+Aus wenigen Eckdaten ein vollständiges Briefing nach pilot-Standard — in Minuten.
 
-## Auslöser — wann ich genutzt werde
-Nutze diesen Skill für: Kreativ-Briefing · Media-Briefing · Projekt-Briefing · Client-Onboarding.
-Stichworte: content, productivity, templates, briefing, kreativ, media.
+## Wann ich starte
+"Mach mir ein Briefing für …", Projekt-/Kampagnenstart, Client-Onboarding.
 
 ## Vorgehen
-1. Eingabe/Kontext erfassen (Datei, Text oder Auftrag).
-2. Kernbotschaft und Zielgruppe bestimmen, dann formulieren.
-3. Ergebnis strukturiert erzeugen (siehe Ausgabe).
-4. Kurz zusammenfassen, was getan wurde.
+1. **Briefing-Typ wählen**: Kreativ / Media / Projekt (siehe `references/template.md`).
+2. **Eckdaten erfassen**: Kunde, Aufgabe, Ziel, Zielgruppe, Budget, Timing.
+   Fehlendes gezielt erfragen — nicht mehr als nötig.
+3. **Anreichern**: sinnvollen Marktkontext und offene Fragen ergänzen.
+4. **Ausfüllen** nach Template; unklare Felder als `[zu klären]` markieren.
 
 ## Ausgabe
-Fertiger Text/Struktur im passenden Format, direkt verwendbar.
+Vollständiges Briefing-Dokument nach dem passenden Template, direkt verwendbar.
 
 ## Regeln
-- Klar und für Nicht-Techniker:innen verständlich bleiben.
-- Nichts erfinden — nur, was aus der Eingabe hervorgeht.
-- Bei Unklarheit kurz nachfragen statt raten.
-
-## Voraussetzungen
-- Claude Code
-
-_Beispiel-Ausgabe siehe `references/beispiel.md`._
+- Keine Annahmen als Fakten ausgeben — Unklares als `[zu klären]` kennzeichnen.
+- Struktur des Templates einhalten; präzise, knappe Formulierungen.
