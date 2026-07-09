@@ -3,7 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>pilot Skill Marketplace</title>
+  <title>pilot Skill Marketplace — Citizen Coding mit Claude Code</title>
+  <meta name="description" content="Der interne Skill-Marktplatz der pilot Agenturgruppe: 31 echte Claude-Code-Skills entdecken, verstehen und selbst nutzen — von Briefings über Mediaplan-Checks bis zum eigenen Tool.">
+  <meta name="theme-color" content="#262626">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="pilot Skill Marketplace">
+  <meta property="og:title" content="pilot Skill Marketplace — Citizen Coding mit Claude Code">
+  <meta property="og:description" content="31 echte Claude-Code-Skills entdecken, verstehen und selbst nutzen. Von Piloten gebaut, für Piloten empfohlen.">
+  <meta property="og:url" content="https://ceekay1901.github.io/pilot-skillmarkt/">
+  <meta property="og:image" content="https://ceekay1901.github.io/pilot-skillmarkt/og-image.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="pilot Skill Marketplace">
+  <meta name="twitter:description" content="31 echte Claude-Code-Skills entdecken, verstehen und selbst nutzen.">
+  <meta name="twitter:image" content="https://ceekay1901.github.io/pilot-skillmarkt/og-image.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -14,9 +26,9 @@
       --c-white: #fcfcfc;
       --c-yellow: #ffe05e;
       --c-gray-l: #bab8ab;
-      --c-gray-m: #7b7a71;
+      --c-gray-m: #66655d;   /* WCAG AA: ~5.9:1 auf Weiß (vorher #7b7a71 = 4.21:1) */
       --c-bg: #f1f1ec;
-      --c-gray-d: #98978e;
+      --c-gray-d: #6f6e66;   /* WCAG AA: ~5.4:1 auf Weiß (vorher #98978e = 2.86:1) */
       --header-h: 8.5rem;
       --max-w: 144rem;
       --pad-d: 8rem;
@@ -1286,6 +1298,9 @@
     .skill-dl-hint { font-size: 1.35rem; color: var(--c-gray-m); }
     .skill-dl-hint code { font-family: var(--font-mono); background: var(--c-bg); border: 1px solid var(--c-gray-l); border-radius: .4rem; padding: 0 .5rem; font-size: 1.2rem; color: var(--c-black); }
     .files-real-badge { color: #2d8a4e; font-family: var(--font-mono); font-weight: 700; letter-spacing: 0; text-transform: none; font-size: 1.3rem; }
+    .files-warn-badge { color: #a5601a; font-family: var(--font-mono); font-weight: 700; letter-spacing: 0; text-transform: none; font-size: 1.3rem; }
+    .files-retry { background: var(--c-black); color: var(--c-white); border: none; border-radius: var(--radius-pill); font-family: inherit; font-size: 1.3rem; padding: .5rem 1.4rem; cursor: pointer; margin-left: .6rem; }
+    .files-retry:hover { background: var(--c-yellow); color: var(--c-black); }
     .files-copy { background: rgba(255,255,255,.1); border: none; color: rgba(252,252,252,.8); font-family: inherit; font-size: 1.2rem; padding: .4rem 1rem; border-radius: .5rem; cursor: pointer; transition: var(--trans); }
     .files-copy:hover { background: var(--c-yellow); color: var(--c-black); }
     .files-code { margin: 0; padding: 1.2rem 0; font-family: var(--font-mono); font-size: 1.35rem; line-height: 1.75; color: #cfcfc7; overflow-x: auto; tab-size: 2; counter-reset: none; }
@@ -1326,6 +1341,13 @@
     .ann-anchor { font-size: 1.35rem; color: var(--c-gray-m); margin-bottom: 1rem; }
     .ann-anchor code { font-family: var(--font-mono); background: var(--c-black); color: var(--c-yellow); padding: .1rem .6rem; border-radius: .4rem; }
     .ann-anchor-snip { font-family: var(--font-mono); color: var(--c-black); background: rgba(255,224,94,.35); padding: .1rem .5rem; border-radius: .3rem; }
+    .ann-range { display: flex; align-items: center; gap: .8rem; flex-wrap: wrap; margin-bottom: 1rem; font-size: 1.35rem; color: var(--c-gray-m); }
+    .ann-range[hidden] { display: none; }
+    .ann-range input { width: 7rem; font-family: var(--font-mono); font-size: 1.4rem; border: 1px solid var(--c-gray-l); border-radius: .6rem; padding: .6rem .8rem; background: var(--c-white); }
+    .ann-range-apply { background: var(--c-black); color: var(--c-white); border: none; border-radius: var(--radius-pill); font-family: inherit; font-size: 1.3rem; padding: .6rem 1.4rem; cursor: pointer; }
+    .ann-range-apply:hover { background: var(--c-yellow); color: var(--c-black); }
+    .ann-range-hint { font-size: 1.2rem; color: var(--c-gray-d); }
+    .ann-range-hint kbd { font-family: var(--font-mono); background: var(--c-bg); border: 1px solid var(--c-gray-l); border-radius: .3rem; padding: 0 .4rem; }
     .ann-text-input, .ann-author-input { width: 100%; font-family: inherit; font-size: 1.5rem; border: 1px solid var(--c-gray-l); border-radius: .8rem; padding: 1rem 1.2rem; background: var(--c-white); }
     .ann-text-input { resize: vertical; margin-bottom: 1rem; display: block; }
     .ann-composer-row { display: flex; gap: 1rem; align-items: center; }
@@ -1335,8 +1357,10 @@
     .ann-list { display: flex; flex-direction: column; gap: 1rem; }
     .ann-empty { font-size: 1.45rem; color: var(--c-gray-m); font-style: italic; }
     .ann-item { display: flex; gap: 1.2rem; align-items: flex-start; background: var(--c-bg); border: 1px solid var(--c-gray-l); border-radius: 1rem; padding: 1.4rem 1.6rem; }
-    .ann-jump { flex-shrink: 0; background: var(--c-black); color: var(--c-white); border: none; border-radius: var(--radius-pill); font-family: var(--font-mono); font-size: 1.2rem; padding: .5rem 1.1rem; cursor: pointer; transition: var(--trans); white-space: nowrap; }
-    .ann-jump:hover { background: var(--c-yellow); color: var(--c-black); }
+    .ann-actions { display: flex; flex-direction: column; gap: .5rem; flex-shrink: 0; }
+    .ann-jump, .ann-link { background: var(--c-black); color: var(--c-white); border: none; border-radius: var(--radius-pill); font-family: var(--font-mono); font-size: 1.2rem; padding: .5rem 1.1rem; cursor: pointer; transition: var(--trans); white-space: nowrap; }
+    .ann-link { background: transparent; color: var(--c-gray-m); border: 1px solid var(--c-gray-l); }
+    .ann-jump:hover, .ann-link:hover { background: var(--c-yellow); color: var(--c-black); border-color: var(--c-yellow); }
     .ann-body { flex: 1; min-width: 0; }
     .ann-ref { font-family: var(--font-mono); font-size: 1.25rem; color: var(--c-gray-m); }
     .ann-snippet { margin: .5rem 0; }
@@ -1353,6 +1377,14 @@
       .file-node { white-space: nowrap; }
       .files-code { font-size: 1.2rem; }
       .ann-item { flex-direction: column; gap: .8rem; }
+      .ann-actions { flex-direction: row; }
+    }
+    /* Touch: größere Trefferflächen (WCAG 2.5.5) */
+    @media (hover: none) and (pointer: coarse) {
+      .ln-gutter { width: 6.4rem; }
+      .ln-add { opacity: 1; width: 3.2rem; height: 3.2rem; font-size: 1.8rem; border-radius: .6rem; }
+      .node-annotate { min-width: 4.4rem; min-height: 4.4rem; font-size: 1.8rem; opacity: .7; }
+      .ln-badge { min-height: 2.8rem; padding: .3rem 1rem; }
     }
 
     /* Explainer responsive */
@@ -1905,17 +1937,17 @@ Gib einen priorisierten Report aus:
         <div class="modal-title-wrap">
           <h2 id="modal-name"></h2>
           <button class="trigger-badge" id="modal-trigger" onclick="copyTrigger()"></button>
-          <span class="trigger-hint" id="trigger-hint" style="font-size:1.3rem;color:#98978e;display:none"></span>
+          <span class="trigger-hint" id="trigger-hint" style="font-size:1.3rem;color:var(--c-gray-d);display:none"></span>
         </div>
         <button class="modal-close" onclick="closeModal()" aria-label="Skill-Detail schließen">✕</button>
       </div>
       <div class="modal-meta" id="modal-meta"></div>
-      <div class="modal-tabs">
-        <button class="tab-btn active" data-tab="overview" onclick="switchTab('overview')">Übersicht</button>
-        <button class="tab-btn" data-tab="files" onclick="switchTab('files')">Aufbau &amp; Dateien</button>
-        <button class="tab-btn" data-tab="ratings" onclick="switchTab('ratings')">Bewertungen &amp; Kommentare</button>
-        <button class="tab-btn" data-tab="pilots" onclick="switchTab('pilots')">Piloten</button>
-        <button class="tab-btn" data-tab="changelog" onclick="switchTab('changelog')">Changelog</button>
+      <div class="modal-tabs" role="tablist" aria-label="Skill-Details">
+        <button class="tab-btn active" role="tab" aria-selected="true" data-tab="overview" onclick="switchTab('overview')">Übersicht</button>
+        <button class="tab-btn" role="tab" aria-selected="false" data-tab="files" onclick="switchTab('files')">Aufbau &amp; Dateien</button>
+        <button class="tab-btn" role="tab" aria-selected="false" data-tab="ratings" onclick="switchTab('ratings')">Bewertungen &amp; Kommentare</button>
+        <button class="tab-btn" role="tab" aria-selected="false" data-tab="pilots" onclick="switchTab('pilots')">Piloten</button>
+        <button class="tab-btn" role="tab" aria-selected="false" data-tab="changelog" onclick="switchTab('changelog')">Changelog</button>
       </div>
       <div class="modal-body" id="modal-body"></div>
     </div>
@@ -3952,12 +3984,14 @@ Gib einen priorisierten Report aus:
 
     // ===== RECENTLY VIEWED =====
     function addToHistory(skillId) {
-      let hist = JSON.parse(localStorage.getItem('skill-history') || '[]');
-      hist = [skillId, ...hist.filter(id => id !== skillId)].slice(0, 5);
-      localStorage.setItem('skill-history', JSON.stringify(hist));
+      try {
+        let hist = JSON.parse(localStorage.getItem('skill-history') || '[]');
+        hist = [skillId, ...hist.filter(id => id !== skillId)].slice(0, 5);
+        localStorage.setItem('skill-history', JSON.stringify(hist));
+      } catch (e) { /* localStorage blockiert/voll — kein Grund, das Modal zu verhindern */ }
     }
     function getHistory() {
-      return JSON.parse(localStorage.getItem('skill-history') || '[]');
+      try { return JSON.parse(localStorage.getItem('skill-history') || '[]'); } catch (e) { return []; }
     }
 
     // ===== RATING =====
@@ -4363,7 +4397,8 @@ Gib einen priorisierten Report aus:
     }
 
     // ===== MODAL =====
-    function openModal(id) {
+    function openModal(id, opts) {
+      const _openOpts = opts || {};
       window._modalOpener = document.activeElement;
       const skill = SKILLS.find(s => s.id === id);
       if (!skill) return;
@@ -4414,15 +4449,21 @@ Gib einen priorisierten Report aus:
       renderModalBody();
       document.getElementById('modal-overlay').classList.add('open');
       document.body.style.overflow = 'hidden';
-      updateURL();
+      if (_openOpts.fromHash) updateURL(); else pushURL();
       setTimeout(() => { const closeBtn = document.querySelector('.modal-close'); if (closeBtn) closeBtn.focus(); }, 50);
     }
 
     function closeModal() {
-      document.getElementById('modal-overlay').classList.remove('open');
+      const ov = document.getElementById('modal-overlay');
+      if (!ov || !ov.classList.contains('open')) return; // ohne offenes Modal keine History-Einträge
+      ov.classList.remove('open');
       document.body.style.overflow = '';
-      state.activeSkill = null;
-      history.pushState(null, '', location.pathname + location.search);
+      state.activeSkill = null; state._pendingAnn = null;
+      if (location.hash) {
+        _hashLock = true;
+        try { history.pushState(null, '', location.pathname + location.search); } catch (e) {}
+        setTimeout(() => { _hashLock = false; }, 0);
+      }
       if (window._modalOpener) { window._modalOpener.focus(); window._modalOpener = null; }
     }
 
@@ -4430,8 +4471,10 @@ Gib einen priorisierten Report aus:
       state.activeTab = tab;
       document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.tab === tab);
+        btn.setAttribute('aria-selected', btn.dataset.tab === tab ? 'true' : 'false');
       });
       renderModalBody();
+      updateURL();
     }
 
     function renderModalBody() {
@@ -4698,6 +4741,7 @@ Gib einen priorisierten Report aus:
       state._files = files; state._filesId = skill.id; state._filesReal = real;
       if ((state.activeFile || 0) >= files.length) state.activeFile = 0;
       renderFilesInto(skill);
+      if (state._hashTarget) applyHashTarget(); else updateURL();
     }
 
     function renderFilesInto(skill) {
@@ -4723,7 +4767,7 @@ Gib einen priorisierten Report aus:
       const folder = cur.path.split('/')[0] + '/';
       const intro = real
         ? `<div class="files-intro"><p class="section-label" style="margin-top:0"><span class="files-real-badge">● Echte Datei im Repo</span></p><p class="files-intro-text">Diese Dateien liegen wirklich im Repo unter <code>skills/${escHtml(skill.id)}/</code> und werden hier <strong>1:1 gespiegelt</strong>. Klick auf das <strong>+</strong> an einer Zeile (mit <strong>Shift+Klick</strong> auf eine zweite Zeile für einen <strong>Bereich</strong>) oder auf <strong>💬</strong> an einer Datei, um die Stelle zu kommentieren.</p></div>`
-        : `<div class="files-intro"><p class="section-label" style="margin-top:0">Aufbau</p><p class="files-intro-text">Vorschau des Aufbaus (echte Dateien erscheinen auf der Live-Seite unter <code>skills/${escHtml(skill.id)}/</code>).</p></div>`;
+        : `<div class="files-intro"><p class="section-label" style="margin-top:0"><span class="files-warn-badge">⚠ Vorschau — echte Dateien nicht geladen</span></p><p class="files-intro-text">Die Original-Dateien aus dem Repo konnten gerade nicht geladen werden (offline, Netzwerk oder GitHub-Limit). Du siehst eine <strong>generierte Vorschau</strong> des Aufbaus. <button class="files-retry" onclick="retryLoadFiles()">Erneut versuchen</button></p></div>`;
       const gh = real ? `<a class="files-gh" href="${REPO_BLOB}/${encodeURI(cur.path)}" target="_blank" rel="noopener">Auf GitHub ansehen ↗</a>` : '';
 
       // Zeilenbasiertes Code-Rendering mit Kommentar-Gutter (inkl. Zeilen-Bereiche)
@@ -4738,9 +4782,9 @@ Gib einen priorisierten Report aus:
       const codeHtml = highlightCode(cur.content, fileLang(cur.path)).split('\n').map((h, idx) => {
         const n = idx + 1; const c = lineBadge[n] || 0;
         return `<div class="code-line${lineHasAnn[n] ? ' has-ann' : ''}" id="cl-${n}" data-line="${n}">`
-          + `<span class="ln-gutter"><button class="ln-add" title="Zeile ${n} kommentieren (Shift+Klick = Bereich)" onclick="startAnnotate(event, ${n})">+</button><span class="ln-n">${n}</span></span>`
+          + `<span class="ln-gutter"><button class="ln-add" tabindex="-1" aria-label="Zeile ${n} kommentieren" title="Zeile ${n} kommentieren (Shift+Klick = Bereich)" onclick="startAnnotate(event, ${n})">+</button><span class="ln-n" aria-hidden="true">${n}</span></span>`
           + `<span class="ln-code">${h || ''}</span>`
-          + (c ? `<button class="ln-badge" title="${c} Anmerkung(en) — anzeigen" onclick="scrollToAnnList(event)">${c}</button>` : '')
+          + (c ? `<button class="ln-badge" tabindex="-1" title="${c} Anmerkung(en) — anzeigen" onclick="scrollToAnnList(event)">${c}</button>` : '')
           + `</div>`;
       }).join('');
 
@@ -4762,9 +4806,9 @@ Gib einen priorisierten Report aus:
           <div class="files-view">
             <div class="files-view-bar">
               <span class="files-view-path">${escHtml(cur.path)}</span>
-              <div class="files-view-actions">${gh}<button class="files-copy" onclick="downloadCurrentFile()" title="Diese Datei herunterladen">⬇ Datei</button><button class="files-copy" onclick="quickCopy(event, getFileContent(${active}))">Kopieren</button></div>
+              <div class="files-view-actions">${gh}<button class="files-copy" onclick="startAnnotate(event, 1)" title="Zeile(n) kommentieren — Bereich im Formular wählbar">✎ Zeile kommentieren</button><button class="files-copy" onclick="downloadCurrentFile()" title="Diese Datei herunterladen">⬇ Datei</button><button class="files-copy" onclick="quickCopy(event, getFileContent(${active}))">Kopieren</button></div>
             </div>
-            <div class="files-code code-view">${codeHtml}</div>
+            <div class="files-code code-view" role="region" tabindex="0" aria-label="Quellcode von ${escHtml(cur.path)}">${codeHtml}</div>
           </div>
         </div>
         <div class="ann-panel" id="ann-panel">
@@ -4774,6 +4818,13 @@ Gib einen priorisierten Report aus:
           </div>
           <div class="ann-composer" id="ann-composer" hidden>
             <div class="ann-anchor" id="ann-anchor"></div>
+            <div class="ann-range" id="ann-range" hidden>
+              <label>Zeilen <input type="number" id="ann-from" min="1" inputmode="numeric"></label>
+              <span>–</span>
+              <label><input type="number" id="ann-to" min="1" inputmode="numeric" aria-label="bis Zeile"></label>
+              <button type="button" class="ann-range-apply" onclick="applyRangeInputs()">Übernehmen</button>
+              <span class="ann-range-hint">Tipp: am Desktop auch per <kbd>Shift</kbd>+Klick auf eine zweite Zeile.</span>
+            </div>
             <textarea id="ann-text" class="ann-text-input" rows="2" placeholder="Deine Anmerkung zu dieser Stelle …"></textarea>
             <div class="ann-composer-row">
               <input id="ann-author" class="ann-author-input" placeholder="Dein Name" value="${escHtml(getAnnAuthor())}">
@@ -4789,7 +4840,10 @@ Gib einen priorisierten Report aus:
       const lbl = a.line ? (a.lineEnd && a.lineEnd > a.line ? `Zeile ${a.line}–${a.lineEnd}` : `Zeile ${a.line}`) : '';
       const ref = a.line ? `${shortP(a.file)} · ${lbl}` : `Datei: ${shortP(a.file)}`;
       return `<div class="ann-item" id="ann-${a.id}">
-        <button class="ann-jump" title="Zur referenzierten Stelle springen" onclick="jumpToAnnotation('${a.id}')">↩ Zur Stelle</button>
+        <div class="ann-actions">
+          <button class="ann-jump" title="Zur referenzierten Stelle springen" onclick="jumpToAnnotation('${a.id}')">↩ Zur Stelle</button>
+          <button class="ann-link" title="Link zu dieser Stelle kopieren" onclick="copyAnnotationLink('${a.id}')">🔗 Link</button>
+        </div>
         <div class="ann-body">
           <div class="ann-ref">${escHtml(ref)}</div>
           ${a.snippet ? `<div class="ann-snippet"><code>${escHtml(a.snippet)}</code></div>` : ''}
@@ -4808,6 +4862,7 @@ Gib einen priorisierten Report aus:
       state.activeFile = i;
       state._pendingAnn = null; // laufende Auswahl beim Dateiwechsel verwerfen
       renderFilesInto(state.activeSkill);
+      updateURL();
     }
 
     // ===== ANNOTATIONEN (Kommentare am Datei-/Zeilen-Objekt) =====
@@ -4844,6 +4899,25 @@ Gib einen priorisierten Report aus:
       applySelHighlight(0, -1);
       showComposer();
     }
+    // Zeilenbereich aus den Eingabefeldern übernehmen (Tastatur-/Touch-Pfad)
+    function applyRangeInputs() {
+      const pa = state._pendingAnn; if (!pa || !pa.line) return;
+      const files = state._files || [];
+      const cur = files.find(f => f.path === pa.file); if (!cur) return;
+      const lines = cur.content.split('\n');
+      let a = parseInt(document.getElementById('ann-from')?.value, 10) || 1;
+      let b = parseInt(document.getElementById('ann-to')?.value, 10) || a;
+      a = Math.min(Math.max(1, a), lines.length);
+      b = Math.min(Math.max(1, b), lines.length);
+      const start = Math.min(a, b), end = Math.max(a, b);
+      let snippet = (lines[start - 1] || '').trim().slice(0, 90);
+      if (end > start) snippet += '  …';
+      state._pendingAnn = { ...pa, line: start, lineEnd: end, snippet, _anchor: start };
+      applySelHighlight(start, end);
+      showComposer();
+      document.getElementById('cl-' + start)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
     function applySelHighlight(start, end) {
       document.querySelectorAll('.code-line.ann-selecting').forEach(el => el.classList.remove('ann-selecting'));
       for (let L = start; L <= end; L++) document.getElementById('cl-' + L)?.classList.add('ann-selecting');
@@ -4858,6 +4932,16 @@ Gib einen priorisierten Report aus:
       anchor.innerHTML = pa.line
         ? `Anmerkung zu <code>${escHtml(short)}</code> · ${lineLabel}` + (pa.snippet ? ` <span class="ann-anchor-snip">${escHtml(pa.snippet)}</span>` : '')
         : `Anmerkung zur Datei <code>${escHtml(short)}</code>`;
+      // Zeilen-Bereich per Eingabefeld (Tastatur + Touch, ohne Shift)
+      const rangeBox = document.getElementById('ann-range');
+      if (rangeBox) {
+        rangeBox.hidden = !pa.line;
+        if (pa.line) {
+          const from = document.getElementById('ann-from'), to = document.getElementById('ann-to');
+          if (from) from.value = pa.line;
+          if (to) to.value = pa.lineEnd || pa.line;
+        }
+      }
       comp.hidden = false;
       comp.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       const t = document.getElementById('ann-text'); if (t) t.focus();
@@ -4891,6 +4975,13 @@ Gib einen priorisierten Report aus:
       const skill = state.activeSkill; if (!skill) return;
       saveAnnotations(skill.id, getAnnotations(skill.id).filter(a => a.id !== annId));
       renderFilesInto(skill);
+    }
+    function retryLoadFiles() {
+      const skill = state.activeSkill; if (!skill) return;
+      _manifest = null; state._files = null; state._filesId = null;
+      const body = document.getElementById('modal-body');
+      if (body) body.innerHTML = `<div class="files-loading">Lade Skill-Dateien aus dem Repo …</div>`;
+      loadModalFiles(skill);
     }
     function scrollToAnnList(evt) {
       if (evt) evt.stopPropagation();
@@ -5237,18 +5328,103 @@ Gib einen priorisierten Report aus:
     }
 
     // ===== URL HASH =====
-    function updateURL() {
-      if (state.activeSkill) {
-        location.hash = '#' + state.activeSkill.id;
+    // ===== DEEP-LINKING: #skill[/tab[/datei[:L8-10]]] =====
+    let _hashLock = false;
+    const MODAL_TABS = ['overview', 'files', 'ratings', 'pilots', 'changelog'];
+
+    function currentFileRel() {
+      const files = state._files || [];
+      const f = files[Math.min(state.activeFile || 0, files.length - 1)];
+      return f ? f.path.split('/').slice(1).join('/') : '';
+    }
+    function buildHash(lineRange) {
+      if (!state.activeSkill) return '';
+      let h = state.activeSkill.id;
+      const tab = state.activeTab || 'overview';
+      if (tab !== 'overview') {
+        h += '/' + tab;
+        if (tab === 'files') {
+          const rel = currentFileRel();
+          if (rel) h += '/' + rel;
+          if (lineRange) h += ':L' + lineRange[0] + (lineRange[1] > lineRange[0] ? '-' + lineRange[1] : '');
+        }
+      }
+      return '#' + h;
+    }
+    function writeHash(h, push) {
+      if (!h || location.hash === h) return;
+      _hashLock = true;
+      try { push ? history.pushState(null, '', h) : history.replaceState(null, '', h); }
+      catch (e) { location.hash = h; }
+      setTimeout(() => { _hashLock = false; }, 0);
+    }
+    function updateURL() { const h = buildHash(); if (h) writeHash(h, false); }
+    function pushURL()   { const h = buildHash(); if (h) writeHash(h, true); }
+
+    function applyHash() {
+      if (_hashLock) return;
+      const raw = decodeURIComponent(location.hash.slice(1));
+      if (!raw) {
+        const ov = document.getElementById('modal-overlay');
+        if (ov && ov.classList.contains('open')) closeModalSilent();
+        return;
+      }
+      let path = raw, lineRange = null;
+      const m = raw.match(/^(.*?):L(\d+)(?:-(\d+))?$/);
+      if (m) { path = m[1]; lineRange = [parseInt(m[2], 10), parseInt(m[3] || m[2], 10)]; }
+      const parts = path.split('/');
+      const skillId = parts[0];
+      const tab = MODAL_TABS.includes(parts[1]) ? parts[1] : 'overview';
+      const fileRel = parts.slice(2).join('/');
+      const skill = SKILLS.find(s => s.id === skillId);
+      if (!skill) return;
+      const ex = document.getElementById('view-explainer');
+      if (ex && !ex.hidden) showView('catalog');
+      if (!state.activeSkill || state.activeSkill.id !== skillId) openModal(skillId, { fromHash: true });
+      if (state.activeTab !== tab) switchTab(tab);
+      if (tab === 'files' && (fileRel || lineRange)) {
+        state._hashTarget = { fileRel, lineRange };
+        if (state._files && state._filesId === skillId) applyHashTarget();
       }
     }
-
-    function restoreFromURL() {
-      const hash = location.hash.slice(1);
-      if (hash) {
-        const skill = SKILLS.find(s => s.id === hash);
-        if (skill) openModal(skill.id);
+    function applyHashTarget() {
+      const t = state._hashTarget; if (!t) return;
+      state._hashTarget = null;
+      const files = state._files || [];
+      if (t.fileRel) {
+        const idx = files.findIndex(f => f.path.split('/').slice(1).join('/') === t.fileRel);
+        if (idx >= 0 && idx !== state.activeFile) { state.activeFile = idx; renderFilesInto(state.activeSkill); }
       }
+      if (t.lineRange) {
+        requestAnimationFrame(() => {
+          const [a, b] = t.lineRange;
+          document.getElementById('cl-' + a)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          for (let L = a; L <= b; L++) {
+            const el = document.getElementById('cl-' + L);
+            if (el) { el.classList.add('cl-flash'); setTimeout(() => el.classList.remove('cl-flash'), 1800); }
+          }
+        });
+      }
+    }
+    function closeModalSilent() {
+      const ov = document.getElementById('modal-overlay');
+      if (!ov) return;
+      ov.classList.remove('open');
+      document.body.style.overflow = '';
+      state.activeSkill = null; state._files = null; state._filesId = null; state._pendingAnn = null;
+    }
+    function restoreFromURL() { applyHash(); }
+
+    // Link zu einer Anmerkung (Datei + Zeilenbereich) in die Zwischenablage
+    function copyAnnotationLink(annId) {
+      const skill = state.activeSkill; if (!skill) return;
+      const a = getAnnotations(skill.id).find(x => x.id === annId); if (!a) return;
+      const rel = a.file.split('/').slice(1).join('/');
+      let h = '#' + skill.id + '/files/' + rel;
+      if (a.line) h += ':L' + a.line + (a.lineEnd && a.lineEnd > a.line ? '-' + a.lineEnd : '');
+      const url = location.origin + location.pathname + location.search + h;
+      quickCopy(null, url);
+      showToast('Link zur Stelle kopiert 🔗');
     }
 
     // ===== DEBOUNCE =====
@@ -5594,6 +5770,9 @@ Gib einen priorisierten Report aus:
       renderPilots();
       render();
       restoreFromURL();
+      // Deep-Link: Back/Forward und manuelle Hash-Änderungen berücksichtigen
+      window.addEventListener('hashchange', applyHash);
+      window.addEventListener('popstate', applyHash);
 
       document.getElementById('search').addEventListener('input', debounce(e => {
         state.search = e.target.value.toLowerCase().trim();
@@ -5618,7 +5797,11 @@ Gib einen priorisierten Report aus:
       });
 
       document.addEventListener('keydown', e => {
-        if (e.key === 'Escape') { closeModal(); return; }
+        if (e.key === 'Escape') {
+          // nur schließen, wenn wirklich ein Modal offen ist (sonst wächst die History)
+          if (document.getElementById('modal-overlay')?.classList.contains('open')) closeModal();
+          return;
+        }
         if (e.key === '/' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
           e.preventDefault();
           const search = document.getElementById('search');
