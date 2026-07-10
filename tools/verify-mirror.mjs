@@ -32,6 +32,9 @@ const pageErrs = [];
 page.on('pageerror', e => pageErrs.push(e.message));
 await page.goto(SITE + cb(), { waitUntil: 'networkidle' });
 await page.waitForTimeout(400);
+// Markdown/CSV öffnen standardmäßig in der formatierten Ansicht — für den
+// Byte-Vergleich brauchen wir die Code-Ansicht (.ln-code) für alle Dateien.
+await page.evaluate(() => { if (typeof state !== 'undefined') state._viewPref = { md: 'code', csv: 'code' }; });
 
 // 1) Ground-Truth-Manifest direkt aus dem Repo
 const manifest = JSON.parse(await rawText('manifest.json'));

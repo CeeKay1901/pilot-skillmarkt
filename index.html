@@ -1342,6 +1342,45 @@
     .files-code .tk-k { color: #6aa9e8; }
     .files-code .tk-b { color: var(--c-yellow); }
     .files-code .tk-code { color: #7ac59a; }
+    /* Umschalter Code ↔ formatierte Ansicht */
+    .view-seg { display: inline-flex; border: 1px solid rgba(255,255,255,.25); border-radius: var(--radius-pill); overflow: hidden; flex-shrink: 0; }
+    .view-seg button { background: transparent; border: none; color: rgba(252,252,252,.75); font-family: inherit; font-size: 1.2rem; padding: .4rem 1.2rem; cursor: pointer; transition: var(--trans); }
+    .view-seg button.active { background: var(--c-yellow); color: var(--c-black); font-weight: 600; }
+    /* Formatierte Ansicht (Markdown/CSV): helle Lesefläche, Blöcke sind kommentierbar */
+    .files-preview { background: var(--paper, #fbfbf7); color: var(--c-black); padding: 2rem 2.4rem; font-size: 1.55rem; line-height: 1.65; overflow-x: auto; }
+    .pv-block { border-left: .4rem solid transparent; border-radius: .4rem; padding: .2rem 1rem .2rem 1.2rem; margin: 0 -1rem 0 -1.2rem; cursor: pointer; transition: background .12s, border-color .12s; }
+    .pv-block:hover { background: rgba(255,224,94,.16); border-left-color: var(--c-yellow); }
+    .pv-block.has-ann { border-left-color: var(--c-yellow); }
+    .pv-block.ann-selecting { background: rgba(255,224,94,.28); border-left-color: var(--c-yellow); }
+    .pv-block.cl-flash { animation: clFlash 1.6s ease; }
+    .pv-block h1 { font-size: 2.6rem; font-weight: 300; letter-spacing: -.02em; margin: 1rem 0 .6rem; }
+    .pv-block h2 { font-size: 2rem; font-weight: 700; margin: 1.4rem 0 .5rem; }
+    .pv-block h3 { font-size: 1.7rem; font-weight: 700; margin: 1rem 0 .4rem; }
+    .pv-block h4 { font-size: 1.55rem; font-weight: 700; margin: .8rem 0 .3rem; }
+    .pv-block p { margin: .5rem 0; }
+    .pv-block ul, .pv-block ol { margin: .5rem 0 .5rem 2.2rem; }
+    .pv-block li { margin: .3rem 0; }
+    .pv-block code { font-family: var(--font-mono); font-size: .88em; background: var(--c-bg); border: 1px solid var(--c-gray-l); border-radius: .4rem; padding: .05rem .5rem; }
+    .pv-block pre { background: #14140f; color: #cfcfc7; border-radius: .8rem; padding: 1.2rem 1.6rem; overflow-x: auto; margin: .6rem 0; }
+    .pv-block pre code { background: none; border: none; padding: 0; color: inherit; font-size: 1.3rem; line-height: 1.7; }
+    .pv-block blockquote { border-left: 3px solid var(--c-yellow); background: #fff; padding: .8rem 1.4rem; margin: .6rem 0; border-radius: 0 .6rem .6rem 0; }
+    .pv-block table { border-collapse: collapse; margin: .6rem 0; font-size: 1.4rem; }
+    .pv-block th, .pv-block td, .files-preview th, .files-preview td { border: 1px solid var(--c-gray-l); padding: .6rem 1rem; text-align: left; }
+    .pv-block th, .files-preview th { background: var(--c-bg); font-weight: 700; }
+    .pv-block hr { border: none; border-top: 1px solid var(--c-gray-l); margin: 1rem 0; }
+    .pv-block a { color: var(--c-black); text-decoration: underline; }
+    .pv-fm { font-family: var(--font-mono); font-size: 1.25rem; background: var(--c-bg); border: 1px dashed var(--c-gray-l); border-radius: .8rem; padding: 1rem 1.4rem; color: var(--c-gray-d); white-space: pre-wrap; }
+    .pv-fm b { color: var(--c-black); font-weight: 600; }
+    .pv-fm-label { font-size: 1.1rem; text-transform: uppercase; letter-spacing: .1em; color: var(--c-gray-m); display: block; margin-bottom: .4rem; }
+    .files-preview table { border-collapse: collapse; font-size: 1.4rem; }
+    .files-preview tr[data-ls] { cursor: pointer; }
+    .files-preview tr[data-ls]:hover td { background: rgba(255,224,94,.16); }
+    .files-preview tr.has-ann td { background: rgba(255,224,94,.25); }
+    .files-preview tr.ann-selecting td { background: rgba(255,224,94,.4); }
+    .files-preview .csv-meta { font-family: var(--font-mono); font-size: 1.25rem; color: var(--c-gray-m); margin-bottom: .8rem; }
+    .files-preview .csv-empty { color: #b3701e; font-style: italic; font-size: .9em; }
+    .files-preview .ann-il-wrap { padding: .6rem 0; max-width: none; }
+    @media (max-width: 640px) { .files-preview { padding: 1.4rem 1.2rem; font-size: 1.45rem; } }
 
     /* Zeilenbasierter Code-View mit Kommentar-Gutter */
     .code-line { display: flex; align-items: flex-start; min-height: 2.35rem; position: relative; }
@@ -5059,6 +5098,112 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
       if (state._hashTarget) applyHashTarget(); else updateURL();
     }
 
+    // ===== FORMATIERTE ANSICHT (Markdown/CSV) =====
+    // Jeder gerenderte Block kennt seinen Quellzeilen-Bereich (1-basiert). Dadurch bleiben
+    // Kommentare zeilenbasiert und erscheinen in Code- UND formatierter Ansicht.
+    function _previewKind(path) {
+      if (fileLang(path) === 'markdown') return 'md';
+      if (/\.csv$/i.test(path)) return 'csv';
+      return null;
+    }
+    function _fileViewMode(path) {
+      const kind = _previewKind(path);
+      if (!kind) return 'code';
+      const pref = state._viewPref || (state._viewPref = { md: 'preview', csv: 'preview' });
+      return pref[kind] || 'preview';
+    }
+    function setFileView(mode) {
+      const files = state._files || [];
+      const cur = files[Math.min(state.activeFile || 0, files.length - 1)];
+      const kind = cur && _previewKind(cur.path);
+      if (!kind) return;
+      state._viewPref = state._viewPref || { md: 'preview', csv: 'preview' };
+      state._viewPref[kind] = mode;
+      state._pendingAnn = null;
+      renderFilesInto(state.activeSkill);
+    }
+    function mdInline(s) {
+      return escHtml(s)
+        .replace(/`([^`]+)`/g, '<code>$1</code>')
+        .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+        .replace(/(^|[^*])\*([^*\n]+)\*/g, '$1<em>$2</em>')
+        .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+    }
+    function mdBlocks(md) {
+      const out = [];
+      const lines = md.replace(/\r\n/g, '\n').split('\n');
+      let i = 0;
+      // push nachdem i HINTER den Block gewandert ist: i (0-basiert, exklusiv) = letzte Zeile 1-basiert
+      const push = (html, s) => out.push({ html, start: s + 1, end: i });
+      // YAML-Frontmatter als Metadaten-Block zeigen statt als kaputtes Markdown
+      if (lines[0] === '---') {
+        let j = 1; while (j < lines.length && lines[j] !== '---') j++;
+        if (j < lines.length) {
+          const fm = lines.slice(1, j).map(l => escHtml(l).replace(/^(\w[\w-]*):/, '<b>$1</b>:')).join('\n');
+          i = j + 1;
+          out.push({ html: `<div class="pv-fm"><span class="pv-fm-label">Metadaten (Frontmatter)</span>${fm}</div>`, start: 1, end: i });
+        }
+      }
+      while (i < lines.length) {
+        const l = lines[i], s = i;
+        if (/^```/.test(l)) { const buf = []; i++; while (i < lines.length && !/^```/.test(lines[i])) buf.push(lines[i++]); i = Math.min(i + 1, lines.length);
+          push('<pre><code>' + escHtml(buf.join('\n')) + '</code></pre>', s); continue; }
+        if (/^\s*\|/.test(l) && /^\s*\|[\s:-]+\|/.test(lines[i + 1] || '')) {
+          const cells = r => r.trim().replace(/^\||\|$/g, '').split('|').map(c => c.trim());
+          const head = cells(l); i += 2; const rows = [];
+          while (i < lines.length && /^\s*\|/.test(lines[i])) rows.push(cells(lines[i++]));
+          push('<table><thead><tr>' + head.map(h => '<th>' + mdInline(h) + '</th>').join('') + '</tr></thead><tbody>' +
+            rows.map(r => '<tr>' + r.map(c => '<td>' + mdInline(c) + '</td>').join('') + '</tr>').join('') + '</tbody></table>', s); continue; }
+        if (/^>\s?/.test(l)) { const buf = []; while (i < lines.length && /^>\s?/.test(lines[i])) buf.push(lines[i++].replace(/^>\s?/, ''));
+          push('<blockquote>' + buf.filter(Boolean).map(x => '<p>' + mdInline(x) + '</p>').join('') + '</blockquote>', s); continue; }
+        if (/^\s*[-*]\s+/.test(l)) { const buf = []; while (i < lines.length && /^\s*[-*]\s+/.test(lines[i])) buf.push(lines[i++].replace(/^\s*[-*]\s+/, ''));
+          push('<ul>' + buf.map(x => '<li>' + mdInline(x) + '</li>').join('') + '</ul>', s); continue; }
+        if (/^\s*\d+\.\s+/.test(l)) { const buf = []; while (i < lines.length && /^\s*\d+\.\s+/.test(lines[i])) buf.push(lines[i++].replace(/^\s*\d+\.\s+/, ''));
+          push('<ol>' + buf.map(x => '<li>' + mdInline(x) + '</li>').join('') + '</ol>', s); continue; }
+        const h = l.match(/^(#{1,4})\s+(.*)$/);
+        if (h) { i++; push(`<h${h[1].length}>` + mdInline(h[2]) + `</h${h[1].length}>`, s); continue; }
+        if (/^\s*---+\s*$/.test(l)) { i++; push('<hr>', s); continue; }
+        if (!l.trim()) { i++; continue; }
+        const buf = []; while (i < lines.length && lines[i].trim() && !/^(#{1,4}\s|>|\s*[-*]\s|\s*\d+\.\s|```|\s*\|)/.test(lines[i])) buf.push(lines[i++]);
+        push('<p>' + mdInline(buf.join(' ')) + '</p>', s);
+      }
+      return out;
+    }
+    // CSV → Tabelle; jede Datenzeile kennt ihre Quellzeile und ist damit kommentierbar
+    function csvTable(text, lineHasAnn) {
+      const rawLines = text.replace(/\r\n/g, '\n').split('\n');
+      const rows = [];
+      rawLines.forEach((l, idx) => { if (l.trim()) rows.push({ l, n: idx + 1 }); });
+      if (!rows.length) return '<p>— leere Datei —</p>';
+      const first = rows[0].l;
+      const delim = (first.match(/;/g) || []).length >= (first.match(/,/g) || []).length ? ';' : ',';
+      const cells = l => { const out = []; let cur = '', q = false;
+        for (const ch of l) { if (ch === '"') q = !q; else if (ch === delim && !q) { out.push(cur); cur = ''; } else cur += ch; }
+        out.push(cur); return out.map(c => c.trim()); };
+      const head = cells(rows[0].l);
+      const body = rows.slice(1).map(r => {
+        const c = cells(r.l);
+        return `<tr data-ls="${r.n}"${lineHasAnn && lineHasAnn[r.n] ? ' class="has-ann"' : ''} title="Zeile ${r.n} kommentieren">`
+          + head.map((_, ci) => '<td>' + (c[ci] !== undefined && c[ci] !== '' ? escHtml(c[ci]) : '<span class="csv-empty">—</span>') + '</td>').join('') + '</tr>';
+      }).join('');
+      return `<p class="csv-meta">${rows.length - 1} Datenzeilen · ${head.length} Spalten · Trennzeichen <code>${escHtml(delim)}</code></p>`
+        + `<table><thead><tr>${head.map(h => '<th>' + escHtml(h) + '</th>').join('')}</tr></thead><tbody>${body}</tbody></table>`;
+    }
+    // Element in der formatierten Ansicht, unter dem der Composer für Zeile `line` sitzt
+    function _pvAnchorFor(line) {
+      const pv = document.querySelector('#modal-body .files-preview');
+      if (!pv) return null;
+      const blocks = [...pv.querySelectorAll('.pv-block')];
+      let before = null;
+      for (const b of blocks) {
+        const ls = +b.dataset.ls, le = +b.dataset.le;
+        if (line >= ls && line <= le) return b;
+        if (le < line) before = b;
+      }
+      if (blocks.length) return before || blocks[0];
+      return pv.querySelector('table') || pv;
+    }
+
     function renderFilesInto(skill) {
       const body = document.getElementById('modal-body');
       if (!body || state.activeTab !== 'files') return;
@@ -5080,8 +5225,13 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
 
       const cur = files[active];
       const folder = cur.path.split('/')[0] + '/';
+      const kind = _previewKind(cur.path);
+      const mode = _fileViewMode(cur.path);
+      const annHint = (mode === 'preview' && kind)
+        ? `Zum Kommentieren: <strong>Text markieren</strong> oder einen <strong>Absatz anklicken</strong> — das Kommentarfeld öffnet sich direkt darunter. Kommentare hängen an den Quellzeilen und erscheinen auch in der Code-Ansicht.`
+        : `Zum Kommentieren: <strong>Text markieren</strong> oder eine <strong>Zeilennummer antippen</strong> — das Kommentarfeld öffnet sich direkt an der Stelle. Eine weitere Zeilennummer erweitert den Bereich.`;
       const intro = real
-        ? `<div class="files-intro"><p class="section-label" style="margin-top:0"><span class="files-real-badge">● Echte Datei im Repo</span></p><p class="files-intro-text">Diese Dateien liegen wirklich im Repo unter <code>skills/${escHtml(skill.id)}/</code> und werden hier <strong>1:1 gespiegelt</strong>. Zum Kommentieren: <strong>Text markieren</strong> oder eine <strong>Zeilennummer antippen</strong> — das Kommentarfeld öffnet sich direkt an der Stelle. Eine weitere Zeilennummer erweitert den Bereich.</p></div>`
+        ? `<div class="files-intro"><p class="section-label" style="margin-top:0"><span class="files-real-badge">● Echte Datei im Repo</span></p><p class="files-intro-text">Diese Dateien liegen wirklich im Repo unter <code>skills/${escHtml(skill.id)}/</code> und werden hier <strong>1:1 gespiegelt</strong>. ${annHint}</p></div>`
         : `<div class="files-intro"><p class="section-label" style="margin-top:0"><span class="files-warn-badge">⚠ Vorschau — echte Dateien nicht geladen</span></p><p class="files-intro-text">Die Original-Dateien aus dem Repo konnten gerade nicht geladen werden (offline, Netzwerk oder GitHub-Limit). Du siehst eine <strong>generierte Vorschau</strong> des Aufbaus. <button class="files-retry" onclick="retryLoadFiles()">Erneut versuchen</button></p></div>`;
       const gh = real ? `<a class="files-gh" href="${REPO_BLOB}/${encodeURI(cur.path)}" target="_blank" rel="noopener">Auf GitHub ansehen ↗</a>` : '';
 
@@ -5096,20 +5246,54 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
         (annsAtLine[endL] = annsAtLine[endL] || []).push(a);
       });
       const ilCard = a => `<div class="ann-il-card" id="il-${a.id}">
-        <div class="ann-il-head"><b>${escHtml(a.author || 'Anonym')}</b><span>${escHtml(a.date)}</span>${a.line && (a.lineEnd || a.line) > a.line ? `<span>Zeile ${a.line}–${a.lineEnd}</span>` : ''}<button class="ann-il-del" onclick="deleteAnnotation('${a.id}')">löschen</button></div>
+        <div class="ann-il-head"><b>${escHtml(a.author || 'Anonym')}</b><span>${escHtml(a.date)}</span>${a.line ? `<span>Zeile ${a.line}${(a.lineEnd || a.line) > a.line ? '–' + a.lineEnd : ''}</span>` : ''}<button class="ann-il-del" onclick="deleteAnnotation('${a.id}')">löschen</button></div>
         <div class="ann-il-text">${escHtml(a.text)}</div>
       </div>`;
       const isMd = fileLang(cur.path) === 'markdown';
       const wrapped = state._wrapPref ? !!state._wrapPref[isMd ? 'md' : 'code'] : isMd;
-      const codeHtml = (fileAnns.length ? `<div class="ann-il-wrap">${fileAnns.map(ilCard).join('')}</div>` : '')
-        + highlightCode(cur.content, fileLang(cur.path)).split('\n').map((h, idx) => {
-          const n = idx + 1;
-          return `<div class="code-line${lineHasAnn[n] ? ' has-ann' : ''}" id="cl-${n}" data-line="${n}">`
-            + `<span class="ln-gutter" data-line="${n}" role="button" tabindex="0" aria-label="Zeile ${n} kommentieren"><span class="ln-n">${n}</span></span>`
-            + `<span class="ln-code">${h || ''}</span>`
-            + `</div>`
-            + (annsAtLine[n] ? `<div class="ann-il-wrap">${annsAtLine[n].map(ilCard).join('')}</div>` : '');
-        }).join('');
+      const fileAnnsHtml = fileAnns.length ? `<div class="ann-il-wrap">${fileAnns.map(ilCard).join('')}</div>` : '';
+      let viewHtml;
+      if (mode === 'preview' && kind) {
+        // Formatierte Ansicht: Blöcke tragen ihren Quellzeilen-Bereich, Karten hängen am Block
+        const lineAnnsList = anns.filter(a => a.file === cur.path && a.line);
+        let inner;
+        if (kind === 'md') {
+          const blocks = mdBlocks(cur.content);
+          const blockAnns = blocks.map(() => []), blockHas = blocks.map(() => false);
+          lineAnnsList.forEach(a => {
+            const e = a.lineEnd || a.line;
+            let target = -1, before = -1;
+            blocks.forEach((b, bi) => {
+              if (b.start <= e && e <= b.end) target = bi;
+              if (b.end < e) before = bi;
+              if (a.line <= b.end && e >= b.start) blockHas[bi] = true;
+            });
+            blockAnns[target >= 0 ? target : (before >= 0 ? before : 0)].push(a);
+          });
+          inner = blocks.map((b, bi) =>
+            `<div class="pv-block${blockHas[bi] ? ' has-ann' : ''}" data-ls="${b.start}" data-le="${b.end}" title="Anklicken zum Kommentieren">${b.html}</div>`
+            + (blockAnns[bi].length ? `<div class="ann-il-wrap">${blockAnns[bi].map(ilCard).join('')}</div>` : '')).join('');
+        } else {
+          inner = csvTable(cur.content, lineHasAnn)
+            + (lineAnnsList.length ? `<div class="ann-il-wrap">${lineAnnsList.map(ilCard).join('')}</div>` : '');
+        }
+        viewHtml = `<div class="files-preview" role="region" tabindex="0" aria-label="Formatierte Ansicht von ${escHtml(cur.path)}">${fileAnnsHtml}${inner}</div>`;
+      } else {
+        const codeHtml = fileAnnsHtml
+          + highlightCode(cur.content, fileLang(cur.path)).split('\n').map((h, idx) => {
+            const n = idx + 1;
+            return `<div class="code-line${lineHasAnn[n] ? ' has-ann' : ''}" id="cl-${n}" data-line="${n}">`
+              + `<span class="ln-gutter" data-line="${n}" role="button" tabindex="0" aria-label="Zeile ${n} kommentieren"><span class="ln-n">${n}</span></span>`
+              + `<span class="ln-code">${h || ''}</span>`
+              + `</div>`
+              + (annsAtLine[n] ? `<div class="ann-il-wrap">${annsAtLine[n].map(ilCard).join('')}</div>` : '');
+          }).join('');
+        viewHtml = `<div class="files-code code-view${wrapped ? ' wrap' : ''}" role="region" tabindex="0" aria-label="Quellcode von ${escHtml(cur.path)}">${codeHtml}</div>`;
+      }
+      const viewSeg = kind ? `<div class="view-seg" role="group" aria-label="Darstellung wechseln">
+        <button class="${mode === 'preview' ? 'active' : ''}" onclick="setFileView('preview')">${kind === 'csv' ? 'Tabelle' : 'Ansicht'}</button>
+        <button class="${mode === 'code' ? 'active' : ''}" onclick="setFileView('code')">Code</button>
+      </div>` : '';
 
       const annList = anns.length
         ? anns.map(a => renderAnnItem(a, shortP)).join('')
@@ -5129,9 +5313,9 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
           <div class="files-view">
             <div class="files-view-bar">
               <span class="files-view-path">${escHtml(cur.path)}</span>
-              <div class="files-view-actions">${gh}<button class="files-copy" onclick="toggleWrap(this)" title="Lange Zeilen umbrechen" aria-pressed="${wrapped}">${wrapped ? '☑' : '☐'} Umbruch</button><button class="files-copy" onclick="downloadCurrentFile()" title="Diese Datei herunterladen">⬇ Datei</button><button class="files-copy" onclick="quickCopy(event, getFileContent(${active}))">Kopieren</button></div>
+              <div class="files-view-actions">${viewSeg}${gh}${mode === 'code' ? `<button class="files-copy" onclick="toggleWrap(this)" title="Lange Zeilen umbrechen" aria-pressed="${wrapped}">${wrapped ? '☑' : '☐'} Umbruch</button>` : ''}<button class="files-copy" onclick="downloadCurrentFile()" title="Diese Datei herunterladen">⬇ Datei</button><button class="files-copy" onclick="quickCopy(event, getFileContent(${active}))">Kopieren</button></div>
             </div>
-            <div class="files-code code-view${wrapped ? ' wrap' : ''}" role="region" tabindex="0" aria-label="Quellcode von ${escHtml(cur.path)}">${codeHtml}</div>
+            ${viewHtml}
           </div>
         </div>
         <div class="ann-panel" id="ann-panel">
@@ -5215,6 +5399,28 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
         const g = e.target.closest && e.target.closest('.ln-gutter');
         if (g && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); gutterTap(parseInt(g.dataset.line, 10)); }
       });
+      // Formatierte Ansicht: Absatz/Tabellenzeile anklicken startet den Kommentar
+      body.addEventListener('click', e => {
+        if (e.target.closest('a, button, input, textarea, .ann-il-wrap')) return;
+        if (!e.target.closest('#modal-body .files-preview')) return;
+        const sel = window.getSelection();
+        if (sel && !sel.isCollapsed) return; // Auswahl aktiv -> die Pille übernimmt
+        const tr = e.target.closest('tr[data-ls]');
+        const blk = e.target.closest('.pv-block');
+        const ls = tr ? +tr.dataset.ls : (blk ? +blk.dataset.ls : 0);
+        const le = tr ? +tr.dataset.ls : (blk ? +blk.dataset.le : 0);
+        if (!ls) return;
+        const files = state._files || [];
+        const cur = files[Math.min(state.activeFile || 0, files.length - 1)];
+        const pa = state._pendingAnn;
+        if (pa && pa.line && cur && pa.file === cur.path && document.getElementById('ann-composer-il')) {
+          // weiterer Klick erweitert den Bereich vom ursprünglichen Block aus
+          const a1 = pa._anchor, a2 = pa._anchorEnd || pa._anchor;
+          beginAnnotation(Math.min(a1, ls), Math.max(a2, le), null, a1, a2);
+        } else {
+          beginAnnotation(ls, le);
+        }
+      });
       // Esc: erst den Composer schließen, nicht gleich das ganze Modal (capture, vor dem Modal-Handler)
       document.addEventListener('keydown', e => {
         if (e.key === 'Escape' && document.getElementById('ann-composer-il')) { e.stopPropagation(); cancelAnnotate(); }
@@ -5233,12 +5439,19 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
       const s = window.getSelection();
       if (!s || s.isCollapsed || !s.rangeCount) return null;
       const r = s.getRangeAt(0);
-      const lineOf = node => {
+      // Zeile eines Auswahl-Endpunkts: Code-Zeile, CSV-Zeile oder Preview-Block (Blockanfang/-ende)
+      const lineOf = (node, edge) => {
         const el = node.nodeType === 1 ? node : node.parentElement;
-        const cl = el && el.closest && el.closest('.code-line');
-        return cl && cl.closest('#modal-body .files-code') ? parseInt(cl.dataset.line, 10) : null;
+        if (!el || !el.closest) return null;
+        const cl = el.closest('.code-line');
+        if (cl && cl.closest('#modal-body .files-code')) return parseInt(cl.dataset.line, 10);
+        const tr = el.closest('#modal-body .files-preview tr[data-ls]');
+        if (tr) return parseInt(tr.dataset.ls, 10);
+        const blk = el.closest('#modal-body .files-preview .pv-block');
+        if (blk) return parseInt(edge === 'end' ? blk.dataset.le : blk.dataset.ls, 10);
+        return null;
       };
-      const a = lineOf(r.startContainer), b = lineOf(r.endContainer);
+      const a = lineOf(r.startContainer, 'start'), b = lineOf(r.endContainer, 'end');
       if (!a || !b) return null;
       const text = s.toString().replace(/\s+/g, ' ').trim();
       if (!text) return null;
@@ -5283,7 +5496,7 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
         beginAnnotation(line, line);
       }
     }
-    function beginAnnotation(start, end, snippet, anchor) {
+    function beginAnnotation(start, end, snippet, anchor, anchorEnd) {
       const files = state._files || [];
       const cur = files[Math.min(state.activeFile || 0, files.length - 1)];
       if (!cur) return;
@@ -5294,18 +5507,18 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
         snippet = (lines[start - 1] || '').trim().slice(0, 90);
         if (end > start) snippet += '  …';
       }
-      state._pendingAnn = { file: cur.path, line: start, lineEnd: end, snippet, _anchor: anchor || start };
+      state._pendingAnn = { file: cur.path, line: start, lineEnd: end, snippet, _anchor: anchor || start, _anchorEnd: anchorEnd || anchor || end };
       applySelHighlight(start, end);
-      openInlineComposer(document.getElementById('cl-' + end));
+      openInlineComposer(document.getElementById('cl-' + end) || _pvAnchorFor(end));
     }
     function startAnnotateFile(evt, i) {
       if (evt) evt.stopPropagation();
       const files = state._files || [];
       const f = files[i]; if (!f) return;
       if (i !== state.activeFile) { state.activeFile = i; renderFilesInto(state.activeSkill); }
-      state._pendingAnn = { file: f.path, line: null, lineEnd: null, snippet: '', _anchor: null };
+      state._pendingAnn = { file: f.path, line: null, lineEnd: null, snippet: '', _anchor: null, _anchorEnd: null };
       applySelHighlight(0, -1);
-      const code = document.querySelector('#modal-body .files-code');
+      const code = document.querySelector('#modal-body .files-code') || document.querySelector('#modal-body .files-preview');
       if (code) openInlineComposer({ prependTo: code });
     }
     // Composer direkt an der Stelle einsetzen; beim Erweitern wandert er mit, Text bleibt erhalten
@@ -5340,8 +5553,16 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
     }
 
     function applySelHighlight(start, end) {
-      document.querySelectorAll('.code-line.ann-selecting').forEach(el => el.classList.remove('ann-selecting'));
+      document.querySelectorAll('.code-line.ann-selecting, .pv-block.ann-selecting, .files-preview tr.ann-selecting').forEach(el => el.classList.remove('ann-selecting'));
+      if (end < start) return;
       for (let L = start; L <= end; L++) document.getElementById('cl-' + L)?.classList.add('ann-selecting');
+      document.querySelectorAll('#modal-body .files-preview .pv-block').forEach(b => {
+        if (+b.dataset.ls <= end && +b.dataset.le >= start) b.classList.add('ann-selecting');
+      });
+      document.querySelectorAll('#modal-body .files-preview tr[data-ls]').forEach(tr => {
+        const n = +tr.dataset.ls;
+        if (n >= start && n <= end) tr.classList.add('ann-selecting');
+      });
     }
     function cancelAnnotate() {
       state._pendingAnn = null;
@@ -5389,14 +5610,17 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
       if (idx < 0) return;
       if (idx !== state.activeFile) { state.activeFile = idx; renderFilesInto(skill); }
       requestAnimationFrame(() => {
-        const target = a.line ? document.getElementById('cl-' + a.line) : document.querySelector('.files-view-bar');
+        const target = a.line ? (document.getElementById('cl-' + a.line) || _pvAnchorFor(a.line)) : document.querySelector('.files-view-bar');
         if (target) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
         if (a.line) {
           const end = a.lineEnd || a.line;
+          let flashed = false;
           for (let L = a.line; L <= end; L++) {
             const el = document.getElementById('cl-' + L);
-            if (el) { el.classList.add('cl-flash'); setTimeout(() => el.classList.remove('cl-flash'), 1600); }
+            if (el) { el.classList.add('cl-flash'); setTimeout(() => el.classList.remove('cl-flash'), 1600); flashed = true; }
           }
+          // formatierte Ansicht: den Block blinken lassen, der die Zeile enthält
+          if (!flashed && target && target.classList) { target.classList.add('cl-flash'); setTimeout(() => target.classList.remove('cl-flash'), 1600); }
         } else if (target) { target.classList.add('cl-flash'); setTimeout(() => target.classList.remove('cl-flash'), 1600); }
       });
     }
@@ -5793,11 +6017,14 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
       if (t.lineRange) {
         requestAnimationFrame(() => {
           const [a, b] = t.lineRange;
-          document.getElementById('cl-' + a)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          const first = document.getElementById('cl-' + a) || _pvAnchorFor(a);
+          first?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          let flashed = false;
           for (let L = a; L <= b; L++) {
             const el = document.getElementById('cl-' + L);
-            if (el) { el.classList.add('cl-flash'); setTimeout(() => el.classList.remove('cl-flash'), 1800); }
+            if (el) { el.classList.add('cl-flash'); setTimeout(() => el.classList.remove('cl-flash'), 1800); flashed = true; }
           }
+          if (!flashed && first && first.classList) { first.classList.add('cl-flash'); setTimeout(() => first.classList.remove('cl-flash'), 1800); }
         });
       }
     }
