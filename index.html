@@ -698,11 +698,12 @@
 
     /* ===== ROLE CHIPS ===== */
     .role-chips {
-      display: flex; align-items: center; gap: .8rem; flex-wrap: wrap;
+      display: flex; flex-direction: column; align-items: flex-start; gap: .8rem;
       padding-bottom: 1.2rem;
       border-bottom: 1px solid var(--c-bg);
     }
-    .role-label { font-size: 1.4rem; color: var(--c-gray-m); font-weight: 500; white-space: nowrap; }
+    .chip-row { display: flex; align-items: center; gap: .8rem; flex-wrap: wrap; }
+    .role-label { font-size: 1.4rem; color: var(--c-gray-m); font-weight: 500; white-space: nowrap; min-width: 8.6rem; }
     .role-chip {
       padding: .6rem 1.4rem;
       font-size: 1.4rem; font-family: inherit;
@@ -1365,8 +1366,10 @@
     /* Annotations-Panel */
     .ann-panel { margin-top: 2rem; border-top: 1px solid var(--c-gray-l); padding-top: 1.6rem; }
     .ann-panel-head { display: flex; align-items: center; gap: 1rem; font-size: 1.5rem; font-weight: 700; margin-bottom: 1.2rem; flex-wrap: wrap; }
-    .ann-export { margin-left: auto; background: var(--c-black); color: var(--c-white); border: none; border-radius: var(--radius-pill); font-family: var(--font-mono); font-size: 1.2rem; font-weight: 500; padding: .6rem 1.4rem; cursor: pointer; transition: var(--trans); }
+    .ann-head-actions { margin-left: auto; display: inline-flex; gap: .6rem; flex-wrap: wrap; }
+    .ann-export { background: var(--c-black); color: var(--c-white); border: none; border-radius: var(--radius-pill); font-family: var(--font-mono); font-size: 1.2rem; font-weight: 500; padding: .6rem 1.4rem; cursor: pointer; transition: var(--trans); }
     .ann-export:hover { background: var(--c-yellow); color: var(--c-black); }
+    .ann-import { background: transparent; color: var(--c-black); border: 1px solid var(--c-gray-l); }
     .ann-count { background: var(--c-black); color: var(--c-white); border-radius: 2rem; font-size: 1.2rem; padding: .1rem .9rem; font-family: var(--font-mono); }
     .ann-composer { background: var(--c-bg); border: 1px solid var(--c-gray-l); border-radius: 1rem; padding: 1.6rem; margin-bottom: 1.6rem; }
     .ann-anchor { font-size: 1.35rem; color: var(--c-gray-m); margin-bottom: 1rem; }
@@ -1997,7 +2000,11 @@ Gib einen priorisierten Report aus:
         <h2 class="ex-h2">Bereit für deinen ersten Skill?</h2>
         <p class="ex-body" style="margin-bottom:3.2rem">Starte mit diesen drei — sie sind für den Einstieg gemacht.</p>
         <div class="ex-starter" id="ex-starter"></div>
-        <button class="c-cta -black-bg" onclick="showView('catalog')" style="margin-top:3.2rem">Alle Skills im Katalog entdecken</button>
+        <div style="display:flex;gap:1.2rem;justify-content:center;flex-wrap:wrap;margin-top:3.2rem">
+          <button class="c-cta -yellow-bg" onclick="downloadStarterPack(this)">⬇ Starter-Paket (5 Skills, .zip)</button>
+          <button class="c-cta -black-bg" onclick="showView('catalog')">Alle Skills im Katalog entdecken</button>
+        </div>
+        <p class="ex-body" style="font-size:1.4rem;color:var(--c-gray-m);margin-top:1.2rem">Das Starter-Paket sind die echten Skill-Dateien — entpacken nach <code>.claude/skills/</code>, Anleitung liegt bei.</p>
       </div>
     </section>
 
@@ -3993,6 +4000,7 @@ Gib einen priorisierten Report aus:
       category: 'all',
       tags: [],
       subcategory: null,
+      role: null,
       endorsedOnly: false,
       favoritesOnly: false,
       sort: 'recommended',
@@ -4173,6 +4181,10 @@ Gib einen priorisierten Report aus:
       }
       if (state.subcategory) {
         result = result.filter(s => s.subcategory === state.subcategory);
+      }
+      if (state.role) {
+        // ohne Zuordnung lieber überall zeigen als still verschwinden (neue Skills)
+        result = result.filter(s => (ROLE_MAP[s.id] || ALL_ROLES).includes(state.role));
       }
       if (state.tags.length > 0) {
         result = result.filter(s => state.tags.every(t => s.tags.includes(t)));
@@ -4521,6 +4533,10 @@ Gib einen priorisierten Report aus:
       if (state.category !== 'all') {
         pills.push({label: catLabel(state.category), clear: `setSource('all')`});
       }
+      if (state.role) {
+        const r = ROLES.find(x => x.id === state.role);
+        pills.push({label: 'Rolle: ' + (r ? r.label : state.role), clear: `setRole('${state.role}')`});
+      }
       if (state.endorsedOnly) pills.push({label: 'Nur empfohlene', clear: `clearEndorsed()`});
       state.tags.forEach(t => pills.push({label: '#' + t, clear: `toggleTagFilter('${t}')`}));
       if (state.search) pills.push({label: `Suche: "${escHtml(state.search)}"`, clear: `clearSearch()`});
@@ -4832,6 +4848,49 @@ Gib einen priorisierten Report aus:
       showToast(`${id}.zip heruntergeladen (${entries.length} Dateien${annCount ? ', inkl. Anmerkungen' : ''}) ⬇`);
       if (btn) { btn.disabled = false; btn.textContent = label; }
     }
+    // ===== STARTER-PAKET (kuratierte Einsteiger-Skills als ein ZIP) =====
+    const STARTER_PACK = ['erste-schritte', 'erste-automation', 'prototyp-bauen', 'webseite-bauen', 'tool-teilen'];
+    async function downloadStarterPack(btn) {
+      const all = await getFilesAll();
+      const ids = STARTER_PACK.filter(id => (all[id] || []).length);
+      if (!ids.length) { showToast('Starter-Paket gerade nicht verfügbar.'); return; }
+      const label = btn ? btn.textContent : '';
+      if (btn) btn.disabled = true;
+      const jobs = ids.flatMap(id => all[id].map(f => ({ id, f })));
+      const entries = [];
+      for (let i = 0; i < jobs.length; i++) {
+        if (btn) btn.textContent = `lädt ${i + 1}/${jobs.length} …`;
+        const data = await fetchBytes(jobs[i].id + '/' + jobs[i].f);
+        if (data) entries.push({ name: 'skills/' + jobs[i].id + '/' + jobs[i].f, data });
+      }
+      if (entries.length < jobs.length) {
+        showToast('Download unvollständig — bitte nochmal versuchen.');
+        if (btn) { btn.disabled = false; btn.textContent = label; }
+        return;
+      }
+      const names = ids.map(id => { const s = SKILLS.find(x => x.id === id); return `- \`${id}\` — ${s ? s.tagline : ''}`; }).join('\n');
+      const readme = `# pilot Starter-Paket — Citizen Coding
+
+${ids.length} Einsteiger-Skills aus dem pilot Skill Marketplace, als echte Dateien.
+
+${names}
+
+## Einrichten (2 Minuten)
+
+1. Diesen Ordner entpacken.
+2. Den Ordner \`skills/\` in dein Projekt kopieren, und zwar nach \`.claude/skills/\`
+   (der Ordner \`.claude\` liegt direkt in deinem Projektordner — ggf. anlegen).
+3. Claude Code im Projektordner starten und lostippen, z. B.: \`/erste-schritte\`
+
+Jeder Skill ist nur ein Ordner mit einer \`SKILL.md\` — schau ruhig rein.
+Mehr Skills und alle Details: pilot Skill Marketplace.
+`;
+      entries.unshift({ name: 'START-HIER.md', data: new TextEncoder().encode(readme) });
+      triggerDownload(makeZip(entries), 'pilot-starter-paket.zip');
+      showToast(`Starter-Paket heruntergeladen (${ids.length} Skills, ${entries.length} Dateien) ⬇`);
+      if (btn) { btn.disabled = false; btn.textContent = label; }
+    }
+
     // ===== ANMERKUNGEN EXPORTIEREN (für Weiterentwicklung in Claude Code) =====
     function _fence(text) {
       let max = 0, run = 0;
@@ -4868,8 +4927,13 @@ Gib einen priorisierten Report aus:
           md += `**Referenzierte Stelle** (mit Kontext):\n\n${f}\n${block}${f}\n\n`;
         }
       });
-      const json = JSON.stringify(sorted.map(a => ({ file: a.file, line: a.line, lineEnd: a.lineEnd || a.line, author: a.author, date: a.date, text: a.text })), null, 2);
-      md += `---\n\n## Rohdaten (JSON)\n\n${_fence(json)}json\n${json}\n${_fence(json)}\n`;
+      // Rundlauf-fähig: dieser Block lässt sich über „Importieren" wieder einlesen
+      const json = JSON.stringify({
+        format: 'skill-annotations-v1',
+        skill: skillId,
+        anmerkungen: sorted.map(a => ({ file: a.file, line: a.line || null, lineEnd: a.lineEnd || a.line || null, author: a.author || '', date: a.date, text: a.text, snippet: a.snippet || '' }))
+      }, null, 2);
+      md += `---\n\n## Rohdaten (JSON)\n\nDiesen Block kann der Marketplace über **Importieren** wieder einlesen — so tauscht ihr Anmerkungen untereinander aus.\n\n${_fence(json)}json\n${json}\n${_fence(json)}\n`;
       return md;
     }
     function exportAnnotations() {
@@ -4879,6 +4943,64 @@ Gib einen priorisierten Report aus:
       const md = buildAnnotationsMarkdown(skill.id);
       triggerDownload(new Blob([md], { type: 'text/markdown;charset=utf-8' }), skill.id + '-anmerkungen.md');
       showToast(`${anns.length} Anmerkung(en) exportiert ⬇`);
+    }
+
+    // ===== ANMERKUNGEN IMPORTIEREN (Gegenstück zum Export — Austausch im Team) =====
+    function importAnnotationsClick() {
+      document.getElementById('ann-import-file')?.click();
+    }
+    function _parseAnnPayload(text, filename) {
+      // .json direkt; .md: JSON-Fence hinter „## Rohdaten (JSON)" herausziehen
+      let raw = text;
+      if (!/\.json$/i.test(filename)) {
+        const m = text.match(/## Rohdaten \(JSON\)[\s\S]*?(`{3,})json\n([\s\S]*?)\n\1/);
+        if (!m) throw new Error('Kein Rohdaten-Block gefunden — bitte eine exportierte Anmerkungs-Datei wählen.');
+        raw = m[2];
+      }
+      const data = JSON.parse(raw);
+      // v1-Objekt oder (ältere Exporte) nacktes Array
+      const list = Array.isArray(data) ? data : data.anmerkungen;
+      if (!Array.isArray(list)) throw new Error('Unbekanntes Format.');
+      return { skill: Array.isArray(data) ? null : data.skill || null, list };
+    }
+    async function importAnnotations(input) {
+      const file = input.files && input.files[0];
+      input.value = ''; // gleiche Datei erneut wählbar
+      const skill = state.activeSkill;
+      if (!file || !skill) return;
+      let payload;
+      try { payload = _parseAnnPayload(await file.text(), file.name); }
+      catch (e) { showToast('Import fehlgeschlagen: ' + e.message); return; }
+      if (payload.skill && payload.skill !== skill.id) {
+        showToast(`Datei gehört zu „${payload.skill}" — hier ist „${skill.id}" geöffnet.`);
+        return;
+      }
+      const anns = getAnnotations(skill.id);
+      const key = a => [a.file, a.line || 0, a.lineEnd || a.line || 0, (a.author || '').trim(), (a.text || '').trim()].join('');
+      const seen = new Set(anns.map(key));
+      let added = 0, skipped = 0, invalid = 0;
+      for (const a of payload.list) {
+        if (!a || typeof a.file !== 'string' || typeof a.text !== 'string' || !a.text.trim()) { invalid++; continue; }
+        if (seen.has(key(a))) { skipped++; continue; }
+        seen.add(key(a));
+        anns.push({
+          id: 'a' + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36) + added.toString(36),
+          file: a.file,
+          line: Number(a.line) || null,
+          lineEnd: Number(a.lineEnd) || Number(a.line) || null,
+          snippet: typeof a.snippet === 'string' ? a.snippet : '',
+          author: (a.author || 'Anonym').slice(0, 80),
+          text: a.text.slice(0, 4000),
+          date: /^\d{4}-\d{2}-\d{2}$/.test(a.date || '') ? a.date : new Date().toISOString().slice(0, 10)
+        });
+        added++;
+      }
+      saveAnnotations(skill.id, anns);
+      renderFilesInto(skill);
+      const parts = [`${added} importiert`];
+      if (skipped) parts.push(`${skipped} schon vorhanden`);
+      if (invalid) parts.push(`${invalid} ungültig`);
+      showToast(`Anmerkungen: ${parts.join(', ')} ✓`);
     }
 
     function downloadCurrentFile() {
@@ -4991,7 +5113,11 @@ Gib einen priorisierten Report aus:
         <div class="ann-panel" id="ann-panel">
           <div class="ann-panel-head">
             <span>Alle Anmerkungen</span><span class="ann-count">${anns.length}</span>
-            ${anns.length ? `<button class="ann-export" onclick="exportAnnotations()" title="Anmerkungen mit Referenzen als Markdown herunterladen">⬇ Als .md exportieren</button>` : ''}
+            <span class="ann-head-actions">
+              ${anns.length ? `<button class="ann-export" onclick="exportAnnotations()" title="Anmerkungen mit Referenzen als Markdown herunterladen">⬇ Exportieren</button>` : ''}
+              <button class="ann-export ann-import" onclick="importAnnotationsClick()" title="Exportierte Anmerkungs-Datei (.md oder .json) von Kolleg:innen einlesen">⬆ Importieren</button>
+              <input type="file" id="ann-import-file" accept=".md,.json,text/markdown,application/json" hidden onchange="importAnnotations(this)">
+            </span>
           </div>
           <div class="ann-list" id="ann-list">${annList}</div>
         </div>`;
@@ -5555,6 +5681,7 @@ Gib einen priorisierten Report aus:
       state.category = 'all';
       state.tags = [];
       state.subcategory = null;
+      state.role = null;
       state.endorsedOnly = false;
       state.favoritesOnly = false;
       state.sort = 'recommended';
@@ -5712,7 +5839,49 @@ Gib einen priorisierten Report aus:
       panel.hidden = isExpanded;
     }
 
-    // ===== SOURCE FILTER (ehem. Role Filter) =====
+    // ===== QUELLE- & ROLLEN-FILTER =====
+    // Redaktionelle Zuordnung: welche Skills sind für welche Rolle bei pilot relevant?
+    const ROLES = [
+      { id: 'media',     label: 'Media & Beratung' },
+      { id: 'kreation',  label: 'Kreation & Content' },
+      { id: 'strategie', label: 'Strategie & Insights' },
+      { id: 'data',      label: 'Daten & Analytics' },
+      { id: 'pm',        label: 'Projektmanagement' }
+    ];
+    const ALL_ROLES = ROLES.map(r => r.id);
+    const ROLE_MAP = {
+      'erste-schritte':      ALL_ROLES,
+      'prototyp-bauen':      ALL_ROLES,
+      'webseite-bauen':      ['kreation', 'media', 'pm'],
+      'erste-automation':    ALL_ROLES,
+      'tool-teilen':         ALL_ROLES,
+      'webaudit':            ['kreation', 'media', 'data'],
+      'briefing-gen':        ['pm', 'kreation', 'media'],
+      'campaign-check':      ['media', 'data'],
+      'mediaplan-audit':     ['media', 'data'],
+      'tracking-audit':      ['media', 'data'],
+      'keyword-research':    ['media', 'kreation', 'strategie'],
+      'content-recycling':   ['kreation'],
+      'tonalitaets-check':   ['kreation'],
+      'social-kalender':     ['kreation', 'pm'],
+      'meeting-notes':       ALL_ROLES,
+      'markt-research':      ['strategie', 'media'],
+      'persona-builder':     ['strategie', 'kreation'],
+      'wettbewerbs-monitor': ['strategie', 'media'],
+      'pitch-deck':          ['strategie', 'pm', 'kreation'],
+      'daten-aufbereiten':   ['data', 'media'],
+      'report-summary':      ['data', 'media', 'pm'],
+      'moodboard':           ['kreation'],
+      'slides-aus-daten':    ['data', 'media', 'strategie'],
+      'pptx':                ALL_ROLES,
+      'xlsx':                ['data', 'media', 'pm'],
+      'docx':                ['pm', 'kreation', 'strategie'],
+      'pdf':                 ['data', 'media', 'pm'],
+      'brand-guidelines':    ['kreation'],
+      'web-artifacts-builder': ['kreation'],
+      'skill-creator':       ALL_ROLES,
+      'internal-comms':      ['pm', 'kreation']
+    };
     function renderRoleChips() {
       const sources = [
         {id:'all',label:'Alle Quellen'},
@@ -5722,15 +5891,27 @@ Gib einen priorisierten Report aus:
       ];
       const container = document.getElementById('role-chips');
       if (!container) return;
-      container.innerHTML = `<span class="role-label">Quelle:</span>` + sources.map(s => {
+      const srcRow = `<span class="role-label">Quelle:</span>` + sources.map(s => {
         const count = s.id === 'all' ? SKILLS.length : SKILLS.filter(sk => sk.category === s.id).length;
         const active = state.category === (s.id === 'all' ? 'all' : s.id);
         return `<button class="role-chip${active ? ' active' : ''}" onclick="setSource('${s.id}')" data-sub="${s.id}">${escHtml(s.label)} <span class="rc-count">${count}</span></button>`;
       }).join('');
+      const roleRow = `<span class="role-label">Deine Rolle:</span>` + ROLES.map(r => {
+        const count = SKILLS.filter(sk => (ROLE_MAP[sk.id] || ALL_ROLES).includes(r.id)).length;
+        return `<button class="role-chip${state.role === r.id ? ' active' : ''}" onclick="setRole('${r.id}')">${escHtml(r.label)} <span class="rc-count">${count}</span></button>`;
+      }).join('');
+      container.innerHTML = `<div class="chip-row">${srcRow}</div><div class="chip-row">${roleRow}</div>`;
     }
 
     function setSource(id) {
       state.category = id;
+      renderRoleChips();
+      render();
+      updateURL();
+    }
+
+    function setRole(id) {
+      state.role = state.role === id ? null : id; // zweiter Klick hebt die Auswahl auf
       renderRoleChips();
       render();
       updateURL();
