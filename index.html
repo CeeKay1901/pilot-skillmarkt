@@ -228,7 +228,7 @@
     .skill-card.featured .cat-badge.gsd { background: rgba(186,184,171,.2); color: var(--c-gray-l); }
     /* Anthropic-Skills: eingebaut vs. nachinstallieren */
     .install-badge { font-family: var(--font-mono); font-size: 1.15rem; font-weight: 600; padding: .3rem 1rem; border-radius: var(--radius-pill); white-space: nowrap; }
-    .install-badge.builtin { background: rgba(45,138,78,.1); color: #2d8a4e; border: 1px solid rgba(45,138,78,.35); }
+    .install-badge.builtin { background: rgba(45,138,78,.1); color: #1e6b3a; border: 1px solid rgba(45,138,78,.35); }
     .install-badge.plugin { background: transparent; color: var(--c-black); border: 1px solid var(--c-gray-l); }
     /* Plattform-Chips auf der Karte: wo lässt sich der Skill einsetzen? */
     .card-platforms { display: flex; gap: .5rem; flex-wrap: wrap; margin-top: 1rem; }
@@ -256,7 +256,7 @@
     .expf-lead { font-size: 1.75rem; line-height: 1.6; max-width: 82rem; }
     .expf-lead code, .expf-cell code { font-family: var(--font-mono); font-size: .88em; background: var(--c-bg); border: 1px solid var(--c-gray-l); border-radius: .4rem; padding: .05rem .5rem; }
     .expf-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; margin: 2.4rem 0 2.8rem; }
-    .expf-cell h4 { font-size: 1.3rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--c-gray-m); margin-bottom: .8rem; }
+    .expf-cell h3 { font-size: 1.3rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--c-gray-m); margin-bottom: .8rem; }
     .expf-cell p { font-size: 1.55rem; line-height: 1.6; }
     @media (max-width: 767px) {
       .expf-grid { grid-template-columns: 1fr; gap: 1.6rem; }
@@ -320,6 +320,10 @@
     .star { font-size: 1.4rem; }
     .star.filled { color: var(--c-yellow); }
     .star.empty { color: var(--c-gray-l); }
+    /* Halbstern: gefüllte Hälfte über dem leeren Stern */
+    .star.half { position: relative; color: var(--c-gray-l); }
+    .star.half::before { content: '★'; position: absolute; left: 0; top: 0; width: 50%; overflow: hidden; color: var(--c-yellow); }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
     .rating-text { font-size: 1.3rem; color: var(--c-gray-m); }
     .pilot-avatars { display: flex; }
     .avatar {
@@ -1060,6 +1064,8 @@
       .header-inner .search-wrap { display: none; }
       /* Ersatz für die versteckte Header-Suche: Suchfeld oben in der Filterleiste */
       .search-wrap-m { display: block; padding: 1.2rem 0 .2rem; }
+      /* iOS zoomt bei Feldern < 16px automatisch hinein — deshalb 1.6rem */
+      #search-m, .bld-form input, .bld-form textarea, .bld-form select { font-size: 1.6rem; }
     }
     @media (max-width: 640px) {
       .nav-link { font-size: 1.25rem; padding: .5rem .8rem; }
@@ -1529,6 +1535,10 @@
       .sel-pill { padding: 1.1rem 2rem; font-size: 1.5rem; }
       /* Filter-Chips & Plattform-Toggle: volle Touch-Höhe (WCAG 2.5.5) */
       .role-chip, .expf-tab, .cat-tab { min-height: 4.4rem; }
+      /* kleine Bedienelemente: unsichtbare Hit-Area auf ~44px aufblasen */
+      .fav-btn, .star-btn, .demo-replay { position: relative; }
+      .fav-btn::after, .star-btn::after, .demo-replay::after { content: ''; position: absolute; inset: -12px; }
+      .card-trigger-chip, .trigger-badge, .demo-case { min-height: 4.4rem; }
     }
 
     /* Explainer responsive */
@@ -1539,7 +1549,7 @@
       .ex-body { font-size: 1.7rem; }
       .ex-section { padding: 6rem 0; }
       .ex-compare-vs { transform: rotate(90deg); padding: 1rem 0; }
-      .ex-analogy-arrow { transform: rotate(90deg); justify-content: center; }
+      .ex-analogy-arrow { align-self: center; justify-content: center; } /* keine Rotation: gestreckt+rotiert sprengte den Layout-Viewport */
       .ex-terminal-body { font-size: 1.35rem; min-height: 30rem; }
     }
 
@@ -1695,7 +1705,7 @@
         <button class="nav-link" id="nav-builder" onclick="showView('builder')">Skill bauen</button>
       </nav>
       <div class="search-wrap">
-        <input type="search" id="search" aria-label="Skills suchen" placeholder="Skills suchen..." autocomplete="off">
+        <input type="search" id="search" aria-label="Skills suchen" placeholder="Skills suchen …" autocomplete="off">
         <span class="search-hint" aria-hidden="true">Drücke <kbd>/</kbd> zum Suchen</span>
       </div>
     </div>
@@ -1712,7 +1722,7 @@
     <div class="hero-glow" aria-hidden="true"></div>
     <div class="hero-inner hero-top">
       <p class="overline" style="color:#ffe05e">pilot · Citizen Coding</p>
-      <h1 class="hero-h1">Skills, die<br><span class="hero-rotator" id="hero-rotator" aria-live="polite">Tools bauen.</span></h1>
+      <h1 class="hero-h1">Skills, die<br><span class="hero-rotator" id="hero-rotator" aria-hidden="true">Tools bauen.</span><span class="sr-only">Arbeit erledigen.</span></h1>
       <p class="subline">Von Piloten gebaut, von Piloten empfohlen — euer Werkzeugkasten für Claude&nbsp;Code, Langdock &amp; Claude&nbsp;Design.</p>
       <div class="hero-stats" id="hero-stats">
         <div class="hero-stat-box"><span class="hero-stat-num" data-count="35" id="stat-skills">0</span><span class="hero-stat-label">Skills</span></div>
@@ -1751,7 +1761,7 @@
           </div>
           <div class="gs-step">
             <span class="gs-num">3</span>
-            <div><strong>Loslegen</strong><p>Claude Code im Terminal öffnen, Befehl eintippen, Enter. Viele Skills laufen auch in Langdock — jeder Skill zeigt unter „Wo du diesen Skill einsetzen kannst“, wo er funktioniert.</p></div>
+            <div><strong>Loslegen</strong><p>Claude Code im Terminal öffnen, Befehl eintippen, Enter. Viele Skills laufen auch in Langdock, Design-Skills füttern Claude Design — jeder Skill zeigt unter „Wo du diesen Skill einsetzen kannst“, wo er funktioniert.</p></div>
           </div>
         </div>
       </div>
@@ -1764,7 +1774,7 @@
     <div class="filter-bar" id="filter-bar">
       <div class="filter-inner">
         <div class="search-wrap-m">
-          <input type="search" id="search-m" aria-label="Skills suchen" placeholder="Skills suchen..." autocomplete="off">
+          <input type="search" id="search-m" aria-label="Skills suchen" placeholder="Skills suchen …" autocomplete="off">
         </div>
         <div class="cat-tabs" id="cat-tabs" role="tablist"></div>
         <button class="filter-toggle-btn" id="filter-toggle-btn" onclick="toggleMobileFilter()" aria-expanded="true">
@@ -1881,12 +1891,12 @@
           </div>
           <div class="cmp-row">
             <div class="cmp-dim">So arbeitest du</div>
-            <div class="cmp-cell">Im Browser: chatten, Team-Assistenten nutzen, Workflows starten — und seit Kurzem eigene Skills hochladen (dazu gleich mehr).</div>
+            <div class="cmp-cell">Im Browser: chatten, Team-Assistenten nutzen, Workflows starten — und seit Kurzem eigene Skills hochladen.</div>
             <div class="cmp-cell cmp-hl">Per Auftrag: es arbeitet selbstständig direkt in deinen Dateien und Ordnern.</div>
           </div>
           <div class="cmp-row">
             <div class="cmp-dim">Was rauskommt</div>
-            <div class="cmp-cell">Starke Antworten, Texte und Analysen — auch aus eurem Firmenwissen.</div>
+            <div class="cmp-cell">Starke Antworten, Texte und Analysen — auf Wunsch auch als PDF-, Word- oder Excel-Datei.</div>
             <div class="cmp-cell cmp-hl">Lauffähige Ergebnisse: Tools, Websites, Reports, Automationen.</div>
           </div>
           <div class="cmp-row">
@@ -1927,9 +1937,9 @@
         <div class="expf-panel" data-pf="code">
           <p class="expf-lead"><strong>Das Zuhause der Skills.</strong> Hier ist ein Skill ein Ordner mit <code>SKILL.md</code> und optionalen Scripts — Claude Code führt ihn aus und arbeitet dabei <em>direkt in deinen Dateien</em>.</p>
           <div class="expf-grid">
-            <div class="expf-cell"><h4>So kommt er rein</h4><p>ZIP aus dem Katalog laden und nach <code>.claude/skills/</code> entpacken — oder einfach den <code>/befehl</code> tippen.</p></div>
-            <div class="expf-cell"><h4>Das kann er</h4><p>Alles: Dateien lesen &amp; schreiben, Scripts ausführen, Browser steuern, Tools und Webseiten bauen, Automationen.</p></div>
-            <div class="expf-cell"><h4>Grenzen</h4><p>Läuft auf deinem Rechner im Terminal — dafür gibt es den Skill <code>/erste-schritte</code> als Einstieg.</p></div>
+            <div class="expf-cell"><h3>So kommt er rein</h3><p>ZIP aus dem Katalog laden und nach <code>.claude/skills/</code> entpacken — oder einfach den <code>/befehl</code> tippen.</p></div>
+            <div class="expf-cell"><h3>Das kann er</h3><p>Alles: Dateien lesen &amp; schreiben, Scripts ausführen, Browser steuern, Tools und Webseiten bauen, Automationen.</p></div>
+            <div class="expf-cell"><h3>Grenzen</h3><p>Läuft auf deinem Rechner im Terminal — dafür gibt es den Skill <code>/erste-schritte</code> als Einstieg.</p></div>
           </div>
           <button class="c-cta -black-bg" onclick="showCatalogWithPlatform('code')">Alle Skills ansehen</button>
         </div>
@@ -1937,9 +1947,9 @@
         <div class="expf-panel" data-pf="langdock" hidden>
           <p class="expf-lead"><strong>Langdock hat ein eigenes Skills-Feature</strong> — gleiches Prinzip, gleiche Datei. Du lädst die <code>SKILL.md</code> hoch, und Langdock aktiviert sie automatisch, sobald deine Nachricht dazu passt. Kein Terminal nötig.</p>
           <div class="expf-grid">
-            <div class="expf-cell"><h4>So kommt er rein</h4><p>In Langdock: <strong>Skills → Add Skill</strong> → <code>SKILL.md</code> (oder ZIP) hochladen. Teilen mit dem Team geht per Share-Dialog, Admins können Workspace-weit freigeben.</p></div>
-            <div class="expf-cell"><h4>Das kann er</h4><p>Alles Instruktive: Checklisten, Prüf-Regeln, Templates, Schreib-Workflows. Dateien erzeugt Langdock über seine eigenen System-Skills (PDF, Word, Excel, PowerPoint).</p></div>
-            <div class="expf-cell"><h4>Grenzen</h4><p>Skills sind hier reine Anleitung: keine eigenen Scripts, kein Dateisystem, kein Browser. Bau-Skills wie <code>webseite-bauen</code> bleiben deshalb Claude-Code-Sache.</p></div>
+            <div class="expf-cell"><h3>So kommt er rein</h3><p>In Langdock: <strong>Skills → Add Skill</strong> → <code>SKILL.md</code> (oder ZIP) hochladen. Teilen mit dem Team geht per Share-Dialog, Admins können Workspace-weit freigeben.</p></div>
+            <div class="expf-cell"><h3>Das kann er</h3><p>Alles Instruktive: Checklisten, Prüf-Regeln, Templates, Schreib-Workflows. Dateien erzeugt Langdock über seine eigenen System-Skills (PDF, Word, Excel, PowerPoint).</p></div>
+            <div class="expf-cell"><h3>Grenzen</h3><p>Skills sind hier reine Anleitung: keine eigenen Scripts, kein Dateisystem, kein Browser. Bau-Skills wie <code>webseite-bauen</code> bleiben deshalb Claude-Code-Sache.</p></div>
           </div>
           <button class="c-cta -black-bg" onclick="showCatalogWithPlatform('langdock')">Langdock-taugliche Skills ansehen</button>
         </div>
@@ -1947,9 +1957,9 @@
         <div class="expf-panel" data-pf="design" hidden>
           <p class="expf-lead"><strong>Claude Design</strong> (Anthropic Labs, seit April 2026) gestaltet auf einem Canvas: Prototypen, Pitch-Decks, One-Pager, Marketing-Visuals. Es kennt kein Skill-System — aber es nimmt <em>eure Guidelines als Design-System</em> an. Genau da helfen unsere Design-Skills.</p>
           <div class="expf-grid">
-            <div class="expf-cell"><h4>So fütterst du es</h4><p>Die Skill-Dateien (z.&nbsp;B. <code>brand-guidelines</code>, <code>theme-factory</code>) in Claude Design als Kontext oder Design-System hochladen — mehr braucht es nicht.</p></div>
-            <div class="expf-cell"><h4>Das kann es</h4><p>Visuelles Arbeiten per Chat und Canvas — und fertige Designs per Handoff an Claude Code übergeben, wo daraus echte Tools werden.</p></div>
-            <div class="expf-cell"><h4>Grenzen</h4><p>Research Preview (bezahlte Claude-Pläne). Analyse-, Daten- und Text-Skills haben hier nichts verloren — dafür gibt es Langdock und Claude Code.</p></div>
+            <div class="expf-cell"><h3>So fütterst du es</h3><p>Die Skill-Dateien (z.&nbsp;B. <code>brand-guidelines</code>, <code>theme-factory</code>) in Claude Design als Kontext oder Design-System hochladen — mehr braucht es nicht.</p></div>
+            <div class="expf-cell"><h3>Das kann es</h3><p>Visuelles Arbeiten per Chat und Canvas — und fertige Designs per Handoff an Claude Code übergeben, wo daraus echte Tools werden.</p></div>
+            <div class="expf-cell"><h3>Grenzen</h3><p>Research Preview (bezahlte Claude-Pläne). Analyse-, Daten- und Text-Skills haben hier nichts verloren — dafür gibt es Langdock und Claude Code.</p></div>
           </div>
           <button class="c-cta -black-bg" onclick="showCatalogWithPlatform('design')">Design-taugliche Skills ansehen</button>
         </div>
@@ -2091,7 +2101,7 @@ Gib einen priorisierten Report aus:
         <div class="trg-brain">
           <div class="trg-brain-k">So entscheidet Claude</div>
           <div class="trg-brain-body">
-            <p>Claude hat von <em>allen</em> Skills immer nur den Namen und die eine <code>description</code>-Zeile im Kopf — wie eine Speisekarte. Passt deine Aufgabe dazu, lädt es den kompletten Skill und wendet ihn an. Das hält alles schnell, auch bei vielen Skills.</p>
+            <p>Claude hat von <em>allen</em> Skills immer nur den Namen und die eine <code>description</code>-Zeile im Kopf — wie eine Speisekarte. Passt deine Aufgabe dazu, lädt Claude den kompletten Skill und wendet ihn an. Das hält alles schnell, auch bei vielen Skills.</p>
             <p class="trg-brain-note">Darum ist die <code>description</code> in der SKILL.md so wichtig: Sie ist das Erkennungsmerkmal. Für heikle Aktionen (z.&nbsp;B. etwas veröffentlichen) lässt sich der Automatik-Start bewusst abschalten — dann zählt nur der Befehl.</p>
           </div>
         </div>
@@ -2103,7 +2113,7 @@ Gib einen priorisierten Report aus:
       <div class="ex-wrap">
         <p class="ex-eyebrow" style="color:var(--c-yellow)">Live ausprobiert</p>
         <h2 class="ex-h2" style="color:var(--c-white)">Skills in Aktion</h2>
-        <p class="ex-body ex-body-light">Wähl links einen Skill und eine konkrete Anwendung — rechts läuft die Demo. <strong>Jedes Ergebnis kannst du direkt öffnen</strong>: die gebaute Webseite, den echten Report, die bereinigte Datei.</p>
+        <p class="ex-body ex-body-light">Wähl einen Skill und eine konkrete Anwendung — und sieh der Demo zu. <strong>Jedes Ergebnis kannst du direkt öffnen</strong>: die gebaute Webseite, den echten Report, die bereinigte Datei.</p>
         <div class="demo-layout">
           <div class="demo-matrix" id="demo-matrix"></div>
           <div class="demo-stage">
@@ -2126,7 +2136,7 @@ Gib einen priorisierten Report aus:
       <div class="ex-wrap ex-narrow">
         <p class="ex-eyebrow">Wo wir stehen</p>
         <h2 class="ex-h2">Euer Weg ins <span class="ex-hl">Citizen Coding</span></h2>
-        <p class="ex-body">Seit vier Monaten baut pilot KI-Kompetenz auf. Jetzt startet die Q0-Testgruppe mit Claude Code — der Moment, in dem aus „KI nutzen“ ein „selbst bauen“ wird.</p>
+        <p class="ex-body">Seit letztem Herbst baut pilot KI-Kompetenz auf. Mit der Q0-Testgruppe geht es jetzt in die nächste Phase: Claude Code — der Moment, in dem aus „KI nutzen“ ein „selbst bauen“ wird.</p>
         <div class="ex-journey">
           <div class="ex-journey-step ex-done">
             <div class="ex-journey-dot"></div>
@@ -2151,13 +2161,13 @@ Gib einen priorisierten Report aus:
     <section class="ex-section ex-cta-section reveal">
       <div class="ex-wrap ex-narrow" style="text-align:center">
         <h2 class="ex-h2">Bereit für deinen ersten Skill?</h2>
-        <p class="ex-body" style="margin-bottom:3.2rem">Starte mit diesen drei — sie sind für den Einstieg gemacht.</p>
+        <p class="ex-body" style="margin-bottom:3.2rem">Starte mit diesen drei — und lade dir darunter das Starter-Paket mit fünf Einsteiger-Skills.</p>
         <div class="ex-starter" id="ex-starter"></div>
         <div style="display:flex;gap:1.2rem;justify-content:center;flex-wrap:wrap;margin-top:3.2rem">
           <button class="c-cta -yellow-bg" onclick="downloadStarterPack(this)">⬇ Starter-Paket (5 Skills, .zip)</button>
           <button class="c-cta -black-bg" onclick="showView('catalog')">Alle Skills im Katalog entdecken</button>
         </div>
-        <p class="ex-body" style="font-size:1.4rem;color:var(--c-gray-m);margin-top:1.2rem">Das Starter-Paket sind die echten Skill-Dateien — entpacken nach <code>.claude/skills/</code>, Anleitung liegt bei.</p>
+        <p class="ex-body" style="font-size:1.4rem;color:var(--c-gray-m);margin-top:1.2rem">Das Starter-Paket enthält die echten Skill-Dateien — entpacken nach <code>.claude/skills/</code>, Anleitung liegt bei.</p>
       </div>
     </section>
 
@@ -2239,8 +2249,8 @@ Gib einen priorisierten Report aus:
 
             <div class="bld-actions">
               <button class="c-cta -black-bg" onclick="builderDownloadZip(this)">⬇ Als Skill herunterladen (.zip)</button>
-              <button class="c-cta -black-border" onclick="builderCopy()">📋 SKILL.md kopieren</button>
-              <button class="c-cta -yellow-bg" onclick="builderSubmitGitHub()">🚀 Einreichen</button>
+              <button class="c-cta -black-border" onclick="builderCopy()">SKILL.md kopieren</button>
+              <button class="c-cta -yellow-bg" onclick="builderSubmitGitHub()">Einreichen</button>
               <button class="ann-cancel" onclick="builderReset()">Formular leeren</button>
             </div>
             <p class="bld-actions-hint">
@@ -2283,7 +2293,7 @@ Gib einen priorisierten Report aus:
   </div>
 
   <!-- TOAST -->
-  <div class="toast" id="toast"></div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script>
     // ===== DATA =====
@@ -2361,7 +2371,7 @@ Gib einen priorisierten Report aus:
         "name": "Prototyp bauen",
         "tagline": "Deine Idee in ein kleines funktionierendes Tool verwandeln",
         "description": "Beschreibe in normaler Sprache, welches interne Tool oder welchen Helfer du brauchst — Claude Code baut dir einen lauffähigen Prototyp. Rechner, Formulare, Dashboards, Mini-Apps.",
-        "longDescription": "Das Herzstück von Citizen Coding: Du hast eine Idee für ein kleines Tool, das dir oder deinem Team Arbeit abnimmt — aber kannst nicht programmieren? Genau dafür ist dieser Skill da. Du beschreibst dein Tool, Claude baut es, du testest es sofort im Browser und sagst was anders sein soll. So entstehen aus Ideen in Minuten echte, nutzbare Werkzeuge — vom Budget-Rechner bis zum kleinen internen Dashboard.",
+        "longDescription": "Das Herzstück von Citizen Coding: Du hast eine Idee für ein kleines Tool, das dir oder deinem Team Arbeit abnimmt — aber kannst nicht programmieren? Genau dafür ist dieser Skill da. Du beschreibst dein Tool, Claude baut es, du testest es sofort im Browser und sagst, was anders sein soll. So entstehen aus Ideen in Minuten echte, nutzbare Werkzeuge — vom Budget-Rechner bis zum kleinen internen Dashboard.",
         "exampleOutput": "Auftrag: \"Ein Tool, das mir aus Reichweite und\nTKP den Netto-Kontaktpreis rechnet\"\n\n✓ Eingabefelder erstellt (Reichweite, TKP, Streuverlust)\n✓ Berechnungslogik implementiert\n✓ Ergebnis-Anzeige mit Live-Update\n✓ pilot-Design angewendet\n\n→ tkp-rechner.html erstellt · im Browser geöffnet\n   Sag mir, was du noch anpassen möchtest.",
         "category": "pilot-inhouse",
         "subcategory": "bauen",
@@ -2414,7 +2424,7 @@ Gib einen priorisierten Report aus:
             "name": "Mia Hoffmann",
             "role": "Senior UX Designerin",
             "initials": "MH",
-            "text": "Perfekt um Ideen schnell greifbar zu machen, bevor wir groß investieren."
+            "text": "Perfekt, um Ideen schnell greifbar zu machen, bevor wir groß investieren."
           }
         ],
         "comments": [
@@ -4353,7 +4363,7 @@ Gib einen priorisierten Report aus:
         const isFull = i <= full;
         const isHalf = !isFull && (i === full + 1 && half);
         const filled = isFull || isHalf;
-        html += `<span class="star ${filled ? 'filled' : 'empty'}" aria-hidden="true">${filled ? '★' : '☆'}</span>`;
+        html += `<span class="star ${isFull ? 'filled' : isHalf ? 'half' : 'empty'}" aria-hidden="true">${isFull ? '★' : '☆'}</span>`;
       }
       html += '</span>';
       return html;
@@ -4392,7 +4402,7 @@ Gib einen priorisierten Report aus:
     }
 
     function setRating(skillId, stars) {
-      submitRating(skillId, stars);
+      if (!submitRating(skillId, stars)) { showToast('Konnte nicht speichern — privater Modus oder Speicher voll.'); return; }
       state.pendingRating[skillId] = stars;
       const container = document.getElementById(`star-input-${skillId}`);
       if (container) {
@@ -4406,15 +4416,18 @@ Gib einen priorisierten Report aus:
       showToast('Bewertung gespeichert ★');
     }
 
+    // Das Sterne-Widget im Bewertungs-Tab heißt 'comment-<id>' (DOM-Namensraum) —
+    // gespeichert wird IMMER unter der echten Skill-ID, sonst zählt die Bewertung nie.
+    function _ratingKey(skillId) { return String(skillId).replace(/^comment-/, ''); }
     function getRating(skillId) {
       try {
-        const data = localStorage.getItem(`skill-rating-${skillId}`);
+        const data = localStorage.getItem(`skill-rating-${_ratingKey(skillId)}`);
         return data ? parseInt(data) : 0;
       } catch(e) { return 0; }
     }
 
     function submitRating(skillId, stars) {
-      try { localStorage.setItem(`skill-rating-${skillId}`, stars); } catch(e) {}
+      try { localStorage.setItem(`skill-rating-${_ratingKey(skillId)}`, stars); return true; } catch(e) { return false; }
     }
 
     function getEffectiveRating(skill) {
@@ -4452,7 +4465,11 @@ Gib einen priorisierten Report aus:
 
       const existing = getComments(skillId);
       existing.unshift(comment);
-      try { localStorage.setItem(`skill-comments-${skillId}`, JSON.stringify(existing)); } catch(e) {}
+      try { localStorage.setItem(`skill-comments-${skillId}`, JSON.stringify(existing)); }
+      catch(e) { showToast('Konnte nicht speichern — privater Modus oder Speicher voll.'); return; }
+      // Die Sterne wandern mit in den Kommentar — Einzel-Bewertung löschen, sonst zählt sie doppelt
+      if (ratingVal) { try { localStorage.removeItem(`skill-rating-${skillId}`); } catch(e) {} }
+      delete state.pendingRating[`comment-${skillId}`];
       showToast('Kommentar veröffentlicht!');
       switchTab('ratings');
     }
@@ -4526,11 +4543,6 @@ Gib einen priorisierten Report aus:
       return result;
     }
 
-    function getAllTags() {
-      const tagSet = new Set();
-      SKILLS.forEach(s => s.tags.forEach(t => tagSet.add(t)));
-      return [...tagSet].sort();
-    }
 
     // ===== RENDER CARD =====
     function renderCard(skill, isFeatured = false, idx = 0) {
@@ -4575,7 +4587,7 @@ Gib einen priorisierten Report aus:
       const delay = Math.min(idx, 11) * 35;
 
       return `
-        <article class="skill-card ${isFeatured ? 'featured' : ''} card-in" style="animation-delay:${delay}ms" onclick="openModal('${skill.id}')" tabindex="0" role="button" aria-label="${escHtml(skill.name)} öffnen" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openModal('${skill.id}')}">
+        <article class="skill-card ${isFeatured ? 'featured' : ''}${state._noCardAnim ? '' : ' card-in'}" style="animation-delay:${state._noCardAnim ? 0 : delay}ms" onclick="openModal('${skill.id}')" tabindex="0" role="button" aria-label="${escHtml(skill.name)} öffnen" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openModal('${skill.id}')}">
           <div class="card-top">
             <span class="card-sub">${escHtml(subLabel(skill.subcategory))}</span>
             <button class="fav-btn ${fav ? 'active' : ''}" onclick="toggleFavorite(event,'${skill.id}')" aria-label="${fav ? 'Aus Favoriten entfernen' : 'Zu Favoriten hinzufügen'}" aria-pressed="${fav}">${fav ? '★' : '☆'}</button>
@@ -4623,6 +4635,7 @@ Gib einen priorisierten Report aus:
     }
     function isFavorite(id) { return getFavorites().includes(id); }
     function toggleFavorite(evt, id) {
+      state._noCardAnim = true; setTimeout(() => { state._noCardAnim = false; }, 0);
       if (evt) evt.stopPropagation();
       let favs = getFavorites();
       if (favs.includes(id)) { favs = favs.filter(f => f !== id); showToast('Aus Favoriten entfernt'); }
@@ -4649,7 +4662,7 @@ Gib einen priorisierten Report aus:
 
     function escHtml(str) {
       if (!str) return '';
-      return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+      return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
     }
 
     // ===== RENDER FEATURED =====
@@ -4727,12 +4740,6 @@ Gib einen priorisierten Report aus:
       updateURL();
     }
 
-    function setCategory(cat) {
-      state.category = cat;
-      renderCatTabs();
-      render();
-      updateURL();
-    }
 
     // ===== RENDER TAG CHIPS =====
     function renderTagChips() {
@@ -4834,7 +4841,7 @@ Gib einen priorisierten Report aus:
       if (!bar) return;
       const pills = [];
       if (state.subcategory) {
-        const labels = {development:'Entwicklung',content:'Inhalt',analytics:'Analytics',productivity:'Produktivität',automation:'Automatisierung',qa:'QA',ai:'KI'};
+        const labels = {einstieg:'Einstieg',bauen:'Bauen',media:'Media',content:'Content',strategy:'Strategie',data:'Data',automation:'Automatisierung'};
         pills.push({label: labels[state.subcategory] || state.subcategory, clear: `setSubCat('all')`});
       }
       if (state.category !== 'all') {
@@ -4849,6 +4856,7 @@ Gib einen priorisierten Report aus:
         pills.push({label: 'Einsatz: ' + (p ? p.label : state.platform), clear: `setPlatform('${state.platform}')`});
       }
       if (state.endorsedOnly) pills.push({label: 'Nur empfohlene', clear: `clearEndorsed()`});
+      if (state.favoritesOnly) pills.push({label: 'Nur Favoriten', clear: `toggleFavoritesOnly()`});
       state.tags.forEach(t => pills.push({label: '#' + t, clear: `toggleTagFilter('${t}')`}));
       if (state.search) pills.push({label: `Suche: "${escHtml(state.search)}"`, clear: `clearSearch()`});
 
@@ -4938,7 +4946,7 @@ Gib einen priorisierten Report aus:
         <span>v${escHtml(skill.version)}</span>
         <span class="modal-meta-sep">·</span>
         <span class="cat-badge ${skill.category}" style="margin:0">${catLabel(skill.category)}</span>
-        ${skill.install ? `<span class="modal-meta-sep">·</span><span class="install-badge ${skill.install}" title="${skill.install === 'builtin' ? 'Steckt schon in Claude — nichts zu installieren' : 'Aus dem offiziellen anthropics/skills-Repo — einmalig installieren'}">${skill.install === 'builtin' ? '⚙ in Claude eingebaut' : '⬇ zum Nachinstallieren'}</span>` : ''}
+        ${skill.install ? `<span class="modal-meta-sep">·</span><span class="install-badge ${skill.install}" title="${skill.install === 'builtin' ? 'Steckt schon in Claude Code — nichts zu installieren' : 'Aus dem offiziellen anthropics/skills-Repo — einmalig installieren'}">${skill.install === 'builtin' ? '⚙ in Claude Code eingebaut' : '⬇ zum Nachinstallieren'}</span>` : ''}
         <span class="modal-meta-sep">·</span>
         <span title="Rollen, in deren Filter dieser Skill auftaucht">Für: ${
           (ROLE_MAP[skill.id] || ALL_ROLES).length === ALL_ROLES.length
@@ -4967,7 +4975,9 @@ Gib einen priorisierten Report aus:
       state.activeSkill = null; state._pendingAnn = null;
       if (location.hash) {
         _hashLock = true;
-        try { history.pushState(null, '', location.pathname + location.search); } catch (e) {}
+        // replaceState: Schließen darf keinen History-Eintrag anhängen, sonst
+        // öffnet „Zurück" das gerade geschlossene Modal wieder (Back-Falle)
+        try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {}
         setTimeout(() => { _hashLock = false; }, 0);
       }
       if (window._modalOpener) { window._modalOpener.focus(); window._modalOpener = null; }
@@ -5349,7 +5359,13 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
       return `<div class="files-loading">Lade Skill-Dateien aus dem Repo …</div>`;
     }
     async function loadModalFiles(skill) {
-      if (state._filesId === skill.id && state._files) { renderFilesInto(skill); return; }
+      if (state._filesId === skill.id && state._files) {
+        // WICHTIG: deferren — der Aufrufer (renderModalBody) setzt direkt nach diesem
+        // Aufruf noch die Loading-Shell per innerHTML. Synchron gerendert würde der
+        // fertige Inhalt sofort wieder überschrieben und der Tab bliebe leer.
+        queueMicrotask(() => renderFilesInto(skill));
+        return;
+      }
       let files = await loadSkillFilesReal(skill);
       let real = true;
       if (!files) { files = skillFiles(skill); real = false; }
@@ -5567,7 +5583,7 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
           <button class="c-cta -black-bg skill-dl-btn" onclick="downloadSkill('${escHtml(skill.id)}', this)">⬇ Skill herunterladen (.zip)</button>
           <span class="skill-dl-hint">${
             skill.install === 'builtin'
-              ? `<strong>Steckt schon in Claude:</strong> Die Office-Fähigkeiten laufen über diesen Skill — du musst nichts installieren. Der Download ist zum Reinschauen und Lernen.`
+              ? `<strong>Steckt schon in Claude Code:</strong> Die Office-Fähigkeiten laufen über diesen Skill — du musst nichts installieren. Der Download ist zum Reinschauen und Lernen.`
               : skill.install === 'plugin'
                 ? `<strong>Einmalig installieren:</strong> In Claude Code <code>/plugin marketplace add anthropics/skills</code> und dann <code>/plugin install example-skills@anthropic-agent-skills</code> — oder das ZIP nach <code>.claude/skills/</code> entpacken.${skillPlatforms(skill).langdock ? ' Für <strong>Langdock</strong> reicht die <code>SKILL.md</code>: unter Skills → Add Skill hochladen.' : ''}`
                 : `Enthält alle Dateien des Skills — entpacken nach <code>.claude/skills/</code> und loslegen.${skillPlatforms(skill).langdock ? ' Für <strong>Langdock</strong> reicht die <code>SKILL.md</code>: unter Skills → Add Skill hochladen.' : ''} Deine Anmerkungen kommen als <code>ANMERKUNGEN.md</code> mit.`
@@ -5645,7 +5661,7 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
       try { return JSON.parse(localStorage.getItem('skill-annotations-' + id) || '[]'); } catch (e) { return []; }
     }
     function saveAnnotations(id, arr) {
-      try { localStorage.setItem('skill-annotations-' + id, JSON.stringify(arr)); } catch (e) {}
+      try { localStorage.setItem('skill-annotations-' + id, JSON.stringify(arr)); return true; } catch (e) { return false; }
     }
     function getAnnAuthor() { try { return localStorage.getItem('skill-ann-author') || ''; } catch (e) { return ''; } }
 
@@ -5853,7 +5869,7 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
         author: author || 'Anonym', text,
         date: new Date().toISOString().slice(0, 10)
       });
-      saveAnnotations(skill.id, anns);
+      if (!saveAnnotations(skill.id, anns)) { showToast('Konnte nicht speichern — privater Modus oder Speicher voll.'); return; }
       state._pendingAnn = null;
       showToast('Anmerkung gespeichert ✎');
       renderFilesInto(skill);
@@ -5958,7 +5974,7 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
           </div>
           ${skill.install === 'builtin' ? `<div class="tway">
             <span class="tway-ic">⚙</span>
-            <div><strong>Schon eingebaut</strong> — dieser Skill steckt in Claude selbst (er treibt die Office-Datei-Fähigkeiten an). Nichts zu installieren; die Dateien hier sind zum Reinschauen.</div>
+            <div><strong>Schon eingebaut</strong> — dieser Skill steckt in Claude Code selbst (er treibt die Office-Datei-Fähigkeiten an). Nichts zu installieren; die Dateien hier sind zum Reinschauen.</div>
           </div>` : ''}
           ${skill.install === 'plugin' ? `<div class="tway">
             <span class="tway-ic">⬇</span>
@@ -5971,7 +5987,7 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
           <div class="pf-item ok">
             <span class="pf-item-name">Claude Code</span>
             <span class="pf-item-how">${skill.install === 'builtin'
-              ? `Schon in Claude eingebaut — nichts zu installieren, einfach lostippen.`
+              ? `Schon in Claude Code eingebaut — nichts zu installieren, einfach lostippen.`
               : `Das Zuhause dieses Skills: Ordner nach <code>.claude/skills/</code>${skill.trigger ? ` — oder direkt <code>${escHtml(skill.trigger)}</code> tippen` : ''}.`}</span>
           </div>
           <div class="pf-item ${skillPlatforms(skill).langdock ? 'ok' : 'na'}">
@@ -6019,7 +6035,7 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
             <p style="font-size:1.4rem;color:var(--c-gray-m);margin:0">Dieser Skill hat keinen eigenen Befehl — Claude Code aktiviert ihn automatisch, wenn deine Aufgabe passt.</p>
             `}
             <p style="margin:1.2rem 0 0;font-size:1.2rem;color:var(--c-gray-m)">
-              Neu bei Claude Code? <a href="https://docs.anthropic.com/claude/docs/claude-code" target="_blank" style="color:var(--c-black);font-weight:600">Zur Dokumentation →</a>
+              Neu bei Claude Code? <a href="https://code.claude.com/docs" target="_blank" style="color:var(--c-black);font-weight:600">Zur Dokumentation →</a>
             </p>
           </div>
         </details>
@@ -6127,7 +6143,7 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
             <div>
               <div class="pilot-tab-name">${escHtml(e.name)}</div>
               <div class="pilot-tab-role">${escHtml(e.role)}</div>
-              <p class="pilot-tab-quote">"${escHtml(e.text)}"</p>
+              <p class="pilot-tab-quote">„${escHtml(e.text)}“</p>
             </div>
           </div>
         `).join('')}
@@ -6177,7 +6193,8 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
         </div>
       `).join('');
 
-      return `<div class="changelog">${entriesHtml}</div>`;
+      return `
+        <p class="files-intro-text" style="margin-bottom:1.6rem">Hinweis: Diese Historie ist aus der Versionsnummer abgeleitet — die echten Änderungen stehen im Repo (Tab „Aufbau &amp; Dateien“ → „Auf GitHub ansehen“).</p><div class="changelog">${entriesHtml}</div>`;
     }
 
     // ===== COPY TRIGGER =====
@@ -6268,7 +6285,7 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
       catch (e) { location.hash = h; }
       setTimeout(() => { _hashLock = false; }, 0);
     }
-    function updateURL() { const h = buildHash(); if (h) writeHash(h, false); }
+    function updateURL() { if (state._hashTarget) return; /* Deep-Link-Ziel nicht vorzeitig überschreiben */ const h = buildHash(); if (h) writeHash(h, false); }
     function pushURL()   { const h = buildHash(); if (h) writeHash(h, true); }
 
     function applyHash() {
@@ -6287,15 +6304,15 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
       const tab = MODAL_TABS.includes(parts[1]) ? parts[1] : 'overview';
       const fileRel = parts.slice(2).join('/');
       const skill = SKILLS.find(s => s.id === skillId);
-      if (!skill) return;
+      if (!skill) { updateURL(); return; } // unbekannter Skill: URL nicht vom UI abweichen lassen
       const ex = document.getElementById('view-explainer');
       if (ex && !ex.hidden) showView('catalog');
+      // Ziel VOR openModal/switchTab merken — beide rufen updateURL, das sonst
+      // den Datei-/Zeilen-Anteil aus der URL kürzen würde (Guard in updateURL)
+      if (tab === 'files' && (fileRel || lineRange)) state._hashTarget = { fileRel, lineRange };
       if (!state.activeSkill || state.activeSkill.id !== skillId) openModal(skillId, { fromHash: true });
       if (state.activeTab !== tab) switchTab(tab);
-      if (tab === 'files' && (fileRel || lineRange)) {
-        state._hashTarget = { fileRel, lineRange };
-        if (state._files && state._filesId === skillId) applyHashTarget();
-      }
+      if (state._hashTarget && state._files && state._filesId === skillId) applyHashTarget();
     }
     function applyHashTarget() {
       const t = state._hashTarget; if (!t) return;
@@ -6318,6 +6335,8 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
           if (!flashed && first && first.classList) { first.classList.add('cl-flash'); setTimeout(() => first.classList.remove('cl-flash'), 1800); }
         });
       }
+      // URL wieder auf das volle Ziel setzen (Datei + Zeilen), nichts geht beim Teilen verloren
+      writeHash(buildHash(t.lineRange), false);
     }
     function closeModalSilent() {
       const ov = document.getElementById('modal-overlay');
@@ -6337,7 +6356,7 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
       if (a.line) h += ':L' + a.line + (a.lineEnd && a.lineEnd > a.line ? '-' + a.lineEnd : '');
       const url = location.origin + location.pathname + location.search + h;
       quickCopy(null, url);
-      showToast('Link zur Stelle kopiert 🔗');
+      showToast('Link zur Stelle kopiert');
     }
 
     // ===== DEBOUNCE =====
@@ -6347,20 +6366,6 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
     }
 
     // ===== INFO MODAL =====
-    function toggleInfoModal() {
-      const overlay = document.getElementById('info-modal-overlay');
-      if (!overlay) return;
-      const isOpen = overlay.classList.toggle('open');
-      if (isOpen) {
-        setTimeout(() => {
-          const closeBtn = overlay.querySelector('.info-modal-close');
-          if (closeBtn) closeBtn.focus();
-        }, 50);
-      } else {
-        const infoBtn = document.querySelector('.info-btn');
-        if (infoBtn) infoBtn.focus();
-      }
-    }
 
     // ===== GETTING STARTED TOGGLE =====
     function toggleGS() {
@@ -6529,19 +6534,12 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
 
     function toggleFavoritesOnly() {
       state.favoritesOnly = !state.favoritesOnly;
+      state._noCardAnim = true; setTimeout(() => { state._noCardAnim = false; }, 0);
       const btn = document.getElementById('fav-filter-btn');
       if (btn) { btn.classList.toggle('active', state.favoritesOnly); btn.setAttribute('aria-pressed', state.favoritesOnly); }
       render();
     }
 
-    function toggleRole(sub) {
-      state.subcategory = state.subcategory === sub ? null : sub;
-      document.querySelectorAll('.role-chip').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.sub === state.subcategory);
-      });
-      render();
-      updateURL();
-    }
 
     // ===================== HERO-INSZENIERUNG =====================
     function initHero() {
@@ -6603,6 +6601,7 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
       Object.entries(views).forEach(([k, id]) => { const el = document.getElementById(id); if (el) el.hidden = (k !== view); });
       Object.entries(navs).forEach(([k, id]) => { const el = document.getElementById(id); if (el) el.classList.toggle('active', k === view); });
       window.scrollTo({ top: 0, behavior: 'auto' });
+      if (view !== 'explainer' && typeof _termTimer !== 'undefined' && _termTimer) { clearTimeout(_termTimer); _termTimer = null; } // Demo tippt sonst unsichtbar weiter
       if (view === 'explainer') { renderStarterCards(); initReveal(); playTerminal(); }
       if (view === 'builder') initBuilder();
     }
@@ -6898,7 +6897,7 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
       if (body.length > MAXB) body = body.slice(0, MAXB) + '\n…\n\n_(gekürzt — bitte ZIP anhängen)_\n';
       const url = `${REPO_ISSUES}?title=${encodeURIComponent('Skill-Einreichung: ' + d.name)}&labels=${encodeURIComponent('skill-einreichung')}&body=${encodeURIComponent(body)}`;
       window.open(url, '_blank', 'noopener');
-      showToast('GitHub-Issue vorbefüllt geöffnet 🚀');
+      showToast('GitHub-Issue vorbefüllt geöffnet');
     }
     function builderReset() {
       if (!confirm('Formular wirklich leeren?')) return;
@@ -6910,6 +6909,7 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
     // ===== INIT =====
     document.addEventListener('DOMContentLoaded', () => {
       renderFeatured();
+      renderRecentlyViewed();
       renderCatTabs();
       renderRoleChips();
       renderTagChips();
@@ -6933,7 +6933,7 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
           state.search = e.target.value.toLowerCase().trim();
           const o = document.getElementById(other);
           if (o && o.value !== e.target.value) o.value = e.target.value;
-          render();
+          state._noCardAnim = true; render(); state._noCardAnim = false;
         }, 150));
       });
 
@@ -6989,25 +6989,8 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
         els.forEach(e=>io.observe(e));
       })();
 
-      // Swipe Down to Close Modal (Mobile)
-      let touchStartY = 0;
-      const modal = document.getElementById('modal');
-      if (modal) {
-        modal.addEventListener('touchstart', e => {
-          touchStartY = e.touches[0].clientY;
-        }, {passive: true});
-        modal.addEventListener('touchmove', e => {
-          const diff = e.touches[0].clientY - touchStartY;
-          if (diff > 0 && modal.scrollTop === 0) {
-            modal.style.transform = `translateY(${Math.min(diff * 0.5, 80)}px)`;
-          }
-        }, {passive: true});
-        modal.addEventListener('touchend', e => {
-          const diff = e.changedTouches[0].clientY - touchStartY;
-          modal.style.transform = '';
-          if (diff > 80 && modal.scrollTop === 0) closeModal();
-        }, {passive: true});
-      }
+      // Swipe-to-close übernimmt initModalSwipe (nur Modal-KOPF): ein modal-weiter
+      // Handler würde Textauswahl/Scrollen im Inhalt als Schließen-Geste fehldeuten.
     });
   </script>
 </body>
