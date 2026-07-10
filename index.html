@@ -4,17 +4,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>pilot Skill Marketplace — Citizen Coding mit Claude Code</title>
-  <meta name="description" content="Der interne Skill-Marktplatz der pilot Agenturgruppe: 31 echte Claude-Code-Skills entdecken, verstehen und selbst nutzen — von Briefings über Mediaplan-Checks bis zum eigenen Tool.">
+  <meta name="description" content="Der interne Skill-Marktplatz der pilot Agenturgruppe: 35 echte Skills für Claude Code, Langdock &amp; Claude Design entdecken, verstehen und selbst nutzen — von Briefings über Mediaplan-Checks bis zum eigenen Tool.">
   <meta name="theme-color" content="#262626">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="pilot Skill Marketplace">
   <meta property="og:title" content="pilot Skill Marketplace — Citizen Coding mit Claude Code">
-  <meta property="og:description" content="31 echte Claude-Code-Skills entdecken, verstehen und selbst nutzen. Von Piloten gebaut, für Piloten empfohlen.">
+  <meta property="og:description" content="35 echte Skills für Claude Code, Langdock &amp; Claude Design entdecken, verstehen und selbst nutzen. Von Piloten gebaut, von Piloten empfohlen.">
   <meta property="og:url" content="https://ceekay1901.github.io/pilot-skillmarkt/">
   <meta property="og:image" content="https://ceekay1901.github.io/pilot-skillmarkt/og-image.png">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="pilot Skill Marketplace">
-  <meta name="twitter:description" content="31 echte Claude-Code-Skills entdecken, verstehen und selbst nutzen.">
+  <meta name="twitter:description" content="35 echte Skills für Claude Code, Langdock &amp; Claude Design entdecken, verstehen und selbst nutzen.">
   <meta name="twitter:image" content="https://ceekay1901.github.io/pilot-skillmarkt/og-image.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -236,7 +236,7 @@
     .pf-chip.pf-code { background: var(--c-black); color: var(--c-yellow); border-color: var(--c-black); }
     .skill-card.featured .pf-chip { border-color: rgba(252,252,252,.25); color: rgba(252,252,252,.65); }
     .skill-card.featured .pf-chip.pf-code { background: var(--c-yellow); color: var(--c-black); border-color: var(--c-yellow); }
-    /* Modal: „Wo du diesen Skill einsetzen kannst" */
+    /* Modal: „Wo du diesen Skill einsetzen kannst“ */
     .pf-list { display: flex; flex-direction: column; gap: .8rem; }
     .pf-item { display: grid; grid-template-columns: 13rem 1fr; gap: 1.2rem; align-items: baseline; padding: 1.1rem 1.4rem; border: 1px solid var(--c-gray-l); border-radius: .9rem; background: var(--c-white); }
     .pf-item.ok { border-left: .4rem solid var(--c-yellow); }
@@ -247,7 +247,7 @@
     .pf-item-how { font-size: 1.45rem; line-height: 1.55; color: var(--c-gray-d); }
     .pf-item-how code { font-family: var(--font-mono); font-size: 1.25rem; background: var(--c-bg); border: 1px solid var(--c-gray-l); border-radius: .4rem; padding: .05rem .5rem; color: var(--c-black); }
     @media (max-width: 640px) { .pf-item { grid-template-columns: 1fr; gap: .3rem; } }
-    /* Explainer: „Ein Skill, drei Systeme" — Plattform-Toggle */
+    /* Explainer: „Ein Skill, drei Systeme“ — Plattform-Toggle */
     .expf-tabs { display: flex; gap: .6rem; flex-wrap: wrap; margin: 2.8rem 0 2rem; }
     .expf-tab { font-family: var(--font-mono); font-size: 1.4rem; padding: 1rem 2.2rem; border-radius: var(--radius-pill); border: 1px solid var(--c-gray-l); background: transparent; color: var(--c-gray-d); cursor: pointer; transition: var(--trans); }
     .expf-tab:hover { border-color: var(--c-black); color: var(--c-black); }
@@ -1713,12 +1713,12 @@
     <div class="hero-inner hero-top">
       <p class="overline" style="color:#ffe05e">pilot · Citizen Coding</p>
       <h1 class="hero-h1">Skills, die<br><span class="hero-rotator" id="hero-rotator" aria-live="polite">Tools bauen.</span></h1>
-      <p class="subline">Von Piloten gebaut, für Piloten empfohlen — euer Werkzeugkasten für Claude&nbsp;Code, Langdock &amp; Claude&nbsp;Design.</p>
+      <p class="subline">Von Piloten gebaut, von Piloten empfohlen — euer Werkzeugkasten für Claude&nbsp;Code, Langdock &amp; Claude&nbsp;Design.</p>
       <div class="hero-stats" id="hero-stats">
-        <div class="hero-stat-box"><span class="hero-stat-num" data-count="34" id="stat-skills">0</span><span class="hero-stat-label">Skills</span></div>
+        <div class="hero-stat-box"><span class="hero-stat-num" data-count="35" id="stat-skills">0</span><span class="hero-stat-label">Skills</span></div>
         <div class="hero-stat-box"><span class="hero-stat-num" data-count="6" id="stat-pilots">0</span><span class="hero-stat-label">Piloten</span></div>
-        <div class="hero-stat-box"><span class="hero-stat-num" id="stat-cats" data-count="7">0</span><span class="hero-stat-label">Kategorien</span></div>
-        <div class="hero-stat-box"><span class="hero-stat-num" data-count="23" id="stat-endorsed">0</span><span class="hero-stat-label">Empfehlungen</span></div>
+        <div class="hero-stat-box"><span class="hero-stat-num" id="stat-cats" data-count="6">0</span><span class="hero-stat-label">Kategorien</span></div>
+        <div class="hero-stat-box"><span class="hero-stat-num" data-count="41" id="stat-endorsed">0</span><span class="hero-stat-label">Empfehlungen</span></div>
       </div>
       <div class="hero-cta">
         <button class="c-cta -yellow-bg" onclick="document.getElementById('main-content').scrollIntoView({behavior:'smooth'})">Katalog durchstöbern</button>
@@ -1747,11 +1747,11 @@
           </div>
           <div class="gs-step">
             <span class="gs-num">2</span>
-            <div><strong>Trigger kopieren</strong><p>Öffne einen Skill und klicke auf den <code>/befehl</code> Badge — er landet automatisch in deiner Zwischenablage.</p></div>
+            <div><strong>Befehl kopieren</strong><p>Öffne einen Skill und klicke auf das <code>/befehl</code>-Badge — er landet automatisch in deiner Zwischenablage.</p></div>
           </div>
           <div class="gs-step">
             <span class="gs-num">3</span>
-            <div><strong>In Claude Code eingeben</strong><p>Öffne Claude Code im Terminal oder der App, tippe den kopierten Befehl und drücke Enter. Fertig.</p></div>
+            <div><strong>Loslegen</strong><p>Claude Code im Terminal öffnen, Befehl eintippen, Enter. Viele Skills laufen auch in Langdock — jeder Skill zeigt unter „Wo du diesen Skill einsetzen kannst“, wo er funktioniert.</p></div>
           </div>
         </div>
       </div>
@@ -1881,7 +1881,7 @@
           </div>
           <div class="cmp-row">
             <div class="cmp-dim">So arbeitest du</div>
-            <div class="cmp-cell">Im Browser: chatten, Team-Assistenten nutzen, Workflows starten.</div>
+            <div class="cmp-cell">Im Browser: chatten, Team-Assistenten nutzen, Workflows starten — und seit Kurzem eigene Skills hochladen (dazu gleich mehr).</div>
             <div class="cmp-cell cmp-hl">Per Auftrag: es arbeitet selbstständig direkt in deinen Dateien und Ordnern.</div>
           </div>
           <div class="cmp-row">
@@ -1901,13 +1901,13 @@
           </div>
           <div class="cmp-row">
             <div class="cmp-dim">Ein Beispiel</div>
-            <div class="cmp-cell"><em>„Fass die Kundenpräsi zusammen und mach daraus eine Mail."</em></div>
-            <div class="cmp-cell cmp-hl"><em>„Bau mir einen TKP-Rechner als kleine Webseite."</em></div>
+            <div class="cmp-cell"><em>„Fass die Kundenpräsi zusammen und mach daraus eine Mail.“</em></div>
+            <div class="cmp-cell cmp-hl"><em>„Bau mir einen TKP-Rechner als kleine Webseite.“</em></div>
           </div>
         </div>
         <div class="cmp-rule">
           <span class="cmp-rule-k">Faustregel</span>
-          <span><strong>Fragen, Texte &amp; Firmenwissen</strong> → Langdock. <strong>Fertige Tools, Dateien &amp; Automationen</strong> → Claude Code. Beides zu können macht dich stark — und fürs Visuelle gibt es seit Kurzem noch <strong>Claude Design</strong>, dazu gleich mehr.</span>
+          <span><strong>Fragen, Texte &amp; Firmenwissen</strong> → Langdock. <strong>Eigene Tools, laufende Automationen &amp; alles, was wachsen soll</strong> → Claude Code. Beides zu können macht dich stark — und fürs Visuelle gibt es seit Kurzem noch <strong>Claude Design</strong>, dazu gleich mehr.</span>
         </div>
       </div>
     </section>
@@ -1964,7 +1964,7 @@
         <div class="ex-vs">
           <div class="ex-vs-card ex-vs-bad">
             <div class="ex-vs-label">Ohne Skill</div>
-            <div class="ex-vs-prompt">„Prüfe die Seite auf Ladezeit, mobile Ansicht, fehlende Alt-Texte, SEO-Tags, Kontraste, kaputte Links … und mach Screenshots … und sortiere nach Wichtigkeit … und …"</div>
+            <div class="ex-vs-prompt">„Prüfe die Seite auf Ladezeit, mobile Ansicht, fehlende Alt-Texte, SEO-Tags, Kontraste, kaputte Links … und mach Screenshots … und sortiere nach Wichtigkeit … und …“</div>
             <div class="ex-vs-foot">Jedes Mal alles neu erklären. Mal vergisst man was.</div>
           </div>
           <div class="ex-vs-card ex-vs-good">
@@ -2041,7 +2041,7 @@ Gib einen priorisierten Report aus:
             </div>
           </div>
         </div>
-        <p class="ex-anatomy-cta">In jedem Skill findest du den Tab <strong>„Aufbau &amp; Dateien"</strong> — schau rein.</p>
+        <p class="ex-anatomy-cta">In jedem Skill findest du den Tab <strong>„Aufbau &amp; Dateien“</strong> — schau rein.</p>
       </div>
     </section>
 
@@ -2062,7 +2062,7 @@ Gib einen priorisierten Report aus:
             <div class="trg-num">2</div>
             <div class="trg-tag -yellow">Automatisch — Claude erkennt ihn</div>
             <p class="trg-text">Du schreibst ganz normal, was du brauchst. Claude erkennt selbst, welcher Skill passt — und startet ihn ohne Befehl.</p>
-            <div class="trg-mono trg-mono-nat">„Prüf mal, ob mit unserer Landingpage alles stimmt."</div>
+            <div class="trg-mono trg-mono-nat">„Prüf mal, ob mit unserer Landingpage alles stimmt.“</div>
           </div>
         </div>
 
@@ -2070,7 +2070,7 @@ Gib einen priorisierten Report aus:
         <div class="trg-match">
           <div class="trg-match-req">
             <span class="trg-match-label">Deine Anfrage</span>
-            „Prüf mal, ob mit unserer Landingpage alles stimmt."
+            „Prüf mal, ob mit unserer Landingpage alles stimmt.“
           </div>
           <div class="trg-match-arrow">Claude vergleicht mit der Skill-Liste ↓</div>
           <div class="trg-menu">
@@ -2126,7 +2126,7 @@ Gib einen priorisierten Report aus:
       <div class="ex-wrap ex-narrow">
         <p class="ex-eyebrow">Wo wir stehen</p>
         <h2 class="ex-h2">Euer Weg ins <span class="ex-hl">Citizen Coding</span></h2>
-        <p class="ex-body">Seit vier Monaten baut pilot KI-Kompetenz auf. Jetzt startet die Q0-Testgruppe mit Claude Code — der Moment, in dem aus „KI nutzen" ein „selbst bauen" wird.</p>
+        <p class="ex-body">Seit vier Monaten baut pilot KI-Kompetenz auf. Jetzt startet die Q0-Testgruppe mit Claude Code — der Moment, in dem aus „KI nutzen“ ein „selbst bauen“ wird.</p>
         <div class="ex-journey">
           <div class="ex-journey-step ex-done">
             <div class="ex-journey-dot"></div>
@@ -2186,7 +2186,7 @@ Gib einen priorisierten Report aus:
 
             <label class="bld-field">
               <span class="bld-label">Kurzbeschreibung <em>*</em></span>
-              <textarea id="bld-desc" rows="3" placeholder="Was macht der Skill — und wann soll Claude ihn einsetzen? z. B. „Prüft Newsletter-Texte auf Länge, Betreffzeile und CTA. Nutze diesen Skill, wenn ein Newsletter vor dem Versand geprüft werden soll.""></textarea>
+              <textarea id="bld-desc" rows="3" placeholder="Was macht der Skill — und wann soll Claude ihn einsetzen? z. B. „Prüft Newsletter-Texte auf Länge, Betreffzeile und CTA. Nutze diesen Skill, wenn ein Newsletter vor dem Versand geprüft werden soll.“"></textarea>
               <span class="bld-hint">⚡ <strong>Wichtigstes Feld:</strong> Daran erkennt Claude <em>automatisch</em>, wann der Skill passt. Schreib rein, wann er genutzt werden soll.</span>
             </label>
 
@@ -2294,7 +2294,7 @@ Gib einen priorisierten Report aus:
         "name": "Erste Schritte",
         "tagline": "Von Langdock zu Claude Code — dein geführter Einstieg",
         "description": "Erklärt Schritt für Schritt, wie Claude Code funktioniert: Projektordner, der erste Auftrag, wie Claude direkt in deinen Dateien arbeitet. Speziell für Umsteiger:innen von Chat-Tools.",
-        "longDescription": "Du kennst KI bisher als Chat — du fragst, sie antwortet. Claude Code geht weiter: Es arbeitet direkt in deinen Dateien und Ordnern, baut Dinge und erledigt Aufgaben. Dieser Skill nimmt dich an die Hand: Was ist ein „Projekt\"? Wie gebe ich einen Auftrag? Wie prüfe ich das Ergebnis? Alles in einfacher Sprache, ohne Programmier-Vorwissen — der ideale erste Schritt nach der KI-Schulung.",
+        "longDescription": "Du kennst KI bisher als Chat — du fragst, sie antwortet. Claude Code geht weiter: Es arbeitet direkt in deinen Dateien und Ordnern, baut Dinge und erledigt Aufgaben. Dieser Skill nimmt dich an die Hand: Was ist ein „Projekt“? Wie gebe ich einen Auftrag? Wie prüfe ich das Ergebnis? Alles in einfacher Sprache, ohne Programmier-Vorwissen — der ideale erste Schritt nach der KI-Schulung.",
         "exampleOutput": "Willkommen bei Claude Code — dein Einstieg\n\n1) Du arbeitest immer in einem Ordner = deinem \"Projekt\"\n2) Sag mir einfach auf Deutsch, was du brauchst\n3) Ich erledige es direkt in den Dateien — du prüfst & gibst frei\n\nProbier es gleich aus:\n\"Erstelle eine Tabelle mit allen Kampagnen aus dieser PDF\"",
         "category": "pilot-inhouse",
         "subcategory": "einstieg",
@@ -2549,7 +2549,7 @@ Gib einen priorisierten Report aus:
             "name": "Sophie Klein",
             "role": "Projektmanagerin",
             "initials": "SK",
-            "text": "Mein erstes „Aha\": eine 20-Minuten-Routine läuft jetzt auf Knopfdruck."
+            "text": "Mein erstes „Aha“: eine 20-Minuten-Routine läuft jetzt auf Knopfdruck."
           }
         ],
         "comments": [
@@ -2558,7 +2558,7 @@ Gib einen priorisierten Report aus:
             "role": "Tech Lead & Citizen-Coding-Mentor",
             "initials": "JR",
             "date": "2026-06-25",
-            "text": "Guter Brückenskill zwischen „nur chatten\" und richtig automatisieren.",
+            "text": "Guter Brückenskill zwischen „nur chatten“ und richtig automatisieren.",
             "rating": 4
           }
         ],
@@ -2571,7 +2571,7 @@ Gib einen priorisierten Report aus:
         "name": "Tool teilen",
         "tagline": "Dein fertiges Tool oder deine Website mit dem Team teilen",
         "description": "Bring dein selbstgebautes Tool zu den Kolleg:innen: als teilbare Datei, im internen Netz oder als Link. Claude erklärt und macht die passenden Schritte.",
-        "longDescription": "Ein Tool nützt erst, wenn andere es nutzen können. Dieser Skill hilft dir, deinen Prototyp oder deine Seite so aufzubereiten, dass du sie einfach weitergeben kannst — als eigenständige Datei zum Doppelklicken, im gemeinsamen Laufwerk oder als interner Link. Inklusive kurzer „So benutzt du es\"-Anleitung für deine Kolleg:innen.",
+        "longDescription": "Ein Tool nützt erst, wenn andere es nutzen können. Dieser Skill hilft dir, deinen Prototyp oder deine Seite so aufzubereiten, dass du sie einfach weitergeben kannst — als eigenständige Datei zum Doppelklicken, im gemeinsamen Laufwerk oder als interner Link. Inklusive kurzer „So benutzt du es“-Anleitung für deine Kolleg:innen.",
         "exampleOutput": "Dein Tool \"tkp-rechner.html\" teilen\n\n✓ Als eigenständige Datei verpackt (läuft per Doppelklick)\n✓ Kurzanleitung \"So nutzt du den TKP-Rechner\" erstellt\n✓ In den Team-Ordner /Tools/ gelegt\n\nTipp: Für eine echte Web-Adresse frag das Tech-Team\nnach internem Hosting.",
         "category": "pilot-inhouse",
         "subcategory": "bauen",
@@ -2621,7 +2621,7 @@ Gib einen priorisierten Report aus:
         "name": "webaudit",
         "tagline": "Deine Website prüfen: UX, Performance, SEO & Barrierefreiheit",
         "description": "Kombiniert Code-Analyse mit echten Browser-Screenshots via Playwright. Prüft UX, Design, Barrierefreiheit (WCAG), Performance, SEO — als strukturierter Report mit Handlungsempfehlungen.",
-        "longDescription": "Ob selbstgebaute Landingpage oder Kunden-Website: webaudit ist pilot's Standard-Check für Qualität. Zweistufige Analyse — Code-Scan plus echter Browser mit Screenshots verschiedener Bildschirmgrößen. Ergebnis: ein klar priorisierter Report, den auch Nicht-Techniker:innen verstehen. Ideal vor jedem Launch und für Client-Reviews.",
+        "longDescription": "Ob selbstgebaute Landingpage oder Kunden-Website: webaudit ist bei pilot der Standard-Check für Qualität. Zweistufige Analyse — Code-Scan plus echter Browser mit Screenshots verschiedener Bildschirmgrößen. Ergebnis: ein klar priorisierter Report, den auch Nicht-Techniker:innen verstehen. Ideal vor jedem Launch und für Client-Reviews.",
         "exampleOutput": "## webaudit Report — herbst-kampagne.html\n**Score:** 78/100\n\n### 🔴 Kritisch (1)\n- 6 Bilder ohne Alt-Text → Barrierefreiheit (WCAG)\n\n### 🟡 Empfehlung (3)\n- Ladezeit mobil 3,1s — Bilder komprimieren\n- Kein Open-Graph-Bild fürs Teilen auf Social\n- Kontrast im Footer zu gering",
         "category": "pilot-inhouse",
         "subcategory": "bauen",
@@ -4101,7 +4101,7 @@ Gib einen priorisierten Report aus:
         "install": "plugin",
         "tagline": "Webseiten & Tools, die nicht nach Baukasten aussehen",
         "description": "Offizieller Anthropic-Skill: Design-Leitplanken für markante, hochwertige Oberflächen — Typografie, Farben, Layout. Läuft automatisch mit, wenn Claude etwas mit UI baut. Inhalt auf Englisch.",
-        "longDescription": "Wer mit Claude eine Webseite oder ein kleines Tool baut, bekommt schnell ein generisches „KI-Template\"-Aussehen. Dieser Skill gibt Claude eine Design-Haltung mit: bewusste Typo-Entscheidungen, stimmige Farbwelten, Layouts mit Charakter. Perfekte Ergänzung zu unseren Bau-Skills (webseite-bauen, prototyp-bauen) — einmal installiert, wirkt er bei jedem UI-Auftrag mit. Inhalt auf Englisch.",
+        "longDescription": "Wer mit Claude eine Webseite oder ein kleines Tool baut, bekommt schnell ein generisches „KI-Template“-Aussehen. Dieser Skill gibt Claude eine Design-Haltung mit: bewusste Typo-Entscheidungen, stimmige Farbwelten, Layouts mit Charakter. Perfekte Ergänzung zu unseren Bau-Skills (webseite-bauen, prototyp-bauen) — einmal installiert, wirkt er bei jedem UI-Auftrag mit. Inhalt auf Englisch.",
         "category": "anthropic",
         "subcategory": "bauen",
         "trigger": null,
@@ -4155,7 +4155,7 @@ Gib einen priorisierten Report aus:
         "install": "plugin",
         "tagline": "Konzepte & Papiere strukturiert gemeinsam schreiben",
         "description": "Offizieller Anthropic-Skill: führt in drei Phasen durch das Schreiben von Konzepten, Proposals und Entscheidungsvorlagen — Kontext sammeln, gemeinsam verfeinern, am Leser testen. Inhalt auf Englisch.",
-        "longDescription": "Statt „schreib mir ein Konzept\" und einem mittelmäßigen Erstwurf: Dieser Skill strukturiert das Schreiben als geführten Prozess. Erst hilft Claude, dein Wissen in den Text zu bekommen (Brain-Dump, gezielte Fragen), dann verfeinert ihr Abschnitt für Abschnitt, zum Schluss prüft Claude den Text aus Sicht der Zielgruppe. Stark für Kundenkonzepte, interne Vorlagen und New-Business-Papiere. Inhalt auf Englisch.",
+        "longDescription": "Statt „schreib mir ein Konzept“ und einem mittelmäßigen Erstwurf: Dieser Skill strukturiert das Schreiben als geführten Prozess. Erst hilft Claude, dein Wissen in den Text zu bekommen (Brain-Dump, gezielte Fragen), dann verfeinert ihr Abschnitt für Abschnitt, zum Schluss prüft Claude den Text aus Sicht der Zielgruppe. Stark für Kundenkonzepte, interne Vorlagen und New-Business-Papiere. Inhalt auf Englisch.",
         "category": "anthropic",
         "subcategory": "content",
         "trigger": null,
@@ -4181,7 +4181,7 @@ Gib einen priorisierten Report aus:
         "name": "theme-factory",
         "install": "plugin",
         "tagline": "10 fertige Design-Themes für Decks, Docs & Landingpages",
-        "description": "Offizieller Anthropic-Skill: 10 kuratierte Farb-/Typo-Themes (von „Modern Minimalist\" bis „Midnight Galaxy\"), die Claude auf Präsentationen, Reports und Webseiten anwendet — oder er baut on-the-fly ein neues. Inhalt auf Englisch.",
+        "description": "Offizieller Anthropic-Skill: 10 kuratierte Farb-/Typo-Themes (von „Modern Minimalist“ bis „Midnight Galaxy“), die Claude auf Präsentationen, Reports und Webseiten anwendet — oder er baut on-the-fly ein neues. Inhalt auf Englisch.",
         "longDescription": "Einheitlicher Look ohne Design-Diskussion: Der Skill bringt 10 ausgearbeitete Themes mit (Farben, Schriften, Stimmung) und wendet sie auf beliebige Artefakte an — Pitch-Decks, Reportings, Landingpages. Auf Zuruf entsteht auch ein neues Theme, z. B. abgeleitet aus einer Kunden-CI. Gut kombinierbar mit pitch-deck und slides-aus-daten. Inhalt auf Englisch.",
         "category": "anthropic",
         "subcategory": "content",
@@ -4267,7 +4267,7 @@ Gib einen priorisierten Report aus:
       {
         "name": "Lukas Weber",
         "initials": "LW",
-        "role": "SEO & Performance Strategist",
+        "role": "SEO Strategist",
         "department": "Performance Marketing",
         "bio": "Kombiniert Performance-Expertise mit KI für schnellere Analysen, saubereres Tracking und bessere Sichtbarkeit.",
         "endorsedSkills": [
@@ -5252,7 +5252,7 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
           md += `**Referenzierte Stelle** (mit Kontext):\n\n${f}\n${block}${f}\n\n`;
         }
       });
-      // Rundlauf-fähig: dieser Block lässt sich über „Importieren" wieder einlesen
+      // Rundlauf-fähig: dieser Block lässt sich über „Importieren“ wieder einlesen
       const json = JSON.stringify({
         format: 'skill-annotations-v1',
         skill: skillId,
@@ -5275,7 +5275,7 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
       document.getElementById('ann-import-file')?.click();
     }
     function _parseAnnPayload(text, filename) {
-      // .json direkt; .md: JSON-Fence hinter „## Rohdaten (JSON)" herausziehen
+      // .json direkt; .md: JSON-Fence hinter „## Rohdaten (JSON)“ herausziehen
       let raw = text;
       if (!/\.json$/i.test(filename)) {
         const m = text.match(/## Rohdaten \(JSON\)[\s\S]*?(`{3,})json\n([\s\S]*?)\n\1/);
@@ -5297,7 +5297,7 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
       try { payload = _parseAnnPayload(await file.text(), file.name); }
       catch (e) { showToast('Import fehlgeschlagen: ' + e.message); return; }
       if (payload.skill && payload.skill !== skill.id) {
-        showToast(`Datei gehört zu „${payload.skill}" — hier ist „${skill.id}" geöffnet.`);
+        showToast(`Datei gehört zu „${payload.skill}“ — hier ist „${skill.id}“ geöffnet.`);
         return;
       }
       const anns = getAnnotations(skill.id);
@@ -5693,7 +5693,7 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
       document.addEventListener('keydown', e => {
         if (e.key === 'Escape' && document.getElementById('ann-composer-il')) { e.stopPropagation(); cancelAnnotate(); }
       }, true);
-      // Textauswahl → schwebende „Kommentieren"-Pille (debounced: deckt Maus UND Touch-Griffe ab)
+      // Textauswahl → schwebende „Kommentieren“-Pille (debounced: deckt Maus UND Touch-Griffe ab)
       document.addEventListener('selectionchange', () => {
         clearTimeout(_selTimer);
         _selTimer = setTimeout(() => {
@@ -5962,7 +5962,7 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
           </div>` : ''}
           ${skill.install === 'plugin' ? `<div class="tway">
             <span class="tway-ic">⬇</span>
-            <div><strong>Einmalig installieren</strong> — offizieller Anthropic-Skill aus <code>anthropics/skills</code>: in Claude Code <code>/plugin marketplace add anthropics/skills</code>, dann <code>/plugin install example-skills@anthropic-agent-skills</code>. Oder im Tab „Aufbau &amp; Dateien" als ZIP laden und nach <code>.claude/skills/</code> entpacken.</div>
+            <div><strong>Einmalig installieren</strong> — offizieller Anthropic-Skill aus <code>anthropics/skills</code>: in Claude Code <code>/plugin marketplace add anthropics/skills</code>, dann <code>/plugin install example-skills@anthropic-agent-skills</code>. Oder im Tab „Aufbau &amp; Dateien“ als ZIP laden und nach <code>.claude/skills/</code> entpacken.</div>
           </div>` : ''}
         </div>
 
@@ -5988,7 +5988,7 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
           </div>
         </div>
 
-        <p class="section-label">Use Cases</p>
+        <p class="section-label">Wann einsetzen</p>
         <ul class="use-cases">${useCasesHtml}</ul>
 
         <p class="section-label">Voraussetzungen</p>
@@ -5998,16 +5998,8 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
         <div class="modal-tag-list">${tagsHtml}</div>
 
         ${skill.exampleOutput ? `
-          <p class="section-label output-label">Beispiel-Output</p>
+          <p class="section-label output-label">Beispiel-Ausgabe</p>
           <pre class="output-example">${escHtml(skill.exampleOutput)}</pre>
-        ` : ''}
-
-        ${skill.trigger ? `
-          <p class="section-label">Trigger</p>
-          <div style="display:flex;align-items:center;gap:1.2rem;flex-wrap:wrap;margin-top:.4rem">
-            <code style="font-size:1.8rem;font-family:var(--font-mono),monospace;background:var(--c-bg);padding:.6rem 1.4rem;border-radius:.6rem;border:1px solid var(--c-gray-l)">${escHtml(skill.trigger)}</code>
-            <button class="c-cta -black-border" onclick="copyTrigger()" style="padding:.7rem 2rem;font-size:1.4rem">Kopieren</button>
-          </div>
         ` : ''}
 
         <details class="install-guide" style="margin-top:2.4rem">
@@ -6020,11 +6012,11 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
             <ol style="margin:0;padding-left:2rem;display:flex;flex-direction:column;gap:1rem;font-size:1.4rem;line-height:1.6">
               <li>Öffne <strong>Claude Code</strong> in deinem Terminal</li>
               <li>Navigiere in dein Projektverzeichnis (<code style="background:rgba(0,0,0,.08);padding:.2rem .5rem;border-radius:.3rem">cd mein-projekt</code>)</li>
-              <li>Tippe den Trigger-Befehl: <code style="background:rgba(0,0,0,.08);padding:.2rem .5rem;border-radius:.3rem">${escHtml(skill.trigger)}</code></li>
+              <li>Tippe den Befehl: <code style="background:rgba(0,0,0,.08);padding:.2rem .5rem;border-radius:.3rem">${escHtml(skill.trigger)}</code></li>
               <li>Folge den Anweisungen im Chat</li>
             </ol>
             ` : `
-            <p style="font-size:1.4rem;color:var(--c-gray-m);margin:0">Dieser Skill hat keinen direkten Trigger-Befehl. Er wird automatisch durch Claude Code aktiviert.</p>
+            <p style="font-size:1.4rem;color:var(--c-gray-m);margin:0">Dieser Skill hat keinen eigenen Befehl — Claude Code aktiviert ihn automatisch, wenn deine Aufgabe passt.</p>
             `}
             <p style="margin:1.2rem 0 0;font-size:1.2rem;color:var(--c-gray-m)">
               Neu bei Claude Code? <a href="https://docs.anthropic.com/claude/docs/claude-code" target="_blank" style="color:var(--c-black);font-weight:600">Zur Dokumentation →</a>
@@ -6074,7 +6066,7 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
       const commentSkillId = skill.id;
 
       const commentsHtml = allComments.length === 0
-        ? '<p class="no-comments">Noch keine Kommentare. Sei der Erste!</p>'
+        ? '<p class="no-comments">Noch keine Kommentare — schreib den ersten!</p>'
         : allComments.map(c => `
           <div class="comment-item">
             <div class="avatar" style="flex-shrink:0;width:4rem;height:4rem;font-size:1.4rem">${escHtml(c.initials || getInitials(c.author))}</div>
@@ -6101,7 +6093,7 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
           <p class="rating-form-label">Deine Sternebewertung</p>
           ${renderInteractiveStars(`comment-${commentSkillId}`)}
           <p class="user-rating-hint" id="rating-hint-comment-${commentSkillId}">
-            ${userRating > 0 ? `Du hast diesen Skill bereits mit ${userRating} Sternen bewertet.` : 'Klick auf die Sterne um zu bewerten.'}
+            ${userRating > 0 ? `Du hast diesen Skill bereits mit ${userRating} Sternen bewertet.` : 'Klick auf die Sterne, um zu bewerten.'}
           </p>
           <div class="form-row" style="margin-top:1.6rem">
             <div>
@@ -6156,7 +6148,7 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
         version: skill.version,
         date: skill.updatedAt,
         changes: patch > 0
-          ? ['Bugfix: Stabilitätsverbesserungen', 'Performance-Optimierung bei großen Repos']
+          ? ['Stabilität verbessert', 'Ausgabe-Qualität verfeinert']
           : minor > 0
           ? ['Neue Funktion: Erweiterte Ausgabe-Optionen', 'Verbesserte Fehlerbehandlung', 'Dokumentation aktualisiert']
           : ['Erste öffentliche Version', 'Basis-Funktionalität implementiert']
@@ -6193,7 +6185,7 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
       if (!state.activeSkill?.trigger) return;
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(state.activeSkill.trigger)
-          .then(() => showToast('Trigger kopiert: ' + state.activeSkill.trigger))
+          .then(() => showToast('Befehl kopiert: ' + state.activeSkill.trigger))
           .catch(() => fallbackCopy(state.activeSkill.trigger));
       } else {
         fallbackCopy(state.activeSkill.trigger);
@@ -6206,7 +6198,7 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
       ta.style.cssText = 'position:fixed;opacity:0;top:-100px';
       document.body.appendChild(ta);
       ta.select();
-      try { document.execCommand('copy'); showToast('Trigger kopiert: ' + text); }
+      try { document.execCommand('copy'); showToast('Befehl kopiert: ' + text); }
       catch(e) { showToast('Kopieren fehlgeschlagen'); }
       document.body.removeChild(ta);
     }
@@ -6432,7 +6424,7 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
       render();
       updateURL();
     }
-    // Explainer: Plattform-Toggle in „Ein Skill, drei Systeme"
+    // Explainer: Plattform-Toggle in „Ein Skill, drei Systeme“
     function exPlatform(id) {
       document.querySelectorAll('.expf-panel').forEach(p => { p.hidden = p.dataset.pf !== id; });
       document.querySelectorAll('.expf-tab').forEach(b => {
