@@ -230,6 +230,38 @@
     .install-badge { font-family: var(--font-mono); font-size: 1.15rem; font-weight: 600; padding: .3rem 1rem; border-radius: var(--radius-pill); white-space: nowrap; }
     .install-badge.builtin { background: rgba(45,138,78,.1); color: #2d8a4e; border: 1px solid rgba(45,138,78,.35); }
     .install-badge.plugin { background: transparent; color: var(--c-black); border: 1px solid var(--c-gray-l); }
+    /* Plattform-Chips auf der Karte: wo lässt sich der Skill einsetzen? */
+    .card-platforms { display: flex; gap: .5rem; flex-wrap: wrap; margin-top: 1rem; }
+    .pf-chip { font-family: var(--font-mono); font-size: 1.05rem; font-weight: 600; letter-spacing: .04em; padding: .25rem .9rem; border-radius: var(--radius-pill); border: 1px solid var(--c-gray-l); color: var(--c-gray-d); background: transparent; }
+    .pf-chip.pf-code { background: var(--c-black); color: var(--c-yellow); border-color: var(--c-black); }
+    .skill-card.featured .pf-chip { border-color: rgba(252,252,252,.25); color: rgba(252,252,252,.65); }
+    .skill-card.featured .pf-chip.pf-code { background: var(--c-yellow); color: var(--c-black); border-color: var(--c-yellow); }
+    /* Modal: „Wo du diesen Skill einsetzen kannst" */
+    .pf-list { display: flex; flex-direction: column; gap: .8rem; }
+    .pf-item { display: grid; grid-template-columns: 13rem 1fr; gap: 1.2rem; align-items: baseline; padding: 1.1rem 1.4rem; border: 1px solid var(--c-gray-l); border-radius: .9rem; background: var(--c-white); }
+    .pf-item.ok { border-left: .4rem solid var(--c-yellow); }
+    .pf-item.na { opacity: .62; }
+    .pf-item-name { font-weight: 700; font-size: 1.45rem; white-space: nowrap; }
+    .pf-item.ok .pf-item-name::before { content: '✓ '; color: #2d8a4e; }
+    .pf-item.na .pf-item-name::before { content: '— '; color: var(--c-gray-m); }
+    .pf-item-how { font-size: 1.45rem; line-height: 1.55; color: var(--c-gray-d); }
+    .pf-item-how code { font-family: var(--font-mono); font-size: 1.25rem; background: var(--c-bg); border: 1px solid var(--c-gray-l); border-radius: .4rem; padding: .05rem .5rem; color: var(--c-black); }
+    @media (max-width: 640px) { .pf-item { grid-template-columns: 1fr; gap: .3rem; } }
+    /* Explainer: „Ein Skill, drei Systeme" — Plattform-Toggle */
+    .expf-tabs { display: flex; gap: .6rem; flex-wrap: wrap; margin: 2.8rem 0 2rem; }
+    .expf-tab { font-family: var(--font-mono); font-size: 1.4rem; padding: 1rem 2.2rem; border-radius: var(--radius-pill); border: 1px solid var(--c-gray-l); background: transparent; color: var(--c-gray-d); cursor: pointer; transition: var(--trans); }
+    .expf-tab:hover { border-color: var(--c-black); color: var(--c-black); }
+    .expf-tab.active { background: var(--c-black); color: var(--c-yellow); border-color: var(--c-black); font-weight: 600; }
+    .expf-panel { background: var(--paper, #fbfbf7); border: 1px solid var(--c-gray-l); border-radius: 1.4rem; padding: 3rem 3.2rem; }
+    .expf-lead { font-size: 1.75rem; line-height: 1.6; max-width: 82rem; }
+    .expf-lead code, .expf-cell code { font-family: var(--font-mono); font-size: .88em; background: var(--c-bg); border: 1px solid var(--c-gray-l); border-radius: .4rem; padding: .05rem .5rem; }
+    .expf-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; margin: 2.4rem 0 2.8rem; }
+    .expf-cell h4 { font-size: 1.3rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--c-gray-m); margin-bottom: .8rem; }
+    .expf-cell p { font-size: 1.55rem; line-height: 1.6; }
+    @media (max-width: 767px) {
+      .expf-grid { grid-template-columns: 1fr; gap: 1.6rem; }
+      .expf-panel { padding: 2rem 1.8rem; }
+    }
 
     .skill-badge {
       font-size: 1.2rem; font-weight: 700; padding: .3rem 1rem;
@@ -452,11 +484,12 @@
       position: sticky; top: 0; background: var(--c-white);
       padding: 2.4rem 2.4rem 0;
       display: flex; align-items: flex-start; justify-content: space-between;
+      gap: 1.2rem; /* Titel darf den Schließen-Knopf nicht berühren */
       border-bottom: 1px solid var(--c-gray-l);
       z-index: 10;
     }
-    .modal-title-wrap { display: flex; align-items: center; gap: 1.6rem; flex-wrap: wrap; }
-    .modal-header h2 { font-size: 2.8rem; font-weight: 700; margin: 0 0 1.6rem; }
+    .modal-title-wrap { display: flex; align-items: center; gap: 1.6rem; flex-wrap: wrap; min-width: 0; }
+    .modal-header h2 { font-size: 2.8rem; font-weight: 700; margin: 0 0 1.6rem; overflow-wrap: anywhere; }
     .trigger-badge {
       font-size: 1.4rem; font-weight: 600; padding: .6rem 1.4rem;
       background: var(--c-bg); border: 1px solid var(--c-gray-l);
@@ -1494,6 +1527,8 @@
       .ln-n { background: rgba(255,224,94,.14); color: rgba(255,255,255,.55); min-width: 3rem; padding: .25rem .5rem; }
       .node-annotate { min-width: 4.4rem; min-height: 4.4rem; font-size: 1.8rem; opacity: .7; }
       .sel-pill { padding: 1.1rem 2rem; font-size: 1.5rem; }
+      /* Filter-Chips & Plattform-Toggle: volle Touch-Höhe (WCAG 2.5.5) */
+      .role-chip, .expf-tab, .cat-tab { min-height: 4.4rem; }
     }
 
     /* Explainer responsive */
@@ -1678,7 +1713,7 @@
     <div class="hero-inner hero-top">
       <p class="overline" style="color:#ffe05e">pilot · Citizen Coding</p>
       <h1 class="hero-h1">Skills, die<br><span class="hero-rotator" id="hero-rotator" aria-live="polite">Tools bauen.</span></h1>
-      <p class="subline">Von Piloten gebaut, für Piloten empfohlen — euer Werkzeugkasten für Claude&nbsp;Code.</p>
+      <p class="subline">Von Piloten gebaut, für Piloten empfohlen — euer Werkzeugkasten für Claude&nbsp;Code, Langdock &amp; Claude&nbsp;Design.</p>
       <div class="hero-stats" id="hero-stats">
         <div class="hero-stat-box"><span class="hero-stat-num" data-count="34" id="stat-skills">0</span><span class="hero-stat-label">Skills</span></div>
         <div class="hero-stat-box"><span class="hero-stat-num" data-count="6" id="stat-pilots">0</span><span class="hero-stat-label">Piloten</span></div>
@@ -1799,7 +1834,7 @@
       <div class="ex-wrap">
         <p class="overline" style="color:var(--c-yellow)">Citizen Coding bei pilot</p>
         <h1 class="ex-h1">Was ist<br>ein <span class="ex-hl">Skill</span>?</h1>
-        <p class="ex-lead">Ihr kennt KI bisher als <strong>Chat</strong>: fragen, Antwort bekommen. Ein Skill ist der nächste Schritt — ein <strong>gespeicherter Arbeitsablauf</strong>, den Claude Code auf einen Befehl hin ausführt. Direkt in euren Dateien. Und ihr könnt damit <strong>selbst Dinge bauen</strong>.</p>
+        <p class="ex-lead">Ihr kennt KI bisher als <strong>Chat</strong>: fragen, Antwort bekommen. Ein Skill ist der nächste Schritt — ein <strong>gespeicherter Arbeitsablauf</strong>, den die KI für dich ausführt. Zuhause ist er in <strong>Claude Code</strong>, viele laufen aber auch in <strong>Langdock</strong> — und Design-Skills füttern <strong>Claude Design</strong>. Und ihr könnt damit <strong>selbst Dinge bauen</strong>.</p>
         <div class="ex-hero-cta">
           <button class="c-cta -yellow-bg" onclick="exScrollTo('ex-demo')">Live-Demo ansehen</button>
           <button class="c-cta -yellow-border" onclick="showView('catalog')">Zum Skill-Katalog</button>
@@ -1872,7 +1907,51 @@
         </div>
         <div class="cmp-rule">
           <span class="cmp-rule-k">Faustregel</span>
-          <span><strong>Fragen, Texte &amp; Firmenwissen</strong> → Langdock. <strong>Fertige Tools, Dateien &amp; Automationen</strong> → Claude Code. Beides zu können macht dich stark.</span>
+          <span><strong>Fragen, Texte &amp; Firmenwissen</strong> → Langdock. <strong>Fertige Tools, Dateien &amp; Automationen</strong> → Claude Code. Beides zu können macht dich stark — und fürs Visuelle gibt es seit Kurzem noch <strong>Claude Design</strong>, dazu gleich mehr.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Ein Skill, drei Systeme -->
+    <section class="ex-section ex-bg reveal" id="ex-platforms">
+      <div class="ex-wrap">
+        <p class="ex-eyebrow">Ein Skill, drei Systeme</p>
+        <h2 class="ex-h2">Wo Skills bei uns <span class="ex-hl">laufen</span></h2>
+        <p class="ex-body">Das Schöne: Im Kern ist ein Skill eine Anleitung in einer Textdatei (<code>SKILL.md</code>) — und die versteht inzwischen mehr als ein System. Jeder Skill im Katalog trägt Chips, die zeigen, wo er einsetzbar ist. Hier der Unterschied:</p>
+        <div class="expf-tabs" role="group" aria-label="System wählen">
+          <button class="expf-tab active" aria-pressed="true" data-pf="code" onclick="exPlatform('code')">Claude Code</button>
+          <button class="expf-tab" aria-pressed="false" data-pf="langdock" onclick="exPlatform('langdock')">Langdock</button>
+          <button class="expf-tab" aria-pressed="false" data-pf="design" onclick="exPlatform('design')">Claude Design</button>
+        </div>
+
+        <div class="expf-panel" data-pf="code">
+          <p class="expf-lead"><strong>Das Zuhause der Skills.</strong> Hier ist ein Skill ein Ordner mit <code>SKILL.md</code> und optionalen Scripts — Claude Code führt ihn aus und arbeitet dabei <em>direkt in deinen Dateien</em>.</p>
+          <div class="expf-grid">
+            <div class="expf-cell"><h4>So kommt er rein</h4><p>ZIP aus dem Katalog laden und nach <code>.claude/skills/</code> entpacken — oder einfach den <code>/befehl</code> tippen.</p></div>
+            <div class="expf-cell"><h4>Das kann er</h4><p>Alles: Dateien lesen &amp; schreiben, Scripts ausführen, Browser steuern, Tools und Webseiten bauen, Automationen.</p></div>
+            <div class="expf-cell"><h4>Grenzen</h4><p>Läuft auf deinem Rechner im Terminal — dafür gibt es den Skill <code>/erste-schritte</code> als Einstieg.</p></div>
+          </div>
+          <button class="c-cta -black-bg" onclick="showCatalogWithPlatform('code')">Alle Skills ansehen</button>
+        </div>
+
+        <div class="expf-panel" data-pf="langdock" hidden>
+          <p class="expf-lead"><strong>Langdock hat ein eigenes Skills-Feature</strong> — gleiches Prinzip, gleiche Datei. Du lädst die <code>SKILL.md</code> hoch, und Langdock aktiviert sie automatisch, sobald deine Nachricht dazu passt. Kein Terminal nötig.</p>
+          <div class="expf-grid">
+            <div class="expf-cell"><h4>So kommt er rein</h4><p>In Langdock: <strong>Skills → Add Skill</strong> → <code>SKILL.md</code> (oder ZIP) hochladen. Teilen mit dem Team geht per Share-Dialog, Admins können Workspace-weit freigeben.</p></div>
+            <div class="expf-cell"><h4>Das kann er</h4><p>Alles Instruktive: Checklisten, Prüf-Regeln, Templates, Schreib-Workflows. Dateien erzeugt Langdock über seine eigenen System-Skills (PDF, Word, Excel, PowerPoint).</p></div>
+            <div class="expf-cell"><h4>Grenzen</h4><p>Skills sind hier reine Anleitung: keine eigenen Scripts, kein Dateisystem, kein Browser. Bau-Skills wie <code>webseite-bauen</code> bleiben deshalb Claude-Code-Sache.</p></div>
+          </div>
+          <button class="c-cta -black-bg" onclick="showCatalogWithPlatform('langdock')">Langdock-taugliche Skills ansehen</button>
+        </div>
+
+        <div class="expf-panel" data-pf="design" hidden>
+          <p class="expf-lead"><strong>Claude Design</strong> (Anthropic Labs, seit April 2026) gestaltet auf einem Canvas: Prototypen, Pitch-Decks, One-Pager, Marketing-Visuals. Es kennt kein Skill-System — aber es nimmt <em>eure Guidelines als Design-System</em> an. Genau da helfen unsere Design-Skills.</p>
+          <div class="expf-grid">
+            <div class="expf-cell"><h4>So fütterst du es</h4><p>Die Skill-Dateien (z.&nbsp;B. <code>brand-guidelines</code>, <code>theme-factory</code>) in Claude Design als Kontext oder Design-System hochladen — mehr braucht es nicht.</p></div>
+            <div class="expf-cell"><h4>Das kann es</h4><p>Visuelles Arbeiten per Chat und Canvas — und fertige Designs per Handoff an Claude Code übergeben, wo daraus echte Tools werden.</p></div>
+            <div class="expf-cell"><h4>Grenzen</h4><p>Research Preview (bezahlte Claude-Pläne). Analyse-, Daten- und Text-Skills haben hier nichts verloren — dafür gibt es Langdock und Claude Code.</p></div>
+          </div>
+          <button class="c-cta -black-bg" onclick="showCatalogWithPlatform('design')">Design-taugliche Skills ansehen</button>
         </div>
       </div>
     </section>
@@ -2211,6 +2290,7 @@ Gib einen priorisierten Report aus:
     const SKILLS = [
       {
         "id": "erste-schritte",
+        "platforms": { "code": true, "langdock": false, "design": false },
         "name": "Erste Schritte",
         "tagline": "Von Langdock zu Claude Code — dein geführter Einstieg",
         "description": "Erklärt Schritt für Schritt, wie Claude Code funktioniert: Projektordner, der erste Auftrag, wie Claude direkt in deinen Dateien arbeitet. Speziell für Umsteiger:innen von Chat-Tools.",
@@ -2277,6 +2357,7 @@ Gib einen priorisierten Report aus:
       },
       {
         "id": "prototyp-bauen",
+        "platforms": { "code": true, "langdock": false, "design": true },
         "name": "Prototyp bauen",
         "tagline": "Deine Idee in ein kleines funktionierendes Tool verwandeln",
         "description": "Beschreibe in normaler Sprache, welches interne Tool oder welchen Helfer du brauchst — Claude Code baut dir einen lauffähigen Prototyp. Rechner, Formulare, Dashboards, Mini-Apps.",
@@ -2359,6 +2440,7 @@ Gib einen priorisierten Report aus:
       },
       {
         "id": "webseite-bauen",
+        "platforms": { "code": true, "langdock": false, "design": true },
         "name": "Webseite bauen",
         "tagline": "Landingpage oder Mini-Website — ganz ohne Programmieren",
         "description": "Von der Kampagnen-Landingpage bis zur kleinen Projekt-Website: Beschreibe Inhalt und Look, Claude Code baut eine responsive Seite im pilot-Design, die du direkt im Browser siehst.",
@@ -2426,6 +2508,7 @@ Gib einen priorisierten Report aus:
       },
       {
         "id": "erste-automation",
+        "platforms": { "code": true, "langdock": false, "design": false },
         "name": "Erste Automation",
         "tagline": "Aus einer nervigen Routine deine erste kleine Automation",
         "description": "Nenne eine wiederkehrende manuelle Aufgabe — Claude Code baut daraus einen wiederverwendbaren Ablauf, den du immer wieder starten kannst.",
@@ -2484,6 +2567,7 @@ Gib einen priorisierten Report aus:
       },
       {
         "id": "tool-teilen",
+        "platforms": { "code": true, "langdock": false, "design": false },
         "name": "Tool teilen",
         "tagline": "Dein fertiges Tool oder deine Website mit dem Team teilen",
         "description": "Bring dein selbstgebautes Tool zu den Kolleg:innen: als teilbare Datei, im internen Netz oder als Link. Claude erklärt und macht die passenden Schritte.",
@@ -2533,6 +2617,7 @@ Gib einen priorisierten Report aus:
       },
       {
         "id": "webaudit",
+        "platforms": { "code": true, "langdock": false, "design": false },
         "name": "webaudit",
         "tagline": "Deine Website prüfen: UX, Performance, SEO & Barrierefreiheit",
         "description": "Kombiniert Code-Analyse mit echten Browser-Screenshots via Playwright. Prüft UX, Design, Barrierefreiheit (WCAG), Performance, SEO — als strukturierter Report mit Handlungsempfehlungen.",
@@ -2618,6 +2703,7 @@ Gib einen priorisierten Report aus:
       },
       {
         "id": "briefing-gen",
+        "platforms": { "code": true, "langdock": true, "design": false },
         "name": "Briefing Generator",
         "tagline": "Strukturierte Briefings in Minuten statt Stunden",
         "description": "Generiert Kreativ-, Media- und Projektbriefings aus wenigen Eckdaten. Gezielte Rückfragen, Marktkontext, vollständiges Dokument nach pilot-Standard.",
@@ -2686,6 +2772,7 @@ Gib einen priorisierten Report aus:
       },
       {
         "id": "campaign-check",
+        "platforms": { "code": true, "langdock": true, "design": false },
         "name": "Campaign Checker",
         "tagline": "Kampagnen-Setup validieren, bevor Budget verbrannt wird",
         "description": "Prüft Kampagnen-Setups auf Vollständigkeit und Fehler: Tracking-Codes, UTM-Parameter, Zielgruppen, Budget-Allocation und KPI-Definitionen.",
@@ -2754,6 +2841,7 @@ Gib einen priorisierten Report aus:
       },
       {
         "id": "mediaplan-audit",
+        "platforms": { "code": true, "langdock": true, "design": false },
         "name": "Mediaplan-Audit",
         "tagline": "Mediaplan-Excel auf Konsistenz, Budget & Flighting prüfen",
         "description": "Lädt deinen Mediaplan (Excel/CSV) und prüft ihn auf Rechenfehler, Budget-Abweichungen, Lücken im Flighting und unplausible KPIs — bevor er zum Kunden geht.",
@@ -2815,6 +2903,7 @@ Gib einen priorisierten Report aus:
       },
       {
         "id": "tracking-audit",
+        "platforms": { "code": true, "langdock": true, "design": false },
         "name": "Tracking-Audit",
         "tagline": "UTM, GA4 & Pixel vor dem Launch sauber validieren",
         "description": "Prüft deine Tracking-Konfiguration: UTM-Konventionen, GA4-Events, Meta/LinkedIn Pixel und Consent. Findet fehlende oder inkonsistente Tags, bevor Daten verloren gehen.",
@@ -2874,6 +2963,7 @@ Gib einen priorisierten Report aus:
       },
       {
         "id": "keyword-research",
+        "platforms": { "code": true, "langdock": true, "design": false },
         "name": "Keyword Researcher",
         "tagline": "SEO Keyword-Analyse mit Content-Cluster-Empfehlungen",
         "description": "Strukturierte Keyword-Analysen: gruppiert nach Suchintention, bewertet Schwierigkeit und erstellt Content-Cluster-Empfehlungen für organisches Wachstum.",
@@ -2933,6 +3023,7 @@ Gib einen priorisierten Report aus:
       },
       {
         "id": "content-recycling",
+        "platforms": { "code": true, "langdock": true, "design": false },
         "name": "Content Recycling",
         "tagline": "Ein Asset — zehn Kanäle. Automatisch adaptiert.",
         "description": "Aus einem bestehenden Inhalt (Artikel, Case, Whitepaper) macht der Skill kanalgerechte Varianten: LinkedIn-Post, Instagram-Caption, Newsletter-Teaser, Kurzvideo-Skript.",
@@ -3000,6 +3091,7 @@ Gib einen priorisierten Report aus:
       },
       {
         "id": "tonalitaets-check",
+        "platforms": { "code": true, "langdock": true, "design": false },
         "name": "Tonalitäts-Check",
         "tagline": "Texte gegen die Marken-Tonalität & CD prüfen",
         "description": "Prüft einen Text gegen definierte Marken-Tonalität und Sprachregeln (Duz/Siez, Claims, No-Gos) und schlägt konkrete Umformulierungen vor.",
@@ -3060,6 +3152,7 @@ Gib einen priorisierten Report aus:
       },
       {
         "id": "social-kalender",
+        "platforms": { "code": true, "langdock": true, "design": false },
         "name": "Social-Media-Kalender",
         "tagline": "Redaktionsplan aus Themen & Terminen generieren",
         "description": "Erstellt aus Themen, Kanälen und Zeitraum einen strukturierten Redaktionsplan: Posting-Termine, Formatvorschläge, Hooks und passende Hashtags.",
@@ -3111,6 +3204,7 @@ Gib einen priorisierten Report aus:
       },
       {
         "id": "meeting-notes",
+        "platforms": { "code": true, "langdock": true, "design": false },
         "name": "Meeting Notes",
         "tagline": "Rohe Mitschriften zu strukturierten Protokollen",
         "description": "Wandelt Mitschriften oder Transkripte in strukturierte Protokolle: Agenda, Beschlüsse, Action Items (wer, was, bis wann), nächste Schritte.",
@@ -3169,6 +3263,7 @@ Gib einen priorisierten Report aus:
       },
       {
         "id": "markt-research",
+        "platforms": { "code": true, "langdock": true, "design": false },
         "name": "Markt-Research",
         "tagline": "Strukturierte Markt- & Zielgruppen-Recherche mit Quellen",
         "description": "Recherchiert strukturiert zu Markt, Wettbewerb und Zielgruppe — mit nachvollziehbaren Quellen. Ergebnis: verdichtetes Briefing statt 20 offener Tabs.",
@@ -3236,6 +3331,7 @@ Gib einen priorisierten Report aus:
       },
       {
         "id": "persona-builder",
+        "platforms": { "code": true, "langdock": true, "design": false },
         "name": "Persona-Builder",
         "tagline": "Zielgruppen-Personas aus Briefing & Daten",
         "description": "Erstellt greifbare Zielgruppen-Personas aus Briefing-Angaben oder Daten: Demografie, Ziele, Pain Points, Mediennutzung und Ansprache-Empfehlung.",
@@ -3296,6 +3392,7 @@ Gib einen priorisierten Report aus:
       },
       {
         "id": "wettbewerbs-monitor",
+        "platforms": { "code": true, "langdock": true, "design": false },
         "name": "Wettbewerbs-Monitor",
         "tagline": "Aktivitäten & Kampagnen der Konkurrenz im Blick",
         "description": "Fasst öffentlich sichtbare Wettbewerbsaktivitäten zusammen: Kampagnen, Botschaften, Kanäle und Tonalität — als kompakter Überblick mit Handlungsimpulsen.",
@@ -3347,6 +3444,7 @@ Gib einen priorisierten Report aus:
       },
       {
         "id": "pitch-deck",
+        "platforms": { "code": true, "langdock": true, "design": true },
         "name": "Pitch Deck Assistent",
         "tagline": "Überzeugender Pitch: Struktur, Argumente, Storytelling",
         "description": "Unterstützt bei Pitch-Decks: strukturiert Argumentation, erstellt Slide-Outline, formuliert Value Propositions, passt Tonalität an die Zielgruppe an.",
@@ -3398,6 +3496,7 @@ Gib einen priorisierten Report aus:
       },
       {
         "id": "daten-aufbereiten",
+        "platforms": { "code": true, "langdock": false, "design": false },
         "name": "Daten aufbereiten",
         "tagline": "Excel & CSV bereinigen, sortieren, analysefertig machen",
         "description": "Lädt eine unordentliche Tabelle und macht sie sauber: Duplikate raus, Formate vereinheitlicht, Spalten sortiert, Pivot-fertig — inklusive kurzer Zusammenfassung.",
@@ -3466,6 +3565,7 @@ Gib einen priorisierten Report aus:
       },
       {
         "id": "report-summary",
+        "platforms": { "code": true, "langdock": true, "design": false },
         "name": "Report Summarizer",
         "tagline": "Lange Reports kompakt und actionable zusammengefasst",
         "description": "Fasst Analysen, Performance-Reports und Marktdaten zusammen. Input: PDF, Excel, Text. Output: Executive Summary + Key Insights + Handlungsempfehlungen auf Deutsch.",
@@ -3533,6 +3633,7 @@ Gib einen priorisierten Report aus:
       },
       {
         "id": "moodboard",
+        "platforms": { "code": true, "langdock": true, "design": true },
         "name": "Moodboard-Generator",
         "tagline": "Visuelle Richtung & Moodboard-Struktur aus dem Briefing",
         "description": "Aus Briefing oder Kampagnen-Idee entsteht eine visuelle Richtung: Stil-Achsen, Farbwelten, Bildsprache, Referenz-Stichworte — als strukturiertes Moodboard-Gerüst.",
@@ -3591,6 +3692,7 @@ Gib einen priorisierten Report aus:
       },
       {
         "id": "slides-aus-daten",
+        "platforms": { "code": true, "langdock": true, "design": true },
         "name": "Slides aus Daten",
         "tagline": "Aus Zahlen eine präsentationsreife Story",
         "description": "Nimmt eine Datentabelle und macht daraus eine Slide-Struktur mit Kernaussagen, passenden Chart-Vorschlägen und Sprechernotizen — bereit für die Präsentation.",
@@ -3654,6 +3756,7 @@ Gib einen priorisierten Report aus:
         "badge": "neu",
         "trigger": null,
         "id": "pptx",
+        "platforms": { "code": true, "langdock": false, "design": false },
         "install": "builtin",
         "name": "pptx",
         "subcategory": "content",
@@ -3698,6 +3801,7 @@ Gib einen priorisierten Report aus:
         "badge": "neu",
         "trigger": null,
         "id": "xlsx",
+        "platforms": { "code": true, "langdock": false, "design": false },
         "install": "builtin",
         "name": "xlsx",
         "subcategory": "data",
@@ -3742,6 +3846,7 @@ Gib einen priorisierten Report aus:
         "badge": "neu",
         "trigger": null,
         "id": "docx",
+        "platforms": { "code": true, "langdock": false, "design": false },
         "install": "builtin",
         "name": "docx",
         "subcategory": "content",
@@ -3784,6 +3889,7 @@ Gib einen priorisierten Report aus:
         "badge": "neu",
         "trigger": null,
         "id": "pdf",
+        "platforms": { "code": true, "langdock": false, "design": false },
         "install": "builtin",
         "name": "pdf",
         "subcategory": "data",
@@ -3826,6 +3932,7 @@ Gib einen priorisierten Report aus:
         "badge": "neu",
         "trigger": null,
         "id": "brand-guidelines",
+        "platforms": { "code": true, "langdock": false, "design": true },
         "install": "plugin",
         "name": "brand-guidelines",
         "subcategory": "content",
@@ -3869,6 +3976,7 @@ Gib einen priorisierten Report aus:
         "badge": "neu",
         "trigger": null,
         "id": "web-artifacts-builder",
+        "platforms": { "code": true, "langdock": false, "design": false },
         "install": "plugin",
         "name": "web-artifacts-builder",
         "subcategory": "bauen",
@@ -3913,6 +4021,7 @@ Gib einen priorisierten Report aus:
         "badge": "neu",
         "trigger": null,
         "id": "skill-creator",
+        "platforms": { "code": true, "langdock": false, "design": false },
         "install": "plugin",
         "name": "skill-creator",
         "subcategory": "einstieg",
@@ -3956,6 +4065,7 @@ Gib einen priorisierten Report aus:
         "badge": "neu",
         "trigger": null,
         "id": "internal-comms",
+        "platforms": { "code": true, "langdock": true, "design": false },
         "install": "plugin",
         "name": "internal-comms",
         "subcategory": "content",
@@ -3986,6 +4096,7 @@ Gib einen priorisierten Report aus:
       }
       ,{
         "id": "frontend-design",
+        "platforms": { "code": true, "langdock": false, "design": true },
         "name": "frontend-design",
         "install": "plugin",
         "tagline": "Webseiten & Tools, die nicht nach Baukasten aussehen",
@@ -4012,6 +4123,7 @@ Gib einen priorisierten Report aus:
       },
       {
         "id": "canvas-design",
+        "platforms": { "code": true, "langdock": false, "design": true },
         "name": "canvas-design",
         "install": "plugin",
         "tagline": "Poster, Key Visuals & Grafiken als PNG/PDF",
@@ -4038,6 +4150,7 @@ Gib einen priorisierten Report aus:
       },
       {
         "id": "doc-coauthoring",
+        "platforms": { "code": true, "langdock": true, "design": false },
         "name": "doc-coauthoring",
         "install": "plugin",
         "tagline": "Konzepte & Papiere strukturiert gemeinsam schreiben",
@@ -4064,6 +4177,7 @@ Gib einen priorisierten Report aus:
       },
       {
         "id": "theme-factory",
+        "platforms": { "code": true, "langdock": false, "design": true },
         "name": "theme-factory",
         "install": "plugin",
         "tagline": "10 fertige Design-Themes für Decks, Docs & Landingpages",
@@ -4188,6 +4302,7 @@ Gib einen priorisierten Report aus:
       tags: [],
       subcategory: null,
       role: null,
+      platform: null,
       endorsedOnly: false,
       favoritesOnly: false,
       sort: 'recommended',
@@ -4373,6 +4488,9 @@ Gib einen priorisierten Report aus:
         // ohne Zuordnung lieber überall zeigen als still verschwinden (neue Skills)
         result = result.filter(s => (ROLE_MAP[s.id] || ALL_ROLES).includes(state.role));
       }
+      if (state.platform) {
+        result = result.filter(s => !!skillPlatforms(s)[state.platform]);
+      }
       if (state.tags.length > 0) {
         result = result.filter(s => state.tags.every(t => s.tags.includes(t)));
       }
@@ -4475,6 +4593,7 @@ Gib einen priorisierten Report aus:
             <span class="meta-dot">·</span>
             <span>${escHtml(skill.timeToRun)}</span>
           </div>
+          <div class="card-platforms" role="group" aria-label="Einsetzbar in">${PLATFORMS.filter(p => !!skillPlatforms(skill)[p.id]).map(p => `<span class="pf-chip pf-${p.id}">${p.short}</span>`).join('')}</div>
           <div class="card-footer">
             <div class="stars-display-wrap">
               ${starsHtml}
@@ -4724,6 +4843,10 @@ Gib einen priorisierten Report aus:
       if (state.role) {
         const r = ROLES.find(x => x.id === state.role);
         pills.push({label: 'Rolle: ' + (r ? r.label : state.role), clear: `setRole('${state.role}')`});
+      }
+      if (state.platform) {
+        const p = PLATFORMS.find(x => x.id === state.platform);
+        pills.push({label: 'Einsatz: ' + (p ? p.label : state.platform), clear: `setPlatform('${state.platform}')`});
       }
       if (state.endorsedOnly) pills.push({label: 'Nur empfohlene', clear: `clearEndorsed()`});
       state.tags.forEach(t => pills.push({label: '#' + t, clear: `toggleTagFilter('${t}')`}));
@@ -5446,8 +5569,8 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
             skill.install === 'builtin'
               ? `<strong>Steckt schon in Claude:</strong> Die Office-Fähigkeiten laufen über diesen Skill — du musst nichts installieren. Der Download ist zum Reinschauen und Lernen.`
               : skill.install === 'plugin'
-                ? `<strong>Einmalig installieren:</strong> In Claude Code <code>/plugin marketplace add anthropics/skills</code> und dann <code>/plugin install example-skills@anthropic-agent-skills</code> — oder das ZIP nach <code>.claude/skills/</code> entpacken.`
-                : `Enthält alle Dateien des Skills — entpacken nach <code>.claude/skills/</code> und loslegen. Deine Anmerkungen kommen als <code>ANMERKUNGEN.md</code> mit.`
+                ? `<strong>Einmalig installieren:</strong> In Claude Code <code>/plugin marketplace add anthropics/skills</code> und dann <code>/plugin install example-skills@anthropic-agent-skills</code> — oder das ZIP nach <code>.claude/skills/</code> entpacken.${skillPlatforms(skill).langdock ? ' Für <strong>Langdock</strong> reicht die <code>SKILL.md</code>: unter Skills → Add Skill hochladen.' : ''}`
+                : `Enthält alle Dateien des Skills — entpacken nach <code>.claude/skills/</code> und loslegen.${skillPlatforms(skill).langdock ? ' Für <strong>Langdock</strong> reicht die <code>SKILL.md</code>: unter Skills → Add Skill hochladen.' : ''} Deine Anmerkungen kommen als <code>ANMERKUNGEN.md</code> mit.`
           }</span>
         </div>` : ''}
         <div class="files-browser">
@@ -5843,6 +5966,28 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
           </div>` : ''}
         </div>
 
+        <p class="section-label">Wo du diesen Skill einsetzen kannst</p>
+        <div class="pf-list">
+          <div class="pf-item ok">
+            <span class="pf-item-name">Claude Code</span>
+            <span class="pf-item-how">${skill.install === 'builtin'
+              ? `Schon in Claude eingebaut — nichts zu installieren, einfach lostippen.`
+              : `Das Zuhause dieses Skills: Ordner nach <code>.claude/skills/</code>${skill.trigger ? ` — oder direkt <code>${escHtml(skill.trigger)}</code> tippen` : ''}.`}</span>
+          </div>
+          <div class="pf-item ${skillPlatforms(skill).langdock ? 'ok' : 'na'}">
+            <span class="pf-item-name">Langdock</span>
+            <span class="pf-item-how">${skillPlatforms(skill).langdock
+              ? `Funktioniert auch hier: die <code>SKILL.md</code> unter <strong>Skills → Add Skill</strong> hochladen — Langdock aktiviert sie automatisch anhand der Beschreibung.`
+              : `Hier nicht sinnvoll — der Skill braucht die Ausführungsumgebung von Claude Code (Dateien, Scripts oder Browser).`}</span>
+          </div>
+          <div class="pf-item ${skillPlatforms(skill).design ? 'ok' : 'na'}">
+            <span class="pf-item-name">Claude Design</span>
+            <span class="pf-item-how">${skillPlatforms(skill).design
+              ? `In Claude Design nutzbar: Guideline-/Theme-Dateien als Kontext oder Design-System hochladen — oder die Aufgabe direkt dort angehen und das Ergebnis per Handoff an Claude Code übergeben.`
+              : `Hier nicht einsetzbar — Claude Design führt keine Skills aus, und dieser Skill liefert kein Guideline- oder Theme-Material als Design-Kontext.`}</span>
+          </div>
+        </div>
+
         <p class="section-label">Use Cases</p>
         <ul class="use-cases">${useCasesHtml}</ul>
 
@@ -6083,6 +6228,7 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
       state.tags = [];
       state.subcategory = null;
       state.role = null;
+      state.platform = null;
       state.endorsedOnly = false;
       state.favoritesOnly = false;
       state.sort = 'recommended';
@@ -6270,6 +6416,39 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
       header.addEventListener('touchcancel', end);
     }
 
+    // ===== PLATTFORMEN =====
+    // Wo lässt sich ein Skill ehrlich einsetzen? code = natives Zuhause (immer);
+    // langdock = SKILL.md direkt als Langdock-Skill hochladbar (reine Instruktions-Skills);
+    // design = Inhalt als Design-Grundlage/Kontext in Claude Design nutzbar.
+    const PLATFORMS = [
+      { id: 'code',     label: 'Claude Code',   short: 'Code' },
+      { id: 'langdock', label: 'Langdock',      short: 'Langdock' },
+      { id: 'design',   label: 'Claude Design', short: 'Design' }
+    ];
+    function skillPlatforms(s) { return s.platforms || { code: true, langdock: false, design: false }; }
+    function setPlatform(id) {
+      state.platform = state.platform === id ? null : id;
+      renderRoleChips();
+      render();
+      updateURL();
+    }
+    // Explainer: Plattform-Toggle in „Ein Skill, drei Systeme"
+    function exPlatform(id) {
+      document.querySelectorAll('.expf-panel').forEach(p => { p.hidden = p.dataset.pf !== id; });
+      document.querySelectorAll('.expf-tab').forEach(b => {
+        b.classList.toggle('active', b.dataset.pf === id);
+        b.setAttribute('aria-pressed', b.dataset.pf === id ? 'true' : 'false');
+      });
+    }
+    // Aus dem Explainer: Katalog mit gesetztem Plattform-Filter öffnen
+    function showCatalogWithPlatform(id) {
+      showView('catalog');
+      state.platform = id;
+      renderRoleChips();
+      render();
+      document.querySelector('.skills-section')?.scrollIntoView({ behavior: 'smooth' });
+    }
+
     // ===== QUELLE- & ROLLEN-FILTER =====
     // Redaktionelle Zuordnung: welche Skills sind für welche Rolle bei pilot relevant?
     const ROLES = [
@@ -6335,7 +6514,11 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
         const count = SKILLS.filter(sk => (ROLE_MAP[sk.id] || ALL_ROLES).includes(r.id)).length;
         return `<button class="role-chip${state.role === r.id ? ' active' : ''}" onclick="setRole('${r.id}')">${escHtml(r.label)} <span class="rc-count">${count}</span></button>`;
       }).join('');
-      container.innerHTML = `<div class="chip-row">${srcRow}</div><div class="chip-row">${roleRow}</div>`;
+      const pfRow = `<span class="role-label">Einsatz in:</span>` + PLATFORMS.map(p => {
+        const count = SKILLS.filter(sk => !!skillPlatforms(sk)[p.id]).length;
+        return `<button class="role-chip${state.platform === p.id ? ' active' : ''}" onclick="setPlatform('${p.id}')">${escHtml(p.label)} <span class="rc-count">${count}</span></button>`;
+      }).join('');
+      container.innerHTML = `<div class="chip-row">${srcRow}</div><div class="chip-row">${roleRow}</div><div class="chip-row">${pfRow}</div>`;
     }
 
     function setSource(id) {
