@@ -994,9 +994,26 @@
     .nav-link:hover { color: var(--c-white); }
     .nav-link.active { color: var(--c-black); background: var(--c-yellow); font-weight: 600; }
     @media (max-width: 1023px) {
-      .main-nav { gap: .2rem; }
-      .nav-link { font-size: 1.3rem; padding: .6rem 1rem; }
+      .main-nav { gap: .2rem; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+      .main-nav::-webkit-scrollbar { display: none; }
+      .nav-link { font-size: 1.3rem; padding: .6rem 1rem; white-space: nowrap; flex-shrink: 0; }
       .header-inner .search-wrap { display: none; }
+    }
+    @media (max-width: 640px) {
+      .nav-link { font-size: 1.25rem; padding: .5rem .8rem; }
+      /* Modal als Vollbild-Sheet — kein eingequetschter Dialog */
+      .modal { max-width: 100%; width: 100%; max-height: 100dvh; height: 100dvh; border-radius: 0; }
+      .modal-header { padding: 1.4rem 1.6rem 0; }
+      .modal-header h2 { font-size: 2.1rem; margin-bottom: 1rem; }
+      .trigger-badge { font-size: 1.25rem; padding: .5rem 1.1rem; margin-bottom: 1rem; }
+      /* Hinweiszeile frisst auf dem Handy Kopfhöhe — das 📋 am Badge reicht (JS setzt display inline, daher !important) */
+      .trigger-hint { display: none !important; }
+      .modal-close { font-size: 2.8rem; padding: .6rem 1rem; margin-bottom: 1rem; }
+      .modal-meta { padding: 1.2rem 1.6rem; gap: 1rem; }
+      .modal-tabs { padding: 0 1.6rem; scrollbar-width: none; }
+      .modal-tabs::-webkit-scrollbar { display: none; }
+      .tab-btn { padding: 1.2rem 1.3rem; font-size: 1.4rem; }
+      .modal-body { padding: 2rem 1.4rem; }
     }
 
     /* ===================== EXPLAINER: WAS SIND SKILLS ===================== */
@@ -1317,12 +1334,26 @@
     .code-line.ann-selecting { background: rgba(255,224,94,.2); box-shadow: inset 3px 0 0 var(--c-yellow); }
     .code-line.cl-flash { animation: clFlash 1.6s ease; }
     @keyframes clFlash { 0%,100% { background: transparent; } 15% { background: rgba(255,224,94,.28); } }
-    .ln-gutter { flex-shrink: 0; width: 5rem; display: inline-flex; align-items: center; justify-content: flex-end; gap: .4rem; padding: 0 1rem 0 .6rem; position: relative; user-select: none; }
-    .ln-n { color: rgba(255,255,255,.28); font-size: 1.2rem; }
-    .ln-add { position: absolute; left: .3rem; top: 50%; transform: translateY(-50%); width: 1.7rem; height: 1.7rem; border-radius: .4rem; border: none; background: var(--c-yellow); color: var(--c-black); font-weight: 700; font-size: 1.4rem; line-height: 1; cursor: pointer; opacity: 0; transition: opacity .12s; display: flex; align-items: center; justify-content: center; padding: 0; }
-    .code-line:hover .ln-add { opacity: 1; }
+    /* Gutter = Tippfläche: Zeilennummer anklicken/antippen startet den Kommentar */
+    .ln-gutter { flex-shrink: 0; width: 5rem; display: inline-flex; align-items: center; justify-content: flex-end; padding: 0 1rem 0 .6rem; position: relative; user-select: none; cursor: pointer; }
+    .ln-n { color: rgba(255,255,255,.32); font-size: 1.2rem; min-width: 2.6rem; text-align: right; border-radius: .4rem; padding: .1rem .4rem; transition: background .12s, color .12s; pointer-events: none; }
+    .code-line:hover .ln-n, .ln-gutter:focus-visible .ln-n { background: var(--c-yellow); color: var(--c-black); font-weight: 700; }
     .ln-code { white-space: pre; flex: 1; padding-right: 1.4rem; }
-    .ln-badge { flex-shrink: 0; align-self: center; margin: 0 1rem 0 .4rem; background: var(--c-yellow); color: var(--c-black); border: none; border-radius: 2rem; font-family: var(--font-mono); font-size: 1.1rem; font-weight: 700; padding: .1rem .7rem; cursor: pointer; }
+    .files-code.wrap .ln-code { white-space: pre-wrap; overflow-wrap: anywhere; }
+    /* Schwebende "Kommentieren"-Pille an der Textauswahl */
+    .sel-pill { position: fixed; z-index: 400; background: var(--c-black); color: var(--c-white); border: 2px solid var(--c-yellow); border-radius: var(--radius-pill); font-family: inherit; font-size: 1.4rem; font-weight: 600; padding: .8rem 1.6rem; cursor: pointer; box-shadow: 0 10px 26px -8px rgba(0,0,0,.5); display: flex; align-items: center; gap: .7rem; }
+    .sel-pill:hover { background: var(--c-yellow); color: var(--c-black); }
+    .sel-pill .sp-lines { font-family: var(--font-mono); font-size: 1.15rem; opacity: .75; font-weight: 400; }
+    /* Inline-Composer & Inline-Kommentare direkt an der Zeile */
+    .ann-il-wrap { padding: .6rem 1.4rem .6rem 5rem; max-width: 86rem; }
+    .ann-composer-inline { background: var(--paper, #fbfbf7); border: 1px solid var(--c-gray-l); border-left: .4rem solid var(--c-yellow); border-radius: .9rem; padding: 1.4rem 1.6rem; font-family: var(--font-sans, Inter, sans-serif); box-shadow: var(--shadow-md); }
+    .ann-il-card { background: var(--paper, #fbfbf7); border: 1px solid var(--c-gray-l); border-left: .4rem solid var(--c-yellow); border-radius: .9rem; padding: 1.1rem 1.4rem; font-family: var(--font-sans, Inter, sans-serif); }
+    .ann-il-card + .ann-il-card { margin-top: .6rem; }
+    .ann-il-head { display: flex; align-items: baseline; gap: .8rem; font-size: 1.25rem; color: var(--c-gray-m); margin-bottom: .3rem; flex-wrap: wrap; }
+    .ann-il-head b { color: var(--c-black); font-size: 1.35rem; }
+    .ann-il-text { font-size: 1.45rem; line-height: 1.5; color: var(--c-black); white-space: normal; }
+    .ann-il-del { margin-left: auto; background: none; border: none; color: var(--c-gray-m); cursor: pointer; font-family: inherit; font-size: 1.2rem; text-decoration: underline; }
+    .ann-il-del:hover { color: #c0392b; }
 
     /* Datei-Knoten mit Kommentar-Button */
     .file-node-row { display: flex; align-items: center; gap: .2rem; }
@@ -1375,16 +1406,20 @@
       .files-tree { flex-direction: row; overflow-x: auto; border-right: none; border-bottom: 1px solid var(--c-gray-l); }
       .files-folder { display: none; }
       .file-node { white-space: nowrap; }
-      .files-code { font-size: 1.2rem; }
+      .files-code { font-size: 1.3rem; }
+      .ln-gutter { width: 4.2rem; padding: 0 .8rem 0 .4rem; }
+      .ann-il-wrap { padding-left: 1.2rem; padding-right: 1.2rem; }
+      .files-view-bar { flex-wrap: wrap; gap: .6rem; }
+      .files-view-actions { flex-wrap: wrap; }
       .ann-item { flex-direction: column; gap: .8rem; }
       .ann-actions { flex-direction: row; }
     }
     /* Touch: größere Trefferflächen (WCAG 2.5.5) */
     @media (hover: none) and (pointer: coarse) {
-      .ln-gutter { width: 6.4rem; }
-      .ln-add { opacity: 1; width: 3.2rem; height: 3.2rem; font-size: 1.8rem; border-radius: .6rem; }
+      .code-line { min-height: 3rem; }
+      .ln-n { background: rgba(255,224,94,.14); color: rgba(255,255,255,.55); min-width: 3rem; padding: .25rem .5rem; }
       .node-annotate { min-width: 4.4rem; min-height: 4.4rem; font-size: 1.8rem; opacity: .7; }
-      .ln-badge { min-height: 2.8rem; padding: .3rem 1rem; }
+      .sel-pill { padding: 1.1rem 2rem; font-size: 1.5rem; }
     }
 
     /* Explainer responsive */
@@ -1468,6 +1503,7 @@
 
     /* Modal: mehr Tiefe */
     .modal { border-radius: 2rem; box-shadow: var(--shadow-lg); }
+    @media (max-width: 640px) { .modal { border-radius: 0; } }
     .modal-overlay { background: rgba(30,30,28,.55); }
 
     /* Piloten-Sektion: edler Übergang */
@@ -4899,27 +4935,35 @@ Gib einen priorisierten Report aus:
       const cur = files[active];
       const folder = cur.path.split('/')[0] + '/';
       const intro = real
-        ? `<div class="files-intro"><p class="section-label" style="margin-top:0"><span class="files-real-badge">● Echte Datei im Repo</span></p><p class="files-intro-text">Diese Dateien liegen wirklich im Repo unter <code>skills/${escHtml(skill.id)}/</code> und werden hier <strong>1:1 gespiegelt</strong>. Klick auf das <strong>+</strong> an einer Zeile (mit <strong>Shift+Klick</strong> auf eine zweite Zeile für einen <strong>Bereich</strong>) oder auf <strong>💬</strong> an einer Datei, um die Stelle zu kommentieren.</p></div>`
+        ? `<div class="files-intro"><p class="section-label" style="margin-top:0"><span class="files-real-badge">● Echte Datei im Repo</span></p><p class="files-intro-text">Diese Dateien liegen wirklich im Repo unter <code>skills/${escHtml(skill.id)}/</code> und werden hier <strong>1:1 gespiegelt</strong>. Zum Kommentieren: <strong>Text markieren</strong> oder eine <strong>Zeilennummer antippen</strong> — das Kommentarfeld öffnet sich direkt an der Stelle. Eine weitere Zeilennummer erweitert den Bereich.</p></div>`
         : `<div class="files-intro"><p class="section-label" style="margin-top:0"><span class="files-warn-badge">⚠ Vorschau — echte Dateien nicht geladen</span></p><p class="files-intro-text">Die Original-Dateien aus dem Repo konnten gerade nicht geladen werden (offline, Netzwerk oder GitHub-Limit). Du siehst eine <strong>generierte Vorschau</strong> des Aufbaus. <button class="files-retry" onclick="retryLoadFiles()">Erneut versuchen</button></p></div>`;
       const gh = real ? `<a class="files-gh" href="${REPO_BLOB}/${encodeURI(cur.path)}" target="_blank" rel="noopener">Auf GitHub ansehen ↗</a>` : '';
 
-      // Zeilenbasiertes Code-Rendering mit Kommentar-Gutter (inkl. Zeilen-Bereiche)
-      const lineHasAnn = {}, lineBadge = {};
+      // Zeilenbasiertes Code-Rendering; Kommentare erscheinen INLINE unter ihrer Zeile
+      const lineHasAnn = {}, annsAtLine = {}, fileAnns = [];
       anns.forEach(a => {
-        if (a.file === cur.path && a.line) {
-          const s = a.line, e = a.lineEnd || a.line;
-          for (let L = s; L <= e; L++) lineHasAnn[L] = true;
-          lineBadge[s] = (lineBadge[s] || 0) + 1;
-        }
+        if (a.file !== cur.path) return;
+        if (!a.line) { fileAnns.push(a); return; }
+        const s = a.line, e = a.lineEnd || a.line;
+        for (let L = s; L <= e; L++) lineHasAnn[L] = true;
+        const endL = e; // Karte unter dem ENDE des Bereichs, damit sie den Bereich nicht zerschneidet
+        (annsAtLine[endL] = annsAtLine[endL] || []).push(a);
       });
-      const codeHtml = highlightCode(cur.content, fileLang(cur.path)).split('\n').map((h, idx) => {
-        const n = idx + 1; const c = lineBadge[n] || 0;
-        return `<div class="code-line${lineHasAnn[n] ? ' has-ann' : ''}" id="cl-${n}" data-line="${n}">`
-          + `<span class="ln-gutter"><button class="ln-add" tabindex="-1" aria-label="Zeile ${n} kommentieren" title="Zeile ${n} kommentieren (Shift+Klick = Bereich)" onclick="startAnnotate(event, ${n})">+</button><span class="ln-n" aria-hidden="true">${n}</span></span>`
-          + `<span class="ln-code">${h || ''}</span>`
-          + (c ? `<button class="ln-badge" tabindex="-1" title="${c} Anmerkung(en) — anzeigen" onclick="scrollToAnnList(event)">${c}</button>` : '')
-          + `</div>`;
-      }).join('');
+      const ilCard = a => `<div class="ann-il-card" id="il-${a.id}">
+        <div class="ann-il-head"><b>${escHtml(a.author || 'Anonym')}</b><span>${escHtml(a.date)}</span>${a.line && (a.lineEnd || a.line) > a.line ? `<span>Zeile ${a.line}–${a.lineEnd}</span>` : ''}<button class="ann-il-del" onclick="deleteAnnotation('${a.id}')">löschen</button></div>
+        <div class="ann-il-text">${escHtml(a.text)}</div>
+      </div>`;
+      const isMd = fileLang(cur.path) === 'markdown';
+      const wrapped = state._wrapPref ? !!state._wrapPref[isMd ? 'md' : 'code'] : isMd;
+      const codeHtml = (fileAnns.length ? `<div class="ann-il-wrap">${fileAnns.map(ilCard).join('')}</div>` : '')
+        + highlightCode(cur.content, fileLang(cur.path)).split('\n').map((h, idx) => {
+          const n = idx + 1;
+          return `<div class="code-line${lineHasAnn[n] ? ' has-ann' : ''}" id="cl-${n}" data-line="${n}">`
+            + `<span class="ln-gutter" data-line="${n}" role="button" tabindex="0" aria-label="Zeile ${n} kommentieren"><span class="ln-n">${n}</span></span>`
+            + `<span class="ln-code">${h || ''}</span>`
+            + `</div>`
+            + (annsAtLine[n] ? `<div class="ann-il-wrap">${annsAtLine[n].map(ilCard).join('')}</div>` : '');
+        }).join('');
 
       const annList = anns.length
         ? anns.map(a => renderAnnItem(a, shortP)).join('')
@@ -4939,34 +4983,30 @@ Gib einen priorisierten Report aus:
           <div class="files-view">
             <div class="files-view-bar">
               <span class="files-view-path">${escHtml(cur.path)}</span>
-              <div class="files-view-actions">${gh}<button class="files-copy" onclick="startAnnotate(event, 1)" title="Zeile(n) kommentieren — Bereich im Formular wählbar">✎ Zeile kommentieren</button><button class="files-copy" onclick="downloadCurrentFile()" title="Diese Datei herunterladen">⬇ Datei</button><button class="files-copy" onclick="quickCopy(event, getFileContent(${active}))">Kopieren</button></div>
+              <div class="files-view-actions">${gh}<button class="files-copy" onclick="toggleWrap(this)" title="Lange Zeilen umbrechen" aria-pressed="${wrapped}">${wrapped ? '☑' : '☐'} Umbruch</button><button class="files-copy" onclick="downloadCurrentFile()" title="Diese Datei herunterladen">⬇ Datei</button><button class="files-copy" onclick="quickCopy(event, getFileContent(${active}))">Kopieren</button></div>
             </div>
-            <div class="files-code code-view" role="region" tabindex="0" aria-label="Quellcode von ${escHtml(cur.path)}">${codeHtml}</div>
+            <div class="files-code code-view${wrapped ? ' wrap' : ''}" role="region" tabindex="0" aria-label="Quellcode von ${escHtml(cur.path)}">${codeHtml}</div>
           </div>
         </div>
         <div class="ann-panel" id="ann-panel">
           <div class="ann-panel-head">
-            <span>Anmerkungen</span><span class="ann-count">${anns.length}</span>
+            <span>Alle Anmerkungen</span><span class="ann-count">${anns.length}</span>
             ${anns.length ? `<button class="ann-export" onclick="exportAnnotations()" title="Anmerkungen mit Referenzen als Markdown herunterladen">⬇ Als .md exportieren</button>` : ''}
-          </div>
-          <div class="ann-composer" id="ann-composer" hidden>
-            <div class="ann-anchor" id="ann-anchor"></div>
-            <div class="ann-range" id="ann-range" hidden>
-              <label>Zeilen <input type="number" id="ann-from" min="1" inputmode="numeric"></label>
-              <span>–</span>
-              <label><input type="number" id="ann-to" min="1" inputmode="numeric" aria-label="bis Zeile"></label>
-              <button type="button" class="ann-range-apply" onclick="applyRangeInputs()">Übernehmen</button>
-              <span class="ann-range-hint">Tipp: am Desktop auch per <kbd>Shift</kbd>+Klick auf eine zweite Zeile.</span>
-            </div>
-            <textarea id="ann-text" class="ann-text-input" rows="2" placeholder="Deine Anmerkung zu dieser Stelle …"></textarea>
-            <div class="ann-composer-row">
-              <input id="ann-author" class="ann-author-input" placeholder="Dein Name" value="${escHtml(getAnnAuthor())}">
-              <button class="c-cta -black-bg ann-save" onclick="submitAnnotation()">Speichern</button>
-              <button class="ann-cancel" onclick="cancelAnnotate()">Abbrechen</button>
-            </div>
           </div>
           <div class="ann-list" id="ann-list">${annList}</div>
         </div>`;
+      bindAnnDelegation();
+    }
+    function toggleWrap(btn) {
+      const files = state._files || [];
+      const cur = files[Math.min(state.activeFile || 0, files.length - 1)];
+      const key = cur && fileLang(cur.path) === 'markdown' ? 'md' : 'code';
+      state._wrapPref = state._wrapPref || { md: true, code: false };
+      state._wrapPref[key] = !state._wrapPref[key];
+      const on = state._wrapPref[key];
+      document.querySelector('#modal-body .files-code')?.classList.toggle('wrap', on);
+      btn.textContent = (on ? '☑' : '☐') + ' Umbruch';
+      btn.setAttribute('aria-pressed', String(on));
     }
 
     function renderAnnItem(a, shortP) {
@@ -5007,82 +5047,157 @@ Gib einen priorisierten Report aus:
     }
     function getAnnAuthor() { try { return localStorage.getItem('skill-ann-author') || ''; } catch (e) { return ''; } }
 
-    function startAnnotate(evt, lineNo) {
-      if (evt) evt.stopPropagation();
+    // ===== Kommentar-Interaktion: Text markieren ODER Zeilennummer antippen =====
+    let _annBound = false, _selTimer = null;
+    function bindAnnDelegation() {
+      if (_annBound) return; _annBound = true;
+      const body = document.getElementById('modal-body');
+      if (!body) return;
+      // Zeilennummer antippen: Anmerkung starten / Bereich erweitern
+      body.addEventListener('click', e => {
+        const g = e.target.closest('.ln-gutter');
+        if (!g || !g.closest('.files-code')) return;
+        const sel = window.getSelection();
+        if (sel && !sel.isCollapsed) return; // Auswahl aktiv -> die Pille übernimmt
+        e.stopPropagation(); gutterTap(parseInt(g.dataset.line, 10));
+      });
+      body.addEventListener('keydown', e => {
+        const g = e.target.closest && e.target.closest('.ln-gutter');
+        if (g && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); gutterTap(parseInt(g.dataset.line, 10)); }
+      });
+      // Esc: erst den Composer schließen, nicht gleich das ganze Modal (capture, vor dem Modal-Handler)
+      document.addEventListener('keydown', e => {
+        if (e.key === 'Escape' && document.getElementById('ann-composer-il')) { e.stopPropagation(); cancelAnnotate(); }
+      }, true);
+      // Textauswahl → schwebende „Kommentieren"-Pille (debounced: deckt Maus UND Touch-Griffe ab)
+      document.addEventListener('selectionchange', () => {
+        clearTimeout(_selTimer);
+        _selTimer = setTimeout(() => {
+          const s = window.getSelection();
+          if (!s || s.isCollapsed) { hideSelPill(); return; }
+          showSelPill();
+        }, 250);
+      });
+    }
+    function _selRangeInfo() {
+      const s = window.getSelection();
+      if (!s || s.isCollapsed || !s.rangeCount) return null;
+      const r = s.getRangeAt(0);
+      const lineOf = node => {
+        const el = node.nodeType === 1 ? node : node.parentElement;
+        const cl = el && el.closest && el.closest('.code-line');
+        return cl && cl.closest('#modal-body .files-code') ? parseInt(cl.dataset.line, 10) : null;
+      };
+      const a = lineOf(r.startContainer), b = lineOf(r.endContainer);
+      if (!a || !b) return null;
+      const text = s.toString().replace(/\s+/g, ' ').trim();
+      if (!text) return null;
+      return { start: Math.min(a, b), end: Math.max(a, b), snippet: text.slice(0, 140), rect: r.getBoundingClientRect() };
+    }
+    function showSelPill() {
+      const info = _selRangeInfo();
+      if (!info) { hideSelPill(); return; }
+      let pill = document.getElementById('sel-pill');
+      if (!pill) {
+        pill = document.createElement('button');
+        pill.id = 'sel-pill'; pill.className = 'sel-pill'; pill.type = 'button';
+        // pointerdown, damit der Tipp die Auswahl nicht vorher auflöst
+        pill.addEventListener('pointerdown', e => {
+          e.preventDefault(); e.stopPropagation();
+          const i = pill._info; if (!i) return;
+          hideSelPill();
+          try { window.getSelection().removeAllRanges(); } catch (err) {}
+          beginAnnotation(i.start, i.end, i.snippet);
+        });
+        document.body.appendChild(pill);
+      }
+      pill._info = info;
+      pill.innerHTML = `✎ Kommentieren <span class="sp-lines">${info.start === info.end ? 'Zeile ' + info.start : 'Zeile ' + info.start + '–' + info.end}</span>`;
+      const r = info.rect;
+      pill.style.left = Math.max(8, Math.min(window.innerWidth - 210, r.left + r.width / 2 - 90)) + 'px';
+      pill.style.top = Math.max(8, Math.min(window.innerHeight - 64, r.bottom + 10)) + 'px';
+      pill.hidden = false;
+    }
+    function hideSelPill() { const p = document.getElementById('sel-pill'); if (p) { p.hidden = true; p._info = null; } }
+
+    function gutterTap(line) {
+      if (!line) return;
+      const files = state._files || [];
+      const cur = files[Math.min(state.activeFile || 0, files.length - 1)];
+      if (!cur) return;
+      const pa = state._pendingAnn;
+      if (pa && pa.line && pa.file === cur.path && document.getElementById('ann-composer-il')) {
+        const anchor = pa._anchor || pa.line;
+        beginAnnotation(Math.min(anchor, line), Math.max(anchor, line), null, anchor);
+      } else {
+        beginAnnotation(line, line);
+      }
+    }
+    function beginAnnotation(start, end, snippet, anchor) {
       const files = state._files || [];
       const cur = files[Math.min(state.activeFile || 0, files.length - 1)];
       if (!cur) return;
       const lines = cur.content.split('\n');
-      const pa = state._pendingAnn;
-      // Shift+Klick erweitert zum Bereich (Anker = erste geklickte Zeile)
-      const extend = evt && evt.shiftKey && pa && pa.file === cur.path && pa._anchor;
-      const anchor = extend ? pa._anchor : lineNo;
-      const start = Math.min(anchor, lineNo), end = Math.max(anchor, lineNo);
-      let snippet = (lines[start - 1] || '').trim().slice(0, 90);
-      if (end > start) snippet += '  …';
-      state._pendingAnn = { file: cur.path, line: start, lineEnd: end, snippet, _anchor: anchor };
+      start = Math.max(1, Math.min(start, lines.length));
+      end = Math.max(start, Math.min(end || start, lines.length));
+      if (!snippet) {
+        snippet = (lines[start - 1] || '').trim().slice(0, 90);
+        if (end > start) snippet += '  …';
+      }
+      state._pendingAnn = { file: cur.path, line: start, lineEnd: end, snippet, _anchor: anchor || start };
       applySelHighlight(start, end);
-      showComposer();
+      openInlineComposer(document.getElementById('cl-' + end));
     }
     function startAnnotateFile(evt, i) {
       if (evt) evt.stopPropagation();
       const files = state._files || [];
       const f = files[i]; if (!f) return;
-      state._pendingAnn = { file: f.path, line: null, lineEnd: null, snippet: '' };
+      if (i !== state.activeFile) { state.activeFile = i; renderFilesInto(state.activeSkill); }
+      state._pendingAnn = { file: f.path, line: null, lineEnd: null, snippet: '', _anchor: null };
       applySelHighlight(0, -1);
-      showComposer();
+      const code = document.querySelector('#modal-body .files-code');
+      if (code) openInlineComposer({ prependTo: code });
     }
-    // Zeilenbereich aus den Eingabefeldern übernehmen (Tastatur-/Touch-Pfad)
-    function applyRangeInputs() {
-      const pa = state._pendingAnn; if (!pa || !pa.line) return;
-      const files = state._files || [];
-      const cur = files.find(f => f.path === pa.file); if (!cur) return;
-      const lines = cur.content.split('\n');
-      let a = parseInt(document.getElementById('ann-from')?.value, 10) || 1;
-      let b = parseInt(document.getElementById('ann-to')?.value, 10) || a;
-      a = Math.min(Math.max(1, a), lines.length);
-      b = Math.min(Math.max(1, b), lines.length);
-      const start = Math.min(a, b), end = Math.max(a, b);
-      let snippet = (lines[start - 1] || '').trim().slice(0, 90);
-      if (end > start) snippet += '  …';
-      state._pendingAnn = { ...pa, line: start, lineEnd: end, snippet, _anchor: start };
-      applySelHighlight(start, end);
-      showComposer();
-      document.getElementById('cl-' + start)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    // Composer direkt an der Stelle einsetzen; beim Erweitern wandert er mit, Text bleibt erhalten
+    function openInlineComposer(target) {
+      if (!target) return;
+      let comp = document.getElementById('ann-composer-il');
+      const isNew = !comp;
+      if (!comp) {
+        comp = document.createElement('div');
+        comp.id = 'ann-composer-il';
+        comp.className = 'ann-il-wrap';
+        comp.innerHTML = `<div class="ann-composer-inline">
+          <div class="ann-anchor" id="ann-anchor"></div>
+          <textarea id="ann-text" class="ann-text-input" rows="3" placeholder="Deine Anmerkung zu dieser Stelle …"></textarea>
+          <div class="ann-composer-row">
+            <input id="ann-author" class="ann-author-input" placeholder="Dein Name" value="${escHtml(getAnnAuthor())}">
+            <button class="c-cta -black-bg ann-save" onclick="submitAnnotation()">Speichern</button>
+            <button class="ann-cancel" onclick="cancelAnnotate()">Abbrechen</button>
+          </div>
+          <div class="ann-range-hint" style="margin-top:.8rem">Tipp: Eine weitere Zeilennummer antippen erweitert den Bereich.</div>
+        </div>`;
+      }
+      if (target.prependTo) target.prependTo.prepend(comp);
+      else target.insertAdjacentElement('afterend', comp);
+      const pa = state._pendingAnn;
+      const short = pa.file.split('/').slice(1).join('/') || pa.file;
+      const lbl = pa.line ? (pa.lineEnd > pa.line ? `Zeile ${pa.line}–${pa.lineEnd}` : `Zeile ${pa.line}`) : 'ganze Datei';
+      comp.querySelector('#ann-anchor').innerHTML = `Anmerkung zu <code>${escHtml(short)}</code> · ${lbl}`
+        + (pa.snippet ? ` <span class="ann-anchor-snip">${escHtml(pa.snippet.slice(0, 90))}</span>` : '');
+      comp.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      if (isNew) comp.querySelector('#ann-text')?.focus();
     }
 
     function applySelHighlight(start, end) {
       document.querySelectorAll('.code-line.ann-selecting').forEach(el => el.classList.remove('ann-selecting'));
       for (let L = start; L <= end; L++) document.getElementById('cl-' + L)?.classList.add('ann-selecting');
     }
-    function showComposer() {
-      const comp = document.getElementById('ann-composer');
-      const anchor = document.getElementById('ann-anchor');
-      const pa = state._pendingAnn;
-      if (!comp || !anchor || !pa) return;
-      const short = pa.file.split('/').slice(1).join('/') || pa.file;
-      const lineLabel = pa.line ? (pa.lineEnd && pa.lineEnd > pa.line ? `Zeile ${pa.line}–${pa.lineEnd}` : `Zeile ${pa.line}`) : '';
-      anchor.innerHTML = pa.line
-        ? `Anmerkung zu <code>${escHtml(short)}</code> · ${lineLabel}` + (pa.snippet ? ` <span class="ann-anchor-snip">${escHtml(pa.snippet)}</span>` : '')
-        : `Anmerkung zur Datei <code>${escHtml(short)}</code>`;
-      // Zeilen-Bereich per Eingabefeld (Tastatur + Touch, ohne Shift)
-      const rangeBox = document.getElementById('ann-range');
-      if (rangeBox) {
-        rangeBox.hidden = !pa.line;
-        if (pa.line) {
-          const from = document.getElementById('ann-from'), to = document.getElementById('ann-to');
-          if (from) from.value = pa.line;
-          if (to) to.value = pa.lineEnd || pa.line;
-        }
-      }
-      comp.hidden = false;
-      comp.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      const t = document.getElementById('ann-text'); if (t) t.focus();
-    }
     function cancelAnnotate() {
       state._pendingAnn = null;
       applySelHighlight(0, -1);
-      const comp = document.getElementById('ann-composer'); if (comp) comp.hidden = true;
+      document.getElementById('ann-composer-il')?.remove();
+      hideSelPill();
     }
     function submitAnnotation() {
       const pa = state._pendingAnn;
@@ -5115,10 +5230,6 @@ Gib einen priorisierten Report aus:
       const body = document.getElementById('modal-body');
       if (body) body.innerHTML = `<div class="files-loading">Lade Skill-Dateien aus dem Repo …</div>`;
       loadModalFiles(skill);
-    }
-    function scrollToAnnList(evt) {
-      if (evt) evt.stopPropagation();
-      document.getElementById('ann-panel')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
     function jumpToAnnotation(annId) {
       const skill = state.activeSkill; if (!skill) return;
