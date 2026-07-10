@@ -86,6 +86,19 @@
     }
     #search::placeholder { color: var(--c-gray-l); }
     #search:focus { outline: none; border-color: var(--c-yellow); background: rgba(252,252,252,.15); }
+    /* Mobile Suche (Filterleiste, helle Fläche) — sichtbar nur ≤1023px */
+    .search-wrap-m { display: none; }
+    #search-m {
+      width: 100%; padding: 1rem 1.8rem;
+      background: var(--c-white);
+      border: 1px solid var(--c-gray-l);
+      border-radius: var(--radius-pill);
+      color: var(--c-black);
+      font-size: 1.5rem; font-family: inherit;
+      transition: var(--trans);
+    }
+    #search-m::placeholder { color: var(--c-gray-m); }
+    #search-m:focus { outline: none; border-color: var(--c-black); }
 
     /* ===== HERO (inszeniert) ===== */
     .hero {
@@ -999,6 +1012,8 @@
       .main-nav::-webkit-scrollbar { display: none; }
       .nav-link { font-size: 1.3rem; padding: .6rem 1rem; white-space: nowrap; flex-shrink: 0; }
       .header-inner .search-wrap { display: none; }
+      /* Ersatz für die versteckte Header-Suche: Suchfeld oben in der Filterleiste */
+      .search-wrap-m { display: block; padding: 1.2rem 0 .2rem; }
     }
     @media (max-width: 640px) {
       .nav-link { font-size: 1.25rem; padding: .5rem .8rem; }
@@ -1657,6 +1672,9 @@
     <!-- FILTER BAR -->
     <div class="filter-bar" id="filter-bar">
       <div class="filter-inner">
+        <div class="search-wrap-m">
+          <input type="search" id="search-m" aria-label="Skills suchen" placeholder="Skills suchen..." autocomplete="off">
+        </div>
         <div class="cat-tabs" id="cat-tabs" role="tablist"></div>
         <button class="filter-toggle-btn" id="filter-toggle-btn" onclick="toggleMobileFilter()" aria-expanded="true">
           <span>Filter &amp; Sortierung</span>
@@ -4555,7 +4573,7 @@ Gib einen priorisierten Report aus:
     }
     function clearSearch() {
       state.search = '';
-      const s = document.getElementById('search'); if (s) s.value = '';
+      ['search', 'search-m'].forEach(id => { const s = document.getElementById(id); if (s) s.value = ''; });
       render();
     }
 
@@ -4624,6 +4642,12 @@ Gib einen priorisierten Report aus:
         <span>v${escHtml(skill.version)}</span>
         <span class="modal-meta-sep">·</span>
         <span class="cat-badge ${skill.category}" style="margin:0">${catLabel(skill.category)}</span>
+        <span class="modal-meta-sep">·</span>
+        <span title="Rollen, in deren Filter dieser Skill auftaucht">Für: ${
+          (ROLE_MAP[skill.id] || ALL_ROLES).length === ALL_ROLES.length
+            ? 'alle Rollen'
+            : (ROLE_MAP[skill.id] || ALL_ROLES).map(id => escHtml((ROLES.find(r => r.id === id) || {label:id}).label)).join(', ')
+        }</span>
       `;
 
       // Reset tabs
@@ -5686,7 +5710,7 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
       state.favoritesOnly = false;
       state.sort = 'recommended';
       state.search = '';
-      const searchEl = document.getElementById('search'); if (searchEl) searchEl.value = '';
+      ['search', 'search-m'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
       const endEl = document.getElementById('endorsed-only'); if (endEl) endEl.checked = false;
       const sortEl = document.getElementById('sort-select'); if (sortEl) sortEl.value = 'recommended';
       const favBtn = document.getElementById('fav-filter-btn'); if (favBtn) { favBtn.classList.remove('active'); favBtn.setAttribute('aria-pressed','false'); }
@@ -6308,10 +6332,15 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
       window.addEventListener('hashchange', applyHash);
       window.addEventListener('popstate', applyHash);
 
-      document.getElementById('search').addEventListener('input', debounce(e => {
-        state.search = e.target.value.toLowerCase().trim();
-        render();
-      }, 150));
+      // Header-Suche (Desktop) und Filterleisten-Suche (Mobil) halten sich gegenseitig aktuell
+      [['search', 'search-m'], ['search-m', 'search']].forEach(([own, other]) => {
+        document.getElementById(own)?.addEventListener('input', debounce(e => {
+          state.search = e.target.value.toLowerCase().trim();
+          const o = document.getElementById(other);
+          if (o && o.value !== e.target.value) o.value = e.target.value;
+          render();
+        }, 150));
+      });
 
       document.getElementById('endorsed-only').addEventListener('change', e => {
         state.endorsedOnly = e.target.checked;
