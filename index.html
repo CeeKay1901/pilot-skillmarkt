@@ -788,7 +788,11 @@
       .header-inner { gap: 2rem; }
       .hero h1 { font-size: 4.8rem; }
       .hero .subline { font-size: 1.8rem; }
-      .featured-grid { grid-template-columns: 1fr; }
+      /* Featured-Karten als wischbares Karussell statt 6er-Stapel — der Hero
+         schrumpft von ~3 auf ~1,5 Bildschirmhöhen, die nächste Karte schaut rein */
+      .featured-grid { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 1.2rem; margin: 0 -2rem; padding: 0 2rem 1rem; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+      .featured-grid::-webkit-scrollbar { display: none; }
+      .featured-grid > * { flex: 0 0 84%; scroll-snap-align: center; }
       .skills-grid { grid-template-columns: 1fr; }
       .pilots-grid { grid-template-columns: 1fr; }
       .modal-overlay { padding: 0; align-items: flex-end; }
@@ -841,10 +845,15 @@
     }
     .filter-toggle-arrow { transition: transform .2s; }
     .filter-toggle-btn[aria-expanded="false"] .filter-toggle-arrow { transform: rotate(-90deg); }
+    .ftb-count { display: inline-block; min-width: 2rem; text-align: center; background: var(--c-yellow); color: var(--c-black); border-radius: var(--radius-pill); font-size: 1.2rem; font-weight: 700; padding: .1rem .6rem; margin-left: .4rem; }
     @media (max-width: 1023px) {
       .filter-toggle-btn { display: flex; }
       .filter-collapsible[hidden] { display: none; }
       .hero { padding: 4rem 0 6rem; }
+    }
+    @media (max-width: 640px) {
+      /* Hero kompakter: Skills sollen ohne langes Scrollen sichtbar werden (Persona-Review P6) */
+      .hero { padding: 3rem 0 4rem; }
     }
 
     .output-example {
@@ -1019,7 +1028,9 @@
       .nav-link { font-size: 1.25rem; padding: .5rem .8rem; }
       /* Modal als Vollbild-Sheet — kein eingequetschter Dialog */
       .modal { max-width: 100%; width: 100%; max-height: 100dvh; height: 100dvh; border-radius: 0; }
-      .modal-header { padding: 1.4rem 1.6rem 0; }
+      .modal-header { padding: 1rem 1.6rem 0; }
+      /* Grab-Handle signalisiert: nach unten wischen schließt */
+      .modal-header::before { content: ''; display: block; width: 4.4rem; height: .4rem; border-radius: .4rem; background: var(--c-gray-l); margin: 0 auto .8rem; }
       .modal-header h2 { font-size: 2.1rem; margin-bottom: 1rem; }
       .trigger-badge { font-size: 1.25rem; padding: .5rem 1.1rem; margin-bottom: 1rem; }
       /* Hinweiszeile frisst auf dem Handy Kopfhöhe — das 📋 am Badge reicht (JS setzt display inline, daher !important) */
@@ -1348,8 +1359,10 @@
     .view-seg button.active { background: var(--c-yellow); color: var(--c-black); font-weight: 600; }
     /* Formatierte Ansicht (Markdown/CSV): helle Lesefläche, Blöcke sind kommentierbar */
     .files-preview { background: var(--paper, #fbfbf7); color: var(--c-black); padding: 2rem 2.4rem; font-size: 1.55rem; line-height: 1.65; overflow-x: auto; }
-    .pv-block { border-left: .4rem solid transparent; border-radius: .4rem; padding: .2rem 1rem .2rem 1.2rem; margin: 0 -1rem 0 -1.2rem; cursor: pointer; transition: background .12s, border-color .12s; }
+    .pv-block { position: relative; border-left: .4rem solid transparent; border-radius: .4rem; padding: .2rem 2.4rem .2rem 1.2rem; margin: 0 -1rem 0 -1.2rem; cursor: pointer; transition: background .12s, border-color .12s; }
     .pv-block:hover { background: rgba(255,224,94,.16); border-left-color: var(--c-yellow); }
+    .pv-block::after { content: '✎'; position: absolute; right: .6rem; top: .3rem; font-size: 1.4rem; color: var(--c-gray-m); opacity: 0; transition: opacity .12s; }
+    .pv-block:hover::after { opacity: .85; }
     .pv-block.has-ann { border-left-color: var(--c-yellow); }
     .pv-block.ann-selecting { background: rgba(255,224,94,.28); border-left-color: var(--c-yellow); }
     .pv-block.cl-flash { animation: clFlash 1.6s ease; }
@@ -1716,7 +1729,7 @@
         </div>
         <div class="cat-tabs" id="cat-tabs" role="tablist"></div>
         <button class="filter-toggle-btn" id="filter-toggle-btn" onclick="toggleMobileFilter()" aria-expanded="true">
-          <span>Filter &amp; Sortierung</span>
+          <span>Filter &amp; Sortierung <span class="ftb-count" id="ftb-count" hidden></span></span>
           <span class="filter-toggle-arrow">▾</span>
         </button>
         <div class="filter-collapsible" id="filter-collapsible">
@@ -2169,7 +2182,7 @@ Gib einen priorisierten Report aus:
       <div class="modal-header">
         <div class="modal-title-wrap">
           <h2 id="modal-name"></h2>
-          <button class="trigger-badge" id="modal-trigger" onclick="copyTrigger()"></button>
+          <button class="trigger-badge" id="modal-trigger" onclick="copyTrigger()" title="Diesen Befehl in Claude Code eingeben — Klick kopiert ihn"></button>
           <span class="trigger-hint" id="trigger-hint" style="font-size:1.3rem;color:var(--c-gray-d);display:none"></span>
         </div>
         <button class="modal-close" onclick="closeModal()" aria-label="Skill-Detail schließen">✕</button>
@@ -4598,6 +4611,9 @@ Gib einen priorisierten Report aus:
       state.tags.forEach(t => pills.push({label: '#' + t, clear: `toggleTagFilter('${t}')`}));
       if (state.search) pills.push({label: `Suche: "${escHtml(state.search)}"`, clear: `clearSearch()`});
 
+      // Zähler am mobilen Filter-Toggle: aktive Filter bleiben auch eingeklappt sichtbar
+      const ftb = document.getElementById('ftb-count');
+      if (ftb) { ftb.hidden = pills.length === 0; ftb.textContent = pills.length; }
       if (pills.length === 0) { bar.hidden = true; bar.innerHTML = ''; return; }
       bar.hidden = false;
       bar.innerHTML = `<span class="active-filters-label">Aktive Filter:</span>` +
@@ -4722,6 +4738,10 @@ Gib einen priorisierten Report aus:
         btn.setAttribute('aria-selected', btn.dataset.tab === tab ? 'true' : 'false');
       });
       renderModalBody();
+      // neuer Tab startet oben, nicht auf der alten Scroll-Position
+      document.getElementById('modal')?.scrollTo({ top: 0 });
+      // auf Mobile: aktiven Tab in die wischbare Leiste holen
+      document.querySelector('.modal-tabs .tab-btn.active')?.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
       updateURL();
     }
 
@@ -5291,7 +5311,7 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
         viewHtml = `<div class="files-code code-view${wrapped ? ' wrap' : ''}" role="region" tabindex="0" aria-label="Quellcode von ${escHtml(cur.path)}">${codeHtml}</div>`;
       }
       const viewSeg = kind ? `<div class="view-seg" role="group" aria-label="Darstellung wechseln">
-        <button class="${mode === 'preview' ? 'active' : ''}" onclick="setFileView('preview')">${kind === 'csv' ? 'Tabelle' : 'Ansicht'}</button>
+        <button class="${mode === 'preview' ? 'active' : ''}" onclick="setFileView('preview')">${kind === 'csv' ? 'Tabelle' : 'Lesen'}</button>
         <button class="${mode === 'code' ? 'active' : ''}" onclick="setFileView('code')">Code</button>
       </div>` : '';
 
@@ -6090,6 +6110,33 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
       panel.hidden = isExpanded;
     }
 
+    // ===== MOBILE: SWIPE-DOWN AUF DEM MODAL-KOPF SCHLIESST (Standard-Geste) =====
+    function initModalSwipe() {
+      const modal = document.getElementById('modal');
+      const header = modal && modal.querySelector('.modal-header');
+      if (!header) return;
+      let startY = null, dy = 0;
+      header.addEventListener('touchstart', e => {
+        if (window.innerWidth > 1023) return;
+        startY = e.touches[0].clientY; dy = 0;
+        modal.style.transition = 'none';
+      }, { passive: true });
+      header.addEventListener('touchmove', e => {
+        if (startY === null) return;
+        dy = e.touches[0].clientY - startY;
+        if (dy > 0) modal.style.transform = `translateY(${dy}px)`;
+      }, { passive: true });
+      const end = () => {
+        if (startY === null) return;
+        modal.style.transition = '';
+        modal.style.transform = '';
+        if (dy > 110) closeModal();
+        startY = null; dy = 0;
+      };
+      header.addEventListener('touchend', end);
+      header.addEventListener('touchcancel', end);
+    }
+
     // ===== QUELLE- & ROLLEN-FILTER =====
     // Redaktionelle Zuordnung: welche Skills sind für welche Rolle bei pilot relevant?
     const ROLES = [
@@ -6555,6 +6602,13 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
       renderPilots();
       render();
       restoreFromURL();
+      // Mobil: Filterpanel startet eingeklappt — der Platz gehört den Skills (Persona-Review P6)
+      if (window.matchMedia && window.matchMedia('(max-width: 1023px)').matches) {
+        const ftb = document.getElementById('filter-toggle-btn');
+        const fc = document.getElementById('filter-collapsible');
+        if (ftb && fc) { ftb.setAttribute('aria-expanded', 'false'); fc.hidden = true; }
+      }
+      initModalSwipe();
       // Deep-Link: Back/Forward und manuelle Hash-Änderungen berücksichtigen
       window.addEventListener('hashchange', applyHash);
       window.addEventListener('popstate', applyHash);
