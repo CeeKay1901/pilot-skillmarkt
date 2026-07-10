@@ -206,5 +206,27 @@
   "scripts/office/validators/pptx.py",
   "scripts/office/validators/redlining.py",
   "scripts/recalc.py"
+ ],
+ "frontend-design": [
+  "SKILL.md"
+ ],
+ "canvas-design": [
+  "SKILL.md"
+ ],
+ "doc-coauthoring": [
+  "SKILL.md"
+ ],
+ "theme-factory": [
+  "SKILL.md",
+  "themes/arctic-frost.md",
+  "themes/botanical-garden.md",
+  "themes/desert-rose.md",
+  "themes/forest-canopy.md",
+  "themes/golden-hour.md",
+  "themes/midnight-galaxy.md",
+  "themes/modern-minimalist.md",
+  "themes/ocean-depths.md",
+  "themes/sunset-boulevard.md",
+  "themes/tech-innovation.md"
  ]
 }

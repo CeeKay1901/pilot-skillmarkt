@@ -226,6 +226,10 @@
     .skill-card.featured .cat-badge.pilot-inhouse { background: rgba(255,224,94,.2); color: var(--c-yellow); }
     .skill-card.featured .cat-badge.anthropic { background: var(--c-yellow); color: var(--c-black); }
     .skill-card.featured .cat-badge.gsd { background: rgba(186,184,171,.2); color: var(--c-gray-l); }
+    /* Anthropic-Skills: eingebaut vs. nachinstallieren */
+    .install-badge { font-family: var(--font-mono); font-size: 1.15rem; font-weight: 600; padding: .3rem 1rem; border-radius: var(--radius-pill); white-space: nowrap; }
+    .install-badge.builtin { background: rgba(45,138,78,.1); color: #2d8a4e; border: 1px solid rgba(45,138,78,.35); }
+    .install-badge.plugin { background: transparent; color: var(--c-black); border: 1px solid var(--c-gray-l); }
 
     .skill-badge {
       font-size: 1.2rem; font-weight: 700; padding: .3rem 1rem;
@@ -1678,7 +1682,7 @@
       <div class="hero-stats" id="hero-stats">
         <div class="hero-stat-box"><span class="hero-stat-num" data-count="34" id="stat-skills">0</span><span class="hero-stat-label">Skills</span></div>
         <div class="hero-stat-box"><span class="hero-stat-num" data-count="6" id="stat-pilots">0</span><span class="hero-stat-label">Piloten</span></div>
-        <div class="hero-stat-box"><span class="hero-stat-num" data-count="7">0</span><span class="hero-stat-label">Kategorien</span></div>
+        <div class="hero-stat-box"><span class="hero-stat-num" id="stat-cats" data-count="7">0</span><span class="hero-stat-label">Kategorien</span></div>
         <div class="hero-stat-box"><span class="hero-stat-num" data-count="23" id="stat-endorsed">0</span><span class="hero-stat-label">Empfehlungen</span></div>
       </div>
       <div class="hero-cta">
@@ -3650,6 +3654,7 @@ Gib einen priorisierten Report aus:
         "badge": "neu",
         "trigger": null,
         "id": "pptx",
+        "install": "builtin",
         "name": "pptx",
         "subcategory": "content",
         "difficulty": "medium",
@@ -3693,6 +3698,7 @@ Gib einen priorisierten Report aus:
         "badge": "neu",
         "trigger": null,
         "id": "xlsx",
+        "install": "builtin",
         "name": "xlsx",
         "subcategory": "data",
         "difficulty": "medium",
@@ -3736,6 +3742,7 @@ Gib einen priorisierten Report aus:
         "badge": "neu",
         "trigger": null,
         "id": "docx",
+        "install": "builtin",
         "name": "docx",
         "subcategory": "content",
         "difficulty": "medium",
@@ -3777,6 +3784,7 @@ Gib einen priorisierten Report aus:
         "badge": "neu",
         "trigger": null,
         "id": "pdf",
+        "install": "builtin",
         "name": "pdf",
         "subcategory": "data",
         "difficulty": "medium",
@@ -3818,6 +3826,7 @@ Gib einen priorisierten Report aus:
         "badge": "neu",
         "trigger": null,
         "id": "brand-guidelines",
+        "install": "plugin",
         "name": "brand-guidelines",
         "subcategory": "content",
         "difficulty": "easy",
@@ -3860,6 +3869,7 @@ Gib einen priorisierten Report aus:
         "badge": "neu",
         "trigger": null,
         "id": "web-artifacts-builder",
+        "install": "plugin",
         "name": "web-artifacts-builder",
         "subcategory": "bauen",
         "difficulty": "advanced",
@@ -3903,6 +3913,7 @@ Gib einen priorisierten Report aus:
         "badge": "neu",
         "trigger": null,
         "id": "skill-creator",
+        "install": "plugin",
         "name": "skill-creator",
         "subcategory": "einstieg",
         "difficulty": "medium",
@@ -3945,6 +3956,7 @@ Gib einen priorisierten Report aus:
         "badge": "neu",
         "trigger": null,
         "id": "internal-comms",
+        "install": "plugin",
         "name": "internal-comms",
         "subcategory": "content",
         "difficulty": "easy",
@@ -3972,6 +3984,111 @@ Gib einen priorisierten Report aus:
         },
         "endorsedBy": []
       }
+      ,{
+        "id": "frontend-design",
+        "name": "frontend-design",
+        "install": "plugin",
+        "tagline": "Webseiten & Tools, die nicht nach Baukasten aussehen",
+        "description": "Offizieller Anthropic-Skill: Design-Leitplanken für markante, hochwertige Oberflächen — Typografie, Farben, Layout. Läuft automatisch mit, wenn Claude etwas mit UI baut. Inhalt auf Englisch.",
+        "longDescription": "Wer mit Claude eine Webseite oder ein kleines Tool baut, bekommt schnell ein generisches „KI-Template\"-Aussehen. Dieser Skill gibt Claude eine Design-Haltung mit: bewusste Typo-Entscheidungen, stimmige Farbwelten, Layouts mit Charakter. Perfekte Ergänzung zu unseren Bau-Skills (webseite-bauen, prototyp-bauen) — einmal installiert, wirkt er bei jedem UI-Auftrag mit. Inhalt auf Englisch.",
+        "category": "anthropic",
+        "subcategory": "bauen",
+        "trigger": null,
+        "author": "Anthropic",
+        "version": "1.0.0",
+        "addedAt": "2026-07-10",
+        "updatedAt": "2026-07-10",
+        "badge": "neu",
+        "featured": false,
+        "tags": ["design", "web", "bauen", "ui", "typografie"],
+        "useCases": ["Landingpages mit Charakter", "Interne Tools aufwerten", "Kunden-Prototypen präsentabel machen"],
+        "difficulty": "easy",
+        "timeToRun": "läuft automatisch mit",
+        "requirements": ["Claude Code"],
+        "rating": { "average": 4.6, "count": 3 },
+        "endorsedBy": [],
+        "endorsements": [],
+        "comments": []
+      },
+      {
+        "id": "canvas-design",
+        "name": "canvas-design",
+        "install": "plugin",
+        "tagline": "Poster, Key Visuals & Grafiken als PNG/PDF",
+        "description": "Offizieller Anthropic-Skill: erstellt eigenständige visuelle Designs (Poster, Artwork, Grafiken) als PNG oder PDF — inklusive 25 mitgelieferter Schriften. Inhalt auf Englisch.",
+        "longDescription": "Claude gestaltet damit statische Visuals nach echten Design-Prinzipien: Moodboard-taugliche Poster, Key-Visual-Entwürfe, Social-Grafiken — als PNG oder PDF. Der Skill bringt 25 kuratierte Open-Source-Schriften mit und legt Wert auf Originalität statt Nachahmung. Für schnelle visuelle Richtungen, bevor die Kreation übernimmt. Inhalt auf Englisch.",
+        "category": "anthropic",
+        "subcategory": "content",
+        "trigger": null,
+        "author": "Anthropic",
+        "version": "1.0.0",
+        "addedAt": "2026-07-10",
+        "updatedAt": "2026-07-10",
+        "badge": "neu",
+        "featured": false,
+        "tags": ["kreativ", "design", "poster", "visual", "png"],
+        "useCases": ["Key-Visual-Entwürfe", "Moodboard-Poster", "Schnelle Kampagnen-Visuals"],
+        "difficulty": "medium",
+        "timeToRun": "5–10 Min",
+        "requirements": ["Claude Code"],
+        "rating": { "average": 4.2, "count": 2 },
+        "endorsedBy": [],
+        "endorsements": [],
+        "comments": []
+      },
+      {
+        "id": "doc-coauthoring",
+        "name": "doc-coauthoring",
+        "install": "plugin",
+        "tagline": "Konzepte & Papiere strukturiert gemeinsam schreiben",
+        "description": "Offizieller Anthropic-Skill: führt in drei Phasen durch das Schreiben von Konzepten, Proposals und Entscheidungsvorlagen — Kontext sammeln, gemeinsam verfeinern, am Leser testen. Inhalt auf Englisch.",
+        "longDescription": "Statt „schreib mir ein Konzept\" und einem mittelmäßigen Erstwurf: Dieser Skill strukturiert das Schreiben als geführten Prozess. Erst hilft Claude, dein Wissen in den Text zu bekommen (Brain-Dump, gezielte Fragen), dann verfeinert ihr Abschnitt für Abschnitt, zum Schluss prüft Claude den Text aus Sicht der Zielgruppe. Stark für Kundenkonzepte, interne Vorlagen und New-Business-Papiere. Inhalt auf Englisch.",
+        "category": "anthropic",
+        "subcategory": "content",
+        "trigger": null,
+        "author": "Anthropic",
+        "version": "1.0.0",
+        "addedAt": "2026-07-10",
+        "updatedAt": "2026-07-10",
+        "badge": "neu",
+        "featured": false,
+        "tags": ["content", "konzept", "proposal", "schreiben", "workflow"],
+        "useCases": ["Kundenkonzepte", "Entscheidungsvorlagen", "New-Business-Papiere"],
+        "difficulty": "easy",
+        "timeToRun": "15–30 Min",
+        "requirements": ["Claude Code"],
+        "rating": { "average": 4.4, "count": 3 },
+        "endorsedBy": [],
+        "endorsements": [],
+        "comments": []
+      },
+      {
+        "id": "theme-factory",
+        "name": "theme-factory",
+        "install": "plugin",
+        "tagline": "10 fertige Design-Themes für Decks, Docs & Landingpages",
+        "description": "Offizieller Anthropic-Skill: 10 kuratierte Farb-/Typo-Themes (von „Modern Minimalist\" bis „Midnight Galaxy\"), die Claude auf Präsentationen, Reports und Webseiten anwendet — oder er baut on-the-fly ein neues. Inhalt auf Englisch.",
+        "longDescription": "Einheitlicher Look ohne Design-Diskussion: Der Skill bringt 10 ausgearbeitete Themes mit (Farben, Schriften, Stimmung) und wendet sie auf beliebige Artefakte an — Pitch-Decks, Reportings, Landingpages. Auf Zuruf entsteht auch ein neues Theme, z. B. abgeleitet aus einer Kunden-CI. Gut kombinierbar mit pitch-deck und slides-aus-daten. Inhalt auf Englisch.",
+        "category": "anthropic",
+        "subcategory": "content",
+        "trigger": null,
+        "author": "Anthropic",
+        "version": "1.0.0",
+        "addedAt": "2026-07-10",
+        "updatedAt": "2026-07-10",
+        "badge": "neu",
+        "featured": false,
+        "tags": ["design", "themes", "präsentation", "styling", "ci"],
+        "useCases": ["Deck in 1 Minute umstylen", "Report-Look vereinheitlichen", "Kunden-CI als Theme"],
+        "difficulty": "easy",
+        "timeToRun": "2–5 Min",
+        "requirements": ["Claude Code"],
+        "rating": { "average": 4.1, "count": 2 },
+        "endorsedBy": [],
+        "endorsements": [],
+        "comments": []
+      }
+
     ];
 
     const PILOTS = [
@@ -4477,6 +4594,7 @@ Gib einen priorisierten Report aus:
       ];
       const html = subs.map(s => {
         const count = s.id === 'all' ? SKILLS.length : SKILLS.filter(sk => sk.subcategory === s.id).length;
+        if (!count && s.id !== 'all') return ''; // leere Kategorien nicht anbieten
         const isActive = state.subcategory === (s.id === 'all' ? null : s.id);
         return `<button class="cat-tab${isActive ? ' active' : ''}" role="tab" aria-selected="${isActive}" onclick="setSubCat('${s.id}')">${escHtml(s.label)} <span class="tab-count">${count}</span></button>`;
       }).join('');
@@ -4697,6 +4815,7 @@ Gib einen priorisierten Report aus:
         <span>v${escHtml(skill.version)}</span>
         <span class="modal-meta-sep">·</span>
         <span class="cat-badge ${skill.category}" style="margin:0">${catLabel(skill.category)}</span>
+        ${skill.install ? `<span class="modal-meta-sep">·</span><span class="install-badge ${skill.install}" title="${skill.install === 'builtin' ? 'Steckt schon in Claude — nichts zu installieren' : 'Aus dem offiziellen anthropics/skills-Repo — einmalig installieren'}">${skill.install === 'builtin' ? '⚙ in Claude eingebaut' : '⬇ zum Nachinstallieren'}</span>` : ''}
         <span class="modal-meta-sep">·</span>
         <span title="Rollen, in deren Filter dieser Skill auftaucht">Für: ${
           (ROLE_MAP[skill.id] || ALL_ROLES).length === ALL_ROLES.length
@@ -5323,7 +5442,13 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
         ${intro}
         ${real ? `<div class="skill-dl-bar">
           <button class="c-cta -black-bg skill-dl-btn" onclick="downloadSkill('${escHtml(skill.id)}', this)">⬇ Skill herunterladen (.zip)</button>
-          <span class="skill-dl-hint">Enthält alle Dateien des Skills — entpacken nach <code>.claude/skills/</code> und loslegen. Deine Anmerkungen kommen als <code>ANMERKUNGEN.md</code> mit.</span>
+          <span class="skill-dl-hint">${
+            skill.install === 'builtin'
+              ? `<strong>Steckt schon in Claude:</strong> Die Office-Fähigkeiten laufen über diesen Skill — du musst nichts installieren. Der Download ist zum Reinschauen und Lernen.`
+              : skill.install === 'plugin'
+                ? `<strong>Einmalig installieren:</strong> In Claude Code <code>/plugin marketplace add anthropics/skills</code> und dann <code>/plugin install example-skills@anthropic-agent-skills</code> — oder das ZIP nach <code>.claude/skills/</code> entpacken.`
+                : `Enthält alle Dateien des Skills — entpacken nach <code>.claude/skills/</code> und loslegen. Deine Anmerkungen kommen als <code>ANMERKUNGEN.md</code> mit.`
+          }</span>
         </div>` : ''}
         <div class="files-browser">
           <div class="files-tree">
@@ -5708,6 +5833,14 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
             <span class="tway-ic">⌘</span>
             <div><strong>Manuell</strong> — ${skill.trigger ? `du tippst <code>${escHtml(skill.trigger)}</code> in Claude Code.` : `dieser Skill hat keinen eigenen Befehl — er läuft automatisch im passenden Workflow.`}</div>
           </div>
+          ${skill.install === 'builtin' ? `<div class="tway">
+            <span class="tway-ic">⚙</span>
+            <div><strong>Schon eingebaut</strong> — dieser Skill steckt in Claude selbst (er treibt die Office-Datei-Fähigkeiten an). Nichts zu installieren; die Dateien hier sind zum Reinschauen.</div>
+          </div>` : ''}
+          ${skill.install === 'plugin' ? `<div class="tway">
+            <span class="tway-ic">⬇</span>
+            <div><strong>Einmalig installieren</strong> — offizieller Anthropic-Skill aus <code>anthropics/skills</code>: in Claude Code <code>/plugin marketplace add anthropics/skills</code>, dann <code>/plugin install example-skills@anthropic-agent-skills</code>. Oder im Tab „Aufbau &amp; Dateien" als ZIP laden und nach <code>.claude/skills/</code> entpacken.</div>
+          </div>` : ''}
         </div>
 
         <p class="section-label">Use Cases</p>
@@ -6178,7 +6311,11 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
       'brand-guidelines':    ['kreation'],
       'web-artifacts-builder': ['kreation'],
       'skill-creator':       ALL_ROLES,
-      'internal-comms':      ['pm', 'kreation']
+      'internal-comms':      ['pm', 'kreation'],
+      'frontend-design':     ['kreation', 'media', 'pm'],
+      'canvas-design':       ['kreation'],
+      'doc-coauthoring':     ['pm', 'strategie', 'kreation', 'media'],
+      'theme-factory':       ['kreation', 'strategie', 'pm']
     };
     function renderRoleChips() {
       const sources = [
@@ -6238,6 +6375,8 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
       const sk = document.getElementById('stat-skills'); if (sk) sk.dataset.count = SKILLS.length;
       const pl = document.getElementById('stat-pilots'); if (pl) pl.dataset.count = PILOTS.length;
       const en = document.getElementById('stat-endorsed'); if (en) en.dataset.count = totalEndorsements;
+      // Kategorien zählen statt hart kodieren — leere zählen nicht
+      const ct = document.getElementById('stat-cats'); if (ct) ct.dataset.count = new Set(SKILLS.map(s => s.subcategory)).size;
 
       const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       document.querySelectorAll('.hero-stat-num').forEach(el => {
