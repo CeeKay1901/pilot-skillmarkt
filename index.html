@@ -570,6 +570,16 @@
     .comment-form { margin-bottom: 3rem; padding: 2.4rem; background: var(--c-bg); border-radius: 1rem; }
     .comment-form h3 { font-size: 1.8rem; font-weight: 700; margin-bottom: 1.6rem; }
     .comment-form label:not(.sr-only) { display: block; font-size: 1.3rem; font-weight: 600; color: var(--c-black); margin-bottom: .4rem; }
+    .comment-local-hint { font-size: 1.25rem; color: var(--c-gray-m); margin-top: 1rem; line-height: 1.5; }
+    .comment-own-badge { font-size: 1.15rem; font-weight: 500; color: var(--c-gray-m); background: var(--c-bg); border: 1px solid var(--c-gray-l); border-radius: 2rem; padding: .1rem .8rem; margin-left: .6rem; white-space: nowrap; }
+    .comment-delete { background: none; border: none; cursor: pointer; color: var(--c-gray-l); font-size: 1.6rem; line-height: 1; padding: 1.2rem; margin: -1rem -1rem 0 0; flex-shrink: 0; align-self: flex-start; transition: var(--trans); border-radius: .6rem; }
+    .comment-delete:hover, .comment-delete:focus-visible { color: var(--c-black); background: var(--c-bg); }
+    /* Katalog→Builder-Brücke im Skill-Modal */
+    .builder-nudge { display: flex; align-items: center; justify-content: space-between; gap: 2rem; background: var(--c-bg); border: 1px solid var(--c-gray-l); border-radius: 1rem; padding: 1.8rem 2rem; margin-top: 2.4rem; }
+    .builder-nudge strong { display: block; font-size: 1.5rem; margin-bottom: .3rem; }
+    .builder-nudge p { font-size: 1.35rem; color: var(--c-gray-m); line-height: 1.5; margin: 0; }
+    .builder-nudge .c-cta { flex-shrink: 0; padding: 1rem 1.8rem; font-size: 1.4rem; }
+    @media (max-width: 640px) { .builder-nudge { flex-direction: column; align-items: stretch; text-align: left; } }
     .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin-bottom: 1.2rem; }
     .comment-form input, .comment-form textarea {
       width: 100%; padding: 1.2rem 1.6rem;
@@ -587,6 +597,7 @@
       display: grid; grid-template-columns: auto 1fr; gap: 1.6rem;
     }
     .comment-item:last-child { border-bottom: none; }
+    .comment-item.-own { grid-template-columns: auto 1fr auto; }
     .comment-author { font-size: 1.6rem; font-weight: 700; margin-bottom: .2rem; }
     .comment-role-date { font-size: 1.3rem; color: var(--c-gray-m); margin-bottom: .8rem; }
     .comment-text { font-size: 1.5rem; line-height: 1.6; }
@@ -4488,7 +4499,18 @@ Gib einen priorisierten Report aus:
       // Die Sterne wandern mit in den Kommentar — Einzel-Bewertung löschen, sonst zählt sie doppelt
       if (ratingVal) { try { localStorage.removeItem(`skill-rating-${skillId}`); } catch(e) {} }
       delete state.pendingRating[`comment-${skillId}`];
-      showToast('Kommentar veröffentlicht!');
+      showToast('Kommentar gespeichert ✓ (nur auf diesem Gerät)');
+      switchTab('ratings');
+    }
+
+    function deleteComment(skillId, idx) {
+      if (!confirm('Deinen Kommentar wirklich löschen?')) return;
+      const existing = getComments(skillId);
+      const removed = existing.splice(idx, 1)[0];
+      try { localStorage.setItem(`skill-comments-${skillId}`, JSON.stringify(existing)); }
+      catch (e) { showToast('Konnte nicht speichern — privater Modus oder Speicher voll.'); return; }
+      // Hing eine Sternebewertung am Kommentar, zählt sie nicht mehr mit
+      showToast(removed && removed.rating ? 'Kommentar & Bewertung gelöscht' : 'Kommentar gelöscht');
       switchTab('ratings');
     }
 
@@ -4511,6 +4533,53 @@ Gib einen priorisierten Report aus:
     // ===== RATING =====
 
     // ===== FILTER & SORT =====
+    // Edit-Distanz ≤1: ein Tippfehler (ersetzt/fehlt/zu viel) oder ein Buchstabendreher
+    function dist1(a, b) {
+      if (a === b) return true;
+      const la = a.length, lb = b.length;
+      if (Math.abs(la - lb) > 1) return false;
+      if (la === lb) {
+        const diff = [];
+        for (let i = 0; i < la; i++) if (a[i] !== b[i]) { diff.push(i); if (diff.length > 2) return false; }
+        if (diff.length === 1) return true;
+        return diff.length === 2 && diff[1] === diff[0] + 1 && a[diff[0]] === b[diff[1]] && a[diff[1]] === b[diff[0]];
+      }
+      const l = la > lb ? a : b, s = la > lb ? b : a;
+      let i = 0, j = 0, skipped = false;
+      while (i < l.length && j < s.length) {
+        if (l[i] === s[j]) { i++; j++; }
+        else { if (skipped) return false; skipped = true; i++; }
+      }
+      return true;
+    }
+
+    // Trefferstärke eines Skills für die Suchbegriffe (0 = kein Treffer).
+    // Exakter Substring zählt doppelt, Tippfehler-Treffer (ab 4 Zeichen) einfach.
+    function searchScore(skill, terms) {
+      const fields = [
+        [skill.name, 5], [skill.trigger || '', 4], [skill.tags.join(' '), 3],
+        [skill.tagline, 2], [(skill.useCases || []).join(' '), 2],
+        [skill.description, 1], [skill.longDescription || '', 1]
+      ];
+      let total = 0;
+      for (const t of terms) {
+        let best = 0;
+        for (const [txt, w] of fields) {
+          const lower = txt.toLowerCase();
+          if (lower.includes(t)) { best = Math.max(best, w * 2); continue; }
+          if (t.length >= 4 && w > best) {
+            for (const word of lower.split(/[^a-zäöüß0-9-]+/)) {
+              // Tippfehler-Toleranz ODER Kompositum ("kundenbriefing" enthält "briefing")
+              if ((word.length >= 3 && dist1(word, t)) || (word.length >= 5 && t.includes(word))) { best = Math.max(best, w); break; }
+            }
+          }
+        }
+        if (!best) return 0;
+        total += best;
+      }
+      return total;
+    }
+
     function filterSkills() {
       let result = [...SKILLS];
       if (state.category !== 'all') {
@@ -4537,15 +4606,24 @@ Gib einen priorisierten Report aus:
         result = result.filter(s => favs.includes(s.id));
       }
       if (state.search) {
-        const q = state.search;
-        result = result.filter(s =>
-          s.name.toLowerCase().includes(q) ||
-          s.tagline.toLowerCase().includes(q) ||
-          s.description.toLowerCase().includes(q) ||
-          s.tags.join(' ').toLowerCase().includes(q)
-        );
+        // Mehrwort-Suche: jeder Begriff muss treffen (UND), mit Tippfehler-Toleranz
+        // und Feld-Gewichtung — Score fürs Relevanz-Ranking merken
+        const terms = state.search.toLowerCase().split(/\s+/).filter(t => t.length > 1);
+        state._searchScore = {};
+        if (terms.length) {
+          result = result.filter(s => {
+            const sc = searchScore(s, terms);
+            if (sc > 0) state._searchScore[s.id] = sc;
+            return sc > 0;
+          });
+        }
       }
       result.sort((a, b) => {
+        // Bei aktiver Suche gewinnt Relevanz, gewählte Sortierung bricht Gleichstand
+        if (state.search && state._searchScore) {
+          const d = (state._searchScore[b.id] || 0) - (state._searchScore[a.id] || 0);
+          if (d) return d;
+        }
         if (state.sort === 'recommended') {
           const aFeat = a.featured ? 1 : 0;
           const bFeat = b.featured ? 1 : 0;
@@ -6058,6 +6136,14 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
           </div>
         </details>
 
+        <div class="builder-nudge">
+          <div>
+            <strong>Passt fast, aber dein Fall ist anders?</strong>
+            <p>Nimm diesen Skill als Vorlage — Name, Beschreibung, Befehl und Einsatzfälle sind im Builder schon vorausgefüllt.</p>
+          </div>
+          <button type="button" class="c-cta -black-border" onclick="loadSkillIntoBuilder('${skill.id}')">Als Vorlage in den Builder</button>
+        </div>
+
         ${(() => {
           const current = skill;
           const similar = SKILLS
@@ -6101,15 +6187,16 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
 
       const commentsHtml = allComments.length === 0
         ? '<p class="no-comments">Noch keine Kommentare — schreib den ersten!</p>'
-        : allComments.map(c => `
-          <div class="comment-item">
+        : allComments.map((c, i) => `
+          <div class="comment-item${i < userComments.length ? ' -own' : ''}">
             <div class="avatar" style="flex-shrink:0;width:4rem;height:4rem;font-size:1.4rem">${escHtml(c.initials || getInitials(c.author))}</div>
-            <div>
-              <div class="comment-author">${escHtml(c.author)}</div>
+            <div style="flex:1">
+              <div class="comment-author">${escHtml(c.author)}${i < userComments.length ? ' <span class="comment-own-badge">von dir · nur auf diesem Gerät</span>' : ''}</div>
               <div class="comment-role-date">${escHtml(c.role)} · ${formatDate(c.date)}</div>
               ${c.rating ? `<div class="comment-stars">${renderStars(c.rating)}</div>` : ''}
               <p class="comment-text">${escHtml(c.text)}</p>
             </div>
+            ${i < userComments.length ? `<button type="button" class="comment-delete" onclick="deleteComment('${commentSkillId}', ${i})" aria-label="Deinen Kommentar löschen" title="Deinen Kommentar löschen">✕</button>` : ''}
           </div>
         `).join('');
 
@@ -6141,7 +6228,8 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
           </div>
           <label for="comment-text-${commentSkillId}" style="margin-top:1.2rem">Dein Kommentar *</label>
           <textarea id="comment-text-${commentSkillId}" rows="3" required></textarea>
-          <button type="submit" class="c-cta -black-bg">Kommentar veröffentlichen</button>
+          <button type="submit" class="c-cta -black-bg">Kommentar speichern</button>
+          <p class="comment-local-hint">Demo-Hinweis: Bewertungen &amp; Kommentare werden nur in deinem Browser gespeichert — Kolleg:innen sehen sie (noch) nicht.</p>
         </form>
 
         <p class="section-label">Alle Kommentare (${allComments.length})</p>
@@ -6883,6 +6971,31 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
         _bldInit = true;
       }
       renderBuilderPreview();
+    }
+
+    // Brücke Katalog → Builder: Skill als Vorlage übernehmen (löst das
+    // Explainer-Versprechen "als Vorlage für eigene nehmen" ein)
+    function loadSkillIntoBuilder(id) {
+      const s = SKILLS.find(x => x.id === id);
+      if (!s) return;
+      let hasDraft = false;
+      try {
+        const d = JSON.parse(localStorage.getItem('skill-builder-draft') || '{}');
+        hasDraft = Object.values(d).some(v => v && String(v).trim());
+      } catch (e) {}
+      if (hasDraft && !confirm('Im Builder liegt schon ein Entwurf. Mit dieser Vorlage überschreiben?')) return;
+      closeModal();
+      showView('builder');
+      const prefill = {
+        name: s.name, desc: s.description, trigger: s.trigger || '',
+        usecases: (s.useCases || []).join('\n'), example: s.exampleOutput || '',
+        tools: '', steps: '', output: '', rules: ''
+      };
+      BLD_FIELDS.forEach(k => { const el = document.getElementById('bld-' + k); if (el) el.value = prefill[k] || ''; });
+      renderBuilderPreview();
+      window.scrollTo({ top: 0, behavior: 'auto' });
+      setTimeout(() => document.getElementById('bld-name')?.focus(), 100);
+      showToast('Vorlage geladen — mach sie zu deinem Skill');
     }
     function builderValidate() {
       const d = builderData();
