@@ -16,10 +16,31 @@
   <meta name="twitter:title" content="pilot Skill Marketplace">
   <meta name="twitter:description" content="35 echte Skills für Claude Code, Langdock &amp; Claude Design entdecken, verstehen und selbst nutzen.">
   <meta name="twitter:image" content="https://ceekay1901.github.io/pilot-skillmarkt/og-image.png">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="preload" href="assets/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
   <style>
+    /* ===== FONTS (lokal, variable — kein CDN) ===== */
+    @font-face {
+      font-family: 'Inter';
+      src: url('assets/fonts/inter-variable.woff2') format('woff2-variations');
+      font-weight: 100 900;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'Inter';
+      src: url('assets/fonts/inter-variable-italic.woff2') format('woff2-variations');
+      font-weight: 100 900;
+      font-style: italic;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'JetBrains Mono';
+      src: url('assets/fonts/jetbrains-mono-variable.woff2') format('woff2-variations');
+      font-weight: 100 800;
+      font-style: normal;
+      font-display: swap;
+    }
+
     /* ===== DESIGN TOKENS ===== */
     :root {
       --c-black: #262626;
@@ -40,6 +61,13 @@
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* Lucide-Inline-Icons: skalieren mit font-size des Elternelements */
+    svg.lu { width: 1em; height: 1em; display: inline-block; vertical-align: -.12em; flex-shrink: 0; }
+
+    ::selection { background: var(--c-yellow); color: var(--c-black); }
+
+    h1, h2, h3 { text-wrap: balance; }
 
     html { font-size: 10px; scroll-behavior: smooth; }
 
@@ -1095,7 +1123,7 @@
       .modal-header::before { content: ''; display: block; width: 4.4rem; height: .4rem; border-radius: .4rem; background: var(--c-gray-l); margin: 0 auto .8rem; }
       .modal-header h2 { font-size: 2.1rem; margin-bottom: 1rem; }
       .trigger-badge { font-size: 1.25rem; padding: .5rem 1.1rem; margin-bottom: 1rem; }
-      /* Hinweiszeile frisst auf dem Handy Kopfhöhe — das 📋 am Badge reicht (JS setzt display inline, daher !important) */
+      /* Hinweiszeile frisst auf dem Handy Kopfhöhe — das Copy-Icon am Badge reicht (JS setzt display inline, daher !important) */
       .trigger-hint { display: none !important; }
       .modal-close { font-size: 2.8rem; padding: .6rem 1rem; margin-bottom: 1rem; }
       .modal-meta { padding: 1.2rem 1.6rem; gap: 1rem; }
@@ -1887,13 +1915,13 @@
         <p class="ex-body">Ein gutes Rezept hält einen erprobten Ablauf fest, damit das Gericht jedes Mal gelingt — ohne dass du bei null anfängst. Ein Skill macht genau das für Arbeit am Rechner: Ein:e Kolleg:in hat einen sinnvollen Ablauf einmal sauber festgehalten, und du rufst ihn per Befehl ab.</p>
         <div class="ex-analogy">
           <div class="ex-analogy-card">
-            <div class="ex-analogy-icon">📋</div>
+            <div class="ex-analogy-icon"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg></div>
             <div class="ex-analogy-title">Rezept</div>
             <div class="ex-analogy-sub">Zutaten + Schritte → immer gleiches Ergebnis</div>
           </div>
           <div class="ex-analogy-arrow">≈</div>
           <div class="ex-analogy-card">
-            <div class="ex-analogy-icon">⚡</div>
+            <div class="ex-analogy-icon"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg></div>
             <div class="ex-analogy-title">Skill</div>
             <div class="ex-analogy-sub"><code>/befehl</code> → Claude erledigt den Ablauf für dich</div>
           </div>
@@ -2018,21 +2046,21 @@
         <div class="ex-flow">
           <div class="ex-flow-step">
             <div class="ex-flow-num">1</div>
-            <div class="ex-flow-icon">⌨️</div>
+            <div class="ex-flow-icon"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 8h.01"/><path d="M12 12h.01"/><path d="M14 8h.01"/><path d="M16 12h.01"/><path d="M18 8h.01"/><path d="M6 8h.01"/><path d="M7 16h10"/><path d="M8 12h.01"/><rect width="20" height="16" x="2" y="4" rx="2"/></svg></div>
             <div class="ex-flow-title">Du gibst den Befehl</div>
             <div class="ex-flow-desc">Ein kurzer <code>/befehl</code> oder ein Satz auf Deutsch — mehr braucht es nicht.</div>
           </div>
           <div class="ex-flow-conn"></div>
           <div class="ex-flow-step">
             <div class="ex-flow-num">2</div>
-            <div class="ex-flow-icon">⚙️</div>
+            <div class="ex-flow-icon"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"/><circle cx="12" cy="12" r="3"/></svg></div>
             <div class="ex-flow-title">Claude arbeitet</div>
             <div class="ex-flow-desc">Der Skill führt seine erprobten Schritte aus — liest, prüft, baut, schreibt.</div>
           </div>
           <div class="ex-flow-conn"></div>
           <div class="ex-flow-step">
             <div class="ex-flow-num">3</div>
-            <div class="ex-flow-icon">✅</div>
+            <div class="ex-flow-icon"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></div>
             <div class="ex-flow-title">Du bekommst das Ergebnis</div>
             <div class="ex-flow-desc">Fertige Datei, Report oder Tool — du prüfst und gibst frei.</div>
           </div>
@@ -2048,7 +2076,7 @@
         <p class="ex-body">Kein Blackbox-Zauber. Ein Skill ist einfach ein <strong>Ordner mit einer Textdatei</strong> — der <code>SKILL.md</code>. Darin steht ein kurzer Steckbrief und die Anleitung, die Claude Code befolgt. Du kannst bei jedem Skill reinschauen, ihn verstehen und als Vorlage für eigene nehmen.</p>
         <div class="ex-anatomy">
           <div class="ex-anatomy-tree">
-            <div class="ex-atree-folder">📁 webaudit/</div>
+            <div class="ex-atree-folder"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg> webaudit/</div>
             <div class="ex-atree-file active">≡ SKILL.md</div>
             <div class="ex-atree-file sub">≡ references/checkliste.md</div>
             <div class="ex-atree-hint">Ordner = Skill.<br>Die <code>SKILL.md</code> ist das Herz.</div>
@@ -2221,7 +2249,7 @@ Gib einen priorisierten Report aus:
             <label class="bld-field">
               <span class="bld-label">Kurzbeschreibung <em>*</em></span>
               <textarea id="bld-desc" rows="3" placeholder="Was macht der Skill — und wann soll Claude ihn einsetzen? z. B. „Prüft Newsletter-Texte auf Länge, Betreffzeile und CTA. Nutze diesen Skill, wenn ein Newsletter vor dem Versand geprüft werden soll.“"></textarea>
-              <span class="bld-hint">⚡ <strong>Wichtigstes Feld:</strong> Daran erkennt Claude <em>automatisch</em>, wann der Skill passt. Schreib rein, wann er genutzt werden soll.</span>
+              <span class="bld-hint"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg> <strong>Wichtigstes Feld:</strong> Daran erkennt Claude <em>automatisch</em>, wann der Skill passt. Schreib rein, wann er genutzt werden soll.</span>
             </label>
 
             <div class="bld-row">
@@ -4349,13 +4377,28 @@ Gib einen priorisierten Report aus:
     };
 
     // ===== HELPERS =====
+    /* Lucide-Icons inline (design-assets/icons/lucide) — statt Emojis, editorialer Look */
+    const LU = {
+      "einstieg": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/></svg>',
+      "bauen": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 12-9.373 9.373a1 1 0 0 1-3.001-3L12 9"/><path d="m18 15 4-4"/><path d="m21.5 11.5-1.914-1.914A2 2 0 0 1 19 8.172v-.344a2 2 0 0 0-.586-1.414l-1.657-1.657A6 6 0 0 0 12.516 3H9l1.243 1.243A6 6 0 0 1 12 8.485V10l2 2h1.172a2 2 0 0 1 1.414.586L18.5 14.5"/></svg>',
+      "media": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 7h6v6"/><path d="m22 7-8.5 8.5-5-5L2 17"/></svg>',
+      "content": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 21h8"/><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/></svg>',
+      "strategy": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z"/></svg>',
+      "data": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>',
+      "automation": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>',
+      "qa": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m8 11 2 2 4-4"/><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>',
+      "development": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"/><circle cx="12" cy="12" r="3"/></svg>',
+      "analytics": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="m19 9-5 5-4-4-3 3"/></svg>',
+      "productivity": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 5h8"/><path d="M13 12h8"/><path d="M13 19h8"/><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/></svg>',
+      "ai": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>',
+      "fallback": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"/><path d="M20 2v4"/><path d="M22 4h-4"/><circle cx="4" cy="20" r="2"/></svg>',
+      "comment": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z"/><path d="M12 8v6"/><path d="M9 11h6"/></svg>',
+      "copy": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>',
+      "link": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>',
+      "folder": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>'
+    };
     function subIcon(sub) {
-      const icons = {
-        'einstieg': '🎓', 'bauen': '🔨', 'media': '📈', 'content': '✍️',
-        'strategy': '🧭', 'data': '📊', 'automation': '🔄',
-        'qa': '🔍', 'development': '⚙️', 'analytics': '📊', 'productivity': '📋', 'ai': '🤖'
-      };
-      return icons[sub] || '✦';
+      return LU[sub] || LU.fallback;
     }
 
     function catLabel(cat) {
@@ -4919,7 +4962,7 @@ Gib einen priorisierten Report aus:
         if (empty) empty.style.display = 'none';
         grid.innerHTML = `
           <div class="empty-state">
-            <div class="empty-icon">🔍</div>
+            <div class="empty-icon"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m13.5 8.5-5 5"/><path d="m8.5 8.5 5 5"/><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></div>
             <h3 class="empty-title">Kein Skill gefunden</h3>
             <p class="empty-text">Keine Skills passen zu deinen aktuellen Filtern. Setze Filter zurück oder probiere einen anderen Suchbegriff.</p>
             <button class="c-cta -black-bg" onclick="resetFilters()" style="margin-top:2rem">Alle Filter zurücksetzen</button>
@@ -5015,7 +5058,7 @@ Gib einen priorisierten Report aus:
       document.getElementById('modal-name').textContent = skill.name;
       const trigBtn = document.getElementById('modal-trigger');
       if (skill.trigger) {
-        trigBtn.textContent = skill.trigger + ' 📋';
+        trigBtn.innerHTML = escHtml(skill.trigger) + ' ' + LU.copy;
         trigBtn.style.display = 'inline-block';
       } else {
         trigBtn.style.display = 'none';
@@ -5593,7 +5636,7 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
         const c = anns.filter(a => a.file === f.path).length;
         return `<div class="file-node-row">
           <button class="file-node ${i === active ? 'active' : ''}" onclick="selectFile(${i})"><span class="file-ic">${icon(f.path)}</span>${escHtml(name)}${c ? `<span class="node-badge" title="${c} Anmerkung(en)">${c}</span>` : ''}</button>
-          <button class="node-annotate" title="Diese Datei kommentieren" onclick="startAnnotateFile(event, ${i})">💬</button>
+          <button class="node-annotate" title="Diese Datei kommentieren" aria-label="Diese Datei kommentieren" onclick="startAnnotateFile(event, ${i})">${LU.comment}</button>
         </div>`;
       }).join('');
 
@@ -5687,7 +5730,7 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
         </div>` : ''}
         <div class="files-browser">
           <div class="files-tree">
-            <div class="files-folder">📁 ${escHtml(folder)}</div>
+            <div class="files-folder">${LU.folder} ${escHtml(folder)}</div>
             ${tree}
           </div>
           <div class="files-view">
@@ -5729,7 +5772,7 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
       return `<div class="ann-item" id="ann-${a.id}">
         <div class="ann-actions">
           <button class="ann-jump" title="Zur referenzierten Stelle springen" onclick="jumpToAnnotation('${a.id}')">↩ Zur Stelle</button>
-          <button class="ann-link" title="Link zu dieser Stelle kopieren" onclick="copyAnnotationLink('${a.id}')">🔗 Link</button>
+          <button class="ann-link" title="Link zu dieser Stelle kopieren" onclick="copyAnnotationLink('${a.id}')">${LU.link} Link</button>
         </div>
         <div class="ann-body">
           <div class="ann-ref">${escHtml(ref)}</div>
@@ -7015,7 +7058,7 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
     function builderCopy() {
       const d = builderValidate(); if (!d) return;
       quickCopy(null, buildBuilderMd(d));
-      showToast('SKILL.md kopiert 📋');
+      showToast('SKILL.md kopiert ✓');
     }
     async function builderDownloadZip(btn) {
       const d = builderValidate(); if (!d) return;
