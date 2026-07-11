@@ -1,4 +1,20 @@
 {
+ "algorithmic-art": [
+  "SKILL.md",
+  "LICENSE.txt",
+  "templates/generator_template.js",
+  "templates/viewer.html"
+ ],
+ "brainstorming": [
+  "SKILL.md",
+  "scripts/frame-template.html",
+  "scripts/helper.js",
+  "scripts/server.cjs",
+  "scripts/start-server.sh",
+  "scripts/stop-server.sh",
+  "spec-document-reviewer-prompt.md",
+  "visual-companion.md"
+ ],
  "brand-guidelines": [
   "SKILL.md",
   "LICENSE.txt"
@@ -343,6 +359,14 @@
   "references/beispiel.md",
   "references/vorlage.md"
  ],
+ "systematic-debugging": [
+  "SKILL.md",
+  "condition-based-waiting-example.ts",
+  "condition-based-waiting.md",
+  "defense-in-depth.md",
+  "find-polluter.sh",
+  "root-cause-tracing.md"
+ ],
  "theme-factory": [
   "SKILL.md",
   "LICENSE.txt",
@@ -371,6 +395,9 @@
   "SKILL.md",
   "references/beispiel.md",
   "references/checkliste.md"
+ ],
+ "verification-before-completion": [
+  "SKILL.md"
  ],
  "web-artifacts-builder": [
   "SKILL.md",

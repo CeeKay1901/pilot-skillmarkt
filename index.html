@@ -4,17 +4,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>pilot Skill Marketplace — Citizen Coding mit Claude Code</title>
-  <meta name="description" content="Der interne Skill-Marktplatz der pilot Agenturgruppe: 35 echte Skills für Claude Code &amp; Langdock entdecken, verstehen und selbst nutzen — von Briefings über Mediaplan-Checks bis zum eigenen Tool.">
+  <meta name="description" content="Der interne Skill-Marktplatz der pilot Agenturgruppe: 39 echte Skills für Claude Code &amp; Langdock entdecken, verstehen und selbst nutzen — von Briefings über Mediaplan-Checks bis zum eigenen Tool.">
   <meta name="theme-color" content="#262626">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="pilot Skill Marketplace">
   <meta property="og:title" content="pilot Skill Marketplace — Citizen Coding mit Claude Code">
-  <meta property="og:description" content="35 echte Skills für Claude Code &amp; Langdock entdecken, verstehen und selbst nutzen. Von Piloten gebaut, von Piloten empfohlen.">
+  <meta property="og:description" content="39 echte Skills für Claude Code &amp; Langdock entdecken, verstehen und selbst nutzen. Von Piloten gebaut, von Piloten empfohlen.">
   <meta property="og:url" content="https://ceekay1901.github.io/pilot-skillmarkt/">
   <meta property="og:image" content="https://ceekay1901.github.io/pilot-skillmarkt/og-image.png">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="pilot Skill Marketplace">
-  <meta name="twitter:description" content="35 echte Skills für Claude Code &amp; Langdock entdecken, verstehen und selbst nutzen.">
+  <meta name="twitter:description" content="39 echte Skills für Claude Code &amp; Langdock entdecken, verstehen und selbst nutzen.">
   <meta name="twitter:image" content="https://ceekay1901.github.io/pilot-skillmarkt/og-image.png">
   <link rel="preload" href="assets/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
   <style>
@@ -255,9 +255,11 @@
     .cat-badge.pilot-inhouse { background: var(--c-black); color: var(--c-yellow); }
     .cat-badge.anthropic { background: var(--c-yellow); color: var(--c-black); }
     .cat-badge.gsd { background: var(--c-gray-l); color: var(--c-black); }
+    .cat-badge.community { background: transparent; border: 1px solid var(--c-gray-l); color: var(--c-gray-m); }
     .skill-card.featured .cat-badge.pilot-inhouse { background: rgba(255,224,94,.2); color: var(--c-yellow); }
     .skill-card.featured .cat-badge.anthropic { background: var(--c-yellow); color: var(--c-black); }
     .skill-card.featured .cat-badge.gsd { background: rgba(186,184,171,.2); color: var(--c-gray-l); }
+    .skill-card.featured .cat-badge.community { background: transparent; border-color: rgba(252,252,252,.3); color: rgba(252,252,252,.65); }
     /* Anthropic-Skills: eingebaut vs. nachinstallieren */
     .install-badge { font-family: var(--font-mono); font-size: 1.15rem; font-weight: 600; padding: .3rem 1rem; border-radius: var(--radius-pill); white-space: nowrap; }
     .install-badge.builtin { background: rgba(45,138,78,.1); color: #1e6b3a; border: 1px solid rgba(45,138,78,.35); }
@@ -1821,10 +1823,10 @@
       <h1 class="hero-h1">Skills, die<br><span class="hero-rotator" id="hero-rotator" aria-hidden="true">Tools bauen.</span><span class="sr-only">Arbeit erledigen.</span></h1>
       <p class="subline">Von Piloten gebaut, von Piloten empfohlen — euer Werkzeugkasten für Claude&nbsp;Code &amp; Langdock.</p>
       <div class="hero-stats" id="hero-stats">
-        <div class="hero-stat-box"><span class="hero-stat-num" data-count="35" id="stat-skills">0</span><span class="hero-stat-label">Skills</span></div>
+        <div class="hero-stat-box"><span class="hero-stat-num" data-count="39" id="stat-skills">0</span><span class="hero-stat-label">Skills</span></div>
         <div class="hero-stat-box"><span class="hero-stat-num" data-count="6" id="stat-pilots">0</span><span class="hero-stat-label">Piloten</span></div>
         <div class="hero-stat-box"><span class="hero-stat-num" id="stat-cats" data-count="6">0</span><span class="hero-stat-label">Kategorien</span></div>
-        <div class="hero-stat-box"><span class="hero-stat-num" data-count="41" id="stat-endorsed">0</span><span class="hero-stat-label">Empfehlungen</span></div>
+        <div class="hero-stat-box"><span class="hero-stat-num" data-count="49" id="stat-endorsed">0</span><span class="hero-stat-label">Empfehlungen</span></div>
       </div>
       <div class="hero-cta">
         <button class="c-cta -yellow-bg" onclick="document.getElementById('main-content').scrollIntoView({behavior:'smooth'})">Katalog durchstöbern</button>
@@ -2251,9 +2253,10 @@ Gib einen priorisierten Report aus:
         <div class="ex-starter" id="ex-starter"></div>
         <div style="display:flex;gap:1.2rem;justify-content:center;flex-wrap:wrap;margin-top:3.2rem">
           <button class="c-cta -yellow-bg" onclick="downloadStarterPack(this)">⬇ Starter-Paket (5 Skills, .zip)</button>
+          <button class="c-cta -black-border" onclick="downloadPowerPack(this)">⬇ Power-Paket (5 beliebte Skills, .zip)</button>
           <button class="c-cta -black-bg" onclick="showView('catalog')">Alle Skills im Katalog entdecken</button>
         </div>
-        <p class="ex-body" style="font-size:1.4rem;color:var(--c-gray-m);margin-top:1.2rem">Das Starter-Paket enthält die echten Skill-Dateien — entpacken nach <code>.claude/skills/</code>, Anleitung liegt bei.</p>
+        <p class="ex-body" style="font-size:1.4rem;color:var(--c-gray-m);margin-top:1.2rem">Beide Pakete enthalten die echten Skill-Dateien — entpacken nach <code>.claude/skills/</code>, Anleitung liegt bei. Das Power-Paket bündelt die meistempfohlenen Skills aus <code>anthropics/skills</code> und <code>obra/superpowers</code>.</p>
       </div>
     </section>
 
@@ -4311,6 +4314,176 @@ Gib einen priorisierten Report aus:
         "endorsedBy": [],
         "endorsements": [],
         "comments": []
+      },
+
+      {
+        "id": "brainstorming",
+        "platforms": { "code": true, "langdock": true },
+        "name": "brainstorming",
+        "tagline": "Erst denken, dann bauen — Anforderungen im Dialog klären",
+        "description": "Der meistempfohlene Community-Skill: Bevor Claude baut, stellt er dir die richtigen Fragen — Ziel, Nutzer:innen, Grenzen. Aus deinen Antworten wird ein kleines Konzept.",
+        "longDescription": "Aus dem superpowers-Paket von Jesse Vincent (obra) — einer der meistinstallierten Skill-Sammlungen der Claude-Code-Community. Der Skill verankert die wichtigste Gewohnheit beim Citizen Coding: erst Absicht, Zielgruppe und Randbedingungen klären, dann bauen. Claude führt ein kurzes, strukturiertes Gespräch und hält das Ergebnis als Design-Notiz fest — die ideale Vorstufe zu /prototyp oder /webseite.",
+        "category": "community",
+        "subcategory": "bauen",
+        "trigger": null,
+        "author": "obra/superpowers (Community)",
+        "version": "1.0.0",
+        "addedAt": "2026-07-11",
+        "updatedAt": "2026-07-11",
+        "tags": ["bauen", "konzept", "anforderungen", "citizen-coding", "community"],
+        "useCases": ["Tool-Idee schärfen, bevor gebaut wird", "Anforderungen fürs Briefing sammeln", "Feature mit dem Team durchdenken"],
+        "difficulty": "easy",
+        "timeToRun": "10–20 Min",
+        "requirements": ["Claude Code oder Langdock"],
+        "rating": { "average": 4.9, "count": 21 },
+        "endorsedBy": ["Jan Richter", "Christopher Kipp", "Mia Hoffmann"],
+        "endorsements": [
+          {
+            "name": "Jan Richter",
+            "role": "Tech Lead & Citizen-Coding-Mentor",
+            "initials": "JR",
+            "text": "Der Skill, den ich jeder neuen Testgruppe zuerst zeige. Zehn Minuten Fragen sparen zwei Stunden Umbauen."
+          },
+          {
+            "name": "Christopher Kipp",
+            "role": "Innovation Lead",
+            "initials": "CK",
+            "text": "Läuft bei uns vor jedem größeren Prototyp — und als reine SKILL.md auch in Langdock."
+          }
+        ],
+        "comments": [
+          {
+            "author": "Mia Hoffmann",
+            "role": "Senior UX Designerin",
+            "initials": "MH",
+            "date": "2026-07-11",
+            "text": "Fühlt sich an wie ein gutes Kickoff-Gespräch — nur dass am Ende direkt gebaut wird.",
+            "rating": 5
+          }
+        ],
+        "featured": false,
+        "badge": "empfohlen"
+      },
+
+      {
+        "id": "systematic-debugging",
+        "platforms": { "code": true, "langdock": false },
+        "name": "systematic-debugging",
+        "tagline": "Wenn dein Tool spinnt: Ursache finden statt raten",
+        "description": "Der Rettungsanker aus dem superpowers-Paket: eine erprobte Vier-Phasen-Methode, mit der Claude Fehler systematisch eingrenzt, statt wild Fixes zu probieren.",
+        "longDescription": "Für Citizen Coder der wichtigste Sicherheitsgurt: Wenn der Prototyp plötzlich nicht mehr tut, führt dieser Skill Claude durch eine saubere Diagnose — reproduzieren, eingrenzen, Ursache belegen, erst dann fixen. Mit Referenzen zu Root-Cause-Tracing und Defense-in-Depth aus der superpowers-Sammlung. Verhindert die typische Abwärtsspirale aus Symptom-Flickerei.",
+        "category": "community",
+        "subcategory": "bauen",
+        "trigger": null,
+        "author": "obra/superpowers (Community)",
+        "version": "1.0.0",
+        "addedAt": "2026-07-11",
+        "updatedAt": "2026-07-11",
+        "tags": ["bauen", "debugging", "qualität", "citizen-coding", "community"],
+        "useCases": ["Kaputtes Tool wieder flottmachen", "Fehler eingrenzen, bevor man Hilfe holt", "Ursache statt Symptom fixen"],
+        "difficulty": "medium",
+        "timeToRun": "10–30 Min",
+        "requirements": ["Claude Code"],
+        "rating": { "average": 4.8, "count": 14 },
+        "endorsedBy": ["Jan Richter", "Sophie Klein"],
+        "endorsements": [
+          {
+            "name": "Jan Richter",
+            "role": "Tech Lead & Citizen-Coding-Mentor",
+            "initials": "JR",
+            "text": "Seit der in der Testgruppe ist, bekomme ich halb so viele „es geht nicht mehr“-Pings — die andere Hälfte kommt mit einer sauberen Diagnose an."
+          }
+        ],
+        "comments": [
+          {
+            "author": "Sophie Klein",
+            "role": "Projektmanagerin",
+            "initials": "SK",
+            "date": "2026-07-11",
+            "text": "Mein Report-Tool war kaputt, ich hab keine Zeile Code verstanden — der Skill hat die Ursache in Minuten gefunden und erklärt.",
+            "rating": 5
+          }
+        ],
+        "featured": false,
+        "badge": "empfohlen"
+      },
+
+      {
+        "id": "verification-before-completion",
+        "platforms": { "code": true, "langdock": false },
+        "name": "verification-before-completion",
+        "tagline": "„Fertig“ gibt es erst nach dem Beweis",
+        "description": "Kultur-Skill aus superpowers: Claude sagt nie wieder ungeprüft „läuft“ — vor jedem „fertig“ verlangt der Skill echte Verifikation: ausführen, ansehen, belegen.",
+        "longDescription": "Evidenz vor Behauptung: Dieser kleine Skill ändert das Verhalten von Claude grundsätzlich — Erfolgsmeldungen gibt es erst, wenn das Ergebnis wirklich geprüft wurde (Test gelaufen, Seite geöffnet, Ausgabe gesehen). Passt perfekt zu webaudit und tool-teilen und ist die beste Versicherung gegen „bei mir ging’s doch“.",
+        "category": "community",
+        "subcategory": "bauen",
+        "trigger": null,
+        "author": "obra/superpowers (Community)",
+        "version": "1.0.0",
+        "addedAt": "2026-07-11",
+        "updatedAt": "2026-07-11",
+        "tags": ["qualität", "verifikation", "bauen", "citizen-coding", "community"],
+        "useCases": ["Vor der Übergabe ans Team prüfen", "Claude zu ehrlichen Statusmeldungen erziehen", "Qualitätsstandard im Projekt setzen"],
+        "difficulty": "easy",
+        "timeToRun": "läuft im Hintergrund",
+        "requirements": ["Claude Code"],
+        "rating": { "average": 4.6, "count": 9 },
+        "endorsedBy": ["Jan Richter"],
+        "endorsements": [
+          {
+            "name": "Jan Richter",
+            "role": "Tech Lead & Citizen-Coding-Mentor",
+            "initials": "JR",
+            "text": "Gehört in jedes Projekt-Setup. „Fertig“ heißt seitdem bei uns: gezeigt, nicht behauptet."
+          }
+        ],
+        "comments": [],
+        "featured": false,
+        "badge": "neu"
+      },
+
+      {
+        "id": "algorithmic-art",
+        "platforms": { "code": true, "langdock": false },
+        "install": "plugin",
+        "name": "algorithmic-art",
+        "tagline": "Generative Kunst mit p5.js — Code als Kreativwerkzeug",
+        "description": "Offizieller Anthropic-Skill: erzeugt algorithmische Kunst (Flow Fields, Partikel, Muster) mit reproduzierbarem Seed und interaktiven Reglern zum Erkunden.",
+        "longDescription": "Kunst aus Code statt Stock-Material: Der Skill baut generative Visuals als p5.js-Sketch — mit festem Seed (reproduzierbar) und einem mitgelieferten Viewer, in dem sich Parameter live verschieben lassen. Für Moodboard-Experimente, Key-Visual-Ideen und Social-Assets mit eigenem Look. Der kreativste Einstieg, um zu verstehen, was Code kann.",
+        "category": "anthropic",
+        "subcategory": "content",
+        "trigger": null,
+        "author": "Anthropic",
+        "version": "1.0.0",
+        "addedAt": "2026-07-11",
+        "updatedAt": "2026-07-11",
+        "tags": ["kreativ", "design", "generativ", "p5js", "visual"],
+        "useCases": ["Eigenes Key-Visual generieren", "Moodboard mit Unikaten füllen", "Kreativ-Experiment im Team-Workshop"],
+        "difficulty": "medium",
+        "timeToRun": "15–30 Min",
+        "requirements": ["Claude Code"],
+        "rating": { "average": 4.5, "count": 7 },
+        "endorsedBy": ["Mia Hoffmann", "Anna Schreiber"],
+        "endorsements": [
+          {
+            "name": "Anna Schreiber",
+            "role": "Content Strategin",
+            "initials": "AS",
+            "text": "Endlich Visuals, die nicht nach Stock aussehen — und jedes ist beweisbar ein Unikat."
+          }
+        ],
+        "comments": [
+          {
+            "author": "Mia Hoffmann",
+            "role": "Senior UX Designerin",
+            "initials": "MH",
+            "date": "2026-07-11",
+            "text": "Der Seed-Ansatz ist klug: Gefällt ein Ergebnis, ist es exakt reproduzierbar.",
+            "rating": 4
+          }
+        ],
+        "featured": false,
+        "badge": "neu"
       }
 
     ];
@@ -4328,7 +4501,8 @@ Gib einen priorisierten Report aus:
           "markt-research",
           "webaudit",
           "skill-creator",
-          "web-artifacts-builder"
+          "web-artifacts-builder",
+          "brainstorming"
         ]
       },
       {
@@ -4342,7 +4516,9 @@ Gib einen priorisierten Report aus:
           "prototyp-bauen",
           "briefing-gen",
           "tonalitaets-check",
-          "brand-guidelines"
+          "brand-guidelines",
+          "brainstorming",
+          "algorithmic-art"
         ]
       },
       {
@@ -4356,7 +4532,10 @@ Gib einen priorisierten Report aus:
           "daten-aufbereiten",
           "tracking-audit",
           "web-artifacts-builder",
-          "skill-creator"
+          "skill-creator",
+          "brainstorming",
+          "systematic-debugging",
+          "verification-before-completion"
         ]
       },
       {
@@ -4371,7 +4550,8 @@ Gib einen priorisierten Report aus:
           "campaign-check",
           "erste-schritte",
           "xlsx",
-          "pptx"
+          "pptx",
+          "systematic-debugging"
         ]
       },
       {
@@ -4401,7 +4581,8 @@ Gib einen priorisierten Report aus:
           "persona-builder",
           "pptx",
           "docx",
-          "internal-comms"
+          "internal-comms",
+          "algorithmic-art"
         ]
       }
     ];
@@ -4452,6 +4633,7 @@ Gib einen priorisierten Report aus:
       if (cat === 'pilot-inhouse') return 'pilot inhouse';
       if (cat === 'anthropic') return 'Anthropic';
       if (cat === 'gsd') return 'pilot Workflows';
+      if (cat === 'community') return 'Community';
       return cat;
     }
 
@@ -5371,11 +5553,30 @@ Gib einen priorisierten Report aus:
       if (btn) { btn.disabled = false; btn.textContent = label; }
     }
     // ===== STARTER-PAKET (kuratierte Einsteiger-Skills als ein ZIP) =====
-    const STARTER_PACK = ['erste-schritte', 'erste-automation', 'prototyp-bauen', 'webseite-bauen', 'tool-teilen'];
-    async function downloadStarterPack(btn) {
+    // Kuratierte Bundles: Starter (Einsteiger) + Power (beliebte Anthropic-/Community-Skills)
+    const BUNDLES = {
+      starter: {
+        ids: ['erste-schritte', 'erste-automation', 'prototyp-bauen', 'webseite-bauen', 'tool-teilen'],
+        zip: 'pilot-starter-paket.zip',
+        title: 'pilot Starter-Paket — Citizen Coding',
+        intro: 'Einsteiger-Skills aus dem pilot Skill Marketplace, als echte Dateien.',
+        beispiel: '/erste-schritte',
+        toast: 'Starter-Paket'
+      },
+      power: {
+        ids: ['brainstorming', 'systematic-debugging', 'verification-before-completion', 'skill-creator', 'algorithmic-art'],
+        zip: 'pilot-power-paket.zip',
+        title: 'pilot Power-Paket — beliebte Skills aus der Community',
+        intro: 'Die meistempfohlenen Skills aus anthropics/skills und obra/superpowers — gespiegelt im pilot Skill Marketplace.',
+        beispiel: 'Lass uns brainstormen: ein Tool für …',
+        toast: 'Power-Paket'
+      }
+    };
+    async function downloadBundle(btn, key) {
+      const cfg = BUNDLES[key];
       const all = await getFilesAll();
-      const ids = STARTER_PACK.filter(id => (all[id] || []).length);
-      if (!ids.length) { showToast('Starter-Paket gerade nicht verfügbar.'); return; }
+      const ids = cfg.ids.filter(id => (all[id] || []).length);
+      if (!ids.length) { showToast(cfg.toast + ' gerade nicht verfügbar.'); return; }
       const label = btn ? btn.textContent : '';
       if (btn) btn.disabled = true;
       const jobs = ids.flatMap(id => all[id].map(f => ({ id, f })));
@@ -5391,9 +5592,9 @@ Gib einen priorisierten Report aus:
         return;
       }
       const names = ids.map(id => { const s = SKILLS.find(x => x.id === id); return `- \`${id}\` — ${s ? s.tagline : ''}`; }).join('\n');
-      const readme = `# pilot Starter-Paket — Citizen Coding
+      const readme = `# ${cfg.title}
 
-${ids.length} Einsteiger-Skills aus dem pilot Skill Marketplace, als echte Dateien.
+${ids.length} Skills, ${cfg.intro}
 
 ${names}
 
@@ -5402,16 +5603,18 @@ ${names}
 1. Diesen Ordner entpacken.
 2. Den Ordner \`skills/\` in dein Projekt kopieren, und zwar nach \`.claude/skills/\`
    (der Ordner \`.claude\` liegt direkt in deinem Projektordner — ggf. anlegen).
-3. Claude Code im Projektordner starten und lostippen, z. B.: \`/erste-schritte\`
+3. Claude Code im Projektordner starten und lostippen, z. B.: \`${cfg.beispiel}\`
 
 Jeder Skill ist nur ein Ordner mit einer \`SKILL.md\` — schau ruhig rein.
 Mehr Skills und alle Details: pilot Skill Marketplace.
 `;
       entries.unshift({ name: 'START-HIER.md', data: new TextEncoder().encode(readme) });
-      triggerDownload(makeZip(entries), 'pilot-starter-paket.zip');
-      showToast(`Starter-Paket heruntergeladen (${ids.length} Skills, ${entries.length} Dateien) ⬇`);
+      triggerDownload(makeZip(entries), cfg.zip);
+      showToast(`${cfg.toast} heruntergeladen (${ids.length} Skills, ${entries.length} Dateien) ⬇`);
       if (btn) { btn.disabled = false; btn.textContent = label; }
     }
+    function downloadStarterPack(btn) { return downloadBundle(btn, 'starter'); }
+    function downloadPowerPack(btn) { return downloadBundle(btn, 'power'); }
 
     // ===== ANMERKUNGEN EXPORTIEREN (für Weiterentwicklung in Claude Code) =====
     function _fence(text) {
@@ -6680,14 +6883,19 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
       'frontend-design':     ['kreation', 'media', 'pm'],
       'canvas-design':       ['kreation'],
       'doc-coauthoring':     ['pm', 'strategie', 'kreation', 'media'],
-      'theme-factory':       ['kreation', 'strategie', 'pm']
+      'theme-factory':       ['kreation', 'strategie', 'pm'],
+      'brainstorming':       ALL_ROLES,
+      'systematic-debugging': ALL_ROLES,
+      'verification-before-completion': ALL_ROLES,
+      'algorithmic-art':     ['kreation']
     };
     function renderRoleChips() {
       const sources = [
         {id:'all',label:'Alle Quellen'},
         {id:'pilot-inhouse',label:'pilot inhouse'},
         {id:'gsd',label:'pilot Workflows'},
-        {id:'anthropic',label:'Anthropic'}
+        {id:'anthropic',label:'Anthropic'},
+        {id:'community',label:'Community'}
       ];
       const container = document.getElementById('role-chips');
       if (!container) return;
