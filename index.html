@@ -1325,26 +1325,19 @@
     .ex-t-sys { color: #8a8a82; }
     .ex-t-ok { color: #7ac59a; }
     .ex-t-hl { color: var(--c-yellow); }
-    /* Ergebnis-Block: das echte Skill-Output, abgesetzt vom Prozess-Log */
-    .ex-t-out {
-      white-space: pre-wrap;
-      margin: 1rem 0 1.2rem;
-      padding: 1.4rem 1.6rem;
-      border-left: 2px solid rgba(255,224,94,.5);
-      background: rgba(255,255,255,.035);
-      border-radius: .4rem;
-      font-size: 1.4rem; line-height: 1.7; color: #cfcfc7;
-      animation: cardIn .45s ease both;
-    }
-    .ex-t-out .o-h { display: block; color: #fcfcfc; font-weight: 700; margin-bottom: .5rem; letter-spacing: -.01em; }
-    .ex-t-out .o-num { color: var(--c-yellow); font-weight: 700; }
-    .ex-t-out .o-err { color: #e8888e; }
-    .ex-t-out .o-warn { color: #e8c56a; }
-    .ex-t-out .o-ok { color: #7ac59a; }
-    .ex-t-out .o-mut { color: #8a8a82; }
-    .ex-t-out .o-score { font-size: 2.6rem; font-weight: 800; color: var(--c-yellow); line-height: 1; }
-    /* Schmale Screens: kleinere Block-Schrift, damit die ausgerichteten Zeilen nicht umbrechen */
-    @media (max-width: 640px) { .ex-t-out { font-size: 1.15rem; line-height: 1.65; padding: 1.1rem 1.2rem; } }
+    /* Echtes Claude-Code-Terminalverhalten: Claude-Text (⏺), Tool-Calls, Ergebnis (⎿).
+       padding + negativer text-indent = hängender Einzug bei Umbrüchen, wie in der CLI */
+    .ex-t-claude { color: #e4e4de; margin-top: .4rem; padding-left: 2.4rem; text-indent: -2.4rem; }
+    .ex-t-claude::before { content: '⏺'; color: var(--c-yellow); margin-right: .8rem; font-size: .8em; vertical-align: 1px; }
+    .ex-t-tool { color: #b4b4ac; margin-top: .4rem; padding-left: 2.4rem; text-indent: -2.4rem; }
+    .ex-t-tool::before { content: '⏺'; color: #7ac59a; margin-right: .8rem; font-size: .8em; vertical-align: 1px; }
+    .ex-t-tool b { color: #fcfcfc; font-weight: 700; }
+    .ex-t-res { color: #86867e; white-space: pre-wrap; padding-left: 4rem; text-indent: -1.8rem; }
+    .ex-t-res::before { content: '⎿'; margin-right: .7rem; opacity: .7; }
+    .ex-t-res .r-num { color: var(--c-yellow); }
+    .ex-t-res .r-err { color: #e8888e; }
+    .ex-t-res .r-ok { color: #7ac59a; }
+    @media (max-width: 640px) { .ex-t-res { font-size: 1.2rem; } }
     .ex-cursor { display: inline-block; width: .9rem; height: 1.6rem; background: var(--c-yellow); vertical-align: text-bottom; animation: exBlink 1s steps(2) infinite; }
     @keyframes exBlink { 50% { opacity: 0; } }
 
@@ -6844,67 +6837,51 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
       { id:'prototyp-bauen', name:'Prototyp bauen', trigger:'/prototyp', cases:[
         { label:'TKP-Rechner bauen', script:[
           {t:'user',text:'/prototyp Tool: aus Reichweite & TKP den Kontaktpreis rechnen'},
-          {t:'sys',text:'Baue Eingaben, Live-Berechnung, pilot-Design …',pause:600},
-          {t:'out',pause:700,html:[
-            '<span class="o-h">tkp-rechner.html — Beispielrechnung</span>',
-            '  Reichweite   <span class="o-num">500.000</span>   ×   TKP <span class="o-num">12,00 €</span>',
-            '  Streuverlust <span class="o-num">30 %</span>  →  Netto-Reichweite <span class="o-num">350.000</span>',
-            '  <span class="o-mut">─────────────────────────────</span>',
-            '  Gesamtkosten     <span class="o-num">6.000,00 €</span>',
-            '  Netto-Kontaktpreis <span class="o-num">17,14 €</span>',
-          ].join('\n')},
-          {t:'hl',text:'→ tkp-rechner.html · rechnet live im Browser'},
+          {t:'claude',text:'Ich baue dir einen kleinen Rechner — eine Datei, läuft direkt im Browser.',pause:750},
+          {t:'tool',html:'<b>Write</b>(tkp-rechner.html)',pause:450},
+          {t:'res',html:'86 Zeilen — Eingaben, Live-Berechnung, pilot-Design',pause:650},
+          {t:'tool',html:'<b>Bash</b>(open tkp-rechner.html)',pause:450},
+          {t:'res',html:'Test: 500.000 × 12,00 € · 30 % Streuverlust → <span class="r-num">6.000,00 €</span> · Netto-TKP <span class="r-num">17,14 €</span> <span class="r-ok">✓</span>',pause:750},
+          {t:'claude',text:'Fertig. Der Rechner läuft, die Beispielrechnung stimmt — probier ihn unten aus.',pause:400},
         ], artifacts:[
           {label:'Gebautes Tool öffnen', href:'./tkp-rechner.html', kind:'open'},
         ], note:'Kein Screenshot — das echte Tool, live rechenbar.' },
         { label:'Umfrage-Auswerter', script:[
           {t:'user',text:'/prototyp Tool, das eine Umfrage-CSV auswertet und Balken zeigt'},
-          {t:'sys',text:'CSV-Upload, Gruppierung, Balken-Render …',pause:600},
-          {t:'out',pause:700,html:[
-            '<span class="o-h">umfrage-auswertung.html — Frage 3</span>',
-            '  „Wie zufrieden mit dem Onboarding?“',
-            '  Sehr    <span class="o-ok">████████████</span> <span class="o-num">48 %</span>',
-            '  Eher    <span class="o-ok">████████</span> <span class="o-num">31 %</span>',
-            '  Neutral <span class="o-mut">████</span> <span class="o-num">14 %</span>',
-            '  Unzufr. <span class="o-mut">██</span> <span class="o-num">7 %</span>',
-          ].join('\n')},
-          {t:'hl',text:'→ umfrage-auswertung.html · eigene CSV einlesbar'},
+          {t:'claude',text:'Ein Auswerter mit CSV-Eingabe und Antwort-Balken je Frage.',pause:750},
+          {t:'tool',html:'<b>Write</b>(umfrage-auswertung.html)',pause:450},
+          {t:'res',html:'108 Zeilen — CSV-Parser, Gruppierung, Balkendiagramm',pause:650},
+          {t:'tool',html:'<b>Bash</b>(Test mit 8 Beispiel-Antworten)',pause:450},
+          {t:'res',html:'„Sehr zufrieden“ <span class="r-num">38 %</span> · „Zufrieden“ <span class="r-num">38 %</span> · Prozente korrekt <span class="r-ok">✓</span>',pause:750},
+          {t:'claude',text:'Fertig — füg deine eigene CSV ein, die Balken bauen sich live.',pause:400},
         ], artifacts:[
           {label:'Gebautes Tool öffnen', href:'./umfrage-auswertung.html', kind:'open'},
-        ], note:'Lädt deine eigene CSV — die Balken oben sind Beispieldaten.' },
+        ], note:'Lädt deine eigene CSV — Beispieldaten per Klick.' },
       ]},
       { id:'webaudit', name:'webaudit', trigger:'/webaudit', cases:[
         { label:'Gebautes Tool prüfen', script:[
           {t:'user',text:'/webaudit tkp-rechner.html'},
-          {t:'sys',text:'Scanne Code, öffne echten Browser, teste Funktion …',pause:650},
-          {t:'out',pause:800,html:[
-            '<span class="o-score">90</span><span class="o-mut"> / 100</span>',
-            '<span class="o-err">●</span> 0 kritisch    <span class="o-warn">●</span> 2 Empfehlungen    <span class="o-ok">●</span> 12 bestanden',
-            '',
-            '<span class="o-warn">⚠</span> Keine Open-Graph-Tags — nackter Link in Slack/Teams',
-            '<span class="o-warn">⚠</span> Fremdes Stylesheet (fonts.googleapis) blockt Render + leakt IP',
-            '<span class="o-ok">✓</span> Funktionstest: 500.000 × 12 € → <span class="o-num">6.000,00 €</span> korrekt',
-            '<span class="o-ok">✓</span> Kontrast: alle 16 Elemente bestehen WCAG AA',
-          ].join('\n')},
-          {t:'hl',text:'→ report.html · mit Screenshots Desktop + Mobil'},
+          {t:'claude',text:'Ich prüfe in zwei Stufen: Code-Scan, dann echter Browser-Lauf.',pause:750},
+          {t:'tool',html:'<b>Read</b>(tkp-rechner.html)',pause:450},
+          {t:'res',html:'86 Zeilen — Meta-Tags, Labels, Struktur gescannt',pause:650},
+          {t:'tool',html:'<b>Bash</b>(playwright: Screenshots + Funktionstest)',pause:450},
+          {t:'res',html:'Desktop 1280 · Mobil 390 · 500.000 × 12 € → <span class="r-num">6.000,00 €</span> <span class="r-ok">✓</span> · Kontrast 16/16 WCAG AA <span class="r-ok">✓</span>',pause:750},
+          {t:'tool',html:'<b>Write</b>(report.html)',pause:450},
+          {t:'res',html:'Score <span class="r-num">95/100</span> · 0 kritisch · 1 Empfehlung · 13 bestanden',pause:650},
+          {t:'claude',text:'Kein kritischer Fund, eine Empfehlung: Open-Graph-Tags fehlen. Frühere Läufe fanden mehr — die Funde wurden behoben, der Score stieg.',pause:400},
         ], artifacts:[
           {label:'Echten Report öffnen', href:'./demo/webaudit/report.html', kind:'open'},
-        ], note:'Aus echtem Browser-Lauf. Der erste Lauf fand einen WCAG-Fehler — im Tool behoben, die 2 Warnungen stehen bewusst noch drin.' },
+        ], note:'Aus echtem Browser-Lauf. Frühere Läufe fanden einen WCAG-Fehler und ein CDN-Stylesheet — beides im Tool behoben.' },
       ]},
       { id:'pptx', name:'pptx', trigger:null, cases:[
         { label:'Pitch-Deck bauen', script:[
           {t:'user',text:'Bau ein Pitch-Deck aus diesem Konzept (konzept.md)'},
-          {t:'sys',text:'Erstelle 16:9-Präsentation mit dem pptx-Skill …',pause:650},
-          {t:'out',pause:800,html:[
-            '<span class="o-h">pitch-deck.pptx — 7 Folien</span>',
-            '  <span class="o-num">1</span>  Hook — „Konsequenz schlägt Rabatt“',
-            '  <span class="o-num">2</span>  Problem — austauschbare Kategorie',
-            '  <span class="o-num">3</span>  Lösung — eine Botschaft, alle Kanäle',
-            '  <span class="o-num">4·5</span> Proof — Recall 11→19 %, ROAS 4,2',
-            '  <span class="o-num">6·7</span> Vorgehen + CTA',
-            '<span class="o-mut">  Sprechernotizen je Folie übernommen</span>',
-          ].join('\n')},
-          {t:'hl',text:'→ pitch-deck.pptx · echte OOXML-Datei'},
+          {t:'claude',text:'Ich nutze den pptx-Skill und baue 7 Folien entlang deines Konzepts.',pause:750},
+          {t:'tool',html:'<b>Read</b>(konzept.md)',pause:450},
+          {t:'res',html:'52 Zeilen — Hook, Problem, Lösung, Proof, CTA',pause:650},
+          {t:'tool',html:'<b>Write</b>(pitch-deck.pptx)',pause:450},
+          {t:'res',html:'7 Folien · 16:9 · Sprechernotizen je Folie · <span class="r-num">99 KB</span> OOXML',pause:750},
+          {t:'claude',text:'pitch-deck.pptx ist fertig — eine echte PowerPoint-Datei, direkt präsentierbar.',pause:400},
         ], artifacts:[
           {label:'Folien ansehen', href:'./demo/pptx/preview.html', kind:'open'},
           {label:'Deck herunterladen (.pptx)', href:'./demo/pptx/pitch-deck.pptx', kind:'file'},
@@ -6913,17 +6890,14 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
       { id:'daten-aufbereiten', name:'Daten aufbereiten', trigger:'/daten-aufbereiten', cases:[
         { label:'Export bereinigen', script:[
           {t:'user',text:'/daten-aufbereiten export_roh.csv'},
-          {t:'sys',text:'Prüfe 9 Zeilen: Dubletten, Formate, Lücken …',pause:650},
-          {t:'out',pause:800,html:[
-            '<span class="o-h">export_roh.csv  →  daten_clean.csv</span>',
-            '  Zeilen        <span class="o-num">9</span> → <span class="o-num">7</span>   <span class="o-mut">(2 Duplikate raus)</span>',
-            '  Datum & Währung vereinheitlicht',
-            '  Summe (bereinigt)  <span class="o-num">8.495,70 €</span>',
-            '',
-            '<span class="o-warn">⚠</span> 2 Lücken markiert statt geraten:',
-            '   <span class="o-mut">Zeile 6 · Klicks fehlen   ·   Zeile 9 · Datum fehlt</span>',
-          ].join('\n')},
-          {t:'hl',text:'→ daten_clean.csv · Original bleibt unangetastet'},
+          {t:'claude',text:'Ich prüfe auf Dubletten, Formate und Lücken — dein Original bleibt unangetastet.',pause:750},
+          {t:'tool',html:'<b>Read</b>(export_roh.csv)',pause:450},
+          {t:'res',html:'9 Datenzeilen — 2 Duplikate, 2 Datumsformate, 2 Lücken erkannt',pause:650},
+          {t:'tool',html:'<b>Write</b>(daten_clean.csv)',pause:450},
+          {t:'res',html:'7 Zeilen · Formate vereinheitlicht · Summe <span class="r-num">8.495,70 €</span>',pause:650},
+          {t:'tool',html:'<b>Write</b>(aenderungen.md)',pause:450},
+          {t:'res',html:'Änderungs-Log · Lücken markiert: <span class="r-err">Z.6 Klicks</span> · <span class="r-err">Z.9 Datum</span>',pause:750},
+          {t:'claude',text:'Fertig — jede Änderung steht im Log. Gefehlt hat, was fehlt: nichts wurde geraten.',pause:400},
         ], artifacts:[
           {label:'Änderungs-Log lesen', href:'./demo/viewer.html?f=daten/aenderungen.md', kind:'open'},
           {label:'Nachher: saubere Daten', href:'./demo/viewer.html?f=daten/daten_clean.csv', kind:'open'},
@@ -6933,16 +6907,12 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
       { id:'content-recycling', name:'Content Recycling', trigger:'/content-recycling', cases:[
         { label:'Case → 4 Kanäle', script:[
           {t:'user',text:'/content-recycling case-study.md'},
-          {t:'sys',text:'Kernbotschaft extrahieren, 4 Formate erzeugen …',pause:650},
-          {t:'out',pause:800,html:[
-            '<span class="o-h">Kernbotschaft — identisch über alle Kanäle</span>',
-            '  „Konsequenz schlägt Rabatt“',
-            '',
-            '  <span class="o-ok">✓</span> LinkedIn <span class="o-mut">~1.100 Z.</span>   <span class="o-ok">✓</span> Instagram-Caption',
-            '  <span class="o-ok">✓</span> Newsletter-Teaser    <span class="o-ok">✓</span> Video-Skript <span class="o-mut">5 Szenen</span>',
-            '  <span class="o-mut">Belegzahlen übernommen:</span> CTR <span class="o-num">+34 %</span> · Recall <span class="o-num">11→19 %</span>',
-          ].join('\n')},
-          {t:'hl',text:'→ varianten.md · eine Botschaft, vier Formate'},
+          {t:'claude',text:'Ich extrahiere die Kernbotschaft und schreibe vier Kanal-Varianten.',pause:750},
+          {t:'tool',html:'<b>Read</b>(case-study.md)',pause:450},
+          {t:'res',html:'Kernbotschaft: „Konsequenz schlägt Rabatt“ · Belege: CTR <span class="r-num">+34 %</span>, Recall <span class="r-num">11→19 %</span>',pause:650},
+          {t:'tool',html:'<b>Write</b>(varianten.md)',pause:450},
+          {t:'res',html:'LinkedIn ~1.100 Z. · Instagram · Newsletter-Teaser · Video-Skript (5 Szenen)',pause:750},
+          {t:'claude',text:'Vier Formate, eine Botschaft — alle Zahlen stammen aus dem Case, nichts ist erfunden.',pause:400},
         ], artifacts:[
           {label:'Ergebnis lesen', href:'./demo/viewer.html?f=content-recycling/varianten.md', kind:'open'},
           {label:'Quell-Case ansehen', href:'./demo/viewer.html?f=content-recycling/case-study.md', kind:'open'},
@@ -6951,16 +6921,12 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
       { id:'campaign-check', name:'Campaign Checker', trigger:'/campaign-check', cases:[
         { label:'Setup vor Launch', script:[
           {t:'user',text:'/campaign-check kampagne.csv'},
-          {t:'sys',text:'Validiere 6 Anzeigen: UTM, Landingpages, Budget …',pause:650},
-          {t:'out',pause:800,html:[
-            '<span class="o-h">Campaign Check — kampagne.csv</span>',
-            '<span class="o-err">✗ 3 Fehler — blockieren den Launch</span>',
-            '   <span class="o-mut">Zeile 5 · Retargeting_B</span>  utm_medium fehlt',
-            '   <span class="o-mut">Zeile 5 · Retargeting_B</span>  Landingpage per <span class="o-err">http://</span>',
-            '   <span class="o-mut">Zeile 7 · Search_B</span>      utm_campaign fehlt',
-            '<span class="o-warn">⚠ 3 Warnungen</span>   <span class="o-ok">✓ 3 sauber getaggt</span>',
-          ].join('\n')},
-          {t:'hl',text:'→ report.md · jeder Fund mit Fundstelle'},
+          {t:'claude',text:'Ich validiere UTM-Parameter, Landingpages und Budget-Caps.',pause:750},
+          {t:'tool',html:'<b>Read</b>(kampagne.csv)',pause:450},
+          {t:'res',html:'6 Anzeigen in 4 Kampagnen',pause:650},
+          {t:'tool',html:'<b>Bash</b>(Validator-Lauf)',pause:450},
+          {t:'res',html:'<span class="r-err">✗ 3 Fehler</span> · ⚠ 3 Warnungen · <span class="r-ok">✓ 3 sauber</span>\n   Z.5 utm_medium fehlt · Z.5 Landingpage per <span class="r-err">http://</span> · Z.7 utm_campaign fehlt',pause:750},
+          {t:'claude',text:'3 Launch-Blocker — jeder mit Zeilennummer. Der Report listet auch die Warnungen (Casing, Budget-Cap).',pause:400},
         ], artifacts:[
           {label:'Echten Report lesen', href:'./demo/viewer.html?f=campaign-check/report.md', kind:'open'},
           {label:'Geprüfte Kampagne ansehen', href:'./demo/viewer.html?f=campaign-check/kampagne.csv', kind:'open'},
@@ -7032,7 +6998,7 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
     }
     function appendTermLine(body, line, initial) {
       const el = document.createElement('div');
-      const known = { user:1, ok:1, hl:1, out:1, sys:1 };
+      const known = { user:1, claude:1, tool:1, res:1, hl:1, sys:1 };
       el.className = 'ex-t-' + (known[line.t] ? line.t : 'sys');
       setTermContent(el, line, initial);
       body.appendChild(el);
@@ -7041,11 +7007,11 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
     function setTermContent(el, line, text) {
       if (line.t === 'user') {
         el.innerHTML = `<span class="ex-term-prompt">›</span>${escHtml(text)}<span class="ex-cursor"></span>`;
-      } else if (line.t === 'out') {
-        // Ergebnis-Block: fest kodiertes HTML aus den DEMOS (kein User-Input)
+      } else if (line.t === 'tool' || line.t === 'res') {
+        // Tool-Call / Ergebnis: fest kodiertes HTML aus den DEMOS (kein User-Input)
         el.innerHTML = line.html || '';
       } else {
-        el.textContent = text;
+        el.textContent = text; // claude, sys, hl
       }
     }
     function typeText(el, line, full, idx, done) {

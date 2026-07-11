@@ -38,9 +38,11 @@ for (let n = 1; n <= 40; n++) {
   const sh = shapes(xml).filter(s => !/sldNum|dt|ftr/i.test(s.type));
   const titleShape = sh.find(s => /title/i.test(s.type)) || sh.reduce((a, b) => (b.sz > (a?.sz || 0) ? b : a), null);
   const title = titleShape?.paras.join(' ') || `Folie ${n}`;
-  // kurzer Text in kleiner Schrift über dem Titel = Kicker („01", „Proof" …)
-  const kicker = sh.find(s => s !== titleShape && s.sz && s.sz < titleShape.sz * 0.55 && s.paras.join('').length <= 24)?.paras.join(' ') || '';
-  const body = sh.flatMap(s => (s === titleShape ? [] : s.paras)).filter(p => p !== kicker);
+  // kurze Texte in kleiner Schrift = Beiwerk (Eyebrow, Seitenzähler) — nie Body.
+  // Als Kicker bevorzugt die Eyebrow (nicht der „01 / 06"-Zähler).
+  const smalls = sh.filter(s => s !== titleShape && s.sz && s.sz < titleShape.sz * 0.55 && s.paras.join(' ').length <= 26);
+  const kicker = (smalls.find(s => !/\d\s*\/\s*\d/.test(s.paras.join(' '))) || smalls[0])?.paras.join(' ') || '';
+  const body = sh.filter(s => s !== titleShape && !smalls.includes(s)).flatMap(s => s.paras);
   const notesXml = unzip(`ppt/notesSlides/notesSlide${n}.xml`);
   const notes = notesXml
     ? shapes(notesXml).filter(s => !/sldNum|dt|ftr/i.test(s.type)).flatMap(s => s.paras).filter(p => !/^\d+$/.test(p))
@@ -49,6 +51,9 @@ for (let n = 1; n <= 40; n++) {
 }
 if (!slides.length) { console.error('Keine Folien in ' + PPTX + ' gefunden'); process.exit(1); }
 
+// Zahlen fett hervorheben — Spiegel der Run-Formatierung in der .pptx
+const boldNums = s => s.replace(/([+−-]?\d[\d.,]*\s?(?:%|€)?)/g, '<b class="n">$1</b>');
+
 const bytes = fs.statSync(PPTX).size;
 const card = s => `
 <article class="slide-wrap">
@@ -56,7 +61,7 @@ const card = s => `
     <span class="num">${s.n}</span>
     ${s.kicker ? '<p class="kicker">' + esc(s.kicker) + '</p>' : ''}
     <h2>${esc(s.title)}</h2>
-    ${s.body.length ? '<ul>' + s.body.map(b => '<li>' + esc(b) + '</li>').join('') + '</ul>' : ''}
+    ${s.body.length ? '<ul>' + s.body.map(b => '<li>' + boldNums(esc(b)) + '</li>').join('') + '</ul>' : ''}
   </div>
   ${s.notes.length ? '<div class="notes"><b>Sprechernotiz</b>' + s.notes.map(t => '<p>' + esc(t) + '</p>').join('') + '</div>' : ''}
 </article>`;
@@ -65,8 +70,9 @@ const html = `<!DOCTYPE html><html lang="de"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Folien-Vorschau — pitch-deck.pptx</title>
 <meta name="description" content="Vorschau der echten pitch-deck.pptx, extrahiert aus der OOXML-Datei selbst.">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
+@font-face{font-family:'Inter';src:url('../../assets/fonts/inter-variable.woff2') format('woff2-variations');font-weight:100 900;font-style:normal;font-display:swap}
+@font-face{font-family:'JetBrains Mono';src:url('../../assets/fonts/jetbrains-mono-variable.woff2') format('woff2-variations');font-weight:100 800;font-style:normal;font-display:swap}
 :root{--black:#262626;--yellow:#ffe05e;--bg:#eeede5;--paper:#fbfbf7;--line:#e4e2d6;--gray:#66655d}
 *{box-sizing:border-box;margin:0;padding:0}html{font-size:62.5%}
 body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--black);line-height:1.55;padding:4rem 2rem}
@@ -90,6 +96,7 @@ h1 b{font-weight:600}
 .slide ul{list-style:none;display:flex;flex-direction:column;gap:.8rem}
 .slide li{font-size:clamp(1.4rem,1.9vw,1.7rem);padding-left:2rem;position:relative}
 .slide li::before{content:'—';position:absolute;left:0;color:var(--gray)}
+.slide li b.n{font-weight:750;background:linear-gradient(transparent 68%,var(--yellow) 68%);padding:0 .15rem}
 .notes{background:#fff;border:1px dashed var(--line);border-radius:0 0 1rem 1rem;margin:0 1.6rem;padding:1.2rem 1.8rem}
 .notes b{font-family:'JetBrains Mono',monospace;font-size:1.1rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gray);display:block;margin-bottom:.4rem}
 .notes p{font-size:1.45rem;color:#4a4942}

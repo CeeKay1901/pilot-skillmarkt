@@ -2,8 +2,9 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Folien-Vorschau — pitch-deck.pptx</title>
 <meta name="description" content="Vorschau der echten pitch-deck.pptx, extrahiert aus der OOXML-Datei selbst.">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
+@font-face{font-family:'Inter';src:url('../../assets/fonts/inter-variable.woff2') format('woff2-variations');font-weight:100 900;font-style:normal;font-display:swap}
+@font-face{font-family:'JetBrains Mono';src:url('../../assets/fonts/jetbrains-mono-variable.woff2') format('woff2-variations');font-weight:100 800;font-style:normal;font-display:swap}
 :root{--black:#262626;--yellow:#ffe05e;--bg:#eeede5;--paper:#fbfbf7;--line:#e4e2d6;--gray:#66655d}
 *{box-sizing:border-box;margin:0;padding:0}html{font-size:62.5%}
 body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--black);line-height:1.55;padding:4rem 2rem}
@@ -27,6 +28,7 @@ h1 b{font-weight:600}
 .slide ul{list-style:none;display:flex;flex-direction:column;gap:.8rem}
 .slide li{font-size:clamp(1.4rem,1.9vw,1.7rem);padding-left:2rem;position:relative}
 .slide li::before{content:'—';position:absolute;left:0;color:var(--gray)}
+.slide li b.n{font-weight:750;background:linear-gradient(transparent 68%,var(--yellow) 68%);padding:0 .15rem}
 .notes{background:#fff;border:1px dashed var(--line);border-radius:0 0 1rem 1rem;margin:0 1.6rem;padding:1.2rem 1.8rem}
 .notes b{font-family:'JetBrains Mono',monospace;font-size:1.1rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gray);display:block;margin-bottom:.4rem}
 .notes p{font-size:1.45rem;color:#4a4942}
@@ -37,7 +39,7 @@ footer a{color:var(--black)}
 <p class="badge">Extrahiert aus der echten Datei</p>
 <h1>Folien-Vorschau — <b>pitch-deck.pptx</b></h1>
 <p class="lead">Diese Vorschau ist keine Nacherzählung: <code>build-pptx-preview.mjs</code> entpackt die
-<code>.pptx</code> (90 KB OOXML) und liest Titel, Inhalte und Sprechernotizen
+<code>.pptx</code> (99 KB OOXML) und liest Titel, Inhalte und Sprechernotizen
 direkt aus dem Folien-XML. 7 Folien, 7 mit Notizen.</p>
 <div class="actions">
 <a class="btn btn-p" href="pitch-deck.pptx" download>⬇ pitch-deck.pptx herunterladen</a>
@@ -47,9 +49,9 @@ direkt aus dem Folien-XML. 7 Folien, 7 mit Notizen.</p>
 <article class="slide-wrap">
   <div class="slide">
     <span class="num">1</span>
-    <p class="kicker">PITCH DECK</p>
+    <p class="kicker">PITCH DECK · HERBST 2026</p>
     <h2>Herbst-Kampagne 2026 — Mustermarke</h2>
-    <ul><li>pilot</li><li>Erzeugt mit dem Skill pptx aus konzept.md</li></ul>
+    <ul><li>pilot</li><li>Mediastrategie &amp; Kreation — pilot Hamburg · Kick-off KW <b class="n">34</b></li><li>Erzeugt mit dem Skill pptx aus konzept.md</li></ul>
   </div>
   <div class="notes"><b>Sprechernotiz</b><p>Titelfolie. Erzeugt aus dem Konzept-Markdown durch den pptx-Skill.</p></div>
 </article>
@@ -57,9 +59,9 @@ direkt aus dem Folien-XML. 7 Folien, 7 mit Notizen.</p>
 <article class="slide-wrap">
   <div class="slide">
     <span class="num">2</span>
-    <p class="kicker">01</p>
+    <p class="kicker">PILOT · MUSTERMARKE</p>
     <h2>Die unbequeme Wahrheit</h2>
-    <ul><li>68 % der Herbst-Kampagnen im Segment sehen austauschbar aus</li><li>Preisrabatt ist der einzige Hebel, den fast alle ziehen</li><li>Die Zielgruppe erinnert sich an keine einzige Marke</li></ul>
+    <ul><li><b class="n">68 %</b> der Herbst-Kampagnen im Segment sehen austauschbar aus</li><li>Preisrabatt ist der einzige Hebel, den fast alle ziehen</li><li>Die Zielgruppe erinnert sich an keine einzige Marke</li></ul>
   </div>
   <div class="notes"><b>Sprechernotiz</b><p>Einstieg hart setzen: Wir reden nicht über Media, wir reden über Wiedererkennbarkeit.</p></div>
 </article>
@@ -67,9 +69,9 @@ direkt aus dem Folien-XML. 7 Folien, 7 mit Notizen.</p>
 <article class="slide-wrap">
   <div class="slide">
     <span class="num">3</span>
-    <p class="kicker">02</p>
+    <p class="kicker">PILOT · MUSTERMARKE</p>
     <h2>Das Problem in Zahlen</h2>
-    <ul><li>Ø Erinnerungswert der Kategorie: 11 %</li><li>Streuverlust bei reiner Preis-Kommunikation: 34 %</li><li>Kosten pro erinnerter Kontakt steigen seit 2024 um 22 %</li></ul>
+    <ul><li>Ø Erinnerungswert der Kategorie: <b class="n">11 %</b></li><li>Streuverlust bei reiner Preis-Kommunikation: <b class="n">34 %</b></li><li>Kosten pro erinnerter Kontakt steigen seit <b class="n">2024 </b>um <b class="n">22 %</b></li></ul>
   </div>
   <div class="notes"><b>Sprechernotiz</b><p>Die Zahlen kommen aus der Kategorie-Analyse, nicht aus einer Umfrage. Kurz halten.</p></div>
 </article>
@@ -77,7 +79,7 @@ direkt aus dem Folien-XML. 7 Folien, 7 mit Notizen.</p>
 <article class="slide-wrap">
   <div class="slide">
     <span class="num">4</span>
-    <p class="kicker">03</p>
+    <p class="kicker">PILOT · MUSTERMARKE</p>
     <h2>Unser Ansatz</h2>
     <ul><li>Eine Botschaft, konsequent über alle Kanäle</li><li>Real People statt Models — Glaubwürdigkeit vor Hochglanz</li><li>Kein Preis im Hero, Preis erst in der Conversion-Stufe</li></ul>
   </div>
@@ -87,9 +89,9 @@ direkt aus dem Folien-XML. 7 Folien, 7 mit Notizen.</p>
 <article class="slide-wrap">
   <div class="slide">
     <span class="num">5</span>
-    <p class="kicker">04</p>
+    <p class="kicker">PILOT · MUSTERMARKE</p>
     <h2>Der Beweis</h2>
-    <ul><li>Case „Frühjahr 2026": +34 % CTR nach Creative-Refresh</li><li>ROAS Paid Social 4,2 bei gleichem Budget</li><li>Erinnerungswert von 11 % auf 19 % gestiegen</li></ul>
+    <ul><li>Case „Frühjahr <b class="n">2026</b>": <b class="n">+34 %</b> CTR nach Creative-Refresh</li><li>ROAS Paid Social <b class="n">4,2 </b>bei gleichem Budget</li><li>Erinnerungswert von <b class="n">11 %</b> auf <b class="n">19 %</b> gestiegen</li></ul>
   </div>
   <div class="notes"><b>Sprechernotiz</b><p>Zahlen aus dem Q2-Report. Falls Nachfrage: Messung über Brand-Lift-Study.</p></div>
 </article>
@@ -97,7 +99,7 @@ direkt aus dem Folien-XML. 7 Folien, 7 mit Notizen.</p>
 <article class="slide-wrap">
   <div class="slide">
     <span class="num">6</span>
-    <p class="kicker">05</p>
+    <p class="kicker">PILOT · MUSTERMARKE</p>
     <h2>Wer das macht</h2>
     <ul><li>Strategie: pilot Hamburg, Team Mustermarke</li><li>Kreation &amp; Media aus einer Hand</li><li>Feste Ansprechpartnerin über die gesamte Laufzeit</li></ul>
   </div>
@@ -107,9 +109,9 @@ direkt aus dem Folien-XML. 7 Folien, 7 mit Notizen.</p>
 <article class="slide-wrap">
   <div class="slide">
     <span class="num">7</span>
-    <p class="kicker">06</p>
+    <p class="kicker">PILOT · MUSTERMARKE</p>
     <h2>Nächste Schritte</h2>
-    <ul><li>Kick-off-Workshop in KW 34</li><li>Kreativ-Briefing bis 15.08.</li><li>Mediaplan v1 bis 22.08., Go-Live 01.09.</li></ul>
+    <ul><li>Kick-off-Workshop in KW <b class="n">34</b></li><li>Kreativ-Briefing bis <b class="n">15.08.</b></li><li>Mediaplan v<b class="n">1 </b>bis <b class="n">22.08., </b>Go-Live <b class="n">01.09.</b></li></ul>
   </div>
   <div class="notes"><b>Sprechernotiz</b><p>Klar mit einem konkreten Datum enden. Kein „melden Sie sich gern".</p></div>
 </article>
