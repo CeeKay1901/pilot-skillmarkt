@@ -9,7 +9,7 @@ allowed-tools: Read, Bash, Grep, Glob
 Sichere eine saubere Datenbasis, bevor die Kampagne startet.
 
 ## Vorgehen
-1. **Bestand erfassen**: UTM-Liste, Tag-/GTM-Export, Pixel-IDs, Consent-Setup.
+1. **Bestand erfassen**: UTM-Liste, Tag-/GTM-Export, Pixel-IDs, Consent-Setup. Vollständige Prüfpunkte: `references/checkliste.md`.
 2. **UTM prüfen**: Konvention (source/medium/campaign), Vollständigkeit, Konsistenz.
 3. **Events prüfen**: definierte GA4-/Pixel-Events vorhanden, feuern einmalig, korrekt benannt.
 4. **Consent prüfen**: Tracking startet erst nach Einwilligung (Consent-Mode).

@@ -9,7 +9,7 @@ allowed-tools: Read, Bash
 Aus 30 Seiten wird eine Seite, die man wirklich liest.
 
 ## Vorgehen
-1. **Quelle lesen** (PDF/Excel/Text). Kernzahlen und Aussagen extrahieren.
+1. **Quelle lesen** (PDF/Excel/Text). Kernzahlen und Aussagen extrahieren. Aufbau & Verdichtungs-Fragen: `references/aufbau.md`.
 2. **Verdichten**: Was ist passiert? Warum? Was heißt das?
 3. **Insights hervorheben** (3–5), dann konkrete Handlungsempfehlungen.
 4. Klar, deutsch, führungsgerecht formulieren.

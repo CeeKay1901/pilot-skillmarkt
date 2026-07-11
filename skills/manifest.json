@@ -12,6 +12,36 @@
   "references/beispiel.md",
   "references/checkliste.md"
  ],
+ "canvas-design": [
+  "SKILL.md",
+  "canvas-fonts/ArsenalSC-OFL.txt",
+  "canvas-fonts/BigShoulders-OFL.txt",
+  "canvas-fonts/Boldonse-OFL.txt",
+  "canvas-fonts/BricolageGrotesque-OFL.txt",
+  "canvas-fonts/CrimsonPro-OFL.txt",
+  "canvas-fonts/DMMono-OFL.txt",
+  "canvas-fonts/EricaOne-OFL.txt",
+  "canvas-fonts/GeistMono-OFL.txt",
+  "canvas-fonts/Gloock-OFL.txt",
+  "canvas-fonts/IBMPlexMono-OFL.txt",
+  "canvas-fonts/InstrumentSans-OFL.txt",
+  "canvas-fonts/Italiana-OFL.txt",
+  "canvas-fonts/JetBrainsMono-OFL.txt",
+  "canvas-fonts/Jura-OFL.txt",
+  "canvas-fonts/LibreBaskerville-OFL.txt",
+  "canvas-fonts/Lora-OFL.txt",
+  "canvas-fonts/NationalPark-OFL.txt",
+  "canvas-fonts/NothingYouCouldDo-OFL.txt",
+  "canvas-fonts/Outfit-OFL.txt",
+  "canvas-fonts/PixelifySans-OFL.txt",
+  "canvas-fonts/PoiretOne-OFL.txt",
+  "canvas-fonts/RedHatMono-OFL.txt",
+  "canvas-fonts/Silkscreen-OFL.txt",
+  "canvas-fonts/SmoochSans-OFL.txt",
+  "canvas-fonts/Tektur-OFL.txt",
+  "canvas-fonts/WorkSans-OFL.txt",
+  "canvas-fonts/YoungSerif-OFL.txt"
+ ],
  "content-recycling": [
   "SKILL.md",
   "references/beispiel.md",
@@ -19,7 +49,11 @@
  ],
  "daten-aufbereiten": [
   "SKILL.md",
-  "references/beispiel.md"
+  "references/beispiel.md",
+  "references/checkliste.md"
+ ],
+ "doc-coauthoring": [
+  "SKILL.md"
  ],
  "docx": [
   "SKILL.md",
@@ -52,6 +86,9 @@
   "SKILL.md",
   "references/beispiel.md"
  ],
+ "frontend-design": [
+  "SKILL.md"
+ ],
  "internal-comms": [
   "SKILL.md",
   "examples/3p-updates.md",
@@ -65,18 +102,23 @@
  ],
  "markt-research": [
   "SKILL.md",
-  "references/beispiel.md"
+  "references/beispiel.md",
+  "references/quellen-raster.md"
  ],
  "mediaplan-audit": [
   "SKILL.md",
-  "references/beispiel.md"
+  "references/beispiel.md",
+  "references/pruefpunkte.md"
  ],
  "meeting-notes": [
   "SKILL.md",
-  "references/beispiel.md"
+  "references/beispiel.md",
+  "references/vorlage.md"
  ],
  "moodboard": [
-  "SKILL.md"
+  "SKILL.md",
+  "references/beispiel.md",
+  "references/raster.md"
  ],
  "pdf": [
   "SKILL.md",
@@ -98,7 +140,8 @@
  ],
  "pitch-deck": [
   "SKILL.md",
-  "references/beispiel.md"
+  "references/beispiel.md",
+  "references/dramaturgie.md"
  ],
  "pptx": [
   "SKILL.md",
@@ -128,6 +171,7 @@
  ],
  "report-summary": [
   "SKILL.md",
+  "references/aufbau.md",
   "references/beispiel.md"
  ],
  "skill-creator": [
@@ -150,11 +194,27 @@
   "scripts/utils.py"
  ],
  "slides-aus-daten": [
-  "SKILL.md"
+  "SKILL.md",
+  "references/beispiel.md",
+  "references/story-muster.md"
  ],
  "social-kalender": [
   "SKILL.md",
-  "references/beispiel.md"
+  "references/beispiel.md",
+  "references/vorlage.md"
+ ],
+ "theme-factory": [
+  "SKILL.md",
+  "themes/arctic-frost.md",
+  "themes/botanical-garden.md",
+  "themes/desert-rose.md",
+  "themes/forest-canopy.md",
+  "themes/golden-hour.md",
+  "themes/midnight-galaxy.md",
+  "themes/modern-minimalist.md",
+  "themes/ocean-depths.md",
+  "themes/sunset-boulevard.md",
+  "themes/tech-innovation.md"
  ],
  "tonalitaets-check": [
   "SKILL.md",
@@ -167,7 +227,8 @@
  ],
  "tracking-audit": [
   "SKILL.md",
-  "references/beispiel.md"
+  "references/beispiel.md",
+  "references/checkliste.md"
  ],
  "web-artifacts-builder": [
   "SKILL.md",
@@ -189,7 +250,8 @@
  ],
  "wettbewerbs-monitor": [
   "SKILL.md",
-  "references/beispiel.md"
+  "references/beispiel.md",
+  "references/dimensionen.md"
  ],
  "xlsx": [
   "SKILL.md",
@@ -206,27 +268,5 @@
   "scripts/office/validators/pptx.py",
   "scripts/office/validators/redlining.py",
   "scripts/recalc.py"
- ],
- "frontend-design": [
-  "SKILL.md"
- ],
- "canvas-design": [
-  "SKILL.md"
- ],
- "doc-coauthoring": [
-  "SKILL.md"
- ],
- "theme-factory": [
-  "SKILL.md",
-  "themes/arctic-frost.md",
-  "themes/botanical-garden.md",
-  "themes/desert-rose.md",
-  "themes/forest-canopy.md",
-  "themes/golden-hour.md",
-  "themes/midnight-galaxy.md",
-  "themes/modern-minimalist.md",
-  "themes/ocean-depths.md",
-  "themes/sunset-boulevard.md",
-  "themes/tech-innovation.md"
  ]
 }

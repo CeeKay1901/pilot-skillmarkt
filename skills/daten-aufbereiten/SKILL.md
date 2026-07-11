@@ -9,7 +9,7 @@ allowed-tools: Read, Write, Bash, Glob
 Die undankbarste Arbeit vor jeder Analyse — übernommen.
 
 ## Vorgehen
-1. **Datei einlesen** (CSV/Excel). Struktur, Spalten, Zeilenzahl erfassen.
+1. **Datei einlesen** (CSV/Excel). Struktur, Spalten, Zeilenzahl erfassen. Schritt-für-Schritt-Checkliste: `references/checkliste.md`.
 2. **Bereinigen**:
    - Duplikate erkennen und entfernen (Regel nennen).
    - Datums-/Zahlen-/Währungsformate vereinheitlichen.

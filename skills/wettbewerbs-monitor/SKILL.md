@@ -9,7 +9,7 @@ allowed-tools: WebSearch, WebFetch, Write
 Behalte den Markt im Blick, ohne täglich manuell zu recherchieren.
 
 ## Vorgehen
-1. **Wettbewerber festlegen** (2–5 Marken) + Betrachtungszeitraum.
+1. **Wettbewerber festlegen** (2–5 Marken) + Betrachtungszeitraum. Beobachtungs-Dimensionen: `references/dimensionen.md`.
 2. Je Marke öffentlich sichtbare Aktivitäten sammeln: aktuelle Kampagnen,
    Kernbotschaften, genutzte Kanäle, Tonalität, Auffälligkeiten.
 3. **Vergleichen**: Muster, Lücken, Differenzierungspotenziale erkennen.

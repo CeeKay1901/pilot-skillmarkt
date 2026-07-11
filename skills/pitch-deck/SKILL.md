@@ -11,7 +11,7 @@ Vom ersten Gedanken zur überzeugenden Struktur.
 ## Vorgehen
 1. **Kontext klären**: Zielgruppe, Anlass, Kernangebot, gewünschte Wirkung.
 2. **Story entwickeln**: roter Faden Problem → Lösung → Beweis → Angebot.
-3. **Slide-Outline** vorschlagen (siehe Standard unten), je Slide eine Botschaft.
+3. **Slide-Outline** vorschlagen (Standard unten; Slide-für-Slide-Dramaturgie in `references/dramaturgie.md`), je Slide eine Botschaft.
 4. **Key Messages** formulieren, Tonalität an Zielgruppe anpassen.
 
 ## Standard-Outline

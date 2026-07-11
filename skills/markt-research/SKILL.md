@@ -12,7 +12,7 @@ Liefere ein verdichtetes, belegtes Research-Briefing statt 20 offener Tabs.
 "Recherchier mal den Markt für …", Pitch-/Konzept-Vorbereitung, "was gibt es zu … ?".
 
 ## Vorgehen
-1. **Scope schärfen**: Thema, Markt/Region, Zeithorizont, Zweck. Bei Bedarf 1–2 Rückfragen.
+1. **Scope schärfen**: Thema, Markt/Region, Zeithorizont, Zweck. Bei Bedarf 1–2 Rückfragen. Blickwinkel & Quellen-Güte: `references/quellen-raster.md`.
 2. **Breit recherchieren**: mehrere Suchen aus verschiedenen Blickwinkeln
    (Marktgröße, Trends, Wettbewerb, Zielgruppe, Regulatorik).
 3. **Quellen prüfen**: bevorzugt aktuelle, seriöse Quellen; Datum & Herkunft beachten;

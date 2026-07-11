@@ -11,7 +11,7 @@ Aus Themen + Terminen ein fertiger Redaktionsplan pro Kanal.
 ## Vorgehen
 1. **Input klären**: Themenliste, Kanäle, Zeitraum, Frequenz, fixe Termine/Anlässe.
 2. **Verteilen**: Themen sinnvoll über den Zeitraum legen (Rhythmus, Anlässe berücksichtigen).
-3. Je Post: Datum, Kanal, Format (Reel/Carousel/Story/Text), Hook-Idee, Hashtags.
+3. Je Post: Datum, Kanal, Format (Reel/Carousel/Story/Text), Hook-Idee, Hashtags. Format-Spickzettel & Vorlage: `references/vorlage.md`.
 4. **Als Tabelle** ausgeben (CSV), direkt weiterverarbeitbar.
 
 ## Ausgabe

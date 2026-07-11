@@ -10,7 +10,7 @@ Aus unstrukturiertem Input ein sauberes, actionable Protokoll.
 
 ## Vorgehen
 1. **Input lesen** (Mitschrift, Transkript, Sprachnotiz-Text).
-2. **Strukturieren** nach Format: Teilnehmer, Agenda, Beschlüsse, Action Items, nächste Schritte.
+2. **Strukturieren** nach Format: Teilnehmer, Agenda, Beschlüsse, Action Items, nächste Schritte (Vorlage: `references/vorlage.md`).
 3. **Action Items schärfen**: je Aufgabe Verantwortliche:r + Frist. Fehlt Info → `[?]`.
 4. Knapp und klar formulieren.
 

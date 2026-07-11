@@ -17,6 +17,8 @@ Fange Flüchtigkeitsfehler im Mediaplan ab, bevor er zum Kunden geht.
 4. **Flighting**: Lücken oder Overlaps im Timing? Kampagnenzeitraum abgedeckt?
 5. **Report** mit priorisierten Findings (Zeilenbezug).
 
+Vollständige Rechenlogik & Prüfpunkte: `references/pruefpunkte.md`.
+
 ## Ausgabe
 ```
 Mediaplan-Audit — "<Datei>"
