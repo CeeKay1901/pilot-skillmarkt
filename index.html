@@ -451,6 +451,7 @@
       border: 1px solid rgba(255,224,94,.3);
       border-radius: 2rem; cursor: pointer;
       transition: var(--trans);
+      font-family: inherit; line-height: 1.4;
     }
     .pilot-skill-chip:hover { background: rgba(255,224,94,.25); }
 
@@ -566,6 +567,7 @@
     /* ===== COMMENT FORM ===== */
     .comment-form { margin-bottom: 3rem; padding: 2.4rem; background: var(--c-bg); border-radius: 1rem; }
     .comment-form h3 { font-size: 1.8rem; font-weight: 700; margin-bottom: 1.6rem; }
+    .comment-form label:not(.sr-only) { display: block; font-size: 1.3rem; font-weight: 600; color: var(--c-black); margin-bottom: .4rem; }
     .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin-bottom: 1.2rem; }
     .comment-form input, .comment-form textarea {
       width: 100%; padding: 1.2rem 1.6rem;
@@ -984,6 +986,9 @@
     }
     .skill-card:hover::after, .skill-card:focus-visible::after { transform: scaleY(1); }
     .skill-card:focus-visible { outline: 2px solid var(--c-black); outline-offset: 2px; }
+    /* Tastatur-Fokus für per role=button/tabindex bedienbare Container & Chips */
+    .pilot-card:focus-visible, .ex-starter-card:focus-visible, .pilot-skill-chip:focus-visible { outline: 2px solid var(--c-black); outline-offset: 2px; }
+    .logo:focus-visible { outline: 2px solid var(--c-yellow); outline-offset: 3px; border-radius: 3px; }
 
     .card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
     .card-sub {
@@ -1695,7 +1700,7 @@
   <!-- HEADER -->
   <header class="site-header">
     <div class="header-inner">
-      <div class="logo" onclick="showView('catalog')" style="cursor:pointer">
+      <div class="logo" onclick="showView('catalog')" style="cursor:pointer" role="button" tabindex="0" aria-label="Zur Startseite (Skill-Katalog)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();showView('catalog')}">
         <span class="logo-mark">pilot</span>
         <span class="overline">Skill Marketplace</span>
       </div>
@@ -1776,7 +1781,7 @@
         <div class="search-wrap-m">
           <input type="search" id="search-m" aria-label="Skills suchen" placeholder="Skills suchen …" autocomplete="off">
         </div>
-        <div class="cat-tabs" id="cat-tabs" role="tablist"></div>
+        <div class="cat-tabs" id="cat-tabs" role="group" aria-label="Nach Themenbereich filtern"></div>
         <button class="filter-toggle-btn" id="filter-toggle-btn" onclick="toggleMobileFilter()" aria-expanded="true">
           <span>Filter &amp; Sortierung <span class="ftb-count" id="ftb-count" hidden></span></span>
           <span class="filter-toggle-arrow">▾</span>
@@ -2248,14 +2253,14 @@ Gib einen priorisierten Report aus:
             <pre class="bld-code" id="bld-code"></pre>
 
             <div class="bld-actions">
-              <button class="c-cta -black-bg" onclick="builderDownloadZip(this)">⬇ Als Skill herunterladen (.zip)</button>
+              <button class="c-cta -yellow-bg" onclick="builderSubmitGitHub()">Skill einreichen</button>
+              <button class="c-cta -black-border" onclick="builderDownloadZip(this)">⬇ Als Skill herunterladen (.zip)</button>
               <button class="c-cta -black-border" onclick="builderCopy()">SKILL.md kopieren</button>
-              <button class="c-cta -yellow-bg" onclick="builderSubmitGitHub()">Einreichen</button>
               <button class="ann-cancel" onclick="builderReset()">Formular leeren</button>
             </div>
             <p class="bld-actions-hint">
-              <strong>Herunterladen</strong> → entpacken nach <code>.claude/skills/</code>, sofort nutzbar.<br>
-              <strong>Einreichen</strong> → öffnet ein vorbefülltes GitHub-Issue mit deiner SKILL.md; das KI-Enablement-Team übernimmt sie ins Repo. Kein GitHub-Konto? Dann lade das ZIP herunter und schick es per Mail.
+              <strong>Einreichen</strong> → öffnet ein vorbefülltes GitHub-Issue mit deiner SKILL.md; das KI-Enablement-Team übernimmt sie ins Repo. Kein GitHub-Konto? Dann lade das ZIP herunter und schick es per Mail.<br>
+              <strong>Herunterladen</strong> → entpacken nach <code>.claude/skills/</code>, sofort nutzbar.
             </p>
           </div>
         </div>
@@ -4682,10 +4687,10 @@ Gib einen priorisierten Report aus:
         const chips = pilot.endorsedSkills.slice(0, 5).map(sid => {
           const skill = SKILLS.find(s => s.id === sid);
           if (!skill) return '';
-          return `<span class="pilot-skill-chip" onclick="event.stopPropagation();openModal('${sid}')" title="Skill ansehen">${escHtml(skill.name)}</span>`;
+          return `<button type="button" class="pilot-skill-chip" onclick="event.stopPropagation();openModal('${sid}')" title="Skill ansehen">${escHtml(skill.name)}</button>`;
         }).join('');
         return `
-          <div class="pilot-card" onclick="filterByPilot('${escHtml(pilot.name)}')">
+          <div class="pilot-card" onclick="filterByPilot('${escHtml(pilot.name)}')" role="button" tabindex="0" aria-label="Skills von ${escHtml(pilot.name)} anzeigen" onkeydown="if((event.key==='Enter'||event.key===' ')&&event.target===event.currentTarget){event.preventDefault();filterByPilot('${escHtml(pilot.name)}')}">
             <div class="pilot-avatar-lg">${pilot.initials}</div>
             <div class="pilot-name">${escHtml(pilot.name)}</div>
             <div class="pilot-role">${escHtml(pilot.role)}</div>
@@ -4729,7 +4734,7 @@ Gib einen priorisierten Report aus:
         const count = s.id === 'all' ? SKILLS.length : SKILLS.filter(sk => sk.subcategory === s.id).length;
         if (!count && s.id !== 'all') return ''; // leere Kategorien nicht anbieten
         const isActive = state.subcategory === (s.id === 'all' ? null : s.id);
-        return `<button class="cat-tab${isActive ? ' active' : ''}" role="tab" aria-selected="${isActive}" onclick="setSubCat('${s.id}')">${escHtml(s.label)} <span class="tab-count">${count}</span></button>`;
+        return `<button class="cat-tab${isActive ? ' active' : ''}" aria-pressed="${isActive}" onclick="setSubCat('${s.id}')">${escHtml(s.label)} <span class="tab-count">${count}</span></button>`;
       }).join('');
       document.getElementById('cat-tabs').innerHTML = html;
     }
@@ -6114,16 +6119,16 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
           </p>
           <div class="form-row" style="margin-top:1.6rem">
             <div>
-              <label for="comment-author-${commentSkillId}" class="sr-only">Dein Name</label>
-              <input type="text" id="comment-author-${commentSkillId}" placeholder="Dein Name *" required>
+              <label for="comment-author-${commentSkillId}">Dein Name *</label>
+              <input type="text" id="comment-author-${commentSkillId}" autocomplete="name" required>
             </div>
             <div>
-              <label for="comment-role-${commentSkillId}" class="sr-only">Deine Rolle</label>
-              <input type="text" id="comment-role-${commentSkillId}" placeholder="Deine Rolle">
+              <label for="comment-role-${commentSkillId}">Deine Rolle <span style="font-weight:400;color:var(--c-gray-m)">(optional)</span></label>
+              <input type="text" id="comment-role-${commentSkillId}">
             </div>
           </div>
-          <label for="comment-text-${commentSkillId}" class="sr-only">Dein Kommentar</label>
-          <textarea id="comment-text-${commentSkillId}" placeholder="Dein Kommentar *" rows="3" required></textarea>
+          <label for="comment-text-${commentSkillId}" style="margin-top:1.2rem">Dein Kommentar *</label>
+          <textarea id="comment-text-${commentSkillId}" rows="3" required></textarea>
           <button class="c-cta -black-bg" onclick="submitComment('${commentSkillId}')">Kommentar veröffentlichen</button>
         </div>
 
@@ -6633,7 +6638,7 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
         const s = SKILLS.find(x => x.id === id);
         if (!s) return '';
         return `
-          <div class="ex-starter-card" onclick="showView('catalog');setTimeout(()=>openModal('${id}'),50)">
+          <div class="ex-starter-card" onclick="showView('catalog');setTimeout(()=>openModal('${id}'),50)" role="button" tabindex="0" aria-label="${escHtml(s.name)} öffnen" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();showView('catalog');setTimeout(()=>openModal('${id}'),50)}">
             <div class="ex-starter-step">Schritt ${i+1}</div>
             <div class="ex-starter-name">${escHtml(s.name)}</div>
             <div class="ex-starter-desc">${escHtml(s.tagline)}</div>
