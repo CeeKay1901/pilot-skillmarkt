@@ -98,28 +98,54 @@ const kampagneRows = [
 ];
 w(path.join(ROOT, 'campaign-check/kampagne.csv'), kampagneRows.map(r => r.join(';')).join('\n') + '\n');
 
-// --- echter Validator ---
+// --- echter Validator: prüft je Anzeige, Report entsteht komplett aus den Ergebnissen ---
 const [ch, ...ads] = kampagneRows;
-const fehler = [], warnungen = [], ok = [];
+const fehler = [], warnungen = [], ok = [], fixes = [], matrix = [];
 const campaigns = new Set();
 ads.forEach((r, i) => {
   const z = i + 2;
   const [anzeige, lp, src, med, camp, cap] = r.map(x => (x || '').trim());
-  if (!med) fehler.push(`Zeile ${z} (${anzeige}): \`utm_medium\` fehlt — Traffic wird nicht zugeordnet`);
-  if (!camp) fehler.push(`Zeile ${z} (${anzeige}): \`utm_campaign\` fehlt`);
-  if (lp.startsWith('http://')) fehler.push(`Zeile ${z} (${anzeige}): Landingpage nutzt unsicheres \`http://\``);
-  if (src !== src.toLowerCase()) warnungen.push(`Zeile ${z} (${anzeige}): \`utm_source=${src}\` nicht kleingeschrieben`);
-  if (camp && camp !== camp.toLowerCase()) warnungen.push(`Zeile ${z} (${anzeige}): \`utm_campaign=${camp}\` nicht kleingeschrieben`);
-  if (!cap) warnungen.push(`Zeile ${z} (${anzeige}): kein \`budget_cap\` gesetzt`);
+  let utm = '✓', lpSt = '✓', capSt = '✓';
+  if (!med) {
+    utm = '✗';
+    fehler.push(`Zeile ${z} (${anzeige}): \`utm_medium\` fehlt — Traffic wird nicht zugeordnet`);
+    fixes.push(`Zeile ${z}: \`utm_medium=cpc\` ergänzen`);
+  }
+  if (!camp) {
+    utm = '✗';
+    fehler.push(`Zeile ${z} (${anzeige}): \`utm_campaign\` fehlt`);
+    fixes.push(`Zeile ${z}: \`utm_campaign=herbst_2026\` ergänzen`);
+  }
+  if (lp.startsWith('http://')) {
+    lpSt = '✗';
+    fehler.push(`Zeile ${z} (${anzeige}): Landingpage nutzt unsicheres \`http://\``);
+    fixes.push(`Zeile ${z}: Landingpage auf \`https://\` umstellen — und das Ziel prüfen (zeigt auf /404)`);
+  }
+  if (src !== src.toLowerCase()) { if (utm === '✓') utm = '⚠'; warnungen.push(`Zeile ${z} (${anzeige}): \`utm_source=${src}\` nicht kleingeschrieben`); }
+  if (camp && camp !== camp.toLowerCase()) { if (utm === '✓') utm = '⚠'; warnungen.push(`Zeile ${z} (${anzeige}): \`utm_campaign=${camp}\` nicht kleingeschrieben`); }
+  if (!cap) { capSt = '⚠'; warnungen.push(`Zeile ${z} (${anzeige}): kein \`budget_cap\` gesetzt`); }
   if (camp) campaigns.add(camp.toLowerCase());
-  if (med && camp && cap && !lp.startsWith('http://')) ok.push(`${anzeige}: vollständig getaggt`);
+  const status = [utm, lpSt, capSt].includes('✗') ? '✗ Blocker'
+    : [utm, lpSt, capSt].includes('⚠') ? '⚠ prüfen' : '✓ startklar';
+  if (status === '✓ startklar') ok.push(`${anzeige}: vollständig getaggt`);
+  matrix.push(`| ${anzeige} | ${utm} | ${lpSt} | ${capSt} | **${status}** |`);
 });
 if (campaigns.size > 1) warnungen.push(`Uneinheitliche Kampagnen-Namen: ${[...campaigns].join(', ')}`);
+const blockerAds = matrix.filter(m => m.includes('✗ Blocker')).length;
 
 w(path.join(ROOT, 'campaign-check/report.md'), `# Campaign Check — \`kampagne.csv\`
 
-Erzeugt von \`demo/build-data-artifacts.mjs\`. Der Validator hat **${ads.length} Anzeigen** geprüft.
-**Alle Findings unten stammen aus dem tatsächlichen Lauf.**
+**Launch-Empfehlung: ${fehler.length ? 'STOPP' : 'GO'}** — ${fehler.length
+  ? `${fehler.length} Blocker in ${blockerAds} von ${ads.length} Anzeigen. Nach den ${fixes.length} Fixes unten ist das Setup startklar.`
+  : `alle ${ads.length} Anzeigen sauber getaggt.`}
+
+Erzeugt von \`demo/build-data-artifacts.mjs\`. **Alle Findings stammen aus dem tatsächlichen Validator-Lauf.**
+
+## Status je Anzeige
+
+| Anzeige | UTM | Landingpage | Budget-Cap | Status |
+|---|---|---|---|---|
+${matrix.join('\n')}
 
 ## ✗ Fehler (${fehler.length}) — blockieren den Launch
 ${fehler.length ? fehler.map(f => '- ' + f).join('\n') : '- keine'}
@@ -130,8 +156,11 @@ ${warnungen.length ? warnungen.map(f => '- ' + f).join('\n') : '- keine'}
 ## ✓ In Ordnung (${ok.length})
 ${ok.length ? ok.map(f => '- ' + f).join('\n') : '- keine'}
 
+## So behebst du es — ${fixes.length} Änderungen, dann GO
+${fixes.map((f, i) => `${i + 1}. ${f}`).join('\n')}
+
 ---
-_Regel des Skills: ✗ = Launch-Blocker, ⚠ = Optimierung. Jeder Fund mit Fundstelle._
+_Regel des Skills: ✗ = Launch-Blocker, ⚠ = Optimierung. Jeder Fund mit Fundstelle — nachprüfbar in \`kampagne.csv\`._
 `);
 
 console.log(`daten/: ${body.length} -> ${clean.length} Zeilen, ${log.duplikate} Duplikate entfernt`);

@@ -45,6 +45,8 @@
   .err{color:#8a3b12;font-size:1.6rem}
   .csv-meta{font-family:'JetBrains Mono',monospace;font-size:1.3rem;color:var(--gray);margin:-.6rem 0 1.6rem}
   .csv-empty{color:#b3701e;font-style:italic;font-size:.9em}
+  .csv-warn{color:#b3362c;font-weight:700;font-size:.9em;letter-spacing:.04em}
+  .g-err{color:#b3362c;font-weight:700}.g-warn{color:#9a6a00;font-weight:700}.g-ok{color:#1f7a4d;font-weight:700}
   article td{font-variant-numeric:tabular-nums}
   footer{text-align:center;font-size:1.3rem;color:var(--gray);margin-top:2.4rem}
   footer a{color:var(--black)}
@@ -77,6 +79,8 @@ function render(md){
   const out = [];
   const lines = md.replace(/\r\n/g,'\n').split('\n');
   let i = 0;
+  // Statusglyphen einfärben — macht die Ampel-Matrix im Report lesbar
+  const glyph = h => h.replace(/✗/g,'<span class="g-err">✗</span>').replace(/⚠/g,'<span class="g-warn">⚠</span>').replace(/✓/g,'<span class="g-ok">✓</span>');
   while (i < lines.length) {
     const l = lines[i];
     if (/^```/.test(l)) { const buf=[]; i++; while(i<lines.length && !/^```/.test(lines[i])) buf.push(lines[i++]); i++;
@@ -86,7 +90,7 @@ function render(md){
       const head = cells(l); i += 2; const rows=[];
       while (i<lines.length && /^\s*\|/.test(lines[i])) rows.push(cells(lines[i++]));
       out.push('<table><thead><tr>'+head.map(h=>'<th>'+inline(h)+'</th>').join('')+'</tr></thead><tbody>'+
-        rows.map(r=>'<tr>'+r.map(c=>'<td>'+inline(c)+'</td>').join('')+'</tr>').join('')+'</tbody></table>'); continue; }
+        rows.map(r=>'<tr>'+r.map(c=>'<td>'+glyph(inline(c))+'</td>').join('')+'</tr>').join('')+'</tbody></table>'); continue; }
     if (/^>\s?/.test(l)) { const buf=[]; while(i<lines.length && /^>\s?/.test(lines[i])) buf.push(lines[i++].replace(/^>\s?/,''));
       out.push('<blockquote>'+buf.filter(Boolean).map(x=>'<p>'+inline(x)+'</p>').join('')+'</blockquote>'); continue; }
     if (/^\s*[-*]\s+/.test(l)) { const buf=[]; while(i<lines.length && /^\s*[-*]\s+/.test(lines[i])) buf.push(lines[i++].replace(/^\s*[-*]\s+/,''));
@@ -120,7 +124,7 @@ function renderCsv(text, name){
   return '<h1>'+esc(name)+'</h1>'
     + '<p class="csv-meta">'+rows.length+' Datenzeilen · '+head.length+' Spalten · Trennzeichen <code>'+delim+'</code></p>'
     + '<table><thead><tr>'+head.map(h=>'<th>'+esc(h)+'</th>').join('')+'</tr></thead><tbody>'
-    + rows.map(r=>'<tr>'+head.map((_,i)=>'<td>'+(r[i]!==undefined&&r[i]!==''?esc(r[i]):'<span class="csv-empty">— leer —</span>')+'</td>').join('')+'</tr>').join('')
+    + rows.map(r=>'<tr>'+head.map((_,i)=>'<td>'+(r[i]==='FEHLT'?'<span class="csv-warn">FEHLT</span>':r[i]!==undefined&&r[i]!==''?esc(r[i]):'<span class="csv-empty">— leer —</span>')+'</td>').join('')+'</tr>').join('')
     + '</tbody></table>';
 }
 (async () => {
