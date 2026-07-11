@@ -556,7 +556,9 @@
     .star-input { display: flex; gap: .4rem; margin: 1rem 0; }
     .star-input .star-btn {
       font-size: 2.8rem; background: none; border: none; cursor: pointer;
-      color: var(--c-gray-l); transition: color .15s ease; padding: 0; line-height: 1;
+      color: var(--c-gray-l); transition: color .15s ease; line-height: 1;
+      /* Trefffläche ≥44px je Stern */
+      padding: .8rem .8rem; margin: -.8rem -.35rem;
     }
     .star-input .star-btn.filled { color: var(--c-yellow); }
     .star-input:hover .star-btn { color: var(--c-gray-l); }
@@ -997,9 +999,10 @@
     }
     .skill-card.featured .card-sub { color: rgba(252,252,252,.55); }
     .fav-btn {
-      background: none; border: none; cursor: pointer; padding: 0; line-height: 1;
+      background: none; border: none; cursor: pointer; line-height: 1;
       font-size: 2rem; color: var(--c-gray-l); transition: var(--trans); flex-shrink: 0;
-      margin: -.4rem -.4rem 0 0;
+      /* Trefffläche ≥44px ohne Layout-Sprung: Padding innen, Margins gleichen aus */
+      padding: 1.2rem; margin: -1.6rem -1.6rem -1.2rem -1.2rem;
     }
     .fav-btn:hover { color: var(--c-yellow); transform: scale(1.15); }
     .fav-btn.active { color: var(--c-yellow); }
@@ -1348,6 +1351,10 @@
     .trg-menu-item.is-match code { color: var(--c-yellow); }
     .trg-menu-item.is-match span:not(.trg-menu-hit) { color: rgba(252,252,252,.85); }
     .trg-menu-hit { font-family: var(--font-mono); font-size: 1.15rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; background: var(--c-yellow); color: var(--c-black); padding: .3rem .9rem; border-radius: 2rem; flex-shrink: 0; }
+    @media (max-width: 480px) {
+      .trg-menu-item { flex-wrap: wrap; gap: .6rem 1rem; padding: 1.2rem 1.4rem; }
+      .trg-menu-item code { min-width: 0; }
+    }
     @keyframes trgPulse { 0%,100% { box-shadow: 0 0 0 3px rgba(255,224,94,.1); } 50% { box-shadow: 0 0 0 6px rgba(255,224,94,.22); } }
     @media (prefers-reduced-motion: reduce) { .trg-menu-item.is-match { animation: none; } }
     .trg-match-out { font-size: 1.7rem; color: rgba(252,252,252,.9); margin-top: 1.4rem; }
@@ -1540,6 +1547,7 @@
       .sel-pill { padding: 1.1rem 2rem; font-size: 1.5rem; }
       /* Filter-Chips & Plattform-Toggle: volle Touch-Höhe (WCAG 2.5.5) */
       .role-chip, .expf-tab, .cat-tab { min-height: 4.4rem; }
+      .nav-link { min-height: 4.4rem; display: inline-flex; align-items: center; }
       /* kleine Bedienelemente: unsichtbare Hit-Area auf ~44px aufblasen */
       .fav-btn, .star-btn, .demo-replay { position: relative; }
       .fav-btn::after, .star-btn::after, .demo-replay::after { content: ''; position: absolute; inset: -12px; }
@@ -4379,7 +4387,7 @@ Gib einen priorisierten Report aus:
       const current = state.pendingRating[skillId] || getRating(skillId) || 0;
       let html = `<div class="star-input" id="star-input-${skillId}" data-current="${current}">`;
       for (let i = 1; i <= 5; i++) {
-        html += `<button class="star-btn ${i <= current ? 'filled' : ''}"
+        html += `<button type="button" class="star-btn ${i <= current ? 'filled' : ''}"
           data-val="${i}"
           onmouseenter="hoverStars('${skillId}', ${i})"
           onmouseleave="resetStarHover('${skillId}')"
@@ -4461,7 +4469,11 @@ Gib einen priorisierten Report aus:
       const text = document.getElementById(`comment-text-${skillId}`)?.value?.trim();
       const ratingVal = state.pendingRating[`comment-${skillId}`] || 0;
 
-      if (!author || !text) { showToast('Bitte Name und Kommentar ausfüllen.'); return; }
+      if (!author || !text) {
+        showToast('Bitte Name und Kommentar ausfüllen.');
+        document.getElementById(`comment-${!author ? 'author' : 'text'}-${skillId}`)?.focus();
+        return;
+      }
 
       const comment = {
         author, role: role || 'Pilot', initials: getInitials(author),
@@ -6110,7 +6122,7 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
           </div>
         </div>
 
-        <div class="comment-form">
+        <form class="comment-form" onsubmit="event.preventDefault();submitComment('${commentSkillId}')">
           <h3>Deine Bewertung & Kommentar</h3>
           <p class="rating-form-label">Deine Sternebewertung</p>
           ${renderInteractiveStars(`comment-${commentSkillId}`)}
@@ -6129,8 +6141,8 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
           </div>
           <label for="comment-text-${commentSkillId}" style="margin-top:1.2rem">Dein Kommentar *</label>
           <textarea id="comment-text-${commentSkillId}" rows="3" required></textarea>
-          <button class="c-cta -black-bg" onclick="submitComment('${commentSkillId}')">Kommentar veröffentlichen</button>
-        </div>
+          <button type="submit" class="c-cta -black-bg">Kommentar veröffentlichen</button>
+        </form>
 
         <p class="section-label">Alle Kommentare (${allComments.length})</p>
         ${commentsHtml}
@@ -6875,11 +6887,16 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
     function builderValidate() {
       const d = builderData();
       const err = document.getElementById('bld-err');
-      let msg = '';
-      if (!d.name) msg = 'Bitte gib dem Skill einen Namen.';
-      else if (!d.desc) msg = 'Bitte beschreibe kurz, was der Skill tut und wann Claude ihn einsetzen soll.';
+      let msg = '', field = '';
+      if (!d.name) { msg = 'Bitte gib dem Skill einen Namen.'; field = 'bld-name'; }
+      else if (!d.desc) { msg = 'Bitte beschreibe kurz, was der Skill tut und wann Claude ihn einsetzen soll.'; field = 'bld-desc'; }
       if (err) { err.hidden = !msg; err.textContent = msg; }
-      if (msg) { showToast(msg); return null; }
+      if (msg) {
+        showToast(msg);
+        const el = document.getElementById(field);
+        if (el) { el.focus(); el.scrollIntoView({ block: 'center', behavior: 'smooth' }); }
+        return null;
+      }
       return d;
     }
     function builderCopy() {
