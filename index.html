@@ -1852,6 +1852,19 @@
       font-size: .95rem; color: var(--c-gray-l); margin-right: .6rem; font-weight: 600;
     }
 
+    /* ===== GRUPPENKARTE (Office / Media-QA) ===== */
+    .skill-card.group-card { border-style: dashed; border-color: var(--c-gray-l); }
+    .skill-card.group-card:hover { border-color: var(--c-black); border-style: solid; }
+    .facet-list { display: flex; flex-direction: column; gap: .6rem; margin: .4rem 0 auto; }
+    .facet-chip {
+      display: flex; align-items: baseline; gap: .8rem; text-align: left; width: 100%;
+      background: var(--c-bg); border: 1px solid var(--line); border-radius: .7rem;
+      padding: .7rem 1rem; font-family: inherit; cursor: pointer; transition: var(--trans);
+    }
+    .facet-chip:hover { border-color: var(--c-black); background: var(--c-white); }
+    .facet-chip strong { font-size: 1.35rem; color: var(--c-black); white-space: nowrap; }
+    .facet-chip span { font-size: 1.2rem; color: var(--c-gray-d); }
+
     /* ===== MODAL-RUNWAY „SO LEGST DU LOS" ===== */
     .runway { margin: 2rem 0 .8rem; }
     .runway-steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0; }
@@ -4941,6 +4954,54 @@ Gib einen priorisierten Report aus:
       return null;
     }
 
+    // ===== KURATIERUNG: ausblenden, Aufgaben-Taxonomie, Merge-Gruppen =====
+    // Aus der Katalog-Fläche genommen (bleiben per Deep-Link erreichbar, aber nicht mehr im Browsing):
+    //  - pitch-deck: schwacher Dritter im Präsentations-Raum (0 Endorser, redundant zu pptx/slides-aus-daten)
+    //  - theme-factory: echte Dublette zu brand-guidelines (Farb/Font-System anwenden), generische Themes ohne pilot-Bezug
+    //  - web-artifacts-builder: einziger „advanced" mit Framework-Signal (React/shadcn) — widerspricht „nicht dev-lastig"
+    const HIDDEN = new Set(['pitch-deck', 'theme-factory', 'web-artifacts-builder']);
+
+    // Aufgaben-Taxonomie: Themen-Tabs denken in „was will ich tun", nicht in Abteilung/Herkunft.
+    // Wird nach dem Laden EINMAL auf skill.subcategory geschrieben (Single Source für Tabs/Labels/Filter).
+    const TASK_GROUP = {
+      'erste-schritte': 'loslegen', 'erste-automation': 'loslegen', 'brainstorming': 'loslegen',
+      'prototyp-bauen': 'bauen', 'webseite-bauen': 'bauen', 'tool-teilen': 'bauen', 'frontend-design': 'bauen',
+      'webaudit': 'bauen', 'systematic-debugging': 'bauen', 'verification-before-completion': 'bauen', 'skill-creator': 'bauen',
+      'web-artifacts-builder': 'bauen',
+      'briefing-gen': 'texten', 'tonalitaets-check': 'texten', 'meeting-notes': 'texten', 'internal-comms': 'texten', 'doc-coauthoring': 'texten',
+      'moodboard': 'gestalten', 'canvas-design': 'gestalten', 'brand-guidelines': 'gestalten', 'algorithmic-art': 'gestalten', 'theme-factory': 'gestalten',
+      'pptx': 'praesentieren', 'xlsx': 'praesentieren', 'docx': 'praesentieren', 'pdf': 'praesentieren',
+      'slides-aus-daten': 'praesentieren', 'daten-aufbereiten': 'praesentieren', 'report-summary': 'praesentieren',
+      'campaign-check': 'media', 'mediaplan-audit': 'media', 'tracking-audit': 'media', 'keyword-research': 'media',
+      'markt-research': 'media', 'persona-builder': 'media', 'wettbewerbs-monitor': 'media', 'content-recycling': 'media', 'social-kalender': 'media',
+      'pitch-deck': 'praesentieren'
+    };
+    SKILLS.forEach(s => { if (TASK_GROUP[s.id]) s.subcategory = TASK_GROUP[s.id]; });
+
+    const TASK_LABELS = { loslegen: 'Loslegen', bauen: 'Bauen', texten: 'Texten & Reden', gestalten: 'Gestalten', praesentieren: 'Präsentieren & Daten', media: 'Media & Strategie' };
+
+    // Merge-Gruppen: mehrere verwandte Skills werden im Katalog als EINE Karte mit Facetten gezeigt.
+    // Bei aktiver Suche werden die Einzel-Skills weiterhin normal gelistet (Auffindbarkeit bleibt).
+    const GROUPS = [
+      { id: 'office', group: 'praesentieren', anchor: 'pptx', members: ['pptx', 'xlsx', 'docx', 'pdf'],
+        name: 'Office-Dokumente aus Claude', tagline: 'Word, Excel, PowerPoint & PDF — erstellen, auslesen, bearbeiten',
+        facets: [
+          { id: 'docx', label: 'Word', how: 'Dokumente & Kommentare' },
+          { id: 'xlsx', label: 'Excel', how: 'Tabellen auswerten & bauen' },
+          { id: 'pptx', label: 'PowerPoint', how: 'Decks erstellen' },
+          { id: 'pdf', label: 'PDF', how: 'auslesen & Formulare' },
+        ] },
+      { id: 'media-qa', group: 'media', anchor: 'campaign-check', members: ['campaign-check', 'mediaplan-audit', 'tracking-audit'],
+        name: 'Media-QA: prüfen, bevor Budget läuft', tagline: 'Kampagnen, Mediapläne & Tracking absichern — vor dem Go',
+        facets: [
+          { id: 'campaign-check', label: 'Kampagnen-Setup', how: 'Checks vor Launch' },
+          { id: 'mediaplan-audit', label: 'Mediaplan (Excel)', how: 'Budget & Flighting' },
+          { id: 'tracking-audit', label: 'Tracking', how: 'UTM · GA4 · Pixel' },
+        ] },
+    ];
+    const MEMBER_OF = {};
+    GROUPS.forEach(g => g.members.forEach(id => { MEMBER_OF[id] = g; }));
+
     function getComments(skillId) {
       try {
         const data = localStorage.getItem(`skill-comments-${skillId}`);
@@ -5055,7 +5116,7 @@ Gib einen priorisierten Report aus:
     }
 
     function filterSkills() {
-      let result = [...SKILLS];
+      let result = SKILLS.filter(s => !HIDDEN.has(s.id));
       if (state.category !== 'all') {
         result = result.filter(s => s.category === state.category);
       }
@@ -5198,7 +5259,7 @@ Gib einen priorisierten Report aus:
 
     // ===== SUBKATEGORIE-LABEL (statt Emoji) =====
     function subLabel(sub) {
-      const labels = {einstieg:'Einstieg', bauen:'Bauen & Prototypen', media:'Media & Performance', content:'Content & Kreation', strategy:'Strategie & Insights', data:'Data & Analytics', automation:'Automatisierung', qa:'Quality Assurance', development:'Entwicklung', analytics:'Analytics', productivity:'Produktivität', ai:'KI'};
+      const labels = {loslegen:'Loslegen', bauen:'Bauen', texten:'Texten & Reden', gestalten:'Gestalten', praesentieren:'Präsentieren & Daten', media:'Media & Strategie', einstieg:'Einstieg', content:'Content', strategy:'Strategie', data:'Data'};
       return labels[sub] || sub;
     }
 
@@ -5359,20 +5420,27 @@ Gib einen priorisierten Report aus:
     }
 
     // ===== RENDER CAT TABS =====
+    // Sichtbare Kartenzahl je Aufgaben-Gruppe (Merge-Gruppen zählen als 1 Karte, ausgeblendete gar nicht)
+    function visibleCardCount(subId) {
+      const inSub = SKILLS.filter(sk => !HIDDEN.has(sk.id) && sk.subcategory === subId).length;
+      let n = inSub;
+      GROUPS.filter(g => g.group === subId).forEach(g => { n = n - g.members.length + 1; });
+      return n;
+    }
     function renderCatTabs() {
       const subs = [
-        {id:'all',label:'Alle'},
-        {id:'einstieg',label:'Einstieg'},
-        {id:'bauen',label:'Bauen'},
-        {id:'media',label:'Media'},
-        {id:'content',label:'Content'},
-        {id:'strategy',label:'Strategie'},
-        {id:'data',label:'Data'},
-        {id:'automation',label:'Automatisierung'}
+        {id:'all',        label:'Alle'},
+        {id:'loslegen',   label:'Loslegen'},
+        {id:'bauen',      label:'Bauen'},
+        {id:'texten',     label:'Texten'},
+        {id:'gestalten',  label:'Gestalten'},
+        {id:'praesentieren', label:'Präsentieren'},
+        {id:'media',      label:'Media'}
       ];
+      const total = subs.slice(1).reduce((a, s) => a + visibleCardCount(s.id), 0);
       const html = subs.map(s => {
-        const count = s.id === 'all' ? SKILLS.length : SKILLS.filter(sk => sk.subcategory === s.id).length;
-        if (!count && s.id !== 'all') return ''; // leere Kategorien nicht anbieten
+        const count = s.id === 'all' ? total : visibleCardCount(s.id);
+        if (!count && s.id !== 'all') return ''; // leere Gruppen nicht anbieten
         const isActive = state.subcategory === (s.id === 'all' ? null : s.id);
         return `<button class="cat-tab${isActive ? ' active' : ''}" aria-pressed="${isActive}" onclick="setSubCat('${s.id}')">${escHtml(s.label)} <span class="tab-count">${count}</span></button>`;
       }).join('');
@@ -5460,7 +5528,15 @@ Gib einen priorisierten Report aus:
 
       if (!grid) return;
 
-      if (count) count.innerHTML = `<strong>${filtered.length}</strong> ${filtered.length === 1 ? 'Skill' : 'Skills'}`;
+      // Angezeigte Kartenzahl (Merge-Gruppen zählen als 1), außer bei aktiver Suche
+      let displayCount = filtered.length;
+      if (!state.search) {
+        GROUPS.forEach(g => {
+          const inF = filtered.filter(s => MEMBER_OF[s.id] === g).length;
+          if (inF > 0) displayCount -= (inF - 1);
+        });
+      }
+      if (count) count.innerHTML = `<strong>${displayCount}</strong> ${displayCount === 1 ? 'Skill' : 'Skills'}`;
 
       renderActiveFilters();
       updateTagCount();
@@ -5482,9 +5558,46 @@ Gib einen priorisierten Report aus:
           && !state.platform && state.tags.length === 0 && !state.endorsedOnly && !state.favoritesOnly;
         const start = noFilter ? filtered.find(s => s.id === 'erste-schritte') : null;
         const rest = start ? filtered.filter(s => s.id !== start.id) : filtered;
-        const pinned = start ? renderCard(start, false, 0, true) : '';
-        grid.innerHTML = pinned + rest.map((s, i) => renderCard(s, false, i + (start ? 1 : 0))).join('');
+        let html = start ? renderCard(start, false, 0, true) : '';
+        let idx = start ? 1 : 0;
+        if (state.search) {
+          // Bei Suche: Einzel-Skills normal listen, damit Merge-Mitglieder auffindbar bleiben
+          html += rest.map(s => renderCard(s, false, idx++)).join('');
+        } else {
+          // Sonst: Merge-Mitglieder an der Position ihres bestplatzierten Mitglieds zu EINER Gruppenkarte bündeln
+          const seen = new Set();
+          for (const s of rest) {
+            const g = MEMBER_OF[s.id];
+            if (g) {
+              if (!seen.has(g.id)) { seen.add(g.id); html += renderGroupCard(g, idx++); }
+              continue;
+            }
+            html += renderCard(s, false, idx++);
+          }
+        }
+        grid.innerHTML = html;
       }
+    }
+
+    // Gruppenkarte: repräsentiert mehrere verwandte Skills mit anklickbaren Facetten (öffnen den jeweiligen Skill)
+    function renderGroupCard(g, idx) {
+      const delay = Math.min(idx, 11) * 35;
+      const facets = g.facets.map(f =>
+        `<button class="facet-chip" onclick="event.stopPropagation();openModal('${f.id}')" title="${escHtml(f.how)}"><strong>${escHtml(f.label)}</strong><span>${escHtml(f.how)}</span></button>`
+      ).join('');
+      return `
+        <article class="skill-card group-card${state._noCardAnim ? '' : ' card-in'}" style="animation-delay:${state._noCardAnim ? 0 : delay}ms" onclick="openModal('${g.anchor}')" tabindex="0" role="button" aria-label="${escHtml(g.name)} öffnen" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openModal('${g.anchor}')}">
+          <div class="card-top">
+            <span class="card-sub">${escHtml(subLabel(g.group))} · ${g.members.length} Skills</span>
+          </div>
+          <h3 class="skill-name">${escHtml(g.name)}</h3>
+          <p class="skill-tagline">${escHtml(g.tagline)}</p>
+          <div class="facet-list">${facets}</div>
+          <div class="card-actions">
+            <span class="card-open-hint">Alle ${g.members.length} ansehen →</span>
+          </div>
+        </article>
+      `;
     }
 
     // ===== AKTIVE FILTER-ZUSAMMENFASSUNG =====
@@ -5493,7 +5606,7 @@ Gib einen priorisierten Report aus:
       if (!bar) return;
       const pills = [];
       if (state.subcategory) {
-        const labels = {einstieg:'Einstieg',bauen:'Bauen',media:'Media',content:'Content',strategy:'Strategie',data:'Data',automation:'Automatisierung'};
+        const labels = {loslegen:'Loslegen',bauen:'Bauen',texten:'Texten',gestalten:'Gestalten',praesentieren:'Präsentieren',media:'Media'};
         pills.push({label: labels[state.subcategory] || state.subcategory, clear: `setSubCat('all')`});
       }
       if (state.category !== 'all') {
