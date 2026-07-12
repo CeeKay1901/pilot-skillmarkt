@@ -1902,6 +1902,10 @@
     }
     .mini-trigger:hover { border-color: var(--c-black); }
 
+    /* Langdock-Toggle in der Filterleiste (einzige verbliebene Filterachse neben Tabs) */
+    .role-chip.lang-toggle::before { content: ''; display: inline-block; width: .6rem; height: .6rem; border-radius: 50%; background: var(--c-gray-l); margin-right: .5rem; vertical-align: middle; transition: background .15s; }
+    .role-chip.lang-toggle.active::before { background: var(--c-black); }
+
     /* ===== „LÄUFT IN" ===== */
     .run-in { display: flex; gap: .8rem; flex-wrap: wrap; margin-bottom: .8rem; }
     .run-chip {
@@ -2065,8 +2069,6 @@
               <select id="sort-select" aria-label="Skills sortieren">
                 <option value="recommended">Empfohlen zuerst</option>
                 <option value="rating">Beste Bewertung</option>
-                <option value="count">Meiste Bewertungen</option>
-                <option value="newest">Neueste zuerst</option>
                 <option value="alpha">Name A–Z</option>
               </select>
               <label class="endorsed-toggle">
@@ -4274,7 +4276,7 @@ Gib einen priorisierten Report aus:
         "difficulty": "advanced",
         "timeToRun": "20–60 Min",
         "featured": false,
-        "tagline": "Anspruchsvolle interaktive Web-Apps (React, Tailwind, shadcn/ui)",
+        "tagline": "Größere, interaktive Web-Apps bauen — für den nächsten Schritt",
         "description": "Offizieller Anthropic-Skill für aufwändigere Web-Artefakte: mehrteilige React-Apps mit State, Routing und UI-Komponenten (React 18, TypeScript, Vite, Tailwind, shadcn/ui). Für einfache Ein-Datei-Tools eignet sich eher /prototyp.",
         "longDescription": "Der offizielle Claude-Code-Skill für komplexere Web-Anwendungen. Richtet ein React-Setup (TypeScript, Vite, Tailwind, shadcn/ui) ein und baut mehrteilige, interaktive Apps mit Zustand und Komponenten. Bewusst NICHT für simple Rechner/Ein-Datei-Seiten gedacht — dafür ist der pilot-Skill /prototyp gemacht.",
         "tags": [
@@ -4315,8 +4317,8 @@ Gib einen priorisierten Report aus:
         "platforms": { "code": true, "langdock": false },
         "install": "plugin",
         "name": "skill-creator",
-        "subcategory": "einstieg",
-        "difficulty": "medium",
+        "subcategory": "bauen",
+        "difficulty": "advanced",
         "timeToRun": "15–40 Min",
         "featured": true,
         "tagline": "Eigene Skills bauen — geführt vom offiziellen Skill-Creator",
@@ -4917,6 +4919,28 @@ Gib einen priorisierten Report aus:
       return { average: totalCount > 0 ? totalSum / totalCount : 0, count: totalCount };
     }
 
+    // Bayes-gewichtetes Rating: dünn bewertete Skills (n=2) nicht über gut belegte (n=21) heben.
+    // score = (n*avg + m*C) / (n + m), Prior C=4.2, Gewicht m=10.
+    function bayesScore(skill) {
+      const e = getEffectiveRating(skill);
+      const C = 4.2, m = 10;
+      return (e.count * e.average + m * C) / (e.count + m);
+    }
+
+    // Kuratiertes Spotlight: 6 Reise-Skills erzählen EINE Geschichte (Einstieg → Tool → Website → Alltag → Denken).
+    // Ersetzt das gestreute featured-Flag (vorher 10/39) als Single Source of Truth fürs Hervorheben.
+    const SPOTLIGHT = new Set(['erste-schritte', 'prototyp-bauen', 'webseite-bauen', 'daten-aufbereiten', 'briefing-gen', 'brainstorming']);
+    function isFeatured(s) { return SPOTLIGHT.has(s.id); }
+
+    // Ehrliche Badges: nur „Team-Favorit" datenverdient (hohe Bewertung + genug Stimmen + Piloten-Endorsement).
+    // Kein „Neu"-Dauerbadge — der ganze Katalog ist frisch, ein Datums-Badge auf ~80% wäre reines Rauschen.
+    function skillBadge(skill) {
+      const e = getEffectiveRating(skill);
+      const endorsers = (skill.endorsedBy || []).length;
+      if (e.average >= 4.6 && e.count >= 12 && endorsers >= 2) return { cls: 'empfohlen', label: 'Team-Favorit' };
+      return null;
+    }
+
     function getComments(skillId) {
       try {
         const data = localStorage.getItem(`skill-comments-${skillId}`);
@@ -5075,12 +5099,12 @@ Gib einen priorisierten Report aus:
           if (d) return d;
         }
         if (state.sort === 'recommended') {
-          const aFeat = a.featured ? 1 : 0;
-          const bFeat = b.featured ? 1 : 0;
+          const aFeat = isFeatured(a) ? 1 : 0;
+          const bFeat = isFeatured(b) ? 1 : 0;
           if (bFeat !== aFeat) return bFeat - aFeat;
-          return getEffectiveRating(b).average - getEffectiveRating(a).average;
+          return bayesScore(b) - bayesScore(a);
         }
-        if (state.sort === 'rating') return getEffectiveRating(b).average - getEffectiveRating(a).average;
+        if (state.sort === 'rating') return bayesScore(b) - bayesScore(a);
         if (state.sort === 'count') return getEffectiveRating(b).count - getEffectiveRating(a).count;
         if (state.sort === 'newest') return new Date(b.updatedAt) - new Date(a.updatedAt);
         if (state.sort === 'alpha') return a.name.localeCompare(b.name, 'de');
@@ -5103,11 +5127,6 @@ Gib einen priorisierten Report aus:
       const endorsers = skill.endorsedBy || [];
       const catClass = skill.category;
 
-      const cutoff = new Date(Date.now() - 21 * 24 * 60 * 60 * 1000);
-      const isNew = new Date(skill.updatedAt || skill.addedAt) > cutoff;
-      // Doppeltes "Neu" vermeiden: nur zeigen, wenn nicht ohnehin schon ein Badge
-      const newBadge = (isNew && skill.badge !== 'neu') ? `<span class="new-badge">Neu</span>` : '';
-
       let avatarsHtml = '';
       if (endorsers.length > 0) {
         const shown = endorsers.slice(0, 3);
@@ -5129,9 +5148,8 @@ Gib einen priorisierten Report aus:
       const starsHtml = renderStars(eff.average);
       const fav = isFavorite(skill.id);
 
-      const badgeHtml = skill.badge
-        ? `<span class="skill-badge ${skill.badge}">${skill.badge === 'empfohlen' ? 'Empfohlen' : skill.badge === 'neu' ? 'Neu' : skill.badge}</span>`
-        : '';
+      const _badge = skillBadge(skill);
+      const badgeHtml = _badge ? `<span class="skill-badge ${_badge.cls}">${_badge.label}</span>` : '';
 
       const triggerHtml = skill.trigger
         ? `<button class="card-trigger-chip" onclick="quickCopy(event,'${escHtml(skill.trigger)}')" title="Befehl kopieren">${escHtml(skill.trigger)}</button>`
@@ -5151,7 +5169,6 @@ Gib einen priorisierten Report aus:
           <div class="card-badges">
             <span class="cat-badge ${catClass}">${catLabel(skill.category)}</span>
             ${badgeHtml}
-            ${newBadge}
           </div>
           <div class="skill-tags">${tagsHtml}</div>
           ${skill.exampleOutput && !isFeatured ? `<p class="card-preview" title="Beispiel-Ergebnis"><span class="card-preview-lead">Ergebnis</span>${escHtml(previewSnippet(skill.exampleOutput))}</p>` : ''}
@@ -5296,7 +5313,7 @@ Gib einen priorisierten Report aus:
 
     // ===== RENDER FEATURED =====
     function renderFeatured() {
-      const featured = SKILLS.filter(s => s.featured).slice(0, 3);
+      const featured = SKILLS.filter(s => isFeatured(s)).slice(0, 3);
       const grid = document.getElementById('featured-grid');
       if (!grid) return;
       grid.innerHTML = featured.map(s => renderCard(s, true)).join('');
@@ -5830,7 +5847,7 @@ Gib einen priorisierten Report aus:
         toast: 'Starter-Paket'
       },
       power: {
-        ids: ['brainstorming', 'systematic-debugging', 'verification-before-completion', 'skill-creator', 'algorithmic-art'],
+        ids: ['brainstorming', 'systematic-debugging', 'verification-before-completion', 'skill-creator', 'webaudit'],
         zip: 'pilot-power-paket.zip',
         title: 'pilot Power-Paket — beliebte Skills aus der Community',
         intro: 'Die meistempfohlenen Skills aus anthropics/skills und obra/superpowers — gespiegelt im pilot Skill Marketplace.',
@@ -7138,30 +7155,15 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
       'verification-before-completion': ALL_ROLES,
       'algorithmic-art':     ['kreation']
     };
+    // Entrümpelt: statt drei fast gleicher Chip-Reihen (Quelle/Rolle/Einsatz) nur EIN sinnvoller Toggle.
+    // „Quelle" (Herkunft) ist für Einsteiger:innen irrelevant und lebt als Karten-Badge weiter; „Rolle" doppelte
+    // die Themen-Tabs. Übrig bleibt der für Langdock-Umsteiger:innen wertvollste Anker: „Läuft auch in Langdock".
     function renderRoleChips() {
-      const sources = [
-        {id:'all',label:'Alle Quellen'},
-        {id:'pilot-inhouse',label:'pilot inhouse'},
-        {id:'gsd',label:'pilot Workflows'},
-        {id:'anthropic',label:'Anthropic'},
-        {id:'community',label:'Community'}
-      ];
       const container = document.getElementById('role-chips');
       if (!container) return;
-      const srcRow = `<span class="role-label">Quelle:</span>` + sources.map(s => {
-        const count = s.id === 'all' ? SKILLS.length : SKILLS.filter(sk => sk.category === s.id).length;
-        const active = state.category === (s.id === 'all' ? 'all' : s.id);
-        return `<button class="role-chip${active ? ' active' : ''}" onclick="setSource('${s.id}')" data-sub="${s.id}">${escHtml(s.label)} <span class="rc-count">${count}</span></button>`;
-      }).join('');
-      const roleRow = `<span class="role-label">Deine Rolle:</span>` + ROLES.map(r => {
-        const count = SKILLS.filter(sk => (ROLE_MAP[sk.id] || ALL_ROLES).includes(r.id)).length;
-        return `<button class="role-chip${state.role === r.id ? ' active' : ''}" onclick="setRole('${r.id}')">${escHtml(r.label)} <span class="rc-count">${count}</span></button>`;
-      }).join('');
-      const pfRow = `<span class="role-label">Einsatz in:</span>` + PLATFORMS.map(p => {
-        const count = SKILLS.filter(sk => !!skillPlatforms(sk)[p.id]).length;
-        return `<button class="role-chip${state.platform === p.id ? ' active' : ''}" onclick="setPlatform('${p.id}')">${escHtml(p.label)} <span class="rc-count">${count}</span></button>`;
-      }).join('');
-      container.innerHTML = `<div class="chip-row">${srcRow}</div><div class="chip-row">${roleRow}</div><div class="chip-row">${pfRow}</div>`;
+      const ldCount = SKILLS.filter(sk => !!skillPlatforms(sk).langdock).length;
+      const active = state.platform === 'langdock';
+      container.innerHTML = `<div class="chip-row"><button class="role-chip lang-toggle${active ? ' active' : ''}" onclick="setPlatform('langdock')" aria-pressed="${active}">Läuft auch in Langdock <span class="rc-count">${ldCount}</span></button></div>`;
     }
 
     function setSource(id) {
