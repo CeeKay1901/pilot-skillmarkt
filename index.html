@@ -242,9 +242,11 @@
       background: transparent; color: var(--c-yellow);
     }
     .skill-card.featured .rating-text { color: rgba(252,252,252,.6); }
-    .skill-card.featured .diff-badge.easy { background: rgba(212,237,218,.2); color: #7ac59a; }
-    .skill-card.featured .diff-badge.medium { background: rgba(255,243,205,.2); color: #e8c56a; }
-    .skill-card.featured .diff-badge.advanced { background: rgba(248,215,218,.2); color: #e8888e; }
+    .skill-card.featured .diff-badge { border-color: rgba(255,255,255,.18); color: rgba(252,252,252,.72); }
+    .skill-card.featured .diff-badge::before { background: rgba(255,255,255,.4); }
+    .skill-card.featured .diff-badge.easy::before { background: #ffe05e; }
+    .skill-card.featured .diff-badge.medium::before { background: #e8c56a; }
+    .skill-card.featured .diff-badge.advanced::before { background: rgba(252,252,252,.9); }
 
     .card-header { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
     .cat-badge {
@@ -340,11 +342,15 @@
       display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;
     }
     .diff-badge {
-      padding: .2rem .7rem; border-radius: 1rem; font-size: 1.2rem; font-weight: 500;
+      display: inline-flex; align-items: center; gap: .5rem;
+      padding: .2rem .8rem .2rem .6rem; border-radius: var(--radius-pill, 1rem);
+      font-size: 1.2rem; font-weight: 500;
+      background: transparent; border: 1px solid var(--line); color: var(--c-gray-d);
     }
-    .diff-badge.easy { background: #d4edda; color: #2d6a4f; }
-    .diff-badge.medium { background: #fff3cd; color: #856404; }
-    .diff-badge.advanced { background: #f8d7da; color: #721c24; }
+    .diff-badge::before { content: ''; width: .55rem; height: .55rem; border-radius: 50%; background: var(--c-gray-l); flex: none; }
+    .diff-badge.easy::before { background: #ffe05e; }
+    .diff-badge.medium::before { background: #d9a400; }
+    .diff-badge.advanced::before { background: var(--c-black); }
     .card-footer {
       display: flex; align-items: center; justify-content: space-between;
       margin-top: auto; gap: 1rem;
@@ -778,7 +784,16 @@
     .gs-arrow { margin-left: auto; font-size: 1.8rem; transition: transform .2s; }
     .gs-toggle[aria-expanded="true"] .gs-arrow { transform: rotate(90deg); }
     .gs-content { padding-bottom: 2.4rem; }
-    .gs-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.4rem; }
+    .gs-steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2.4rem; }
+    .gs-step a { color: var(--c-black); font-weight: 600; text-decoration: none; border-bottom: 1px solid var(--c-yellow); }
+    .gs-step a:hover { background: var(--c-yellow); }
+    .gs-step .gs-num { background: var(--c-yellow); }
+    .gs-progress-badge {
+      font-family: var(--font-mono); font-size: 1.1rem; font-weight: 600;
+      letter-spacing: .04em; color: var(--c-black);
+      background: var(--c-yellow); border-radius: var(--radius-pill);
+      padding: .2rem 1rem;
+    }
     .gs-step { display: flex; gap: 1.6rem; align-items: flex-start; }
     .gs-num {
       width: 3.2rem; height: 3.2rem; flex-shrink: 0;
@@ -1704,7 +1719,7 @@
     }
     .skill-card::after { width: 100%; height: 3px; top: 0; left: 0; bottom: auto; transform: scaleX(0); transform-origin: left; }
     .skill-card:hover::after, .skill-card:focus-visible::after { transform: scaleX(1); }
-    .card-sub { color: #a09e92; }
+    .card-sub { color: var(--c-gray-d); }
     .skill-name { font-size: 2.1rem; letter-spacing: -.02em; }
     .skill-tagline { color: #6f6e66; }
     .rating-text { color: #8d8b80; }
@@ -1785,6 +1800,123 @@
     .tway strong { color: var(--c-black); }
     .tway code { font-family: var(--font-mono); font-size: 1.35rem; background: var(--c-black); color: var(--c-yellow); padding: .2rem .7rem; border-radius: .4rem; }
     .tway-ic { flex-shrink: 0; width: 2.8rem; height: 2.8rem; border-radius: .8rem; background: var(--c-black); color: var(--c-yellow); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
+    /* ===== OUTCOME-ROUTER ===== */
+    .outcome-router { background: var(--c-bg); border-top: 1px solid var(--line); padding: 5.6rem 0 4.8rem; }
+    .outcome-inner { max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-d); }
+    .outcome-h { font-size: clamp(2.8rem, 4vw, 4rem); font-weight: 640; letter-spacing: -.02em; margin: .4rem 0 .8rem; color: var(--c-black); }
+    .outcome-sub { font-size: 1.6rem; line-height: 1.5; color: var(--c-gray-d); max-width: 60ch; margin-bottom: 2.8rem; }
+    .outcome-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.4rem; }
+    .outcome-card {
+      display: flex; flex-direction: column; gap: .5rem;
+      text-align: left; cursor: pointer;
+      background: var(--c-white, #fcfcfc); border: 1px solid var(--line);
+      border-radius: var(--r-lg, 1.6rem); padding: 2rem 2rem 1.8rem;
+      font-family: inherit; transition: var(--trans);
+    }
+    .outcome-card:hover, .outcome-card:focus-visible {
+      transform: translateY(-4px); box-shadow: var(--shadow-lg);
+      border-color: var(--c-black); outline: none;
+    }
+    .outcome-ic { width: 2.8rem; height: 2.8rem; color: var(--c-black); margin-bottom: .6rem; }
+    .outcome-ic .lu { width: 2.8rem; height: 2.8rem; }
+    .outcome-label { font-size: 1.75rem; font-weight: 600; letter-spacing: -.01em; color: var(--c-black); line-height: 1.25; }
+    .outcome-hint { font-size: 1.35rem; color: var(--c-gray-d); line-height: 1.4; }
+    .outcome-card.is-guide { background: var(--c-black); border-color: var(--c-black); }
+    .outcome-card.is-guide .outcome-ic, .outcome-card.is-guide .outcome-label { color: var(--c-yellow); }
+    .outcome-card.is-guide .outcome-hint { color: rgba(252,252,252,.72); }
+    .outcome-card.is-guide:hover { box-shadow: 0 24px 50px -18px rgba(0,0,0,.5); }
+    @media (max-width: 1023px) { .outcome-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 600px) { .outcome-grid { grid-template-columns: 1fr; } .outcome-router { padding: 4rem 0 3.2rem; } }
+
+    /* ===== „FANG HIER AN"-KARTE ===== */
+    .skill-card.start-here { border-color: var(--c-black); box-shadow: var(--shadow-md); overflow: visible; }
+    .skill-card.start-here::after { background: var(--c-yellow); }
+    .start-here-ribbon {
+      position: absolute; top: 0; right: 2rem; transform: translateY(-50%);
+      background: var(--c-black); color: var(--c-yellow);
+      font-family: var(--font-mono); font-size: 1.05rem; font-weight: 600;
+      letter-spacing: .08em; text-transform: uppercase;
+      padding: .35rem 1rem; border-radius: var(--radius-pill); z-index: 2;
+    }
+
+    /* ===== KARTEN-ERGEBNISVORSCHAU ===== */
+    .card-preview {
+      font-family: var(--font-mono); font-size: 1.15rem; line-height: 1.4;
+      color: var(--c-gray-d); background: var(--c-bg);
+      border-left: 2px solid var(--line); border-radius: .4rem;
+      padding: .7rem .9rem; margin: 0 0 .4rem;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .card-preview-lead {
+      display: inline-block; text-transform: uppercase; letter-spacing: .1em;
+      font-size: .95rem; color: var(--c-gray-l); margin-right: .6rem; font-weight: 600;
+    }
+
+    /* ===== MODAL-RUNWAY „SO LEGST DU LOS" ===== */
+    .runway { margin: 2rem 0 .8rem; }
+    .runway-steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0; }
+    .runway-step { display: flex; gap: 1.4rem; padding: 1.4rem 0; position: relative; }
+    .runway-step + .runway-step { border-top: 1px solid var(--line); }
+    .runway-num {
+      width: 2.8rem; height: 2.8rem; flex-shrink: 0;
+      background: var(--c-black); color: var(--c-yellow);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem; font-weight: 700; font-family: var(--font-mono);
+    }
+    .runway-body { flex: 1; min-width: 0; }
+    .runway-body strong { font-size: 1.55rem; display: block; margin-bottom: .3rem; color: var(--c-black); }
+    .runway-desc { font-size: 1.4rem; color: var(--c-gray-d); line-height: 1.5; margin: 0 0 1rem; }
+    .runway-action {
+      display: inline-flex; align-items: center; gap: 1rem;
+      font-family: inherit; font-size: 1.4rem; font-weight: 600; cursor: pointer;
+      background: transparent; color: var(--c-black);
+      border: 1px solid var(--c-black); border-radius: var(--radius-pill);
+      padding: .8rem 1.6rem; transition: var(--trans);
+    }
+    .runway-action:hover { background: var(--c-black); color: var(--c-white, #fcfcfc); }
+    .runway-action.-primary { background: var(--c-yellow); border-color: var(--c-yellow); }
+    .runway-action.-primary:hover { background: var(--c-black); color: var(--c-yellow); border-color: var(--c-black); }
+    .runway-action .ra-copy { font-family: var(--font-mono); font-size: 1.1rem; opacity: .6; }
+    .runway-note { font-size: 1.25rem; color: var(--c-gray-d); margin: .8rem 0 0; }
+    .startprompt {
+      display: flex; align-items: stretch; gap: 0;
+      background: #14140f; border-radius: var(--r-md, 1.2rem); overflow: hidden;
+    }
+    .startprompt-text {
+      flex: 1; margin: 0; padding: 1.4rem 1.6rem;
+      font-family: var(--font-mono); font-size: 1.35rem; line-height: 1.55;
+      color: #f1f1ec;
+    }
+    .startprompt-copy {
+      flex-shrink: 0; border: none; cursor: pointer;
+      background: var(--c-yellow); color: var(--c-black);
+      font-family: inherit; font-size: 1.35rem; font-weight: 600;
+      padding: 0 1.8rem; transition: background .15s ease-out;
+    }
+    .startprompt-copy:hover { background: #ffd400; }
+    .runway-alt { font-size: 1.35rem; color: var(--c-gray-d); margin: 1rem 0 0; }
+    .mini-trigger {
+      font-family: var(--font-mono); font-size: 1.25rem; font-weight: 600;
+      background: var(--c-bg); border: 1px solid var(--line); border-radius: .5rem;
+      padding: .2rem .7rem; color: var(--c-black); cursor: pointer;
+    }
+    .mini-trigger:hover { border-color: var(--c-black); }
+
+    /* ===== „LÄUFT IN" ===== */
+    .run-in { display: flex; gap: .8rem; flex-wrap: wrap; margin-bottom: .8rem; }
+    .run-chip {
+      font-family: var(--font-mono); font-size: 1.25rem; font-weight: 600;
+      padding: .35rem 1.1rem; border-radius: var(--radius-pill);
+      border: 1px solid var(--line); background: transparent;
+      display: inline-flex; align-items: center; gap: .5rem;
+    }
+    .run-chip::before { content: ''; width: .6rem; height: .6rem; border-radius: 50%; background: var(--c-black); }
+    .run-chip.na { color: var(--c-gray-d); text-decoration: line-through; text-decoration-color: var(--c-gray-l); }
+    .run-chip.na::before { background: var(--c-gray-l); }
+    .run-note { font-size: 1.3rem; color: var(--c-gray-d); line-height: 1.5; margin: 0 0 .4rem; }
+
+    /* Meta (Autor/Version) ans Ende, leise */
+    .info-grid-foot { margin-top: 2.4rem; padding-top: 1.6rem; border-top: 1px solid var(--line); opacity: .78; }
   </style>
 </head>
 <body>
@@ -1821,7 +1953,7 @@
     <div class="hero-inner hero-top">
       <p class="overline" style="color:#ffe05e">pilot · Citizen Coding</p>
       <h1 class="hero-h1">Skills, die<br><span class="hero-rotator" id="hero-rotator" aria-hidden="true">Tools bauen.</span><span class="sr-only">Arbeit erledigen.</span></h1>
-      <p class="subline">Von Piloten gebaut, von Piloten empfohlen — euer Werkzeugkasten für Claude&nbsp;Code &amp; Langdock.</p>
+      <p class="subline">Von Piloten gebaut, von Piloten empfohlen. Du beschreibst auf Deutsch, was du brauchst — Claude&nbsp;Code baut es. <strong>Kein Programmier-Vorwissen nötig.</strong></p>
       <div class="hero-stats" id="hero-stats">
         <div class="hero-stat-box"><span class="hero-stat-num" data-count="39" id="stat-skills">0</span><span class="hero-stat-label">Skills</span></div>
         <div class="hero-stat-box"><span class="hero-stat-num" data-count="6" id="stat-pilots">0</span><span class="hero-stat-label">Piloten</span></div>
@@ -1829,7 +1961,7 @@
         <div class="hero-stat-box"><span class="hero-stat-num" data-count="49" id="stat-endorsed">0</span><span class="hero-stat-label">Empfehlungen</span></div>
       </div>
       <div class="hero-cta">
-        <button class="c-cta -yellow-bg" onclick="document.getElementById('main-content').scrollIntoView({behavior:'smooth'})">Katalog durchstöbern</button>
+        <button class="c-cta -yellow-bg" onclick="document.getElementById('outcome-router').scrollIntoView({behavior:'smooth',block:'start'})">Ersten Skill finden</button>
         <button class="c-cta -yellow-border" onclick="showView('explainer')">Was sind Skills?</button>
       </div>
     </div>
@@ -1840,26 +1972,72 @@
     </div>
   </section>
 
+  <!-- OUTCOME ROUTER -->
+  <section class="outcome-router" id="outcome-router" aria-labelledby="outcome-h">
+    <div class="outcome-inner">
+      <p class="overline">Los geht's</p>
+      <h2 id="outcome-h" class="outcome-h">Was willst du tun?</h2>
+      <p class="outcome-sub">Wähle ein Ziel — wir zeigen dir den Skill, der dich direkt dorthin bringt. Kein Vorwissen nötig.</p>
+      <div class="outcome-grid">
+        <button class="outcome-card" type="button" onclick="pickOutcome('pptx')">
+          <span class="outcome-ic"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h20"/><path d="M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3"/><path d="m7 21 5-5 5 5"/></svg></span>
+          <span class="outcome-label">Eine Präsentation bauen</span>
+          <span class="outcome-hint">PowerPoint aus deinem Rohmaterial</span>
+        </button>
+        <button class="outcome-card" type="button" onclick="pickOutcome('pdf')">
+          <span class="outcome-ic"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M9 13h6"/><path d="M9 17h6"/></svg></span>
+          <span class="outcome-label">Eine PDF auswerten</span>
+          <span class="outcome-hint">Report, Vertrag oder Studie verdichtet</span>
+        </button>
+        <button class="outcome-card" type="button" onclick="pickOutcome('webseite-bauen')">
+          <span class="outcome-ic"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg></span>
+          <span class="outcome-label">Eine Website oder ein Tool bauen</span>
+          <span class="outcome-hint">Kleine Web-App, die wirklich läuft</span>
+        </button>
+        <button class="outcome-card" type="button" onclick="pickOutcome('slides-aus-daten')">
+          <span class="outcome-ic"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg></span>
+          <span class="outcome-label">Aus Daten Slides machen</span>
+          <span class="outcome-hint">Excel oder CSV → fertige Charts</span>
+        </button>
+        <button class="outcome-card" type="button" onclick="pickOutcome('tonalitaets-check')">
+          <span class="outcome-ic"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z"/></svg></span>
+          <span class="outcome-label">Text markengerecht schreiben</span>
+          <span class="outcome-hint">Auf pilot-Tonalität geprüft</span>
+        </button>
+        <button class="outcome-card is-guide" type="button" onclick="pickOutcome('erste-schritte')">
+          <span class="outcome-ic"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m16.24 7.76-2.12 6.36-6.36 2.12 2.12-6.36z"/></svg></span>
+          <span class="outcome-label">Ich weiß noch nicht</span>
+          <span class="outcome-hint">Zeig mir den Einstieg</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
   <!-- GETTING STARTED -->
   <div class="getting-started" id="getting-started">
     <div class="gs-inner">
       <button class="gs-toggle" onclick="toggleGS()" aria-expanded="false" id="gs-toggle-btn">
-        <span>Neu bei Skills? So startest du in 3 Schritten</span>
+        <span>Neu bei Skills? So startest du in vier Schritten</span>
+        <span class="gs-progress-badge" id="gs-progress" hidden></span>
         <span class="gs-arrow">›</span>
       </button>
       <div class="gs-content" id="gs-content" hidden>
         <div class="gs-steps">
           <div class="gs-step">
+            <span class="gs-num">0</span>
+            <div><strong>Claude Code startklar machen</strong><p>Noch nicht installiert? <a href="https://code.claude.com/docs" target="_blank" rel="noopener">Hier entlang zur Anleitung →</a> Das Terminal sieht technisch aus, ist aber nur ein Textfeld — du tippst deine Aufgabe auf Deutsch hinein.</p></div>
+          </div>
+          <div class="gs-step">
             <span class="gs-num">1</span>
-            <div><strong>Skill entdecken</strong><p>Durchsuche den Marketplace, filtere nach Aufgabe, Quelle oder Thema und finde den passenden Skill.</p></div>
+            <div><strong>Skill entdecken</strong><p>Wähle oben, was du tun willst — oder durchsuche den Katalog nach Aufgabe, Rolle oder Thema.</p></div>
           </div>
           <div class="gs-step">
             <span class="gs-num">2</span>
-            <div><strong>Befehl kopieren</strong><p>Öffne einen Skill und klicke auf das <code>/befehl</code>-Badge — er landet automatisch in deiner Zwischenablage.</p></div>
+            <div><strong>Startprompt kopieren</strong><p>Öffne einen Skill und kopiere den fertigen Satz unter „So legst du los“ — genau so, wie du es aus Langdock kennst.</p></div>
           </div>
           <div class="gs-step">
             <span class="gs-num">3</span>
-            <div><strong>Loslegen</strong><p>Claude Code im Terminal öffnen, Befehl eintippen, Enter. Viele Skills laufen auch in Langdock — jeder Skill zeigt unter „Wo du diesen Skill einsetzen kannst“, wo er funktioniert.</p></div>
+            <div><strong>Loslegen</strong><p>In Claude Code einfügen, Enter — fertig. Viele Skills laufen auch in Langdock; jeder Skill zeigt, wo er funktioniert.</p></div>
           </div>
         </div>
       </div>
@@ -1927,7 +2105,7 @@
     <section class="pilots-section cat-reveal">
       <div class="pilots-inner">
         <p class="overline">Unsere Piloten</p>
-        <h2>Das sagen unsere Experten</h2>
+        <h2>Das sagen Kolleg:innen, die schon dabei sind</h2>
         <div class="pilots-grid" id="pilots-grid"></div>
       </div>
     </section>
@@ -2385,7 +2563,7 @@ Gib einen priorisierten Report aus:
       <div class="modal-meta" id="modal-meta"></div>
       <div class="modal-tabs" role="tablist" aria-label="Skill-Details">
         <button class="tab-btn active" role="tab" aria-selected="true" data-tab="overview" onclick="switchTab('overview')">Übersicht</button>
-        <button class="tab-btn" role="tab" aria-selected="false" data-tab="files" onclick="switchTab('files')">Aufbau &amp; Dateien</button>
+        <button class="tab-btn" role="tab" aria-selected="false" data-tab="files" onclick="switchTab('files')">Dateien &amp; Download</button>
         <button class="tab-btn" role="tab" aria-selected="false" data-tab="ratings" onclick="switchTab('ratings')">Bewertungen &amp; Kommentare</button>
         <button class="tab-btn" role="tab" aria-selected="false" data-tab="pilots" onclick="switchTab('pilots')">Piloten</button>
         <button class="tab-btn" role="tab" aria-selected="false" data-tab="changelog" onclick="switchTab('changelog')">Changelog</button>
@@ -4912,8 +5090,15 @@ Gib einen priorisierten Report aus:
     }
 
 
+    // Kurze Ergebnis-Vorschau für die Karte (erste sinnvolle Zeile aus exampleOutput)
+    function previewSnippet(out) {
+      if (!out) return '';
+      const line = out.split('\n').map(l => l.trim()).find(l => l.length > 3) || '';
+      return line.length > 88 ? line.slice(0, 88).trimEnd() + ' …' : line;
+    }
+
     // ===== RENDER CARD =====
-    function renderCard(skill, isFeatured = false, idx = 0) {
+    function renderCard(skill, isFeatured = false, idx = 0, isStart = false) {
       const eff = getEffectiveRating(skill);
       const endorsers = skill.endorsedBy || [];
       const catClass = skill.category;
@@ -4955,7 +5140,8 @@ Gib einen priorisierten Report aus:
       const delay = Math.min(idx, 11) * 35;
 
       return `
-        <article class="skill-card ${isFeatured ? 'featured' : ''}${state._noCardAnim ? '' : ' card-in'}" style="animation-delay:${state._noCardAnim ? 0 : delay}ms" onclick="openModal('${skill.id}')" tabindex="0" role="button" aria-label="${escHtml(skill.name)} öffnen" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openModal('${skill.id}')}">
+        <article class="skill-card ${isFeatured ? 'featured' : ''}${isStart ? ' start-here' : ''}${state._noCardAnim ? '' : ' card-in'}" style="animation-delay:${state._noCardAnim ? 0 : delay}ms" onclick="openModal('${skill.id}')" tabindex="0" role="button" aria-label="${escHtml(skill.name)} öffnen" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openModal('${skill.id}')}">
+          ${isStart ? '<span class="start-here-ribbon">Fang hier an</span>' : ''}
           <div class="card-top">
             <span class="card-sub">${escHtml(subLabel(skill.subcategory))}</span>
             <button class="fav-btn ${fav ? 'active' : ''}" onclick="toggleFavorite(event,'${skill.id}')" aria-label="${fav ? 'Aus Favoriten entfernen' : 'Zu Favoriten hinzufügen'}" aria-pressed="${fav}">${fav ? '★' : '☆'}</button>
@@ -4968,6 +5154,7 @@ Gib einen priorisierten Report aus:
             ${newBadge}
           </div>
           <div class="skill-tags">${tagsHtml}</div>
+          ${skill.exampleOutput && !isFeatured ? `<p class="card-preview" title="Beispiel-Ergebnis"><span class="card-preview-lead">Ergebnis</span>${escHtml(previewSnippet(skill.exampleOutput))}</p>` : ''}
           <div class="skill-meta">
             <span class="diff-badge ${skill.difficulty}">${diffLabel(skill.difficulty)}</span>
             <span class="meta-dot">·</span>
@@ -5032,6 +5219,79 @@ Gib einen priorisierten Report aus:
     function escHtml(str) {
       if (!str) return '';
       return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+    }
+
+    // ===== AKTIVIERUNG: Startprompts, „ausprobiert"-Fortschritt, Outcome-Router =====
+    // Fertige deutsche Sätze zum Einfügen in Claude Code — die Zielgruppe denkt in Prompts, nicht in /befehlen.
+    const START_PROMPTS = {
+      'erste-schritte': 'Ich komme von Langdock und bin neu in Claude Code. Zeig mir Schritt für Schritt, wie ich starte und meinen ersten Skill nutze.',
+      'pptx': 'Bau mir aus diesen Stichpunkten eine PowerPoint-Präsentation: [hier deine Inhalte einfügen]',
+      'pdf': 'Lies die PDF in meinem Projektordner und fass die wichtigsten Punkte für mich zusammen.',
+      'webseite-bauen': 'Bau mir eine kleine Website für [Thema] — mit [was drauf soll]. Ich kann nicht programmieren, führ mich Schritt für Schritt.',
+      'slides-aus-daten': 'Mach aus der Tabelle in meinem Projektordner präsentationsreife Slides mit passenden Charts.',
+      'tonalitaets-check': 'Prüf diesen Text gegen unsere Marken-Tonalität und schlag Verbesserungen vor: [Text einfügen]',
+      'webaudit': 'Mach einen Audit von [URL]: UX, Performance, SEO und Barrierefreiheit — mit konkreten Empfehlungen.',
+      'pitch-deck': 'Hilf mir, einen überzeugenden Pitch für [Thema/Kunde] zu strukturieren — Argumente und Storyline.',
+      'markt-research': 'Recherchier strukturiert den Markt für [Thema] — mit Quellenangaben zu jeder Aussage.',
+      'meeting-notes': 'Mach aus dieser Mitschrift ein sauberes Protokoll mit Entscheidungen und To-dos: [Notizen einfügen]',
+      'report-summary': 'Fass diesen Report auf eine halbe Seite zusammen — Kernaussagen und Handlungsempfehlung: [Report einfügen]',
+      'docx': 'Erstell mir ein Word-Dokument für [Zweck] mit folgendem Inhalt: [Inhalt einfügen]',
+      'xlsx': 'Bau mir eine Excel-Tabelle, die [Zweck] — die Rohdaten hänge ich an.'
+    };
+    function startPrompt(skill) {
+      if (START_PROMPTS[skill.id]) return START_PROMPTS[skill.id];
+      const t = (skill.tagline || skill.name).replace(/\.$/, '');
+      return `Hilf mir bei dieser Aufgabe: ${t}. Sag mir, welche Infos du dafür von mir brauchst.`;
+    }
+
+    // „ausprobiert"-Set (localStorage, analog zu Favoriten) — schließt die Browse→Tun-Schleife
+    const STARTER_JOURNEY = ['erste-schritte', 'prototyp-bauen', 'webseite-bauen'];
+    function getTried() {
+      try { return JSON.parse(localStorage.getItem('skill-tried') || '[]'); } catch(e) { return []; }
+    }
+    function markTried(id) {
+      let t = getTried();
+      if (t.includes(id)) return;
+      t.push(id);
+      try { localStorage.setItem('skill-tried', JSON.stringify(t)); } catch(e) {}
+      renderGsProgress();
+      if (STARTER_JOURNEY.includes(id)) {
+        const done = STARTER_JOURNEY.filter(s => t.includes(s)).length;
+        showToast(done >= STARTER_JOURNEY.length
+          ? 'Alle Einsteiger-Skills ausprobiert — stark! ✓'
+          : `Geschafft ✓ — ${done} von ${STARTER_JOURNEY.length} Einsteiger-Skills`);
+      }
+    }
+    function renderGsProgress() {
+      const el = document.getElementById('gs-progress');
+      if (!el) return;
+      const done = STARTER_JOURNEY.filter(s => getTried().includes(s)).length;
+      if (done === 0) { el.hidden = true; return; }
+      el.hidden = false;
+      el.textContent = `${done}/${STARTER_JOURNEY.length} geschafft`;
+    }
+
+    // Outcome-Router: Ziel wählen → passenden Skill öffnen
+    function pickOutcome(id) {
+      if (SKILLS.some(s => s.id === id)) openModal(id);
+      else document.getElementById('main-content').scrollIntoView({behavior:'smooth'});
+    }
+    function copyStartPrompt(evt, id) {
+      if (evt) evt.stopPropagation();
+      const skill = SKILLS.find(s => s.id === id);
+      if (!skill) return;
+      const text = startPrompt(skill);
+      const done = () => { showToast('Startprompt kopiert ✓ — jetzt in Claude Code einfügen'); markTried(id); };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(() => { fallbackCopy(text); done(); });
+      } else { fallbackCopy(text); done(); }
+    }
+    function copyTriggerRunway(evt, trigger, id) {
+      if (evt) evt.stopPropagation();
+      const done = () => { showToast('Kopiert: ' + trigger); markTried(id); };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(trigger).then(done).catch(() => { fallbackCopy(trigger); done(); });
+      } else { fallbackCopy(trigger); done(); }
     }
 
     // ===== RENDER FEATURED =====
@@ -5200,7 +5460,13 @@ Gib einen priorisierten Report aus:
         `;
       } else {
         if (empty) empty.style.display = 'none';
-        grid.innerHTML = filtered.map((s, i) => renderCard(s, false, i)).join('');
+        // Ohne aktive Filter/Suche: „erste-schritte" als „Fang hier an" oben anpinnen — ein klarer erster Schritt
+        const noFilter = !state.search && state.category === 'all' && !state.subcategory && !state.role
+          && !state.platform && state.tags.length === 0 && !state.endorsedOnly && !state.favoritesOnly;
+        const start = noFilter ? filtered.find(s => s.id === 'erste-schritte') : null;
+        const rest = start ? filtered.filter(s => s.id !== start.id) : filtered;
+        const pinned = start ? renderCard(start, false, 0, true) : '';
+        grid.innerHTML = pinned + rest.map((s, i) => renderCard(s, false, i + (start ? 1 : 0))).join('');
       }
     }
 
@@ -6345,48 +6611,50 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
           </div>
         </div>
 
-        <div class="info-grid">
-          <div class="info-item"><label>Autor</label><span>${escHtml(skill.author)}</span></div>
-          <div class="info-item"><label>Version</label><span>${escHtml(skill.version)}</span></div>
-          <div class="info-item"><label>Hinzugefügt</label><span>${formatDate(skill.addedAt)}</span></div>
-          <div class="info-item"><label>Zuletzt aktualisiert</label><span>${formatDate(skill.updatedAt)}</span></div>
+        ${skill.exampleOutput ? `
+          <p class="section-label output-label">Das bekommst du</p>
+          <pre class="output-example">${escHtml(skill.exampleOutput)}</pre>
+        ` : ''}
+
+        <div class="runway">
+          <p class="section-label">So legst du los</p>
+          <ol class="runway-steps">
+            <li class="runway-step">
+              <span class="runway-num">1</span>
+              <div class="runway-body">
+                ${skill.install === 'builtin'
+                  ? `<strong>Nichts zu installieren</strong><p class="runway-desc">Dieser Skill steckt fest in Claude Code — direkt weiter zu Schritt&nbsp;2.</p>`
+                  : skill.install === 'plugin'
+                  ? `<strong>Einmalig installieren</strong><p class="runway-desc">Offizieller Anthropic-Skill. In Claude Code einmal einrichten:</p>
+                     <button class="runway-action" onclick="quickCopy(event,'/plugin marketplace add anthropics/skills')"><span>/plugin marketplace add anthropics/skills</span><span class="ra-copy">kopieren</span></button>
+                     <p class="runway-note">Alternativ im Tab „Dateien &amp; Download“ als .zip laden.</p>`
+                  : `<strong>Skill herunterladen</strong><p class="runway-desc">Als .zip laden und in deinem Projekt nach <code>.claude/skills/</code> entpacken.</p>
+                     <button class="runway-action -primary" onclick="downloadSkill('${skill.id}', this)">Skill herunterladen (.zip)</button>`}
+              </div>
+            </li>
+            <li class="runway-step">
+              <span class="runway-num">2</span>
+              <div class="runway-body">
+                <strong>In Claude Code einfügen und loslegen</strong>
+                <p class="runway-desc">Kopier diesen Satz und füg ihn in Claude Code ein — genau wie du es aus Langdock kennst:</p>
+                <div class="startprompt">
+                  <p class="startprompt-text">${escHtml(startPrompt(skill))}</p>
+                  <button class="startprompt-copy" onclick="copyStartPrompt(event,'${skill.id}')" aria-label="Startprompt kopieren">Kopieren</button>
+                </div>
+                ${skill.trigger ? `<p class="runway-alt">Schon geübt? Kürzer geht's mit <button class="mini-trigger" onclick="copyTriggerRunway(event,'${escHtml(skill.trigger)}','${skill.id}')">${escHtml(skill.trigger)}</button></p>` : ''}
+              </div>
+            </li>
+          </ol>
         </div>
 
-        <p class="section-label">So startet dieser Skill</p>
-        <div class="trigger-ways">
-          <div class="tway">
-            <span class="tway-ic">✦</span>
-            <div><strong>Automatisch</strong> — Claude startet ihn von selbst, wenn deine Anfrage dazu passt. Kein Befehl nötig.</div>
-          </div>
-          <div class="tway">
-            <span class="tway-ic">⌘</span>
-            <div><strong>Manuell</strong> — ${skill.trigger ? `du tippst <code>${escHtml(skill.trigger)}</code> in Claude Code.` : `dieser Skill hat keinen eigenen Befehl — er läuft automatisch im passenden Workflow.`}</div>
-          </div>
-          ${skill.install === 'builtin' ? `<div class="tway">
-            <span class="tway-ic">⚙</span>
-            <div><strong>Schon eingebaut</strong> — dieser Skill steckt in Claude Code selbst (er treibt die Office-Datei-Fähigkeiten an). Nichts zu installieren; die Dateien hier sind zum Reinschauen.</div>
-          </div>` : ''}
-          ${skill.install === 'plugin' ? `<div class="tway">
-            <span class="tway-ic">⬇</span>
-            <div><strong>Einmalig installieren</strong> — offizieller Anthropic-Skill aus <code>anthropics/skills</code>: in Claude Code <code>/plugin marketplace add anthropics/skills</code>, dann <code>/plugin install example-skills@anthropic-agent-skills</code>. Oder im Tab „Aufbau &amp; Dateien“ als ZIP laden und nach <code>.claude/skills/</code> entpacken.</div>
-          </div>` : ''}
+        <p class="section-label">Läuft in</p>
+        <div class="run-in">
+          <span class="run-chip ok">Claude Code</span>
+          <span class="run-chip ${skillPlatforms(skill).langdock ? 'ok' : 'na'}">Langdock</span>
         </div>
-
-        <p class="section-label">Wo du diesen Skill einsetzen kannst</p>
-        <div class="pf-list">
-          <div class="pf-item ok">
-            <span class="pf-item-name">Claude Code</span>
-            <span class="pf-item-how">${skill.install === 'builtin'
-              ? `Schon in Claude Code eingebaut — nichts zu installieren, einfach lostippen.`
-              : `Das Zuhause dieses Skills: Ordner nach <code>.claude/skills/</code>${skill.trigger ? ` — oder direkt <code>${escHtml(skill.trigger)}</code> tippen` : ''}.`}</span>
-          </div>
-          <div class="pf-item ${skillPlatforms(skill).langdock ? 'ok' : 'na'}">
-            <span class="pf-item-name">Langdock</span>
-            <span class="pf-item-how">${skillPlatforms(skill).langdock
-              ? `Funktioniert auch hier: die <code>SKILL.md</code> unter <strong>Skills → Add Skill</strong> hochladen — Langdock aktiviert sie automatisch anhand der Beschreibung.`
-              : `Hier nicht sinnvoll — der Skill braucht die Ausführungsumgebung von Claude Code (Dateien, Scripts oder Browser).`}</span>
-          </div>
-        </div>
+        <p class="run-note">${skillPlatforms(skill).langdock
+          ? `In Langdock: die <code>SKILL.md</code> unter <strong>Skills → Add Skill</strong> hochladen — sie aktiviert sich automatisch anhand der Beschreibung.`
+          : `Nur Claude Code — dieser Skill braucht dessen Ausführungsumgebung (Dateien, Scripts oder Browser).`}</p>
 
         <p class="section-label">Wann einsetzen</p>
         <ul class="use-cases">${useCasesHtml}</ul>
@@ -6397,32 +6665,12 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
         <p class="section-label">Tags</p>
         <div class="modal-tag-list">${tagsHtml}</div>
 
-        ${skill.exampleOutput ? `
-          <p class="section-label output-label">Beispiel-Ausgabe</p>
-          <pre class="output-example">${escHtml(skill.exampleOutput)}</pre>
-        ` : ''}
-
-        <details class="install-guide" style="margin-top:2.4rem">
-          <summary style="cursor:pointer;font-size:1.4rem;font-weight:600;color:var(--c-black);padding:.8rem 0;list-style:none;display:flex;align-items:center;gap:.8rem">
-            <span>So nutzt du diesen Skill</span>
-            <span style="margin-left:auto;font-size:1.2rem;color:var(--c-gray-m)">▼</span>
-          </summary>
-          <div style="padding:1.6rem;background:var(--c-bg);border-radius:1rem;margin-top:.8rem">
-            ${skill.trigger ? `
-            <ol style="margin:0;padding-left:2rem;display:flex;flex-direction:column;gap:1rem;font-size:1.4rem;line-height:1.6">
-              <li>Öffne <strong>Claude Code</strong> in deinem Terminal</li>
-              <li>Navigiere in dein Projektverzeichnis (<code style="background:rgba(0,0,0,.08);padding:.2rem .5rem;border-radius:.3rem">cd mein-projekt</code>)</li>
-              <li>Tippe den Befehl: <code style="background:rgba(0,0,0,.08);padding:.2rem .5rem;border-radius:.3rem">${escHtml(skill.trigger)}</code></li>
-              <li>Folge den Anweisungen im Chat</li>
-            </ol>
-            ` : `
-            <p style="font-size:1.4rem;color:var(--c-gray-m);margin:0">Dieser Skill hat keinen eigenen Befehl — Claude Code aktiviert ihn automatisch, wenn deine Aufgabe passt.</p>
-            `}
-            <p style="margin:1.2rem 0 0;font-size:1.2rem;color:var(--c-gray-m)">
-              Neu bei Claude Code? <a href="https://code.claude.com/docs" target="_blank" style="color:var(--c-black);font-weight:600">Zur Dokumentation →</a>
-            </p>
-          </div>
-        </details>
+        <div class="info-grid info-grid-foot">
+          <div class="info-item"><label>Autor</label><span>${escHtml(skill.author)}</span></div>
+          <div class="info-item"><label>Version</label><span>${escHtml(skill.version)}</span></div>
+          <div class="info-item"><label>Hinzugefügt</label><span>${formatDate(skill.addedAt)}</span></div>
+          <div class="info-item"><label>Zuletzt aktualisiert</label><span>${formatDate(skill.updatedAt)}</span></div>
+        </div>
 
         <div class="builder-nudge">
           <div>
@@ -6768,6 +7016,7 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
       const isHidden = content.hidden;
       content.hidden = !isHidden;
       btn.setAttribute('aria-expanded', isHidden ? 'true' : 'false');
+      try { localStorage.setItem('gs-seen', '1'); } catch(e) {}
     }
 
     // ===== MOBILE FILTER TOGGLE =====
@@ -7361,6 +7610,15 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
       renderPilots();
       render();
       restoreFromURL();
+      // Getting-Started beim allerersten Besuch offen zeigen (danach gemerkt) — die Kernpersona sieht das Gerüst einmal
+      try {
+        if (!localStorage.getItem('gs-seen')) {
+          const gsc = document.getElementById('gs-content');
+          const gsb = document.getElementById('gs-toggle-btn');
+          if (gsc && gsb) { gsc.hidden = false; gsb.setAttribute('aria-expanded', 'true'); }
+        }
+      } catch(e) {}
+      renderGsProgress();
       // Mobil: Filterpanel startet eingeklappt — der Platz gehört den Skills (Persona-Review P6)
       if (window.matchMedia && window.matchMedia('(max-width: 1023px)').matches) {
         const ftb = document.getElementById('filter-toggle-btn');
