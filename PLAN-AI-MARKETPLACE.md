@@ -147,6 +147,38 @@ als „In Arbeit“-Teaser-Karten auf der Startseite.
 - Jede Sektion bekommt eigenes Deep-Link-Schema (`prompts.html?p=…`,
   `hilfe.html?begriff=…`, `showroom.html?case=…`).
 
+### 2.5 Design-Rüstzeug & Anti-Slop-Leitplanken (Ausrüstungs-Check 2026-07-15)
+
+Verifiziert und einsatzbereit: Node v22 + Playwright/Chromium (Screenshots &
+Regressionstests), `python3 -m http.server` für lokale Tests, `build-skills.mjs`
+läuft (39 Skills). Lokale Design-Bibliothek unter
+`/data/data/com.termux/files/home/design-assets/` — daraus wird in E1 gezogen:
+
+- **Tokens**: `tokens/pilot.css` als Ausgangspunkt für `shared/base.css`
+  (Papier-Töne, Linien, Status-Farben, Radien-Skala — nicht neu erfinden).
+- **Typografie**: Inter variable bleibt die CI-Schrift (liegt schon im Repo),
+  aber mit Gewichts-Nuancen (450/640 statt 400/700) und sauberer clamp()-Skala;
+  `JetBrains Mono` (schon im Repo) für Terminal/Prompts/Code. Kein Font-Zoo.
+- **Icons**: konsequent Lucide inline (bestehende `LU`-Map wächst mit);
+  Simple Icons nur für eindeutige Marken (wie bisher).
+- **Textur & Tiefe**: `snippets/noise.svg` + `snippets/ui-details.css`
+  (Fokus-Ring, mehrstufige getönte Schatten, Hairlines), dezente Patterns
+  (`dots`/`grid`) für Sektions-Rhythmus.
+- **Animation**: eigene `animations.css`-Utilities (fade-up, stagger, reveal,
+  reduced-motion eingebaut) + bestehende Mechaniken (`animateCount`,
+  `playScript`, Wort-Rotator); GSAP nur falls Scroll-Storytelling nötig wird —
+  Zurückhaltung ist Teil des editorialen Looks.
+
+**Anti-Slop-Regeln für alle Etappen** (aus frontend-design abgeleitet, auf
+pilot angewandt): Jede neue Seite beginnt mit einem kurzen Design-Pass
+(Layout-These + ein Signature-Element pro Seite — z.B. der Router-Hero der
+Startseite, der Prompt-Builder, der Icon-Browser), statt Karten-Grid-Schema F.
+Sektionen rhythmisieren (nicht jede Seite = zentrierter Container + Grid),
+Zahlen/Zählungen nur echt, Emojis weiterhin tabu, Texte im bewährten
+Du-Form-Editorial-Ton, `text-wrap: balance` für Headlines, Kontrast AA.
+Nach jeder Etappe Playwright-Screenshots (Desktop + Mobil) als Selbstkritik
+vor dem Push.
+
 ---
 
 ## 3. Gemeinsame Feature-Bausteine (jede Sektion bekommt sie)
