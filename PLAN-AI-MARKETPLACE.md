@@ -11,7 +11,7 @@
 | Frage | Entscheidung |
 |---|---|
 | Name | **pilot AI Marketplace** |
-| Architektur | **Multi-Page-Hub**: Startseite als Hub + eine HTML-Seite pro Sektion, geteilte `shared/base.css` + `shared/base.js`, **kein Build-Schritt**, GitHub Pages |
+| Architektur | **Multi-Page-Aufbau**: zentrale Startseite + eine HTML-Seite pro Sektion, geteilte `shared/base.css` + `shared/base.js`, **kein Build-Schritt**, GitHub Pages |
 | Feedback/Kollaboration | **Bleibt simuliert** (kuratierte Beispiel-Stimmen im Code + eigene Eingaben via localStorage), aber durchgängig inszeniert und ehrlich erklärt |
 | Inhaltstiefe | **Leuchtturm + Breite**: pro Sektion 3–5 voll ausgearbeitete, sofort nutzbare Inhalte + 10–20 solide schlankere Einträge |
 | Plugins & Frameworks | **Im Katalog als Typen** (Tabs: Alle / Skills / Plugins / Frameworks), gleiche Karten/Modals/Bewertungen, Typ-Erklärer |
@@ -60,12 +60,12 @@
   liefe unter Christophers Namen als stärkster Echtheits-Beweis (optionaler
   Leuchtturm-Case).
 
-**Hub & Navigation**
+**Startseite & Navigation**
 - **Der Outcome-Router IST der Hero** („Was willst du tun?“ mit 6–8 Ziel-Kacheln
   direkt im Sichtfeld), Sektions-Karten und „Meine Reise“ darunter.
 - **Header: 5 sichtbare Punkte + „Mehr“**: Katalog · Prompts · Baukasten ·
   Showroom · Hilfe · Mehr ▾ (Lernen, Asset-Bibliothek) + Such-Lupe. Mobil: Burger.
-- **Etappen-Zwischenstände**: Hub zeigt ab E1 alle 7 Sektions-Karten — fertige
+- **Etappen-Zwischenstände**: die Startseite zeigt ab E1 alle 7 Sektions-Karten — fertige
   klickbar, kommende als „In Arbeit“-Teaser mit 1-Satz-Ausblick. Die Nav führt
   nur zu Fertigem (keine toten Links).
 - **Globale Suche als Overlay auf jeder Seite** (E9): durchsucht alle
@@ -79,7 +79,7 @@
 
 ```
 pilot-skillmarkt/
-├── index.html              ← NEU: Hub/Landing (Überblick, Einstieg, Router)
+├── index.html              ← NEU: Startseite (Überblick, Einstieg, Router)
 ├── skills.html             ← bisheriger Katalog inkl. Plugins/Frameworks
 │                              + Views „Was sind Skills?“ und „Skill bauen“
 ├── prompts.html            ← Prompt-Sammlung
@@ -117,7 +117,7 @@ Aus `index.html` extrahiert und **verallgemeinert auf Item-Typen**:
 - **Rating-Engine**: Sterne + Kommentare + „hat geholfen“-Votes, localStorage-Keys
   nach Typ namespaced (`rate:prompt:<id>`, `vote:befehl:<id>`, …). `bayesScore()`
   zieht in base.js um und gilt für alle Kataloge.
-- **Favoriten & „ausprobiert“** typ-übergreifend (`fav:<typ>:<id>`), damit der Hub
+- **Favoriten & „ausprobiert“** typ-übergreifend (`fav:<typ>:<id>`), damit die Startseite
   eine sektionsübergreifende „Meine Reise“ zeigen kann.
 - **Utils**: `copyToClipboard`, `animateCount`, Lucide-`LU`-Icon-Map, Such-/Filter-
   Helfer, aktive-Filter-Leiste, `skillBadge()`-Logik als `itemBadge()`.
@@ -140,7 +140,7 @@ Header (desktop, entschieden): **Logo · Katalog · Prompts · Baukasten · Show
 Hilfe · Mehr ▾** (Dropdown: Lernen, Asset-Bibliothek) · Such-Lupe (öffnet ab E9 das
 globale Such-Overlay). Mobil: Burger-Menü mit allen Punkten. Die Nav führt während
 der Bauphase nur zu fertigen Seiten — kommende Sektionen erscheinen ausschließlich
-als „In Arbeit“-Teaser-Karten im Hub.
+als „In Arbeit“-Teaser-Karten auf der Startseite.
 
 - **Deep-Links bleiben gültig**: `index.html?skill=x` leitet per JS auf
   `skills.html?skill=x` weiter (alte geteilte Links brechen nicht).
@@ -171,7 +171,7 @@ Sektion diese Grundausstattung:
    Danke-Zustand). Demo-Charakter wird zentral gekennzeichnet (Footer-Satz +
    „Über diese Seite“-Modal), nicht an jedem Modul.
 6. **Einsteiger-Pfad**: „Fang hier an“-Pin (je 1 Einstiegs-Item pro Sektion),
-   kopierbare Startprompts wo sinnvoll, Querverweis zurück zum Hub-Router.
+   kopierbare Startprompts wo sinnvoll, Querverweis zurück zum Router der Startseite.
 7. **Querverweise**: Items verlinken aufeinander (Showroom-Case → benutzte Skills
    & Prompts; Prompt → passender Skill; Baustein → Showroom-Case, der ihn nutzt).
 
@@ -179,7 +179,7 @@ Sektion diese Grundausstattung:
 
 ## 4. Die Sektionen im Detail
 
-### 4.1 Hub (`index.html`) — „Ein Ort für alles, was ihr mit KI baut“
+### 4.1 Startseite (`index.html`) — „Ein Ort für alles, was ihr mit KI baut“
 
 - **Der Outcome-Router IST der Hero** (entschieden): „Was willst du tun?“ mit 6–8
   Ziel-Kacheln direkt im Sichtfeld — „Präsentation bauen“ → Skill pptx · „Besseren
@@ -338,8 +338,8 @@ Zusätzlich zu den Sektions-Umbauten, verteilt über die Etappen:
 
 1. **Token-Konsolidierung** (E1): Typo-Skala, Grautöne, Radien in base.css — erledigt
    die offenen Punkte aus dem letzten Audit nebenbei.
-2. **„Citizen Coding“ in einem Satz** definieren (Hub + Erklärer) — offener Punkt.
-3. **Stimmen sichtbarer**: „Stimmen aus dem Team“-Module (Katalogkopf + Hub),
+2. **„Citizen Coding“ in einem Satz** definieren (Startseite + Erklärer) — offener Punkt.
+3. **Stimmen sichtbarer**: „Stimmen aus dem Team“-Module (Katalogkopf + Startseite),
    Kommentar-CTA nach „ausprobiert“.
 4. **Einreichen ehrlich inszenieren**: einheitlicher Demo-Flow-Baustein mit klarer
    Kennzeichnung, wie der echte Weg aussähe — statt totem Button.
@@ -358,7 +358,7 @@ Commit + Push (= live), kurzer Report an dich → du schaust drauf, wir justiere
 
 | # | Etappe | Inhalt | Ergebnis |
 |---|---|---|---|
-| **E1** | **Fundament & Umzug** | `shared/base.css` + `shared/base.js` extrahieren (inkl. Token-Konsolidierung), SKILLS → `data/skills.js`, Katalog zieht nach `skills.html`, neuer Hub auf `index.html` (Router-Hero, Sektions-Karten — künftige Sektionen als „In Arbeit“-Teaser), Deep-Link-Weiterleitung, JS-injizierte Nav | Alles Bisherige funktioniert unverändert unter neuer Struktur; Hub live |
+| **E1** | **Fundament & Umzug** | `shared/base.css` + `shared/base.js` extrahieren (inkl. Token-Konsolidierung), SKILLS → `data/skills.js`, Katalog zieht nach `skills.html`, neue Startseite auf `index.html` (Router-Hero, Sektions-Karten — künftige Sektionen als „In Arbeit“-Teaser), Deep-Link-Weiterleitung, JS-injizierte Nav | Alles Bisherige funktioniert unverändert unter neuer Struktur; Startseite live |
 | **E2** | **Katalog-Ausbau** | Typ-Taxonomie Skill/Plugin/Framework, Typ-Tabs + Badges + Erklärer, 3–4 Plugins + 2–3 Frameworks kuratiert, Install-Demos, „Stimmen aus dem Team“, Filter-Entrümpelung | Katalog = Erweiterungs-Katalog |
 | **E3** | **Prompt-Sammlung** | `prompts.html` komplett: 5 Leuchttürme + 15–20 Einträge, Kopieren/Varianten/Warum-Erklärungen, Plattform-Chips, Einreichen-Flow | Zweite große Sektion live |
 | **E4** | **Hilfe-Center** | `hilfe.html`: Befehle-Ranking (~25), Glossar (~40), FAQ (~10), Upvotes, Terminal-Demos | Einsteiger-Sicherheitsnetz steht |
@@ -366,7 +366,7 @@ Commit + Push (= live), kurzer Report an dich → du schaust drauf, wir justiere
 | **E6** | **Asset-Bibliothek** | `bibliothek.html`: Fonts mit Live-Preview, Icon-Browser, Paletten, Patterns, Brand-Vorlagen | |
 | **E7** | **Baukasten** | `baukasten.html`: ~12 Bausteine mit iframe-Live-Vorschau + „Sag Claude“-Prompts, `beispieldaten/` mit Übungsideen | |
 | **E8** | **Showroom** | `showroom.html`: 3–4 echte + 5–6 inszenierte Cases **inkl. Bau der Mini-Demos** (aufwändigste Inhalts-Etappe), kompakt/aufklappbare Stories, Nachbauen-Tabs, Einreichen-Flow, Querverweise in beide Richtungen | Emotionaler Höhepunkt der Seite |
-| **E9** | **Verzahnung & Politur** | Querverweise komplettieren, Hub-Zähler/„Meine Reise“ final, **globales Such-Overlay auf allen Seiten** (durchsucht alle data/-Arrays, Treffer nach Typ gruppiert), Persona-Review + Webaudit über das Gesamtding, Feinschliff | Gesamtabnahme |
+| **E9** | **Verzahnung & Politur** | Querverweise komplettieren, Startseiten-Zähler/„Meine Reise“ final, **globales Such-Overlay auf allen Seiten** (durchsucht alle data/-Arrays, Treffer nach Typ gruppiert), Persona-Review + Webaudit über das Gesamtding, Feinschliff | Gesamtabnahme |
 
 Grobe Einschätzung: E1 ist die größte Einzeletappe (Refactoring mit
 Regressions-Risiko), E3/E4/E8 sind inhaltsschwer, E5/E6/E7 mittel.
@@ -389,7 +389,7 @@ Reihenfolge E3–E8 ist nach deinem Feedback frei umsortierbar.
 - **Sprache & Ton**: durchgängig Deutsch, Du-Form, editorial, Lucide statt Emoji —
   wie bisher.
 - **Performance**: data/-Dateien pro Seite laden nur, was die Seite braucht;
-  Hub lädt für Zähler/Suche alle, aber `defer`.
+  die Startseite lädt für Zähler/Suche alle, aber `defer`.
 
 ---
 
