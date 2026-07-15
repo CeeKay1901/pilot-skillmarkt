@@ -114,7 +114,7 @@ direkt aus dem Folien-XML. ${slides.length} Folien, ${slides.filter(s => s.notes
 <a class="btn" href="../viewer.html?f=pptx/konzept.md">Quell-Konzept ansehen</a>
 </div>
 ${slides.map(card).join('\n')}
-<footer>Erzeugt von <code style="font-family:'JetBrains Mono',monospace">demo/build-pptx-preview.mjs</code> — direkt aus der .pptx, nicht aus dem Konzept.<br><a href="../index.html">← zurück zum Skill Marketplace</a></footer>
+<footer>Erzeugt von <code style="font-family:'JetBrains Mono',monospace">demo/build-pptx-preview.mjs</code> — direkt aus der .pptx, nicht aus dem Konzept.<br><a href="../skills.html">← zurück zum Katalog</a></footer>
 </div></body></html>`;
 
 fs.writeFileSync(path.join(ROOT, 'pptx/preview.html'), html);

@@ -178,7 +178,7 @@ ${contrastMeasured.map(s => `<tr><td><code>${escH(s.tag)}</code></td><td>${escH(
 
 <section><h2>Struktur</h2><ul class="pass">${facts.headings.map(h => `<li>${escH(h)}</li>`).join('')}</ul></section>
 
-<footer>Dieser Report wurde von <code>demo/build-webaudit-report.mjs</code> erzeugt — jeder Wert stammt aus dem tatsächlichen Browser-Lauf.<br><a href="../../index.html">← zurück zum Skill Marketplace</a></footer>
+<footer>Dieser Report wurde von <code>demo/build-webaudit-report.mjs</code> erzeugt — jeder Wert stammt aus dem tatsächlichen Browser-Lauf.<br><a href="../../skills.html">← zurück zum Katalog</a></footer>
 </div></body></html>`;
 
 fs.mkdirSync(path.join(ROOT, 'webaudit'), { recursive: true });
