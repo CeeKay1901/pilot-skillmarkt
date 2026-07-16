@@ -74,10 +74,60 @@
     .skill-card.featured .cat-badge.anthropic { background: var(--c-yellow); color: var(--c-black); }
     .skill-card.featured .cat-badge.gsd { background: rgba(186,184,171,.2); color: var(--c-gray-l); }
     .skill-card.featured .cat-badge.community { background: transparent; border-color: rgba(252,252,252,.3); color: rgba(252,252,252,.65); }
+    /* Typ-Badge (E2): nur Plugins & Frameworks tragen ihn — Skills bleiben ruhig */
+    .type-badge {
+      font-family: var(--font-mono); font-size: 1.05rem; font-weight: 600;
+      letter-spacing: .06em; text-transform: uppercase;
+      padding: .25rem .9rem; border-radius: var(--radius-pill);
+      border: 1px solid var(--c-black); color: var(--c-black); background: transparent;
+      white-space: nowrap; flex-shrink: 0;
+    }
+    .skill-card.featured .type-badge { border-color: rgba(252,252,252,.4); color: rgba(252,252,252,.8); }
+    .card-top-left { display: inline-flex; align-items: center; gap: .8rem; min-width: 0; }
+    /* Typ-Leiste (E2): zweite Filterdimension über den Aufgaben-Tabs (Skill / Plugin / Framework) */
+    .type-row { display: flex; align-items: center; justify-content: space-between; gap: .8rem 2rem; flex-wrap: wrap; }
+    .type-tabs { display: flex; gap: .6rem; flex-wrap: wrap; }
+    .type-tab {
+      font-family: var(--font-mono); font-size: 1.3rem; padding: .55rem 1.5rem;
+      border-radius: var(--radius-pill); border: 1px solid var(--c-gray-l);
+      background: transparent; color: var(--c-gray-d); cursor: pointer; transition: var(--trans);
+      white-space: nowrap;
+    }
+    .type-tab:hover { border-color: var(--c-black); color: var(--c-black); }
+    .type-tab.active { background: var(--c-black); color: var(--c-yellow); border-color: var(--c-black); font-weight: 600; }
+    .type-info-toggle {
+      display: inline-flex; align-items: center; gap: .6rem;
+      background: none; border: none; cursor: pointer; font-family: inherit;
+      font-size: 1.3rem; font-weight: 500; color: var(--c-gray-m); padding: .4rem 0;
+      text-align: left;
+    }
+    .type-info-toggle:hover { color: var(--c-black); }
+    .type-info-toggle .tt-arrow { font-size: 1.1rem; transition: transform .2s; }
+    .type-info-toggle[aria-expanded="true"] .tt-arrow { transform: rotate(180deg); }
+    .type-info { font-size: 1.35rem; line-height: 1.6; color: var(--c-gray-d); margin: -.2rem 0 0; }
+    .type-info strong { color: var(--c-black); }
+    .type-info[hidden] { display: none; }
+    .type-info-link { background: none; border: none; padding: 0; font: inherit; color: var(--c-black); text-decoration: underline; cursor: pointer; }
     /* Anthropic-Skills: eingebaut vs. nachinstallieren */
     .install-badge { font-family: var(--font-mono); font-size: 1.15rem; font-weight: 600; padding: .3rem 1rem; border-radius: var(--radius-pill); white-space: nowrap; }
     .install-badge.builtin { background: rgba(45,138,78,.1); color: #1e6b3a; border: 1px solid rgba(45,138,78,.35); }
     .install-badge.plugin { background: transparent; color: var(--c-black); border: 1px solid var(--c-gray-l); }
+    /* E2: Plugin-Installation & Framework-Ablauf im Modal */
+    .modal-term { max-width: none; margin: 1.2rem 0 0; box-shadow: 0 12px 34px rgba(0,0,0,.25); }
+    .modal-term .ex-terminal-body { min-height: 22rem; max-height: 34rem; overflow-y: auto; font-size: 1.35rem; padding: 1.8rem 2rem; }
+    .fw-start { border: 1px solid var(--c-gray-l); border-radius: var(--r-md); padding: 1.8rem 2rem; display: flex; flex-direction: column; gap: 1.4rem; align-items: flex-start; background: var(--c-bg); }
+    .fw-start .runway-desc { margin: 0; }
+    .install-alt { display: flex; flex-direction: column; gap: .8rem; align-items: flex-start; }
+    .install-contains, .install-note, .wf-intro { font-size: 1.5rem; line-height: 1.65; color: var(--c-ink-strong); }
+    .install-note { font-size: 1.35rem; color: var(--c-gray-m); }
+    .src-link { color: inherit; text-decoration: underline; text-underline-offset: .25em; }
+    .src-link:hover { color: var(--c-black); }
+    .wf-note { font-size: 1.35rem; color: var(--c-gray-m); border-left: 3px solid var(--c-yellow); padding: .4rem 0 .4rem 1.2rem; margin-top: 1rem; line-height: 1.6; }
+    .wf-steps { margin-top: 1.6rem; }
+    .wf-steps .startprompt { margin-top: .8rem; }
+    .wf-example { margin-top: 2.4rem; background: var(--c-bg); border: 1px solid var(--c-gray-l); border-radius: var(--r-md); padding: 2rem; }
+    .wf-example-steps { margin: 0; padding-left: 1.8em; display: flex; flex-direction: column; gap: .9rem; font-size: 1.45rem; line-height: 1.65; color: var(--c-ink-body); }
+    .wf-pitfalls { margin: 0; padding-left: 1.6em; display: flex; flex-direction: column; gap: .7rem; font-size: 1.45rem; line-height: 1.6; color: var(--c-ink-body); }
     /* Plattform-Chips auf der Karte: wo lässt sich der Skill einsetzen? */
     .card-platforms { display: inline-flex; gap: .5rem; flex-wrap: wrap; vertical-align: middle; }
     .pf-chip { font-family: var(--font-mono); font-size: 1.05rem; font-weight: 600; letter-spacing: .04em; padding: .25rem .9rem; border-radius: var(--radius-pill); border: 1px solid var(--c-gray-l); color: var(--c-gray-d); background: transparent; }
@@ -271,6 +321,85 @@
       font-family: var(--font-mono); color: var(--c-black);
     }
     @media (max-width: 1023px) { .gs-steps { grid-template-columns: 1fr; gap: 1.6rem; } }
+
+    /* ===== STIMMEN AUS DEM TEAM (E2) ===== */
+    .team-voices { border-top: 1px solid var(--line); }
+    .tv-inner {
+      max-width: var(--max-w); margin: 0 auto; padding: 2.8rem var(--pad-d) 3.4rem;
+      display: flex; gap: 6rem; align-items: flex-start;
+    }
+    .tv-label { flex-shrink: 0; max-width: 24rem; padding-top: .3rem; }
+    /* .overline ist global gelb (für dunkle Flächen) — auf Beige unlesbar, daher Schwarz + gelber Marker */
+    .team-voices .overline {
+      color: var(--c-black);
+      display: inline-block;
+      box-shadow: inset 0 -0.6em 0 var(--c-yellow);
+    }
+    .tv-hint { font-size: 1.3rem; color: var(--c-gray-m); line-height: 1.5; margin-top: .6rem; }
+    .tv-stage { flex: 1; min-width: 0; min-height: 11rem; transition: opacity .38s ease; }
+    .tv-stage.tv-fading { opacity: 0; }
+    .tv-card {
+      display: block; width: 100%; text-align: left; cursor: pointer;
+      background: none; border: none; padding: 0; font-family: inherit;
+    }
+    .tv-quote {
+      display: block; font-size: 1.8rem; line-height: 1.55; font-style: italic;
+      color: var(--c-ink-body); max-width: 88rem; margin-bottom: 1.4rem;
+    }
+    .tv-card:hover .tv-quote, .tv-card:focus-visible .tv-quote { color: var(--c-black); }
+    .tv-meta { display: flex; align-items: center; gap: 1.2rem; flex-wrap: wrap; }
+    .tv-avatar {
+      width: 3.4rem; height: 3.4rem; flex-shrink: 0; border-radius: 50%;
+      background: var(--c-yellow); color: var(--c-black);
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 1.25rem; font-weight: 700;
+    }
+    .tv-who { display: flex; flex-direction: column; min-width: 0; }
+    .tv-who strong { font-size: 1.4rem; color: var(--c-black); }
+    .tv-who span { font-size: 1.25rem; color: var(--c-gray-m); }
+    .tv-ref {
+      margin-left: auto; display: inline-flex; align-items: center; gap: .6rem;
+      font-size: 1.35rem; font-weight: 600; color: var(--c-black);
+      border-bottom: 1px solid var(--c-yellow); padding-bottom: .1rem;
+      white-space: nowrap; max-width: 100%; overflow: hidden;
+    }
+    .tv-card:hover .tv-ref { background: var(--c-yellow); }
+    .tv-ref .lu { width: 1.4rem; height: 1.4rem; flex-shrink: 0; }
+    @media (prefers-reduced-motion: reduce) { .tv-stage { transition: none; } }
+    @media (max-width: 1023px) {
+      .tv-inner { flex-direction: column; gap: 1.4rem; padding: 2rem var(--pad-m) 2.4rem; }
+      .tv-stage { min-height: 13rem; }
+      .tv-quote { font-size: 1.6rem; margin-bottom: 1.2rem; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+      .tv-ref { margin-left: 0; flex-basis: 100%; justify-content: flex-start; }
+    }
+
+    /* Sanfter Kommentar-CTA nach „ausprobiert“ (E2): sticky Leiste am Modal-Fuß */
+    .tried-cta {
+      position: sticky; bottom: 0; z-index: 5;
+      display: flex; align-items: center; gap: 1.6rem;
+      background: var(--paper-warm); border-top: 1px solid var(--line-strong);
+      padding: 1.4rem 3rem; font-size: 1.4rem; line-height: 1.5; color: var(--c-ink-strong);
+      animation: tried-cta-in .35s ease both;
+    }
+    @keyframes tried-cta-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+    @media (prefers-reduced-motion: reduce) { .tried-cta { animation: none; } }
+    .tried-cta strong { color: var(--c-black); }
+    .tc-btn {
+      flex-shrink: 0; margin-left: auto; padding: .7rem 1.6rem;
+      background: var(--c-black); color: var(--c-yellow); border: none;
+      border-radius: var(--radius-pill); font-family: inherit; font-size: 1.35rem; font-weight: 600;
+      cursor: pointer; transition: var(--trans); white-space: nowrap;
+    }
+    .tc-btn:hover { background: var(--c-black-soft); }
+    .tc-close {
+      flex-shrink: 0; background: none; border: none; cursor: pointer;
+      font-size: 1.5rem; color: var(--c-gray-m); padding: .4rem; line-height: 1;
+    }
+    .tc-close:hover { color: var(--c-black); }
+    @media (max-width: 767px) {
+      .tried-cta { flex-wrap: wrap; padding: 1.2rem 1.6rem; gap: 1rem; }
+      .tc-btn { margin-left: 0; }
+    }
 
     .more-tags-btn {
       padding: .6rem 1.4rem; font-size: 1.4rem; font-family: inherit;
@@ -902,7 +1031,8 @@
       font-size: 1.4rem; font-weight: 700; font-family: var(--font-mono);
     }
     .runway-body { flex: 1; min-width: 0; }
-    .runway-body strong { font-size: 1.55rem; display: block; margin-bottom: .3rem; color: var(--c-black); }
+    /* Nur direkte Kinder (Schritt-Titel) als Block — Inline-strongs im Fließtext bleiben inline */
+    .runway-body > strong { font-size: 1.55rem; display: block; margin-bottom: .3rem; color: var(--c-black); }
     .runway-desc { font-size: 1.4rem; color: var(--c-gray-d); line-height: 1.5; margin: 0 0 1rem; }
     .runway-action {
       display: inline-flex; align-items: center; gap: 1rem;
@@ -1069,6 +1199,17 @@
     </div>
   </div>
 
+  <!-- STIMMEN AUS DEM TEAM (E2): rotiert echte seeded Kommentare aus den Item-Daten -->
+  <section class="team-voices cat-reveal" id="team-voices" aria-label="Stimmen aus dem Team">
+    <div class="tv-inner">
+      <div class="tv-label">
+        <p class="overline">Stimmen aus dem Team</p>
+        <p class="tv-hint">Aus den Bewertungen im Katalog — klick dich zum Eintrag.</p>
+      </div>
+      <div class="tv-stage" id="tv-stage" aria-live="off"></div>
+    </div>
+  </section>
+
   <!-- MAIN -->
   <main>
     <!-- FILTER BAR -->
@@ -1077,6 +1218,11 @@
         <div class="search-wrap-m">
           <input type="search" id="search-m" aria-label="Skills suchen" placeholder="Skills suchen …" autocomplete="off">
         </div>
+        <div class="type-row">
+          <div class="type-tabs" id="type-tabs" role="group" aria-label="Nach Typ filtern"></div>
+          <button class="type-info-toggle" id="type-info-toggle" onclick="toggleTypeInfo()" aria-expanded="false" aria-controls="type-info">Skill, Plugin, Framework — was ist der Unterschied? <span class="tt-arrow" aria-hidden="true">▾</span></button>
+        </div>
+        <p class="type-info" id="type-info" hidden><strong>Skill</strong> = eine Fähigkeit · <strong>Plugin</strong> = Paket aus Skills und Befehlen · <strong>Framework</strong> = komplette Arbeitsweise. Ausführlich erklärt unter <button class="type-info-link" onclick="showView('explainer')">„Was sind Skills?“</button></p>
         <div class="cat-tabs" id="cat-tabs" role="group" aria-label="Nach Themenbereich filtern"></div>
         <button class="filter-toggle-btn" id="filter-toggle-btn" onclick="toggleMobileFilter()" aria-expanded="true">
           <span>Filter &amp; Sortierung <span class="ftb-count" id="ftb-count" hidden></span></span>
@@ -1107,6 +1253,14 @@
               <span class="tt-arrow" aria-hidden="true">▾</span>
             </button>
             <div class="tag-chips" id="tag-chips" hidden></div>
+          </div>
+          <div class="tag-section">
+            <button class="tag-toggle" id="source-toggle" onclick="toggleSourceSection()" aria-expanded="false" aria-controls="source-chips">
+              <span>Nach Quelle filtern</span>
+              <span class="tt-count" id="source-active-count" hidden></span>
+              <span class="tt-arrow" aria-hidden="true">▾</span>
+            </button>
+            <div class="tag-chips" id="source-chips" hidden></div>
           </div>
           <div class="active-filters" id="active-filters" hidden></div>
         </div>
@@ -1344,6 +1498,32 @@ Gib einen priorisierten Report aus:
       </div>
     </section>
 
+    <!-- Skill, Plugin, Framework: die Steigerung -->
+    <section class="ex-section ex-bg reveal" id="ex-types">
+      <div class="ex-wrap">
+        <p class="ex-eyebrow">Die größeren Bausteine</p>
+        <h2 class="ex-h2">Vom Skill zum <span class="ex-hl">Framework</span></h2>
+        <p class="ex-body">Ein Skill ist die kleinste Einheit: eine Fähigkeit, ein erprobter Ablauf. Im Katalog begegnen dir noch zwei größere Bausteine — beide bauen auf demselben Prinzip auf, nur eine Nummer größer. Bleiben wir beim Bild vom Rezept:</p>
+        <div class="expf-panel" style="margin-top:2.4rem">
+          <div class="expf-grid" style="margin:0">
+            <div class="expf-cell">
+              <h3>Skill — eine Fähigkeit</h3>
+              <p>Ein Ablauf in einer Textdatei, den du per <code>/befehl</code> oder ganz normalem Satz abrufst. <strong>Wie ein einzelnes Rezept.</strong></p>
+            </div>
+            <div class="expf-cell">
+              <h3>Plugin — ein Paket</h3>
+              <p>Bündelt mehrere zusammengehörige Skills und Befehle und kommt mit einem einzigen <code>/plugin</code>-Befehl in dein Claude Code. <strong>Wie ein Kochbuch:</strong> einmal ins Regal gestellt, alle Rezepte griffbereit.</p>
+            </div>
+            <div class="expf-cell">
+              <h3>Framework — eine Arbeitsweise</h3>
+              <p>Kein Download, sondern ein komplettes Vorgehen, das deine Zusammenarbeit mit Claude strukturiert — von der Idee über den Plan bis zum geprüften Ergebnis. <strong>Wie eine Art zu kochen,</strong> nicht nur ein Rezept.</p>
+            </div>
+          </div>
+        </div>
+        <p class="ex-anatomy-cta">Im Katalog filterst du oben über die Typ-Leiste: <strong>Skills · Plugins · Frameworks</strong> — Plugins und Frameworks tragen ihren Typ als Badge auf der Karte.</p>
+      </div>
+    </section>
+
     <!-- Auslöser: manuell vs. automatisch -->
     <section class="ex-section ex-dark reveal" id="ex-trigger">
       <div class="ex-wrap">
@@ -1457,7 +1637,7 @@ Gib einen priorisierten Report aus:
           <button class="c-cta -black-border" onclick="downloadPowerPack(this)">⬇ Power-Paket (5 beliebte Skills, .zip)</button>
           <button class="c-cta -black-bg" onclick="showView('catalog')">Alle Skills im Katalog entdecken</button>
         </div>
-        <p class="ex-body" style="font-size:1.4rem;color:var(--c-gray-m);margin-top:1.2rem">Beide Pakete enthalten die echten Skill-Dateien — entpacken nach <code>.claude/skills/</code>, Anleitung liegt bei. Das Power-Paket bündelt die meistempfohlenen Skills aus <code>anthropics/skills</code> und <code>obra/superpowers</code>.</p>
+        <p class="ex-body" style="font-size:1.4rem;color:var(--c-gray-m);margin-top:1.2rem">Beide Pakete enthalten die echten Skill-Dateien — entpacken nach <code>.claude/skills/</code>, Anleitung liegt bei. Das Power-Paket bündelt beliebte Skills aus <code>anthropics/skills</code>, <code>obra/superpowers</code> und von pilot.</p>
       </div>
     </section>
 
@@ -1570,7 +1750,7 @@ Gib einen priorisierten Report aus:
       <div class="modal-tabs" role="tablist" aria-label="Skill-Details">
         <button class="tab-btn active" role="tab" aria-selected="true" data-tab="overview" onclick="switchTab('overview')">Übersicht</button>
         <button class="tab-btn" role="tab" aria-selected="false" data-tab="files" onclick="switchTab('files')">Dateien &amp; Download</button>
-        <button class="tab-btn" role="tab" aria-selected="false" data-tab="ratings" onclick="switchTab('ratings')">Bewertungen &amp; Kommentare</button>
+        <button class="tab-btn" role="tab" aria-selected="false" data-tab="ratings" onclick="switchTab('ratings')">Bewertungen</button>
         <button class="tab-btn" role="tab" aria-selected="false" data-tab="pilots" onclick="switchTab('pilots')">Piloten</button>
         <button class="tab-btn" role="tab" aria-selected="false" data-tab="changelog" onclick="switchTab('changelog')">Changelog</button>
       </div>
@@ -1591,6 +1771,7 @@ Gib einen priorisierten Report aus:
     // ===== STATE ===== (dokumentierte Global — wird auch von der Engine in base.js gelesen)
     const state = {
       category: 'all',
+      itemType: 'all',
       tags: [],
       subcategory: null,
       role: null,
@@ -1623,21 +1804,28 @@ Gib einen priorisierten Report aus:
     });
 
     // ===== MODAL-ENGINE-VERDRAHTUNG (shared/base.js) =====
+    // stopTermScript vor jedem Renderer: die Installations-Demo (Plugins) tippt sonst
+    // nach einem Tab-Wechsel unsichtbar in den entfernten Terminal-Container weiter.
     window.ModalConfig = {
       getItem: id => SKILLS.find(s => s.id === id),
       onOpen: item => { addToHistory(item.id); renderRecentlyViewed(); },
       renderHead: item => renderModalHead(item),
       renderers: {
-        overview:  item => renderModalOverview(item),
-        files:     item => renderModalFiles(item),
-        ratings:   item => renderModalRatings(item),
-        pilots:    item => renderModalPilots(item),
-        changelog: item => renderModalChangelog(item)
+        overview:     item => { stopTermScript(); return renderModalOverview(item); },
+        files:        item => { stopTermScript(); return renderModalFiles(item); },
+        installation: item => renderModalInstall(item),
+        arbeiten:     item => { stopTermScript(); return renderModalWorkflow(item); },
+        ratings:      item => { stopTermScript(); removeTriedCta(); return renderModalRatings(item); },
+        pilots:       item => { stopTermScript(); return renderModalPilots(item); },
+        changelog:    item => { stopTermScript(); return renderModalChangelog(item); }
       },
       updateURL: () => updateURL(),
       pushURL:   () => pushURL(),
       lockHash:  () => { _hashLock = true; setTimeout(() => { _hashLock = false; }, 0); }
     };
+    // Modal schließen stoppt eine evtl. laufende Terminal-Demo (Engine-Funktion sanft umwickeln)
+    const _engineCloseModal = closeModal;
+    closeModal = function () { stopTermScript(); removeTriedCta(); _engineCloseModal(); };
 
     // ===== ENGINE-HOOKS (shared/base.js) =====
     window.onFavoritesChanged = () => {
@@ -1654,7 +1842,38 @@ Gib einen priorisierten Report aus:
           ? 'Alle Einsteiger-Skills ausprobiert — stark! ✓'
           : `Geschafft ✓ — ${done} von ${STARTER_JOURNEY.length} Einsteiger-Skills`);
       }
+      maybeShowTriedCta(id);
     };
+
+    // ===== KOMMENTAR-CTA NACH „AUSPROBIERT“ (E2) =====
+    // markTried feuert beim Kopieren (nicht nach dem echten Ausprobieren) — der Text
+    // formuliert das ehrlich. Einmalig pro Item (localStorage-gedämpft), abweisbar.
+    function removeTriedCta() {
+      document.querySelectorAll('.tried-cta').forEach(el => el.remove());
+    }
+    function maybeShowTriedCta(id) {
+      try { if (localStorage.getItem('cta-seen:' + id)) return; } catch (e) {}
+      const item = state.activeSkill;
+      if (!item || item.id !== id) return; // nur im offenen Modal des Items
+      // Rating-Engine speichert typunabhängig im 'skill'-Namespace (rate:skill:<id>) —
+      // deshalb hier ohne Typ-Argument lesen, sonst prüfen wir nie geschriebene Keys.
+      if (getRating(id) || getComments(id).length) return; // Feedback gibt es schon
+      // warten, bis der Kopier-Toast (2,5s) verschwunden ist — die Leiste soll leise nachkommen
+      setTimeout(() => {
+        if (!state.activeSkill || state.activeSkill.id !== id) return; // Modal inzwischen zu
+        const modal = document.getElementById('modal');
+        if (!modal || modal.querySelector('.tried-cta')) return;
+        try { localStorage.setItem('cta-seen:' + id, '1'); } catch (e) {}
+        const bar = document.createElement('div');
+        bar.className = 'tried-cta';
+        bar.setAttribute('role', 'status');
+        bar.innerHTML = `
+          <span class="tc-text"><strong>Wie lief’s?</strong> Wenn du’s ausprobiert hast: 20 Sekunden Feedback helfen den Kolleg:innen bei der Auswahl.</span>
+          <button type="button" class="tc-btn" onclick="removeTriedCta(); switchTab('ratings')">Kurz bewerten</button>
+          <button type="button" class="tc-close" onclick="removeTriedCta()" aria-label="Feedback-Hinweis schließen">✕</button>`;
+        modal.appendChild(bar);
+      }, 2700);
+    }
 
     // ===== HELPERS =====
     // LU-Icon-Map + subIcon: shared/base.js
@@ -1665,6 +1884,14 @@ Gib einen priorisierten Report aus:
       if (cat === 'gsd') return 'pilot Workflows';
       if (cat === 'community') return 'Community';
       return cat;
+    }
+
+    // Typ-Taxonomie (E2): 'skill' ist der Default — Bestandseinträge tragen kein Feld
+    function itemType(s) { return s.itemType || 'skill'; }
+    function typeLabel(t) {
+      if (t === 'plugin') return 'Plugin';
+      if (t === 'framework') return 'Framework';
+      return 'Skill';
     }
 
     function diffLabel(d) {
@@ -1712,6 +1939,9 @@ Gib einen priorisierten Report aus:
 
     function filterSkills() {
       let result = SKILLS.filter(s => !HIDDEN.has(s.id));
+      if (state.itemType !== 'all') {
+        result = result.filter(s => itemType(s) === state.itemType);
+      }
       if (state.category !== 'all') {
         result = result.filter(s => s.category === state.category);
       }
@@ -1807,6 +2037,10 @@ Gib einen priorisierten Report aus:
       const _badge = skillBadge(skill);
       const badgeHtml = _badge ? `<span class="skill-badge ${_badge.cls}">${_badge.label}</span>` : '';
 
+      // Typ-Badge nur für Plugins/Frameworks — Skills bleiben unmarkiert (kein Rausch)
+      const _type = itemType(skill);
+      const typeBadgeHtml = _type !== 'skill' ? `<span class="type-badge ${_type}">${typeLabel(_type)}</span>` : '';
+
       const triggerHtml = skill.trigger
         ? `<button class="card-trigger-chip" onclick="quickCopy(event,'${escHtml(skill.trigger)}')" title="Befehl kopieren">${escHtml(skill.trigger)}</button>`
         : `<span class="card-trigger-chip no-trigger">kein Befehl</span>`;
@@ -1817,7 +2051,7 @@ Gib einen priorisierten Report aus:
         <article class="skill-card ${isFeatured ? 'featured' : ''}${isStart ? ' start-here' : ''}${state._noCardAnim ? '' : ' card-in'}" style="animation-delay:${state._noCardAnim ? 0 : delay}ms" onclick="openModal('${skill.id}')" tabindex="0" role="button" aria-label="${escHtml(skill.name)} öffnen" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openModal('${skill.id}')}">
           ${isStart ? '<span class="start-here-ribbon">Fang hier an</span>' : ''}
           <div class="card-top">
-            <span class="card-sub">${escHtml(subLabel(skill.subcategory))}</span>
+            <span class="card-top-left"><span class="card-sub">${escHtml(subLabel(skill.subcategory))}</span>${typeBadgeHtml}</span>
             <button class="fav-btn ${fav ? 'active' : ''}" onclick="toggleFavorite(event,'${skill.id}')" aria-label="${fav ? 'Aus Favoriten entfernen' : 'Zu Favoriten hinzufügen'}" aria-pressed="${fav}">${fav ? '★' : '☆'}</button>
           </div>
           <h3 class="skill-name">${escHtml(skill.name)}</h3>
@@ -1957,11 +2191,16 @@ Gib einen priorisierten Report aus:
     }
 
     // ===== RENDER CAT TABS =====
-    // Sichtbare Kartenzahl je Aufgaben-Gruppe (Merge-Gruppen zählen als 1 Karte, ausgeblendete gar nicht)
+    // Sichtbare Kartenzahl je Aufgaben-Gruppe (Merge-Gruppen zählen als 1 Karte, ausgeblendete gar nicht).
+    // Berücksichtigt den aktiven Typ-Filter, damit die Tab-Zahlen zur Kartenfläche passen.
     function visibleCardCount(subId) {
-      const inSub = SKILLS.filter(sk => !HIDDEN.has(sk.id) && sk.subcategory === subId).length;
-      let n = inSub;
-      GROUPS.filter(g => g.group === subId).forEach(g => { n = n - g.members.length + 1; });
+      const match = sk => !HIDDEN.has(sk.id) && sk.subcategory === subId
+        && (state.itemType === 'all' || itemType(sk) === state.itemType);
+      let n = SKILLS.filter(match).length;
+      GROUPS.filter(g => g.group === subId).forEach(g => {
+        const m = g.members.filter(id => { const s = SKILLS.find(x => x.id === id); return s && match(s); }).length;
+        if (m > 0) n -= (m - 1);
+      });
       return n;
     }
     function renderCatTabs() {
@@ -1977,8 +2216,10 @@ Gib einen priorisierten Report aus:
       const total = subs.slice(1).reduce((a, s) => a + visibleCardCount(s.id), 0);
       const html = subs.map(s => {
         const count = s.id === 'all' ? total : visibleCardCount(s.id);
-        if (!count && s.id !== 'all') return ''; // leere Gruppen nicht anbieten
         const isActive = state.subcategory === (s.id === 'all' ? null : s.id);
+        // Leere Gruppen nicht anbieten — außer sie sind gerade aktiv (z. B. „Texten 0"
+        // nach Typ-Wechsel), sonst verschwindet der aktive Filter aus der Leiste.
+        if (!count && s.id !== 'all' && !isActive) return '';
         return `<button class="cat-tab${isActive ? ' active' : ''}" aria-pressed="${isActive}" onclick="setSubCat('${s.id}')">${escHtml(s.label)} <span class="tab-count">${count}</span></button>`;
       }).join('');
       document.getElementById('cat-tabs').innerHTML = html;
@@ -1989,6 +2230,50 @@ Gib einen priorisierten Report aus:
       renderCatTabs();
       render();
       updateURL();
+    }
+
+    // ===== TYP-TABS (E2): zweite Filterdimension Skill / Plugin / Framework =====
+    // Zählt merge-bewusst wie visibleCardCount — Gruppenkarten zählen als 1.
+    function visibleTypeCount(typeId) {
+      const match = sk => !HIDDEN.has(sk.id) && itemType(sk) === typeId;
+      let n = SKILLS.filter(match).length;
+      GROUPS.forEach(g => {
+        const m = g.members.filter(id => { const s = SKILLS.find(x => x.id === id); return s && match(s); }).length;
+        if (m > 0) n -= (m - 1);
+      });
+      return n;
+    }
+    function renderTypeTabs() {
+      const el = document.getElementById('type-tabs');
+      if (!el) return;
+      const types = [
+        { id: 'all',       label: 'Alle' },
+        { id: 'skill',     label: 'Skills' },
+        { id: 'plugin',    label: 'Plugins' },
+        { id: 'framework', label: 'Frameworks' }
+      ];
+      const total = types.slice(1).reduce((a, t) => a + visibleTypeCount(t.id), 0);
+      el.innerHTML = types.map(t => {
+        const count = t.id === 'all' ? total : visibleTypeCount(t.id);
+        const active = state.itemType === t.id;
+        return `<button class="type-tab${active ? ' active' : ''}" aria-pressed="${active}" onclick="setItemType('${t.id}')">${t.label} <span class="rc-count">${count}</span></button>`;
+      }).join('');
+    }
+    function setItemType(t) {
+      state.itemType = t;
+      state._noCardAnim = true; setTimeout(() => { state._noCardAnim = false; }, 0);
+      renderTypeTabs();
+      renderCatTabs(); // Aufgaben-Zähler folgen dem aktiven Typ
+      renderSourceChips(); // Quellen-Zähler ebenfalls
+      render();
+    }
+    function toggleTypeInfo() {
+      const btn = document.getElementById('type-info-toggle');
+      const info = document.getElementById('type-info');
+      if (!btn || !info) return;
+      const expanded = btn.getAttribute('aria-expanded') === 'true';
+      btn.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+      info.hidden = expanded;
     }
 
 
@@ -2056,6 +2341,16 @@ Gib einen priorisierten Report aus:
       toggleTagFilter(tag);
     }
 
+    // Ergebnis-Zähler ehrlich benennen: beim aktiven Typ-Tab wechselt das Wort mit;
+    // „Alle" sagt erst dann „Einträge", wenn wirklich Nicht-Skills im Katalog sind.
+    function resultNoun(n) {
+      if (state.itemType === 'skill') return n === 1 ? 'Skill' : 'Skills';
+      if (state.itemType === 'plugin') return n === 1 ? 'Plugin' : 'Plugins';
+      if (state.itemType === 'framework') return n === 1 ? 'Framework' : 'Frameworks';
+      const mixed = SKILLS.some(s => itemType(s) !== 'skill');
+      return mixed ? (n === 1 ? 'Eintrag' : 'Einträge') : (n === 1 ? 'Skill' : 'Skills');
+    }
+
     // ===== RENDER MAIN GRID =====
     function render() {
       const filtered = filterSkills();
@@ -2073,7 +2368,7 @@ Gib einen priorisierten Report aus:
           if (inF > 0) displayCount -= (inF - 1);
         });
       }
-      if (count) count.innerHTML = `<strong>${displayCount}</strong> ${displayCount === 1 ? 'Skill' : 'Skills'}`;
+      if (count) count.innerHTML = `<strong>${displayCount}</strong> ${resultNoun(displayCount)}`;
 
       renderActiveFilters();
       updateTagCount();
@@ -2146,6 +2441,9 @@ Gib einen priorisierten Report aus:
         const labels = {loslegen:'Loslegen',bauen:'Bauen',texten:'Texten',gestalten:'Gestalten',praesentieren:'Präsentieren',media:'Media'};
         pills.push({label: labels[state.subcategory] || state.subcategory, clear: `setSubCat('all')`});
       }
+      if (state.itemType !== 'all') {
+        pills.push({label: 'Typ: ' + typeLabel(state.itemType) + 's', clear: `setItemType('all')`});
+      }
       if (state.category !== 'all') {
         pills.push({label: catLabel(state.category), clear: `setSource('all')`});
       }
@@ -2208,8 +2506,37 @@ Gib einen priorisierten Report aus:
     // ===== MODAL =====
     // Modal-Engine (openModal/closeModal/switchTab/renderModalBody): shared/base.js.
     // Hier bleibt nur der skill-spezifische Modal-Kopf (Name, Trigger, Meta-Zeile).
+
+    // Typabhängige Tab-Leiste (E2): Skills behalten ihre 5 Tabs; Plugins bekommen
+    // „Installation“ (kein Changelog, Dateien nur wenn wirklich im Repo gespiegelt),
+    // Frameworks bekommen „So arbeitest du damit“ — kein Download, keine Dateien.
+    function modalTabsFor(item) {
+      const t = itemType(item);
+      if (t === 'plugin') {
+        const tabs = [['overview', 'Übersicht'], ['installation', 'Installation']];
+        if (item.filesMirrored) tabs.push(['files', 'Dateien & Download']);
+        tabs.push(['ratings', 'Bewertungen'], ['pilots', 'Piloten']);
+        return tabs;
+      }
+      if (t === 'framework') {
+        return [['overview', 'Übersicht'], ['arbeiten', 'So arbeitest du damit'], ['ratings', 'Bewertungen'], ['pilots', 'Piloten']];
+      }
+      return [['overview', 'Übersicht'], ['files', 'Dateien & Download'], ['ratings', 'Bewertungen'], ['pilots', 'Piloten'], ['changelog', 'Changelog']];
+    }
+
     function renderModalHead(skill) {
+      const _type = itemType(skill);
+      removeTriedCta(); // Leiste des vorherigen Items nicht ins nächste Modal mitnehmen
       document.getElementById('modal-name').textContent = skill.name;
+
+      // Tab-Leiste typabhängig neu rendern (läuft VOR dem Tab-Reset der Engine)
+      const tabBar = document.querySelector('#modal .modal-tabs');
+      if (tabBar) {
+        tabBar.innerHTML = modalTabsFor(skill).map(([id, label], i) =>
+          `<button class="tab-btn${i === 0 ? ' active' : ''}" role="tab" aria-selected="${i === 0 ? 'true' : 'false'}" data-tab="${id}" onclick="switchTab('${id}')">${escHtml(label)}</button>`
+        ).join('');
+      }
+
       const trigBtn = document.getElementById('modal-trigger');
       if (skill.trigger) {
         trigBtn.innerHTML = escHtml(skill.trigger) + ' ' + LU.copy;
@@ -2220,8 +2547,16 @@ Gib einen priorisierten Report aus:
       const triggerHint = document.getElementById('trigger-hint');
       if (triggerHint) {
         triggerHint.textContent = skill.trigger
-          ? `Befehl kopieren — oder Claude startet ihn automatisch`
-          : 'Kein Befehl — startet automatisch im passenden Workflow';
+          ? (_type === 'plugin'
+              ? 'Befehl kopieren — verfügbar, sobald das Plugin installiert ist'
+              : _type === 'framework'
+              ? 'Befehl kopieren — der Einstieg in den Ablauf'
+              : 'Befehl kopieren — oder Claude startet ihn automatisch')
+          : (_type === 'plugin'
+              ? 'Kein Befehl — die Skills des Plugins starten automatisch'
+              : _type === 'framework'
+              ? 'Kein Befehl — du startest mit einem Prompt (Tab „So arbeitest du damit“)'
+              : 'Kein Befehl — startet automatisch im passenden Workflow');
         triggerHint.style.display = 'block';
       }
 
@@ -2232,16 +2567,16 @@ Gib einen priorisierten Report aus:
         ${renderStars(eff.average)}
         <span>${eff.average.toFixed(1)} (${eff.count} Bewertungen)</span>
         <span class="modal-meta-sep">·</span>
+        ${_type !== 'skill' ? `<span class="type-badge ${_type}">${typeLabel(_type)}</span><span class="modal-meta-sep">·</span>` : ''}
         <span class="diff-badge ${skill.difficulty}">${diffLabel(skill.difficulty)}</span>
         <span class="modal-meta-sep">·</span>
         <span>${escHtml(skill.timeToRun)}</span>
-        <span class="modal-meta-sep">·</span>
-        <span>v${escHtml(skill.version)}</span>
+        ${skill.version ? `<span class="modal-meta-sep">·</span><span>v${escHtml(skill.version)}</span>` : ''}
         <span class="modal-meta-sep">·</span>
         <span class="cat-badge ${skill.category}" style="margin:0">${catLabel(skill.category)}</span>
-        ${skill.install ? `<span class="modal-meta-sep">·</span><span class="install-badge ${skill.install}" title="${skill.install === 'builtin' ? 'Steckt schon in Claude Code — nichts zu installieren' : 'Aus dem offiziellen anthropics/skills-Repo — einmalig installieren'}">${skill.install === 'builtin' ? '⚙ in Claude Code eingebaut' : '⬇ zum Nachinstallieren'}</span>` : ''}
+        ${_type === 'skill' && skill.install ? `<span class="modal-meta-sep">·</span><span class="install-badge ${skill.install}" title="${skill.install === 'builtin' ? 'Steckt schon in Claude Code — nichts zu installieren' : 'Aus dem offiziellen anthropics/skills-Repo — einmalig installieren'}">${skill.install === 'builtin' ? '⚙ in Claude Code eingebaut' : '⬇ zum Nachinstallieren'}</span>` : ''}
         <span class="modal-meta-sep">·</span>
-        <span title="Rollen, in deren Filter dieser Skill auftaucht">Für: ${
+        <span title="Rollen, in deren Filter dieser Eintrag auftaucht">Für: ${
           (ROLE_MAP[skill.id] || ALL_ROLES).length === ALL_ROLES.length
             ? 'alle Rollen'
             : (ROLE_MAP[skill.id] || ALL_ROLES).map(id => escHtml((ROLES.find(r => r.id === id) || {label:id}).label)).join(', ')
@@ -2410,7 +2745,12 @@ Gib einen priorisierten Report aus:
     async function downloadBundle(btn, key) {
       const cfg = BUNDLES[key];
       const all = await getFilesAll();
-      const ids = cfg.ids.filter(id => (all[id] || []).length);
+      // Nur echte Skills ausliefern — Plugins/Frameworks gehören nicht in einen
+      // .claude/skills/-Ordner (Installation läuft dort über /plugin bzw. Arbeitsweise).
+      const ids = cfg.ids.filter(id => {
+        const s = SKILLS.find(x => x.id === id);
+        return s && (s.itemType || 'skill') === 'skill' && (all[id] || []).length;
+      });
       if (!ids.length) { showToast(cfg.toast + ' gerade nicht verfügbar.'); return; }
       const label = btn ? btn.textContent : '';
       if (btn) btn.disabled = true;
@@ -3089,6 +3429,48 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
           <pre class="output-example">${escHtml(skill.exampleOutput)}</pre>
         ` : ''}
 
+        ${(() => {
+          const _t = itemType(skill);
+          if (_t === 'framework') {
+            return `
+        <div class="runway">
+          <p class="section-label">So legst du los</p>
+          <div class="fw-start">
+            <p class="runway-desc">Ein Framework lädst du nicht herunter — es ist eine Arbeitsweise: eine feste Abfolge von Schritten, mit der du Claude führst. Den kompletten Ablauf mit kopierbaren Prompts findest du im eigenen Tab.</p>
+            <button class="c-cta -yellow-bg" onclick="switchTab('arbeiten')">So arbeitest du damit — Schritt für Schritt</button>
+          </div>
+        </div>`;
+          }
+          if (_t === 'plugin') {
+            return `
+        <div class="runway">
+          <p class="section-label">So legst du los</p>
+          <ol class="runway-steps">
+            <li class="runway-step">
+              <span class="runway-num">1</span>
+              <div class="runway-body">
+                <strong>Einmalig installieren</strong>
+                <p class="runway-desc">Der offizielle Plugin-Katalog ist in Claude Code vorinstalliert — ein Befehl genügt:</p>
+                <button class="runway-action" onclick="quickCopy(event,'${escHtml(skill.installCmd || '/plugin')}')"><span>${escHtml(skill.installCmd || '/plugin')}</span><span class="ra-copy">kopieren</span></button>
+                <p class="runway-note">Danach Scope wählen und <code>/reload-plugins</code> — der komplette Ablauf steht im Tab <button class="type-info-link" onclick="switchTab('installation')">„Installation“</button>.</p>
+              </div>
+            </li>
+            <li class="runway-step">
+              <span class="runway-num">2</span>
+              <div class="runway-body">
+                <strong>Danach einfach loslegen</strong>
+                <p class="runway-desc">Kopier diesen Satz und füg ihn in Claude Code ein:</p>
+                <div class="startprompt">
+                  <p class="startprompt-text">${escHtml(startPrompt(skill))}</p>
+                  <button class="startprompt-copy" onclick="copyStartPrompt(event,'${skill.id}')" aria-label="Startprompt kopieren">Kopieren</button>
+                </div>
+                ${skill.trigger ? `<p class="runway-alt">Der Befehl dazu: <button class="mini-trigger" onclick="copyTriggerRunway(event,'${escHtml(skill.trigger)}','${skill.id}')">${escHtml(skill.trigger)}</button></p>` : ''}
+              </div>
+            </li>
+          </ol>
+        </div>`;
+          }
+          return `
         <div class="runway">
           <p class="section-label">So legst du los</p>
           <ol class="runway-steps">
@@ -3118,7 +3500,8 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
               </div>
             </li>
           </ol>
-        </div>
+        </div>`;
+        })()}
 
         <p class="section-label">Läuft in</p>
         <div class="run-in">
@@ -3127,6 +3510,10 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
         </div>
         <p class="run-note">${skillPlatforms(skill).langdock
           ? `In Langdock: die <code>SKILL.md</code> unter <strong>Skills → Add Skill</strong> hochladen — sie aktiviert sich automatisch anhand der Beschreibung.`
+          : itemType(skill) === 'plugin'
+          ? `Nur Claude Code — Plugins sind ein Claude-Code-Mechanismus (Installation über <code>/plugin</code>).`
+          : itemType(skill) === 'framework'
+          ? `Die Arbeitsweise ist für Claude Code gedacht — dort arbeitet Claude direkt in deinen Dateien und kann Ergebnisse selbst prüfen.`
           : `Nur Claude Code — dieser Skill braucht dessen Ausführungsumgebung (Dateien, Scripts oder Browser).`}</p>
 
         <p class="section-label">Wann einsetzen</p>
@@ -3140,18 +3527,20 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
 
         <div class="info-grid info-grid-foot">
           <div class="info-item"><label>Autor</label><span>${escHtml(skill.author)}</span></div>
-          <div class="info-item"><label>Version</label><span>${escHtml(skill.version)}</span></div>
+          ${skill.version ? `<div class="info-item"><label>Version</label><span>${escHtml(skill.version)}</span></div>` : ''}
           <div class="info-item"><label>Hinzugefügt</label><span>${formatDate(skill.addedAt)}</span></div>
           <div class="info-item"><label>Zuletzt aktualisiert</label><span>${formatDate(skill.updatedAt)}</span></div>
+          ${itemType(skill) !== 'skill' && skill.source ? `<div class="info-item"><label>Quelle</label><span><a class="src-link" href="${escHtml(skill.source)}" target="_blank" rel="noopener">${escHtml(skill.source.replace('https://github.com/', 'github.com/').split('/tree/')[0])} ↗</a></span></div>` : ''}
         </div>
 
+        ${itemType(skill) === 'skill' ? `
         <div class="builder-nudge">
           <div>
             <strong>Passt fast, aber dein Fall ist anders?</strong>
             <p>Nimm diesen Skill als Vorlage — Name, Beschreibung, Befehl und Einsatzfälle sind im Builder schon vorausgefüllt.</p>
           </div>
           <button type="button" class="c-cta -black-border" onclick="loadSkillIntoBuilder('${skill.id}')">Als Vorlage in den Builder</button>
-        </div>
+        </div>` : ''}
 
         ${(() => {
           const current = skill;
@@ -3180,7 +3569,7 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
           `).join('');
 
           return `
-            <p class="section-label" style="margin-top:2.4rem">Ähnliche Skills</p>
+            <p class="section-label" style="margin-top:2.4rem">${itemType(current) === 'skill' ? 'Ähnliche Skills' : 'Ähnliches im Katalog'}</p>
             <div class="similar-grid">${cards}</div>
           `;
         })()}
@@ -3312,12 +3701,127 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
         <p class="files-intro-text" style="margin-bottom:1.6rem">Hinweis: Diese Historie ist aus der Versionsnummer abgeleitet — die echten Änderungen stehen im Repo (Tab „Aufbau &amp; Dateien“ → „Auf GitHub ansehen“).</p><div class="changelog">${entriesHtml}</div>`;
     }
 
+    // ===== PLUGIN: TAB „INSTALLATION“ (E2) =====
+    // Echte /plugin-Mechanik aus Claude Code: offizieller Katalog ist vorinstalliert,
+    // Install-Befehl → Scope-Auswahl → /reload-plugins. Die Terminal-Demo nutzt die
+    // bestehende playScript-Engine (shared/base.js) mit eigenem Container im Modal.
+    function renderModalInstall(skill) {
+      // Demo nach dem Einhängen starten (renderModalBody setzt das HTML erst NACH diesem Aufruf)
+      queueMicrotask(startModalInstallDemo);
+      const alt = skill.installAlt ? `
+        <p class="section-label">${escHtml(skill.installAlt.label)}</p>
+        <div class="install-alt">
+          ${skill.installAlt.cmds.map(c => `<button class="runway-action" onclick="quickCopy(event,'${escHtml(c)}')"><span>${escHtml(c)}</span><span class="ra-copy">kopieren</span></button>`).join('')}
+          <p class="runway-note">So fügst du einen externen Marketplace hinzu — ein gutes Lehrbeispiel dafür, was ein Marketplace ist.</p>
+        </div>` : '';
+      return `
+        <p class="section-label">Installation — einmalig, direkt in Claude Code</p>
+        <ol class="runway-steps">
+          <li class="runway-step">
+            <span class="runway-num">1</span>
+            <div class="runway-body">
+              <strong>Install-Befehl einfügen</strong>
+              <p class="runway-desc">Der offizielle Plugin-Katalog (<code>claude-plugins-official</code>) ist in Claude Code vorinstalliert — du musst nichts vorbereiten.</p>
+              <button class="runway-action" onclick="quickCopy(event,'${escHtml(skill.installCmd || '/plugin')}')"><span>${escHtml(skill.installCmd || '/plugin')}</span><span class="ra-copy">kopieren</span></button>
+            </div>
+          </li>
+          <li class="runway-step">
+            <span class="runway-num">2</span>
+            <div class="runway-body">
+              <strong>Scope wählen</strong>
+              <p class="runway-desc">Claude Code zeigt die Detailansicht (was drin ist und was es an Kontext kostet) und fragt nach dem Geltungsbereich: <strong>User</strong> (überall), <strong>Project</strong> (fürs Team im Repo) oder <strong>Local</strong> (nur du, nur hier).</p>
+            </div>
+          </li>
+          <li class="runway-step">
+            <span class="runway-num">3</span>
+            <div class="runway-body">
+              <strong>Aktivieren — ohne Neustart</strong>
+              <button class="runway-action" onclick="quickCopy(event,'/reload-plugins')"><span>/reload-plugins</span><span class="ra-copy">kopieren</span></button>
+            </div>
+          </li>
+        </ol>
+
+        <p class="section-label">So sieht das in Claude Code aus</p>
+        <div class="ex-terminal modal-term">
+          <div class="ex-terminal-bar">
+            <span class="ex-dot"></span><span class="ex-dot"></span><span class="ex-dot"></span>
+            <span class="ex-terminal-title">claude code — /plugin</span>
+            <button class="demo-replay" onclick="startModalInstallDemo()" title="Demo neu abspielen" aria-label="Demo neu abspielen">↻</button>
+          </div>
+          <div class="ex-terminal-body" id="modal-term-body"></div>
+        </div>
+
+        <p class="section-label">Das steckt drin</p>
+        <p class="install-contains">${escHtml(skill.contains || '')}</p>
+        ${alt}
+
+        <p class="section-label">Quelle &amp; Vertrauen</p>
+        <p class="install-note">${skill.source ? `Quellcode offen einsehbar: <a class="src-link" href="${escHtml(skill.source)}" target="_blank" rel="noopener">${escHtml(skill.source.replace('https://github.com/', 'github.com/'))} ↗</a>. ` : ''}Installiere Plugins nur aus Quellen, denen du vertraust — Anthropic prüft nicht jeden Inhalt von Drittanbieter-Plugins.</p>
+        <p class="install-note">Zum Stöbern: <code>/plugin</code> öffnet den Katalog-Dialog in Claude Code (Discover · Installed · Marketplaces), im Web unter claude.com/plugins. Befehle aus Plugins heißen immer <code>/&lt;plugin&gt;:&lt;befehl&gt;</code> — z.&nbsp;B. <code>/ralph-loop:help</code>.</p>
+      `;
+    }
+    function startModalInstallDemo() {
+      const item = state.activeSkill;
+      if (!item || state.activeTab !== 'installation') return;
+      const body = document.getElementById('modal-term-body');
+      if (!body || !item.installDemo) return;
+      playScript(item.installDemo, { artifacts: [] }, { body, actions: null });
+    }
+
+    // ===== FRAMEWORK: TAB „SO ARBEITEST DU DAMIT“ (E2) =====
+    // Kein Download, keine Installation — der Ablauf selbst ist das Produkt.
+    function copyWorkflowPrompt(evt, id, idx) {
+      if (evt) evt.stopPropagation();
+      const item = SKILLS.find(s => s.id === id);
+      const step = item && item.workflow && item.workflow.steps[idx];
+      if (!step) return;
+      const done = () => { showToast('Kopiert ✓ — in Claude Code einfügen'); markTried(id); };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(step.copy).then(done).catch(() => { fallbackCopy(step.copy); done(); });
+      } else { fallbackCopy(step.copy); done(); }
+    }
+    function renderModalWorkflow(skill) {
+      const wf = skill.workflow;
+      if (!wf) return '<p class="no-comments">Für diesen Eintrag ist noch kein Ablauf hinterlegt.</p>';
+      const isCmd = txt => /^\//.test(txt);
+      const steps = wf.steps.map((s, i) => `
+        <li class="runway-step">
+          <span class="runway-num">${i + 1}</span>
+          <div class="runway-body">
+            <strong>${escHtml(s.title)}</strong>
+            <p class="runway-desc">${escHtml(s.desc)}</p>
+            ${isCmd(s.copy)
+              ? `<button class="runway-action" onclick="copyWorkflowPrompt(event,'${skill.id}',${i})"><span>${escHtml(s.copy)}</span><span class="ra-copy">kopieren</span></button>`
+              : `<div class="startprompt">
+                   <p class="startprompt-text">${escHtml(s.copy)}</p>
+                   <button class="startprompt-copy" onclick="copyWorkflowPrompt(event,'${skill.id}',${i})" aria-label="Prompt für diesen Schritt kopieren">Kopieren</button>
+                 </div>`}
+          </div>
+        </li>`).join('');
+      return `
+        <p class="section-label">So arbeitest du damit</p>
+        <p class="wf-intro">${escHtml(wf.intro || '')}</p>
+        ${wf.note ? `<p class="wf-note">${escHtml(wf.note)}</p>` : ''}
+        <ol class="runway-steps wf-steps">${steps}</ol>
+        ${wf.example ? `
+          <div class="wf-example">
+            <p class="section-label" style="margin-top:0">${escHtml(wf.example.title)}</p>
+            <ol class="wf-example-steps">${wf.example.steps.map(s => `<li>${escHtml(s)}</li>`).join('')}</ol>
+          </div>` : ''}
+        ${wf.pitfalls && wf.pitfalls.length ? `
+          <p class="section-label">Stolpersteine</p>
+          <ul class="wf-pitfalls">${wf.pitfalls.map(p => `<li>${escHtml(p)}</li>`).join('')}</ul>` : ''}
+        ${skill.source ? `<p class="install-note">Quelle: <a class="src-link" href="${escHtml(skill.source)}" target="_blank" rel="noopener">${escHtml(skill.source.replace('https://github.com/', 'github.com/'))} ↗</a></p>` : ''}
+      `;
+    }
+
     // ===== COPY TRIGGER =====
     // copyTrigger/fallbackCopy/showToast (Toast-Engine): shared/base.js
 
     // ===== RESET FILTERS =====
     function resetFilters() {
       state.category = 'all';
+      state.itemType = 'all';
       state.tags = [];
       state.subcategory = null;
       state.role = null;
@@ -3330,9 +3834,11 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
       const endEl = document.getElementById('endorsed-only'); if (endEl) endEl.checked = false;
       const sortEl = document.getElementById('sort-select'); if (sortEl) sortEl.value = 'recommended';
       const favBtn = document.getElementById('fav-filter-btn'); if (favBtn) { favBtn.classList.remove('active'); favBtn.setAttribute('aria-pressed','false'); }
+      renderTypeTabs();
       renderCatTabs();
       renderRoleChips();
       renderTagChips();
+      renderSourceChips();
       render();
       updateFavCount();
       updateURL();
@@ -3341,7 +3847,7 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
     // ===== URL HASH =====
     // ===== DEEP-LINKING: #skill[/tab[/datei[:L8-10]]] =====
     let _hashLock = false;
-    const MODAL_TABS = ['overview', 'files', 'ratings', 'pilots', 'changelog'];
+    const MODAL_TABS = ['overview', 'files', 'installation', 'arbeiten', 'ratings', 'pilots', 'changelog'];
 
     function currentFileRel() {
       const files = state._files || [];
@@ -3385,10 +3891,13 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
       if (m) { path = m[1]; lineRange = [parseInt(m[2], 10), parseInt(m[3] || m[2], 10)]; }
       const parts = path.split('/');
       const skillId = parts[0];
-      const tab = MODAL_TABS.includes(parts[1]) ? parts[1] : 'overview';
       const fileRel = parts.slice(2).join('/');
       const skill = SKILLS.find(s => s.id === skillId);
       if (!skill) { updateURL(); return; } // unbekannter Skill: URL nicht vom UI abweichen lassen
+      // Tab muss es für DIESEN Typ geben (z.B. hat ein Plugin ohne gespiegelte Dateien
+      // keinen files-Tab — sonst würde eine generierte Vorschau-SKILL.md erscheinen)
+      const allowedTabs = modalTabsFor(skill).map(t => t[0]);
+      const tab = (MODAL_TABS.includes(parts[1]) && allowedTabs.includes(parts[1])) ? parts[1] : 'overview';
       const ex = document.getElementById('view-explainer');
       if (ex && !ex.hidden) showView('catalog');
       // Ziel VOR openModal/switchTab merken — beide rufen updateURL, das sonst
@@ -3423,6 +3932,7 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
       writeHash(buildHash(t.lineRange), false);
     }
     function closeModalSilent() {
+      stopTermScript(); // laufende Installations-Demo (Plugins) nicht ins Leere tippen lassen
       const ov = document.getElementById('modal-overlay');
       if (!ov) return;
       ov.classList.remove('open');
@@ -3509,10 +4019,46 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
     }
 
     function setSource(id) {
-      state.category = id;
-      renderRoleChips();
+      // zweiter Klick auf die aktive Quelle hebt die Auswahl auf; setSource('all') setzt zurück
+      state.category = (id !== 'all' && state.category === id) ? 'all' : id;
+      renderSourceChips();
       render();
       updateURL();
+    }
+
+    // Quellen-Filter (Plan §5.6): standardmäßig eingeklappt — die Herkunft lebt primär
+    // als Karten-Badge weiter, bleibt hier aber als Filter erreichbar.
+    // Zählt merge-bewusst wie visibleCardCount (Gruppen = 1 Karte) und
+    // berücksichtigt den aktiven Typ-Filter, damit Chip-Zahl und Ergebnisfläche passen.
+    function visibleSourceCount(catId) {
+      const match = sk => !HIDDEN.has(sk.id) && sk.category === catId
+        && (state.itemType === 'all' || itemType(sk) === state.itemType);
+      let n = SKILLS.filter(match).length;
+      GROUPS.forEach(g => {
+        const m = g.members.filter(id => { const s = SKILLS.find(x => x.id === id); return s && match(s); }).length;
+        if (m > 0) n -= (m - 1);
+      });
+      return n;
+    }
+    function renderSourceChips() {
+      const container = document.getElementById('source-chips');
+      if (!container) return;
+      const sources = ['pilot-inhouse', 'gsd', 'anthropic', 'community'];
+      container.innerHTML = `<div class="chip-row">` + sources.map(id => {
+        const n = visibleSourceCount(id);
+        const active = state.category === id;
+        return `<button class="role-chip${active ? ' active' : ''}" onclick="setSource('${id}')" aria-pressed="${active}">${catLabel(id)} <span class="rc-count">${n}</span></button>`;
+      }).join('') + `</div>`;
+      const badge = document.getElementById('source-active-count');
+      if (badge) { badge.hidden = state.category === 'all'; badge.textContent = '1'; }
+    }
+    function toggleSourceSection() {
+      const btn = document.getElementById('source-toggle');
+      const chips = document.getElementById('source-chips');
+      if (!btn || !chips) return;
+      const expanded = btn.getAttribute('aria-expanded') === 'true';
+      btn.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+      chips.hidden = expanded;
     }
 
     function setRole(id) {
@@ -3535,7 +4081,8 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
     function initHero() {
       // echte Werte in die Zähler
       const totalEndorsements = SKILLS.reduce((sum, s) => sum + (s.endorsedBy?.length || 0), 0);
-      const sk = document.getElementById('stat-skills'); if (sk) sk.dataset.count = SKILLS.length;
+      // Nur echte Skills zählen — Plugins/Frameworks würden das Label „Skills" sonst zur Lüge machen
+      const sk = document.getElementById('stat-skills'); if (sk) sk.dataset.count = SKILLS.filter(s => itemType(s) === 'skill').length;
       const pl = document.getElementById('stat-pilots'); if (pl) pl.dataset.count = PILOTS.length;
       const en = document.getElementById('stat-endorsed'); if (en) en.dataset.count = totalEndorsements;
       // Kategorien zählen statt hart kodieren — leere zählen nicht
@@ -3572,6 +4119,66 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
     }
 
     // animateCount: shared/base.js
+
+    // ===== STIMMEN AUS DEM TEAM (E2) =====
+    // Rotiert echte seeded Kommentare aus den Item-Daten (data/skills.js) — nichts erfunden,
+    // jede Stimme verlinkt auf ihr Item. Pausiert bei Hover/Fokus, respektiert reduced-motion.
+    function buildVoicePool() {
+      const pool = [];
+      SKILLS.forEach(s => {
+        if (HIDDEN.has(s.id)) return;
+        (s.comments || []).forEach(c => {
+          if (c && c.text && c.author) pool.push({ item: s, c });
+        });
+      });
+      // Fisher-Yates: jede Sitzung eine andere Reihenfolge, kein Zitat bevorzugt
+      for (let i = pool.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [pool[i], pool[j]] = [pool[j], pool[i]];
+      }
+      return pool;
+    }
+
+    function voiceHtml(v) {
+      const p = PILOTS.find(pl => pl.name === v.c.author);
+      const who = [v.c.role, p && p.department].filter(Boolean).join(' · ');
+      const arrow = '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>';
+      return `
+        <button type="button" class="tv-card" data-skill-id="${escHtml(v.item.id)}" onclick="openModal('${escHtml(v.item.id)}')"
+          aria-label="Kommentar von ${escHtml(v.c.author)} zu ${escHtml(v.item.name)} — Details öffnen">
+          <span class="tv-quote">„${escHtml(v.c.text)}“</span>
+          <span class="tv-meta">
+            <span class="tv-avatar" aria-hidden="true">${escHtml(v.c.initials || getInitials(v.c.author))}</span>
+            <span class="tv-who"><strong>${escHtml(v.c.author)}</strong><span>${escHtml(who)}</span></span>
+            <span class="tv-ref">zu ${escHtml(v.item.name)} ${arrow}</span>
+          </span>
+        </button>`;
+    }
+
+    function initVoices() {
+      const section = document.getElementById('team-voices');
+      const stage = document.getElementById('tv-stage');
+      if (!section || !stage) return;
+      const pool = buildVoicePool();
+      if (!pool.length) { section.hidden = true; return; }
+      let vi = 0;
+      const show = () => { stage.innerHTML = voiceHtml(pool[vi]); };
+      show();
+      const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reduce || pool.length < 2) return;
+      let paused = false;
+      ['mouseenter', 'focusin'].forEach(ev => section.addEventListener(ev, () => { paused = true; }));
+      ['mouseleave', 'focusout'].forEach(ev => section.addEventListener(ev, () => { paused = false; }));
+      setInterval(() => {
+        if (paused || document.hidden) return;
+        stage.classList.add('tv-fading');
+        setTimeout(() => {
+          vi = (vi + 1) % pool.length;
+          show();
+          stage.classList.remove('tv-fading');
+        }, 380);
+      }, 6000);
+    }
 
     // ===================== EXPLAINER: WAS SIND SKILLS =====================
     function showView(view) {
@@ -3778,9 +4385,11 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
     document.addEventListener('DOMContentLoaded', () => {
       renderFeatured();
       renderRecentlyViewed();
+      renderTypeTabs();
       renderCatTabs();
       renderRoleChips();
       renderTagChips();
+      renderSourceChips();
       renderPilots();
       render();
       // Deep-Link-Schema skills.html?skill=<id>: auf die kanonische Hash-Form
@@ -3854,6 +4463,7 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
       });
 
       initHero();
+      initVoices();
 
       // Filterleiste: beim Scrollen fixieren + verdichten. Platzhalter hält die
       // Flow-Höhe konstant, damit der Katalog beim Umschalten nicht springt.

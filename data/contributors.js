@@ -15,7 +15,10 @@
           "webaudit",
           "skill-creator",
           "web-artifacts-builder",
-          "brainstorming"
+          "brainstorming",
+          "superpowers",
+          "gsd",
+          "brainstorm-plan-execute"
         ]
       },
       {
@@ -31,7 +34,9 @@
           "tonalitaets-check",
           "brand-guidelines",
           "brainstorming",
-          "algorithmic-art"
+          "algorithmic-art",
+          "frontend-design",
+          "brainstorm-plan-execute"
         ]
       },
       {
@@ -48,7 +53,10 @@
           "skill-creator",
           "brainstorming",
           "systematic-debugging",
-          "verification-before-completion"
+          "verification-before-completion",
+          "superpowers",
+          "ralph-loop",
+          "test-driven-development"
         ]
       },
       {
@@ -64,7 +72,8 @@
           "erste-schritte",
           "xlsx",
           "pptx",
-          "systematic-debugging"
+          "systematic-debugging",
+          "gsd"
         ]
       },
       {

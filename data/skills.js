@@ -1730,25 +1730,47 @@
         "author": "Anthropic",
         "version": "1.0.0",
         "addedAt": "2026-07-01",
-        "updatedAt": "2026-07-09",
+        "updatedAt": "2026-07-16",
         "requirements": [
           "Claude Code"
         ],
-        "endorsements": [],
+        "endorsements": [
+          {
+            "name": "Christopher Kipp",
+            "role": "Innovation Lead",
+            "initials": "CK",
+            "text": "Das Werkzeug, das aus Skill-Nutzer:innen Skill-Beitragende macht — der direkte Weg zu neuen pilot-Skills im Katalog."
+          }
+        ],
         "comments": [],
         "badge": "neu",
         "trigger": null,
         "id": "skill-creator",
+        "itemType": "plugin",
         "platforms": { "code": true, "langdock": false },
-        "install": "plugin",
         "name": "skill-creator",
         "subcategory": "bauen",
         "difficulty": "advanced",
         "timeToRun": "15–40 Min",
         "featured": true,
         "tagline": "Eigene Skills bauen — geführt vom offiziellen Skill-Creator",
-        "description": "Offizieller Anthropic-Skill, der beim Erstellen eigener Skills hilft: Struktur, SKILL.md, gute description, Referenzen und Tests.",
-        "longDescription": "Der offizielle Claude-Code-Skill zum Bauen eigener Skills. Führt durch Aufbau, gute description (für den Auto-Trigger), Ordnerstruktur und Qualität. Der natürliche nächste Schritt, wenn das Team eigene pilot-Skills schreiben will.",
+        "description": "Offizielles Anthropic-Plugin, das beim Erstellen eigener Skills hilft: Struktur, SKILL.md, gute description, Referenzen und Tests. Du beschreibst, was der Skill können soll — Claude baut ihn nach Anthropic-Best-Practices.",
+        "longDescription": "Macht aus „ich erkläre Claude jedes Mal dasselbe“ einen wiederverwendbaren Skill: Du sagst einfach „Erstell mir einen Skill, der …“, und Claude führt dich durch Aufbau, gute description (für den Auto-Trigger), Ordnerstruktur und Qualität. Der natürliche nächste Schritt, wenn das Team eigene pilot-Skills schreiben will — fertige Skill-Ordner kannst du mit Kolleg:innen teilen und bei uns in den Katalog einreichen. Ehrlich gesagt: Gute Skills brauchen mehrere Runden Ausprobieren und Nachschärfen — der erste Wurf ist selten perfekt (das sagt Anthropic selbst so). Die Eval-Funktionen sind Fortgeschrittenen-Terrain; einen einfachen Skill schafft aber auch ein:e Einsteiger:in im Dialog.",
+        "exampleOutput": "Du: \"Erstell mir einen Skill, der aus unseren\nKampagnen-Kennzahlen einen Report im pilot-Stil macht\"\n\n✓ Fragen geklärt: Eingabeformat, Report-Aufbau, Ton\n✓ Skill-Ordner angelegt: kampagnen-report/\n  SKILL.md · references/beispiel.md\n→ Zum Teilen bereit — und zum Einreichen in den Katalog",
+        "filesMirrored": true,
+        "source": "https://github.com/anthropics/claude-plugins-official/tree/main/plugins/skill-creator",
+        "installCmd": "/plugin install skill-creator@claude-plugins-official",
+        "contains": "1 großer Skill inklusive drei Hilfs-Agents (analyzer, comparator, grader), Referenz-Dokumenten und einem Eval-Werkzeug, mit dem sich messen lässt, ob ein Skill zuverlässig funktioniert. Keine Slash-Befehle — du sagst einfach „Erstell mir einen Skill, der …“.",
+        "installDemo": [
+          {"t":"user","text":"/plugin install skill-creator@claude-plugins-official"},
+          {"t":"sys","text":"Detailansicht öffnet sich: 1 Skill + 3 Hilfs-Agents (analyzer, comparator, grader) · Context cost in Tokens","pause":900},
+          {"t":"sys","text":"Scope wählen: User (überall) · Project (fürs Team im Repo) · Local (nur du, nur hier)","pause":950},
+          {"t":"res","html":"Installiert im Scope „User“ <span class=\"r-ok\">✓</span>","pause":700},
+          {"t":"user","text":"/reload-plugins"},
+          {"t":"res","html":"Plugins neu geladen <span class=\"r-ok\">✓</span>","pause":650},
+          {"t":"user","text":"Erstell mir einen Skill, der aus Kampagnen-Kennzahlen einen Report im pilot-Stil macht."},
+          {"t":"claude","text":"Gern — ich stelle dir erst ein paar Fragen zu Eingabeformat und Report-Aufbau, dann baue ich den Skill-Ordner nach den Anthropic-Best-Practices.","pause":400}
+        ],
         "tags": [
           "einstieg",
           "skills",
@@ -1814,19 +1836,20 @@
       }
       ,{
         "id": "frontend-design",
+        "itemType": "plugin",
         "platforms": { "code": true, "langdock": false },
         "name": "frontend-design",
-        "install": "plugin",
         "tagline": "Webseiten & Tools, die nicht nach Baukasten aussehen",
-        "description": "Offizieller Anthropic-Skill: Design-Leitplanken für markante, hochwertige Oberflächen — Typografie, Farben, Layout. Läuft automatisch mit, wenn Claude etwas mit UI baut. Inhalt auf Englisch.",
-        "longDescription": "Wer mit Claude eine Webseite oder ein kleines Tool baut, bekommt schnell ein generisches „KI-Template“-Aussehen. Dieser Skill gibt Claude eine Design-Haltung mit: bewusste Typo-Entscheidungen, stimmige Farbwelten, Layouts mit Charakter. Perfekte Ergänzung zu unseren Bau-Skills (webseite-bauen, prototyp-bauen) — einmal installiert, wirkt er bei jedem UI-Auftrag mit. Inhalt auf Englisch.",
+        "description": "Offizielles Anthropic-Plugin mit genau einem Skill: Design-Leitplanken für markante, hochwertige Oberflächen — Typografie, Farben, Layout. Läuft automatisch mit, wenn Claude etwas mit UI baut. Inhalt auf Englisch.",
+        "longDescription": "Wer mit Claude eine Webseite oder ein kleines Tool baut, bekommt schnell ein generisches „KI-Template“-Aussehen. Dieses Plugin gibt Claude eine Design-Haltung mit: bewusste Typo-Entscheidungen, stimmige Farbwelten, Layouts mit Charakter. Perfekte Ergänzung zu unseren Bau-Skills (webseite-bauen, prototyp-bauen) — einmal installiert, wirkt es bei jedem UI-Auftrag mit, ganz ohne Bedienung. Ehrlich gesagt: Es ersetzt keine CI-Vorgaben — Kunden-Guidelines gibst du weiterhin selbst in den Prompt. Und es ist bewusst meinungsstark, manchmal gewagter, als der Kunde es will. Inhalt auf Englisch.",
+        "exampleOutput": "Du: \"Bau mir eine Microsite für den Kunden-Pitch\"\n\nOhne Plugin: das übliche Template-Einerlei.\nMit Plugin wählt Claude eine eigene Richtung —\nund begründet sie:\n\"Editorial-Look: enge Headline-Typo, viel Weißraum,\n eine Akzentfarbe aus dem Kampagnenmotiv.\"",
         "category": "anthropic",
         "subcategory": "bauen",
         "trigger": null,
         "author": "Anthropic",
         "version": "1.0.0",
         "addedAt": "2026-07-10",
-        "updatedAt": "2026-07-10",
+        "updatedAt": "2026-07-16",
         "badge": "neu",
         "featured": false,
         "tags": ["design", "web", "bauen", "ui", "typografie"],
@@ -1835,9 +1858,29 @@
         "timeToRun": "läuft automatisch mit",
         "requirements": ["Claude Code"],
         "rating": { "average": 4.6, "count": 3 },
-        "endorsedBy": [],
-        "endorsements": [],
-        "comments": []
+        "endorsedBy": ["Mia Hoffmann"],
+        "endorsements": [
+          {
+            "name": "Mia Hoffmann",
+            "role": "Senior UX Designerin",
+            "initials": "MH",
+            "text": "Der Unterschied zwischen „KI-Template“ und „kann man dem Kunden zeigen“. Brand Guidelines musst du trotzdem selbst mitgeben."
+          }
+        ],
+        "comments": [],
+        "filesMirrored": true,
+        "source": "https://github.com/anthropics/claude-plugins-public/tree/main/plugins/frontend-design",
+        "installCmd": "/plugin install frontend-design@claude-plugins-official",
+        "contains": "Genau 1 Skill (frontend-design) mit Design-Leitlinien zu Typografie, Farbwahl und Layout. Keine Slash-Befehle — der Skill springt automatisch an, sobald Claude Oberflächen baut.",
+        "installDemo": [
+          {"t":"user","text":"/plugin install frontend-design@claude-plugins-official"},
+          {"t":"sys","text":"Detailansicht öffnet sich: 1 Skill (frontend-design) · keine Befehle · Context cost in Tokens","pause":900},
+          {"t":"sys","text":"Scope wählen: User (überall) · Project (fürs Team im Repo) · Local (nur du, nur hier)","pause":950},
+          {"t":"res","html":"Installiert im Scope „User“ <span class=\"r-ok\">✓</span>","pause":700},
+          {"t":"user","text":"/reload-plugins"},
+          {"t":"res","html":"Plugins neu geladen <span class=\"r-ok\">✓</span>","pause":650},
+          {"t":"sys","text":"Nichts weiter zu tun — der Skill wirkt ab jetzt automatisch mit, sobald Claude etwas mit Oberfläche baut.","pause":400}
+        ]
       },
       {
         "id": "canvas-design",
@@ -2089,6 +2132,363 @@
         ],
         "featured": false,
         "badge": "neu"
+      },
+
+      {
+        "id": "superpowers",
+        "itemType": "plugin",
+        "platforms": { "code": true, "langdock": false },
+        "name": "superpowers",
+        "tagline": "Ein Plugin, das Claude beibringt, wie ein eingespieltes Team zu arbeiten",
+        "description": "Das Community-Skill-Paket von Jesse Vincent (obra), auch im offiziellen Anthropic-Katalog gelistet: 14 Skills plus Hooks, die Claude automatisch erst verstehen, planen und prüfen lassen, statt drauflos zu bauen. Inhalt auf Englisch.",
+        "longDescription": "Das Skill-Paket, aus dem auch unsere Einzel-Skills brainstorming, systematic-debugging und verification-before-completion stammen. Als Plugin installierst du alle 14 Skills auf einmal — inklusive Hooks, die sie automatisch aktivieren: Claude greift von selbst zum passenden Skill und startet bei einer neuen Tool-Idee z. B. ohne Aufforderung die Brainstorming-Phase mit Rückfragen. Ehrlich gesagt: Die Texte sind Englisch, ein Teil der Skills ist klar entwicklerlastig (Git-Worktrees, Code-Review, TDD), und Claude arbeitet damit gründlicher und dadurch langsamer — für schnelle Mini-Aufgaben kann sich das übertrieben anfühlen. Für alles, was gebaut wird und halten soll, lohnt es sich. Sehr aktives Community-Projekt, ändert sich laufend.",
+        "exampleOutput": "Du: \"Bau mir ein Kampagnen-Reporting-Tool\"\n\nOhne superpowers: Claude schreibt sofort Code.\nMit superpowers:\n  1) Brainstorming — Claude fragt nach: Wer nutzt das?\n     Welche Daten? Was heißt \"fertig\"?\n  2) Design-Dokument — du gibst frei\n  3) Plan in kleinen Schritten\n  4) Umsetzung — geprüft, bevor \"fertig\" fällt",
+        "category": "community",
+        "subcategory": "bauen",
+        "trigger": null,
+        "author": "Jesse Vincent (obra)",
+        "version": "",
+        "addedAt": "2026-07-16",
+        "updatedAt": "2026-07-16",
+        "tags": ["workflow", "qualität", "bauen", "community", "citizen-coding"],
+        "useCases": ["Größeres Vorhaben diszipliniert angehen", "Alle Superpowers-Skills auf einmal installieren", "Claude ohne Zuruf gründlich arbeiten lassen"],
+        "difficulty": "medium",
+        "timeToRun": "wirkt bei jeder Aufgabe mit",
+        "requirements": ["Claude Code"],
+        "rating": { "average": 4.6, "count": 8 },
+        "endorsedBy": ["Jan Richter", "Christopher Kipp"],
+        "endorsements": [
+          {
+            "name": "Jan Richter",
+            "role": "Tech Lead & Citizen-Coding-Mentor",
+            "initials": "JR",
+            "text": "Unsere drei meistempfohlenen Community-Skills stammen aus diesem Paket. Wer mehr als einen davon nutzt, fährt mit dem kompletten Plugin besser."
+          },
+          {
+            "name": "Christopher Kipp",
+            "role": "Innovation Lead",
+            "initials": "CK",
+            "text": "Der Unterschied ist spürbar: weniger „sieht gut aus, ist aber kaputt“, mehr nachvollziehbare Zwischenschritte."
+          }
+        ],
+        "comments": [
+          {
+            "author": "Sophie Klein",
+            "role": "Projektmanagerin",
+            "initials": "SK",
+            "date": "2026-07-16",
+            "text": "Die Rückfragen am Anfang haben mich erst genervt — bis mir auffiel, dass der erste Wurf seitdem fast immer sitzt.",
+            "rating": 4
+          }
+        ],
+        "featured": false,
+        "badge": null,
+        "source": "https://github.com/obra/superpowers",
+        "installCmd": "/plugin install superpowers@claude-plugins-official",
+        "installAlt": {
+          "label": "Alternative: über den Marketplace des Autors",
+          "cmds": ["/plugin marketplace add obra/superpowers-marketplace", "/plugin install superpowers@superpowers-marketplace"]
+        },
+        "contains": "14 Skills — u. a. brainstorming, writing-plans, executing-plans, test-driven-development, systematic-debugging, verification-before-completion — plus Hooks, die die Skills automatisch aktivieren. Keine Slash-Befehle nötig.",
+        "installDemo": [
+          {"t":"user","text":"/plugin install superpowers@claude-plugins-official"},
+          {"t":"sys","text":"Detailansicht öffnet sich: 14 Skills · Hooks · Context cost in Tokens","pause":900},
+          {"t":"sys","text":"Scope wählen: User (überall) · Project (fürs Team im Repo) · Local (nur du, nur hier)","pause":950},
+          {"t":"res","html":"Installiert im Scope „User“ <span class=\"r-ok\">✓</span>","pause":700},
+          {"t":"user","text":"/reload-plugins"},
+          {"t":"res","html":"Plugins neu geladen <span class=\"r-ok\">✓</span>","pause":650},
+          {"t":"sys","text":"Ab jetzt greift Claude selbst zum passenden Skill — bei deiner nächsten Tool-Idee startet zuerst das Brainstorming.","pause":400}
+        ]
+      },
+
+      {
+        "id": "ralph-loop",
+        "itemType": "plugin",
+        "platforms": { "code": true, "langdock": false },
+        "name": "ralph-loop",
+        "tagline": "Claude bleibt dran, bis die Aufgabe wirklich fertig ist",
+        "description": "Offizielles Anthropic-Plugin: Du gibst eine Aufgabe mit messbarem Fertig-Kriterium, ein Stop-Hook speist sie so lange erneut ein, bis das Kriterium erfüllt ist — oder das Iterationslimit greift. Für Fortgeschrittene, Inhalt auf Englisch.",
+        "longDescription": "Für Fleißaufgaben, bei denen du nicht daneben sitzen und „weiter“ tippen willst: ralph-loop fängt Claudes Beenden-Versuch per Stop-Hook ab und füttert dieselbe Aufgabe erneut ein — arbeiten, prüfen, korrigieren, erneut prüfen. Benannt nach der „Ralph Wiggum“-Technik von Geoffrey Huntley. Ehrliche Einordnung: Der Nutzen steht und fällt mit einem präzisen Prompt und einem messbaren Fertig-Kriterium — schwammige Aufgaben drehen sich im Kreis. Der Loop läuft unbeaufsichtigt weiter und verbraucht entsprechend Kontingent; --max-iterations ist laut README das primäre Sicherheitsnetz und gehört immer gesetzt. Ungeeignet für Geschmacks- und Designentscheidungen — das steht so auch im README.",
+        "exampleOutput": "/ralph-loop:ralph-loop \"Prüfe alle 30 Landingpages\ngegen die Checkliste und korrigiere die Funde.\nFertig, wenn alle Checks grün sind — gib dann\n<promise>FERTIG</promise> aus.\"\n--completion-promise \"FERTIG\" --max-iterations 20\n\n→ Claude arbeitet · prüft · korrigiert · prüft erneut\n→ Der Stop-Hook speist die Aufgabe so lange neu ein,\n  bis FERTIG fällt oder das Iterationslimit greift",
+        "category": "anthropic",
+        "subcategory": "automation",
+        "trigger": "/ralph-loop:ralph-loop",
+        "author": "Anthropic",
+        "version": "1.0.0",
+        "addedAt": "2026-07-16",
+        "updatedAt": "2026-07-16",
+        "tags": ["automation", "workflow", "bauen", "unbeaufsichtigt"],
+        "useCases": ["Lange Checklisten unbeaufsichtigt abarbeiten", "Viele Dateien nach demselben Muster prüfen und korrigieren", "Über Nacht iterieren lassen — mit hartem Limit"],
+        "difficulty": "advanced",
+        "timeToRun": "läuft unbeaufsichtigt weiter",
+        "requirements": ["Claude Code", "Ein messbares Fertig-Kriterium", "--max-iterations immer setzen"],
+        "rating": { "average": 4.1, "count": 4 },
+        "endorsedBy": ["Jan Richter"],
+        "endorsements": [
+          {
+            "name": "Jan Richter",
+            "role": "Tech Lead & Citizen-Coding-Mentor",
+            "initials": "JR",
+            "text": "Mächtig, aber nur mit klarem Fertig-Kriterium und Iterationslimit. Erst mit kleinen Aufgaben üben, dann skalieren."
+          }
+        ],
+        "comments": [
+          {
+            "author": "Lukas Weber",
+            "role": "SEO Strategist",
+            "initials": "LW",
+            "date": "2026-07-16",
+            "text": "40 Produktseiten über Nacht gegen unsere SEO-Checkliste laufen lassen — morgens war die Liste durch. Ohne hartes Fertig-Kriterium wäre das nichts geworden.",
+            "rating": 4
+          }
+        ],
+        "featured": false,
+        "badge": null,
+        "source": "https://github.com/anthropics/claude-plugins-public/tree/main/plugins/ralph-loop",
+        "installCmd": "/plugin install ralph-loop@claude-plugins-official",
+        "contains": "3 Befehle — /ralph-loop:ralph-loop (Loop starten), /ralph-loop:cancel-ralph (abbrechen), /ralph-loop:help — plus der Stop-Hook, der den Loop am Laufen hält. Keine Skills, kein MCP.",
+        "installDemo": [
+          {"t":"user","text":"/plugin install ralph-loop@claude-plugins-official"},
+          {"t":"sys","text":"Detailansicht öffnet sich: ralph-loop v1.0.0 · 3 Befehle + 1 Stop-Hook · Context cost in Tokens","pause":900},
+          {"t":"sys","text":"Scope wählen: User (überall) · Project (fürs Team im Repo) · Local (nur du, nur hier)","pause":950},
+          {"t":"res","html":"Installiert im Scope „User“ <span class=\"r-ok\">✓</span>","pause":700},
+          {"t":"user","text":"/reload-plugins"},
+          {"t":"res","html":"Plugins neu geladen <span class=\"r-ok\">✓</span>","pause":650},
+          {"t":"sys","text":"Ab jetzt verfügbar: /ralph-loop:ralph-loop · /ralph-loop:cancel-ralph · /ralph-loop:help","pause":650},
+          {"t":"sys","text":"Tipp: Starte den Loop nur mit messbarem Fertig-Kriterium — und setz immer --max-iterations.","pause":400}
+        ]
+      },
+
+      {
+        "id": "gsd",
+        "itemType": "framework",
+        "platforms": { "code": true, "langdock": false },
+        "name": "GSD — Get Shit Done",
+        "tagline": "Vom Ideensatz zum fertigen Projekt — in Phasen, mit Projektgedächtnis",
+        "description": "Arbeitsweise für größere Vorhaben: GSD macht aus einer vagen Idee einen schriftlichen Projektplan mit Phasen und lässt Claude sie einzeln bauen und prüfen. Du bleibst Auftraggeber:in, nicht Programmierer:in.",
+        "longDescription": "Wenn ein Tool über Tage oder Wochen wächst, vergisst eine normale Claude-Sitzung irgendwann, was ihr eigentlich baut. GSD schreibt den Projektstand in Dateien (Ordner .planning/ mit PROJECT.md, ROADMAP.md, STATE.md), die jede neue Sitzung wieder einliest — nichts geht verloren. Der Ablauf: Fragen beantworten, Phase besprechen, planen lassen, bauen lassen, im Gespräch abnehmen. Typische pilot-Fälle: Reporting-Tool fürs Team, interner Kampagnen-Kalender, Pitch-Material-Generator — alles, was mehr als einen Nachmittag braucht. Zur Ehrlichkeit beim Namen: Die bei uns installierte Variante heißt „GSD Core“ und löst das Kürzel als „Git. Ship. Done.“ auf; bekannt geworden ist die Arbeitsweise als „Get Shit Done“ — beides meint dasselbe. Für „ändere mal eben die Überschrift“ ist der Apparat zu schwer.",
+        "exampleOutput": "/gsd-new-project\n\nGSD fragt: Was baust du? Für wen? Was heißt fertig?\n→ .planning/PROJECT.md — dein Projekt in deinen Worten\n→ .planning/ROADMAP.md — z. B. 3 Phasen:\n  CSV einlesen → Übersicht rendern → Kunden verwalten\n\nDanach, Phase für Phase:\n/gsd-discuss-phase 1 · /gsd-plan-phase 1 ·\n/gsd-execute-phase 1 · /gsd-verify-work 1",
+        "category": "community",
+        "subcategory": "bauen",
+        "trigger": "/gsd-new-project",
+        "author": "open-gsd (Community)",
+        "version": "1.7.0",
+        "addedAt": "2026-07-16",
+        "updatedAt": "2026-07-16",
+        "tags": ["workflow", "projekt", "bauen", "phasen", "community"],
+        "useCases": ["Internes Tool, das über Wochen wächst", "Projektstand über Sitzungen hinweg behalten", "Große Idee in machbare Phasen zerlegen"],
+        "difficulty": "medium",
+        "timeToRun": "über mehrere Sitzungen",
+        "requirements": ["Claude Code", "Git im Projekt (Claude richtet das auf Zuruf ein)", "Einmalige Einrichtung: npx @opengsd/gsd-core@latest"],
+        "rating": { "average": 4.5, "count": 7 },
+        "endorsedBy": ["Christopher Kipp", "Sophie Klein"],
+        "endorsements": [
+          {
+            "name": "Christopher Kipp",
+            "role": "Innovation Lead",
+            "initials": "CK",
+            "text": "Unser Standard für alles, was länger als einen Nachmittag dauert. Der .planning-Ordner ist das Gedächtnis, das Chat-Sitzungen nie hatten."
+          },
+          {
+            "name": "Sophie Klein",
+            "role": "Projektmanagerin",
+            "initials": "SK",
+            "text": "Fühlt sich an wie ein Projekt mit gutem PM: erst Anforderungen, dann Plan, dann Abnahme — nur dass Claude baut."
+          }
+        ],
+        "comments": [
+          {
+            "author": "Jan Richter",
+            "role": "Tech Lead & Citizen-Coding-Mentor",
+            "initials": "JR",
+            "date": "2026-07-16",
+            "text": "Die Fragerunden am Anfang nicht abkürzen — genau da entsteht der Plan, der später trägt.",
+            "rating": 4
+          }
+        ],
+        "featured": false,
+        "badge": null,
+        "source": "https://github.com/open-gsd/gsd-core",
+        "workflow": {
+          "intro": "GSD lädst du nicht als Datei herunter — es ist eine feste Abfolge von Befehlen, mit der du Claude durch ein Projekt führst. Für den Einstieg reichen diese sechs Schritte; /gsd-help listet den Rest.",
+          "note": "Technisch installierst du GSD einmalig als Werkzeugkasten (npx @opengsd/gsd-core@latest) — danach ist es eine Arbeitsweise aus Befehlen.",
+          "steps": [
+            { "title": "Projekt anlegen", "desc": "GSD stellt dir Fragen zu Ziel, Zielgruppe und Umfang und schreibt daraus PROJECT.md, REQUIREMENTS.md und eine ROADMAP.md mit Phasen. Antworte in deinen Worten — kein Fachjargon nötig.", "copy": "/gsd-new-project" },
+            { "title": "Phase besprechen", "desc": "Bevor geplant wird, klärt GSD die offenen Punkte der ersten Phase mit dir: Was ist dir wichtig, was ist schon entschieden? Ergebnis ist eine CONTEXT.md mit euren Entscheidungen.", "copy": "/gsd-discuss-phase 1" },
+            { "title": "Phase planen", "desc": "Claude erstellt einen detaillierten Bauplan (PLAN.md) für die Phase und prüft ihn selbst auf Lücken, bevor gebaut wird.", "copy": "/gsd-plan-phase 1" },
+            { "title": "Phase bauen", "desc": "Claude arbeitet den Plan ab, Schritt für Schritt, mit sauberen Zwischenständen in Git.", "copy": "/gsd-execute-phase 1" },
+            { "title": "Ergebnis abnehmen", "desc": "GSD führt dich durch einen Abnahmetest im Gespräch: Punkt für Punkt sagst du „funktioniert“ oder „funktioniert nicht“ — gefundene Probleme werden diagnostiziert und als Fix-Plan vorbereitet.", "copy": "/gsd-verify-work 1" },
+            { "title": "Orientierung behalten", "desc": "Nach einer Pause nicht mehr sicher, wo ihr steht? Dieser Befehl zeigt Stand und nächsten Schritt. Für Phase 2 geht es dann wieder bei Schritt 2 los.", "copy": "/gsd-progress" }
+          ],
+          "example": {
+            "title": "Mini-Beispiel: Kampagnen-Reporting statt Copy-Paste",
+            "steps": [
+              "Anna aus dem Media-Team will Wochen-CSVs nicht mehr per Hand in Präsentationen kopieren. /gsd-new-project — sie beschreibt: „Ein Tool, das unsere Wochen-CSVs einliest und eine HTML-Übersicht pro Kunde baut.“ GSD fragt nach (Welche Spalten? Wer schaut drauf? Lokal oder online?) — Ergebnis: eine Roadmap mit 3 Phasen.",
+              "/gsd-discuss-phase 1 — Anna entscheidet: erst mal nur die Meta-Ads-CSVs; das Format legt eine Beispieldatei fest, die sie in den Projektordner legt.",
+              "/gsd-plan-phase 1 und /gsd-execute-phase 1 — Claude plant und baut den CSV-Import; Anna liest zwischendurch nur die Zusammenfassungen.",
+              "/gsd-verify-work 1 — GSD fragt: „Lege die Beispieldatei ab und starte das Tool — siehst du die 12 Kampagnen?“ Eine Zahl ist falsch formatiert, GSD plant den Fix, der nächste Lauf räumt ihn ab.",
+              "Nächste Woche, neue Sitzung: /gsd-progress — GSD weiß noch alles und schlägt Phase 2 vor."
+            ]
+          },
+          "pitfalls": [
+            "Zu kleiner Anlass: Für Mini-Aufgaben ist der Ablauf Overkill — GSD selbst bietet dafür /gsd-quick und /gsd-fast an, oder du lässt GSD ganz weg.",
+            "Fragen weggeklickt: Die Fragerunden am Anfang sind der eigentliche Wert. Wer sie mit „mach einfach“ abkürzt, bekommt einen Plan voller Annahmen.",
+            "Viele Befehle: GSD bringt weit über 50 Kommandos mit. Für den Einstieg reichen die sechs oben — /gsd-help listet alles.",
+            "Der Ordner .planning/ ist kein Müll, sondern das Gedächtnis des Projekts — nicht löschen."
+          ]
+        }
+      },
+
+      {
+        "id": "test-driven-development",
+        "itemType": "framework",
+        "platforms": { "code": true, "langdock": false },
+        "name": "Test-Driven Development (TDD)",
+        "tagline": "Erst der Maßstab, dann das Werk — Claude baut, bis alle Prüfungen grün sind",
+        "description": "Arbeitsweise für alles, was richtig rechnen oder prüfen muss: Du legst zuerst automatisch prüfbar fest, woran man erkennt, dass es funktioniert — und lässt Claude erst danach bauen, bis genau diese Prüfung besteht.",
+        "longDescription": "Ein „Test“ ist hier kein manuelles Durchklicken, sondern ein kleines Prüfprogramm, das Claude für dich schreibt und das automatisch Rot (kaputt) oder Grün (funktioniert) meldet. Der Kern, den man nicht weglassen darf: Die Prüfung muss erst einmal scheitern (Rot), bevor gebaut wird — nur so weißt du, dass sie wirklich das Richtige prüft. Ideal, wenn dein Tool verlässlich rechnen muss (Budget-Verteilung, UTM-Links, Mediaplan-Validierung, Datumslogik) und wenn es wachsen soll, ohne dass Neues das Alte kaputt macht: Die Tests rechnen bei jeder Änderung wieder nach. Die klassische Software-Arbeitsweise (bekannt gemacht von Kent Beck, 2002) funktioniert komplett über Prompts; der Superpowers-Skill test-driven-development macht sie nur strenger. Weniger geeignet für reine Optik — Aussehen prüfst du mit den eigenen Augen.",
+        "exampleOutput": "Schritt 1 — Tests zuerst, alle müssen ROT sein:\n  ✗ utm-link: Basis-Link korrekt zusammengesetzt\n  ✗ utm-link: Umlaute & Leerzeichen bereinigt\n  ✗ utm-link: Fehlermeldung bei fehlendem Namen\n\nSchritt 2 — bauen, bis alles GRÜN ist:\n  ✓ 3 von 3 Tests bestehen\n\nJede spätere Erweiterung: neuer roter Test zuerst —\ndie alten Tests laufen immer mit und schützen das Alte.",
+        "category": "community",
+        "subcategory": "bauen",
+        "trigger": null,
+        "author": "Methode: Kent Beck · Skill: obra/superpowers",
+        "version": "",
+        "addedAt": "2026-07-16",
+        "updatedAt": "2026-07-16",
+        "tags": ["qualität", "tests", "bauen", "workflow", "community"],
+        "useCases": ["Rechner & Validierer verlässlich machen", "Tool erweitern, ohne Bestehendes zu brechen", "Claude-Ergebnisse nicht von Hand nachrechnen"],
+        "difficulty": "medium",
+        "timeToRun": "pro Kriterienrunde 15–30 Min",
+        "requirements": ["Claude Code", "Konkrete Beispiele mit erwartetem Ergebnis", "Optional: Skill test-driven-development aus obra/superpowers"],
+        "rating": { "average": 4.4, "count": 5 },
+        "endorsedBy": ["Jan Richter"],
+        "endorsements": [
+          {
+            "name": "Jan Richter",
+            "role": "Tech Lead & Citizen-Coding-Mentor",
+            "initials": "JR",
+            "text": "Die Reihenfolge ist der ganze Trick: erst Rot sehen, dann bauen. Tests, die nie rot waren, beweisen nichts."
+          }
+        ],
+        "comments": [
+          {
+            "author": "Lukas Weber",
+            "role": "SEO Strategist",
+            "initials": "LW",
+            "date": "2026-07-16",
+            "text": "Mein UTM-Generator läuft seit Wochen — jede Erweiterung startet mit einem roten Test, und noch nie ist ein alter Link kaputtgegangen.",
+            "rating": 5
+          }
+        ],
+        "featured": false,
+        "badge": null,
+        "source": "https://github.com/obra/superpowers",
+        "workflow": {
+          "intro": "TDD braucht keine Installation — die Arbeitsweise steckt komplett in den Prompts. Mit installiertem Superpowers-Skill wird sie strenger, weil Claude die Regeln dann selbst durchsetzt.",
+          "note": "Der Kern: Die Prüfung muss erst Rot zeigen, bevor gebaut wird. Bauen und Tests hinterher schreiben beweist nur, was der Code zufällig tut.",
+          "steps": [
+            { "title": "Erfolgskriterien in deinen Worten festlegen", "desc": "Konkrete Beispiele mit erwartetem Ergebnis — wie eine Stichprobe für die Abnahme.", "copy": "Ich will einen UTM-Link-Generator. Bevor du irgendetwas baust: Hier sind meine Erfolgskriterien. 1) Aus \"pilot.de\", Kampagne \"sommer-sale\", Kanal \"newsletter\" muss exakt dieser Link entstehen: https://pilot.de/?utm_source=newsletter&utm_medium=email&utm_campaign=sommer-sale — 2) Umlaute und Leerzeichen im Kampagnennamen werden automatisch bereinigt. 3) Fehlt der Kampagnenname, gibt es eine Fehlermeldung statt eines halben Links." },
+            { "title": "Prüfprogramm schreiben lassen — und scheitern sehen", "desc": "Claude übersetzt deine Kriterien in automatische Tests und führt sie aus, bevor es Werkzeug-Code gibt. Alle müssen Rot zeigen.", "copy": "Arbeite testgetrieben: Schreibe zuerst automatische Tests für genau diese drei Kriterien und führe sie aus. Sie müssen jetzt fehlschlagen, weil es den Generator noch nicht gibt. Zeig mir das Ergebnis, bevor du weitermachst." },
+            { "title": "Bauen lassen, bis alles Grün ist", "desc": "Jetzt erst entsteht das eigentliche Tool — und zwar nur so viel, wie die Tests verlangen.", "copy": "Jetzt baue den Generator so, dass alle Tests bestehen. Führe die Tests am Ende aus und zeig mir das Ergebnis." },
+            { "title": "Aufräumen lassen — bei laufenden Tests", "desc": "Bei Grün darf Claude den Code ordnen, solange alles Grün bleibt.", "copy": "Alle Tests sind grün. Räume den Code auf, ohne das Verhalten zu ändern, und führe die Tests danach noch einmal aus." },
+            { "title": "Jede Erweiterung beginnt wieder bei Schritt 1", "desc": "Neues Kriterium, neuer roter Test, dann bauen. Die alten Tests laufen immer mit.", "copy": "Neues Kriterium: Der Generator soll auch utm_content unterstützen. Schreibe erst den fehlschlagenden Test dafür, dann die Umsetzung. Alle bisherigen Tests müssen weiter bestehen." }
+          ],
+          "example": {
+            "title": "Mini-Beispiel: Mediaplan-Prüfer",
+            "steps": [
+              "Jonas aus dem Campaign Management bekommt Mediapläne als CSV und verliert Zeit mit Flüchtigkeitsfehlern darin. Er legt Kriterien fest: Start-/Enddatum pro Zeile, Ende nie vor Start, Budgets größer 0, Zeilensumme gleich Gesamtbudget — je Kriterium eine Beispiel-Zeile, die durchfallen soll.",
+              "Claude schreibt vier Tests mit genau diesen Beispiel-Zeilen — alle Rot, denn den Prüfer gibt es noch nicht. Am roten Lauf sieht Jonas: Die Tests prüfen wirklich seine Fälle.",
+              "Claude baut den Prüfer, bis alle vier Tests Grün sind.",
+              "Zwei Wochen später kommt ein fünftes Kriterium dazu (Kanalnamen aus fester Liste): neuer roter Test, neue Umsetzung — die vier alten Tests garantieren, dass nichts Bestehendes bricht."
+            ]
+          },
+          "pitfalls": [
+            "Der klassische Fehler: bauen lassen und Tests hinterher schreiben. Dann bestätigen die Tests nur, was der Code zufällig tut — nicht, was du wolltest.",
+            "Vage Kriterien: „Soll gut funktionieren“ kann niemand prüfen. Du brauchst konkrete Beispiele mit konkretem erwartetem Ergebnis.",
+            "Zu viele Kriterien auf einmal: Lieber drei Kriterien, Grün sehen, dann die nächsten drei.",
+            "Claude will abkürzen: Wenn Claude „aus Effizienz“ Code vor dem Test schreibt, freundlich zurückpfeifen — erst der fehlschlagende Test."
+          ]
+        }
+      },
+
+      {
+        "id": "brainstorm-plan-execute",
+        "itemType": "framework",
+        "platforms": { "code": true, "langdock": false },
+        "name": "Brainstorm → Plan → Execute",
+        "tagline": "Drei Schritte von der unscharfen Idee zum abgenommenen Ergebnis",
+        "description": "Arbeitsweise aus drei Superpowers-Skills: erst im Dialog klären, was du wirklich willst (Design-Dokument), dann einen kleinteiligen Bauplan schreiben, dann Punkt für Punkt abarbeiten lassen. Kein Code, bevor du das Design abgenommen hast.",
+        "longDescription": "Für ein konkretes Vorhaben mittlerer Größe — ein Tool, eine Seite, ein Feature, fertig in einer Sitzung bis wenigen Tagen. Wenn deine Idee noch unscharf ist („irgendwas, das uns beim Statusreporting hilft“), stellt der Brainstorm-Schritt genau eine Frage nach der anderen, bis aus dem Bauchgefühl ein beschlossenes Design wird. Die Kette hat eine eingebaute Sperre: kein Code, bevor du das Design abgenommen hast — das steht wörtlich so im Skill („HARD-GATE“). Die drei Skills brainstorming, writing-plans und executing-plans stammen aus github.com/obra/superpowers und müssen installiert sein (einzeln aus unserem Katalog oder als superpowers-Plugin); die Skills sind Englisch, das Gespräch mit dir führt Claude trotzdem auf Deutsch. Für Mehrwochen-Projekte mit vielen Phasen ist GSD die schwerere, passendere Maschine — TDD ergänzt beide als Qualitätsregel unterwegs.",
+        "exampleOutput": "1) brainstorming — eine Frage pro Nachricht:\n   \"Sollen Deadlines von Hand gepflegt werden\n    oder aus einer Datei kommen?\"\n2) Design-Dokument → du gibst frei\n   (vorher wird nicht gebaut — das Gate steckt im Skill)\n3) writing-plans — Plan in Minuten-Häppchen,\n   jedes mit eigener Erfolgskontrolle\n4) executing-plans — arbeitet ab, stoppt bei\n   Unklarheit und fragt, statt zu raten",
+        "category": "community",
+        "subcategory": "einstieg",
+        "trigger": null,
+        "author": "Jesse Vincent (obra)",
+        "version": "",
+        "addedAt": "2026-07-16",
+        "updatedAt": "2026-07-16",
+        "tags": ["workflow", "konzept", "citizen-coding", "community", "bauen"],
+        "useCases": ["Unscharfe Idee zum beschlossenen Design schärfen", "Tool oder Seite in einer Sitzung sauber bauen", "Claude vom Losbauen ohne Plan abhalten"],
+        "difficulty": "easy",
+        "timeToRun": "eine Sitzung bis wenige Tage",
+        "requirements": ["Claude Code", "Superpowers-Skills brainstorming, writing-plans, executing-plans (github.com/obra/superpowers)"],
+        "rating": { "average": 4.6, "count": 6 },
+        "endorsedBy": ["Christopher Kipp", "Mia Hoffmann"],
+        "endorsements": [
+          {
+            "name": "Christopher Kipp",
+            "role": "Innovation Lead",
+            "initials": "CK",
+            "text": "Die natürliche Fortsetzung von brainstorming: dieselbe Sorgfalt, aber bis zum fertigen, geprüften Ergebnis durchgezogen."
+          },
+          {
+            "name": "Mia Hoffmann",
+            "role": "Senior UX Designerin",
+            "initials": "MH",
+            "text": "Das Design-Gate hat mir mehr Umbau-Runden erspart als jedes andere Werkzeug. Erst nicken, dann bauen."
+          }
+        ],
+        "comments": [
+          {
+            "author": "Sophie Klein",
+            "role": "Projektmanagerin",
+            "initials": "SK",
+            "date": "2026-07-16",
+            "text": "Eine Frage pro Nachricht fühlt sich anfangs zäh an — aber bei Frage drei habe ich gemerkt, dass ich eigentlich etwas anderes brauche als gedacht.",
+            "rating": 5
+          }
+        ],
+        "featured": false,
+        "badge": null,
+        "source": "https://github.com/obra/superpowers",
+        "workflow": {
+          "intro": "Drei sauber getrennte Arbeitsschritte, jeder mit eigenem Skill. Voraussetzung: die Superpowers-Skills sind installiert — einzeln aus unserem Katalog oder als superpowers-Plugin.",
+          "note": "Die reinen Arbeitsschritte (Fragen zuerst, Design-Abnahme, kleinteiliger Plan) funktionieren zur Not auch als ausformulierte Prompts ohne Skill — dann fehlt aber das eingebaute Gate.",
+          "steps": [
+            { "title": "Brainstorm starten", "desc": "Beschreibe die Idee grob und ruf den Skill auf. Claude schaut sich erst dein Projekt an und stellt dann Fragen — eine pro Nachricht.", "copy": "Nutze den Skill brainstorming. Meine Idee: ein internes Tool, mit dem unser Team den Status aller laufenden Kampagnen auf einen Blick sieht." },
+            { "title": "Varianten abwägen und entscheiden", "desc": "Claude schlägt dir 2–3 Ansätze mit Vor- und Nachteilen vor und empfiehlt einen. Du entscheidest.", "copy": "Nimm Variante 2, aber ohne Login — das Tool läuft nur intern. Fasse das Design jetzt abschnittsweise zusammen, ich nicke jeden Abschnitt einzeln ab." },
+            { "title": "Design abnehmen", "desc": "Am Ende schreibt Claude ein kurzes Design-Dokument (landet unter docs/superpowers/specs/). Erst wenn du es freigibst, geht es weiter — vorher wird nicht gebaut.", "copy": "Das Design passt so. Übernimm es ins Design-Dokument und geh zum Plan über." },
+            { "title": "Plan schreiben lassen", "desc": "Der Skill writing-plans zerlegt das Design in Häppchen von wenigen Minuten, jedes mit eigener Erfolgskontrolle (landet unter docs/superpowers/plans/).", "copy": "Nutze den Skill writing-plans und erstelle aus dem Design-Dokument den Umsetzungsplan." },
+            { "title": "Plan ausführen lassen", "desc": "Der Skill executing-plans arbeitet die Aufgaben der Reihe nach ab, prüft jede und stoppt bei Unklarheiten, statt zu raten.", "copy": "Nutze den Skill executing-plans und arbeite den Plan ab. Melde dich, wenn etwas unklar ist, statt zu raten." },
+            { "title": "Abnehmen", "desc": "Am Ende bekommst du das Ergebnis präsentiert und entscheidest, was damit passiert.", "copy": "Zeig mir das Ergebnis im Browser und fasse zusammen, was vom Plan umgesetzt ist und was offen blieb." }
+          ],
+          "example": {
+            "title": "Mini-Beispiel: Pitch-Countdown-Seite",
+            "steps": [
+              "Leas Unit hat in drei Wochen einen wichtigen Pitch. Sie will eine interne Seite: Countdown, wer liefert was bis wann, Links zu den Dokumenten.",
+              "Brainstorm: Claude fragt u. a. „Wer aktualisiert die Seite?“ — Lea merkt dabei, dass sie kein Pflege-Tool braucht, sondern eine einzige Datei, die alle editieren können. Der Zuschnitt ändert sich vor der ersten Zeile Code, also gratis.",
+              "Design-Abnahme: statische Seite, Daten in einer einfachen Textdatei, Countdown im Browser. Lea gibt frei.",
+              "writing-plans erstellt kleine Aufgaben (Datenformat → Seite → Countdown → Deadline-Ampel), jede mit Prüfschritt.",
+              "executing-plans arbeitet ab; bei der Deadline-Ampel ist die Regel unklar (ab wann „gelb“?) — Claude stoppt und fragt, statt sich etwas auszudenken."
+            ]
+          },
+          "pitfalls": [
+            "Das Gate umgehen: Wer beim Brainstormen „bau einfach schon mal los“ sagt, hebelt den Kern der Arbeitsweise aus. Die Reihenfolge ist der Wert.",
+            "„Zu simpel für ein Design“: nennt der Skill selbst ein Anti-Pattern — gerade bei „einfachen“ Ideen stecken die falschen Annahmen. Ein Design darf auch drei Sätze lang sein.",
+            "Fragen-Marathon aushalten: Eine Frage pro Nachricht fühlt sich zäh an — jede Frage erspart eine Umbau-Runde.",
+            "Zu großes Vorhaben: Sind es in Wahrheit vier Teilprojekte, hilft der Brainstorm beim Zerlegen — dann braucht jedes seine eigene Kette (oder gleich GSD)."
+          ]
+        }
       }
 
     ];
@@ -2113,7 +2513,10 @@
       'slides-aus-daten': 'praesentieren', 'daten-aufbereiten': 'praesentieren', 'report-summary': 'praesentieren',
       'campaign-check': 'media', 'mediaplan-audit': 'media', 'tracking-audit': 'media', 'keyword-research': 'media',
       'markt-research': 'media', 'persona-builder': 'media', 'wettbewerbs-monitor': 'media', 'content-recycling': 'media', 'social-kalender': 'media',
-      'pitch-deck': 'praesentieren'
+      'pitch-deck': 'praesentieren',
+      // E2: Plugins & Frameworks — auch sie ordnen sich in die Aufgaben-Tabs ein
+      'superpowers': 'bauen', 'ralph-loop': 'bauen', 'gsd': 'bauen', 'test-driven-development': 'bauen',
+      'brainstorm-plan-execute': 'loslegen'
     };
     const TASK_LABELS = { loslegen: 'Loslegen', bauen: 'Bauen', texten: 'Texten & Reden', gestalten: 'Gestalten', praesentieren: 'Präsentieren & Daten', media: 'Media & Strategie' };
     // Merge-Gruppen: mehrere verwandte Skills werden im Katalog als EINE Karte mit Facetten gezeigt.
@@ -2149,7 +2552,12 @@
       'meeting-notes': 'Mach aus dieser Mitschrift ein sauberes Protokoll mit Entscheidungen und To-dos: [Notizen einfügen]',
       'report-summary': 'Fass diesen Report auf eine halbe Seite zusammen — Kernaussagen und Handlungsempfehlung: [Report einfügen]',
       'docx': 'Erstell mir ein Word-Dokument für [Zweck] mit folgendem Inhalt: [Inhalt einfügen]',
-      'xlsx': 'Bau mir eine Excel-Tabelle, die [Zweck] — die Rohdaten hänge ich an.'
+      'xlsx': 'Bau mir eine Excel-Tabelle, die [Zweck] — die Rohdaten hänge ich an.',
+      // E2: Nutzungs-Prompts für Plugins (nach der Installation)
+      'superpowers': 'Ich habe eine Idee für ein internes Tool: [deine Idee]. Lass uns sie erst gemeinsam durchdenken, bevor du baust.',
+      'frontend-design': 'Bau mir eine Landingpage für [Thema] — mit eigenständiger, hochwertiger Gestaltung statt Template-Look.',
+      'skill-creator': 'Erstell mir einen Skill, der [was er können soll]. Führ mich durch die nötigen Entscheidungen.',
+      'ralph-loop': '/ralph-loop:ralph-loop "Baue [Aufgabe]. Fertig, wenn [messbares Kriterium] — gib dann <promise>FERTIG</promise> aus." --completion-promise "FERTIG" --max-iterations 20'
     };
     const STARTER_JOURNEY = ['erste-schritte', 'prototyp-bauen', 'webseite-bauen'];
     // Kuratierte Bundles: Starter (Einsteiger) + Power (beliebte Anthropic-/Community-Skills)
@@ -2163,10 +2571,12 @@
         toast: 'Starter-Paket'
       },
       power: {
-        ids: ['brainstorming', 'systematic-debugging', 'verification-before-completion', 'skill-creator', 'webaudit'],
+        // Nur echte Skills (itemType 'skill') — Plugins wie skill-creator installiert
+        // man per /plugin, nicht als entpackter Skill-Ordner.
+        ids: ['brainstorming', 'systematic-debugging', 'verification-before-completion', 'doc-coauthoring', 'webaudit'],
         zip: 'pilot-power-paket.zip',
         title: 'pilot Power-Paket — beliebte Skills aus der Community',
-        intro: 'Die meistempfohlenen Skills aus anthropics/skills und obra/superpowers — gespiegelt im pilot Skill Marketplace.',
+        intro: 'beliebte Skills aus anthropics/skills, obra/superpowers und von pilot — gespiegelt im pilot Skill Marketplace.',
         beispiel: 'Lass uns brainstormen: ein Tool für …',
         toast: 'Power-Paket'
       }
@@ -2225,7 +2635,12 @@
       'brainstorming':       ALL_ROLES,
       'systematic-debugging': ALL_ROLES,
       'verification-before-completion': ALL_ROLES,
-      'algorithmic-art':     ['kreation']
+      'algorithmic-art':     ['kreation'],
+      'superpowers':         ALL_ROLES,
+      'ralph-loop':          ALL_ROLES,
+      'gsd':                 ALL_ROLES,
+      'test-driven-development': ['data', 'media', 'pm'],
+      'brainstorm-plan-execute': ALL_ROLES
     };
     // ===== DEMO-MATRIX: jeder Fall verweist auf ein ECHTES, abrufbares Ergebnis =====
     // Alle Zahlen unten stammen aus den tatsächlichen Läufen der Generator-Skripte in demo/.

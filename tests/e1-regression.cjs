@@ -23,12 +23,16 @@ const { chromium } = require('/usr/lib/node_modules/playwright');
 
 const TARGET = process.argv[2] || 'http://localhost:8412/skills.html';
 
-// Soll-Werte (IST-Stand index.html, 2026-07-15): sichtbare Karten pro Aufgaben-Tab,
-// Merge-Karten zählen als 1 Karte.
+// Soll-Werte (Stand E2 Schritt 2, 2026-07-16): sichtbare Karten pro Aufgaben-Tab,
+// Merge-Karten zählen als 1 Karte. Änderung ggü. E1-Baseline (31/3/8/5/4/4/7):
+//  +5 neue Einträge — Plugins superpowers & ralph-loop (Bauen), Frameworks
+//  gsd & test-driven-development (Bauen) und brainstorm-plan-execute (Loslegen).
+//  frontend-design & skill-creator wurden zu itemType 'plugin' konvertiert
+//  (bleiben in Bauen — der Default-Typ-Tab „Alle" zählt sie weiter mit).
 const EXPECTED_TAB_COUNTS = {
-  'Alle': 31,
-  'Loslegen': 3,
-  'Bauen': 8,
+  'Alle': 36,
+  'Loslegen': 4,
+  'Bauen': 12,
   'Texten': 5,
   'Gestalten': 4,
   'Präsentieren': 4,

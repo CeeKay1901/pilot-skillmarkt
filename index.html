@@ -407,7 +407,7 @@
               <span class="area-count-label">Skills</span>
             </div>
             <p class="area-meta" id="area-skill-meta"></p>
-            <p class="area-text">Skills für Claude Code und Langdock — mit Stimmen aus dem Team, Blick in jede Datei, Live-Demos und fertigen Startprompts zum Kopieren.</p>
+            <p class="area-text">Skills, Plugins und Frameworks für Claude Code und Langdock — mit Stimmen aus dem Team, Blick in jede Datei, Live-Demos und fertigen Startprompts zum Kopieren.</p>
             <a class="area-spot" href="skills.html?skill=erste-schritte">
               <span class="area-spot-label">Fang hier an</span>
               <span class="area-spot-name">Erste Schritte</span>
@@ -569,7 +569,10 @@
 
     // ===== ECHTE ZÄHLER (live aus data/skills.js — nichts erfunden) =====
     const COUNTS = {
-      skills: SKILLS.length,
+      // typgetrennt gezählt — Plugins/Frameworks (itemType, ab E2) zählen nicht als „Skills"
+      skills: SKILLS.filter(s => (s.itemType || 'skill') === 'skill').length,
+      plugins: SKILLS.filter(s => s.itemType === 'plugin').length,
+      frameworks: SKILLS.filter(s => s.itemType === 'framework').length,
       prompts: Object.keys(START_PROMPTS).length,
       demos: DEMOS.reduce((sum, d) => sum + d.cases.length, 0),
       bundles: Object.keys(BUNDLES).length
@@ -587,7 +590,7 @@
     const areaCount = document.getElementById('area-skill-count');
     if (areaCount) animateCount(areaCount, COUNTS.skills, 1100);
     const areaMeta = document.getElementById('area-skill-meta');
-    if (areaMeta) areaMeta.textContent = `${COUNTS.prompts} Startprompts · ${COUNTS.demos} Live-Demos · ${COUNTS.bundles} Skill-Pakete`;
+    if (areaMeta) areaMeta.textContent = `dazu ${COUNTS.plugins} Plugins · ${COUNTS.frameworks} Frameworks · ${COUNTS.prompts} Startprompts · ${COUNTS.demos} Live-Demos · ${COUNTS.bundles} Skill-Pakete`;
 
     (function renderSpotRating() {
       const el = document.getElementById('area-spot-rating');
