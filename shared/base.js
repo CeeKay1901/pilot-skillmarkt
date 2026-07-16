@@ -30,6 +30,18 @@
       window.onFavoritesChanged(id, isNowFav) — nach Favoriten-Toggle
       window.onTried(id, triedList, type)     — nach „ausprobiert“
 
+   4) window.RatingConfig (optional, E3) — seitenweiter Default-Typ der
+      Rating-/Favoriten-/Tried-Engine: { type: 'prompt' } lässt alle
+      Speicher-Keys ohne Parameter-Fädelei im prompt-Namespace landen
+      (rate:prompt:<id>, comments:prompt:<id>, fav:prompt:<id>, …).
+      Ohne RatingConfig bleibt alles beim Default 'skill' — Bestandsseiten
+      (index, skills) verhalten sich byte-identisch.
+
+   5) openSubmitFlow(config) (E3, Plan §5.4) — wiederverwendbarer
+      „Einreichen“-Demo-Flow (3 Schritte + Formular + Danke-Zustand),
+      ehrlich als Demo gekennzeichnet; Entwurf bleibt lokal unter
+      submit:<typ>:draft. Details am Funktionskopf unten.
+
    localStorage (E1, typ-namespaced + Alt-Key-Kompatibilität):
       Neu:  rate:<typ>:<id>, comments:<typ>:<id>,
             fav:<typ>:<id> = '1', tried:<typ>:<id> = '1'
@@ -92,7 +104,8 @@ function renderNav(activePage, opts) {
   document.querySelectorAll('[data-shared-nav]').forEach(el => el.remove());
 
   const sharedItems = [
-    { id: 'nav-catalog', page: 'katalog', label: 'Katalog', href: 'skills.html' }
+    { id: 'nav-catalog', page: 'katalog', label: 'Katalog', href: 'skills.html' },
+    { id: 'nav-prompts', page: 'prompts', label: 'Prompts', href: 'prompts.html' }
   ];
   const linkHtml = sharedItems.map(it => {
     const active = it.page === activePage;
@@ -168,7 +181,8 @@ const LU = {
   "comment": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z"/><path d="M12 8v6"/><path d="M9 11h6"/></svg>',
   "copy": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>',
   "link": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>',
-  "folder": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>'
+  "folder": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>',
+  "check": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/></svg>'
 };
 function subIcon(sub) {
   return LU[sub] || LU.fallback;
@@ -368,8 +382,12 @@ function setRating(skillId, stars) {
 // gespeichert wird IMMER unter der echten Item-ID, sonst zählt die Bewertung nie.
 function _ratingKey(skillId) { return String(skillId).replace(/^comment-/, ''); }
 
+// Typ-Auflösung: expliziter Parameter > window.RatingConfig.type (Seiten-Default) > 'skill'.
+// So bewertet prompts.html ohne Parameter-Fädelei im prompt-Namespace (E2-Lektion).
+function _ratingType(t) { return t || (window.RatingConfig && window.RatingConfig.type) || 'skill'; }
+
 function getRating(skillId, type) {
-  type = type || 'skill';
+  type = _ratingType(type);
   const id = _ratingKey(skillId);
   let data = lsGet(`rate:${type}:${id}`);
   if (data === null && type === 'skill') data = lsGet(`skill-rating-${id}`);
@@ -377,7 +395,7 @@ function getRating(skillId, type) {
 }
 
 function submitRating(skillId, stars, type) {
-  type = type || 'skill';
+  type = _ratingType(type);
   const id = _ratingKey(skillId);
   const ok = lsSet(`rate:${type}:${id}`, stars);
   if (type === 'skill') lsSet(`skill-rating-${id}`, stars); // Alt-Key synchron halten
@@ -385,7 +403,7 @@ function submitRating(skillId, stars, type) {
 }
 
 function getComments(skillId, type) {
-  type = type || 'skill';
+  type = _ratingType(type);
   try {
     let data = lsGet(`comments:${type}:${skillId}`);
     if (data === null && type === 'skill') data = lsGet(`skill-comments-${skillId}`);
@@ -394,7 +412,7 @@ function getComments(skillId, type) {
 }
 
 function _saveComments(skillId, arr, type) {
-  type = type || 'skill';
+  type = _ratingType(type);
   const json = JSON.stringify(arr);
   const ok = lsSet(`comments:${type}:${skillId}`, json);
   if (type === 'skill') lsSet(`skill-comments-${skillId}`, json); // Alt-Key synchron halten
@@ -451,7 +469,11 @@ function submitComment(skillId) {
   existing.unshift(comment);
   if (!_saveComments(skillId, existing)) { showToast('Konnte nicht speichern — privater Modus oder Speicher voll.'); return; }
   // Die Sterne wandern mit in den Kommentar — Einzel-Bewertung löschen, sonst zählt sie doppelt
-  if (ratingVal) { lsRemove(`rate:skill:${skillId}`); lsRemove(`skill-rating-${skillId}`); }
+  if (ratingVal) {
+    const _t = _ratingType();
+    lsRemove(`rate:${_t}:${skillId}`);
+    if (_t === 'skill') lsRemove(`skill-rating-${skillId}`); // Alt-Key nur im skill-Namespace
+  }
   delete state.pendingRating[`comment-${skillId}`];
   showToast('Kommentar gespeichert ✓ (nur auf diesem Gerät)');
   switchTab('ratings');
@@ -469,7 +491,7 @@ function deleteComment(skillId, idx) {
 
 /* ===== FAVORITEN & „AUSPROBIERT“ (typ-namespaced: fav:<typ>:<id>) ===== */
 function getFavorites(type) {
-  type = type || 'skill';
+  type = _ratingType(type);
   const prefix = `fav:${type}:`;
   const ids = lsKeysWithPrefix(prefix).map(k => k.slice(prefix.length));
   if (type === 'skill') { // Alt-Key weiterlesen (Bestandsnutzer)
@@ -479,7 +501,7 @@ function getFavorites(type) {
 }
 function isFavorite(id, type) { return getFavorites(type).includes(id); }
 function toggleFavorite(evt, id, type) {
-  type = type || 'skill';
+  type = _ratingType(type);
   if (evt) evt.stopPropagation();
   const wasFav = isFavorite(id, type);
   if (wasFav) { lsRemove(`fav:${type}:${id}`); showToast('Aus Favoriten entfernt'); }
@@ -495,7 +517,7 @@ function toggleFavorite(evt, id, type) {
 }
 
 function getTried(type) {
-  type = type || 'skill';
+  type = _ratingType(type);
   const prefix = `tried:${type}:`;
   const ids = lsKeysWithPrefix(prefix).map(k => k.slice(prefix.length));
   if (type === 'skill') { // Alt-Key weiterlesen (Bestandsnutzer)
@@ -504,7 +526,7 @@ function getTried(type) {
   return ids;
 }
 function markTried(id, type) {
-  type = type || 'skill';
+  type = _ratingType(type);
   const t = getTried(type);
   if (t.includes(id)) return;
   t.push(id);
@@ -851,4 +873,192 @@ function typeText(el, line, full, idx, done) {
   if (idx > full.length) { done(); return; }
   el.innerHTML = `<span class="ex-term-prompt">›</span>${escHtml(full.slice(0, idx))}<span class="ex-cursor"></span>`;
   _termTimer = setTimeout(() => typeText(el, line, full, idx + 1, done), 28);
+}
+
+/* ===== „EINREICHEN“-DEMO-FLOW (openSubmitFlow, Plan §5.4) =====
+   Wiederverwendbarer Baustein für alle Sektionen (Prompts, Hilfe, Lernen,
+   Baukasten, Showroom …): erklärt in drei Schritten, wie ein Beitrag den
+   Weg in den Katalog finden würde, nimmt einen Entwurf im Formular an und
+   endet in einem Danke-Zustand. EHRLICH gekennzeichnete Demo: der Entwurf
+   bleibt lokal im Browser (localStorage submit:<typ>:draft), es wird
+   nichts gesendet.
+
+   openSubmitFlow(config):
+     type         Pflicht — Draft-Namespace, z. B. 'prompt' (submit:prompt:draft)
+     title        Dialog-Überschrift (Default 'Beitrag einreichen')
+     intro        Satz über dem Formular (optional)
+     steps        eigene [{ label, text }] statt der 3 Standard-Schritte (optional)
+     fields       Pflicht — [{ key, label, type: 'text'|'textarea'|'select',
+                  placeholder, options, required, value, hint }]
+                  `value` befüllt nur Felder, für die noch kein Draft existiert.
+     submitLabel  Beschriftung des Absende-Knopfs (Default 'Entwurf einreichen (Demo)')
+     thanksText   eigener Danke-Satz (optional)
+     onSubmitted(values)  Hook nach dem Absenden (optional)
+
+   Styling: .sf-*-Komponenten in shared/base.css. */
+let _submitFlowConfig = null;
+let _submitFlowOpener = null;
+
+function _submitDraftKey(type) { return `submit:${type}:draft`; }
+function getSubmitDraft(type) {
+  try { return JSON.parse(lsGet(_submitDraftKey(type)) || '{}') || {}; } catch (e) { return {}; }
+}
+function _saveSubmitDraft(type, vals) { lsSet(_submitDraftKey(type), JSON.stringify(vals)); }
+
+function _ensureSubmitOverlay() {
+  let ov = document.getElementById('submit-overlay');
+  if (ov) return ov;
+  ov = document.createElement('div');
+  ov.className = 'sf-overlay';
+  ov.id = 'submit-overlay';
+  ov.innerHTML = `
+    <div class="sf-modal" role="dialog" aria-modal="true" aria-labelledby="sf-title">
+      <div class="sf-header">
+        <h2 id="sf-title"></h2>
+        <button type="button" class="sf-close" onclick="closeSubmitFlow()" aria-label="Einreichen-Dialog schließen">✕</button>
+      </div>
+      <div class="sf-body" id="sf-body"></div>
+    </div>`;
+  document.body.appendChild(ov);
+  ov.addEventListener('click', e => { if (e.target === ov) closeSubmitFlow(); });
+  if (!document._sfKeyBound) {
+    document._sfKeyBound = true;
+    document.addEventListener('keydown', e => {
+      const open = document.getElementById('submit-overlay')?.classList.contains('open');
+      if (!open) return;
+      if (e.key === 'Escape') { e.stopPropagation(); closeSubmitFlow(); return; }
+      // Fokus-Falle im Einreichen-Dialog
+      if (e.key === 'Tab') {
+        const dlg = document.querySelector('#submit-overlay .sf-modal');
+        const focusable = dlg ? [...dlg.querySelectorAll('button, input, textarea, select, a[href]')] : [];
+        if (!focusable.length) return;
+        const first = focusable[0], last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+      }
+    }, true); // capture: läuft VOR dem Modal-Esc-Handler der Engine
+  }
+  return ov;
+}
+
+const _SF_DEFAULT_STEPS = [
+  { label: 'Entwurf ins Formular', text: 'Du beschreibst deinen Beitrag direkt hier — kein Ticket, kein Umweg.' },
+  { label: 'Kurz-Check durchs Team', text: 'Die Redaktion liest gegen: Funktioniert es? Ist es verständlich? Fehlt was?' },
+  { label: 'Erscheint im Katalog', text: 'Dein Beitrag geht live — mit deinem Namen dran.' }
+];
+
+function _sfStepsHtml(steps, doneFirst) {
+  return `
+    <p class="sf-steps-label">So würde dein Beitrag den Weg in den Katalog finden</p>
+    <ol class="sf-steps">
+      ${steps.map((s, i) => `
+        <li class="sf-step${doneFirst && i === 0 ? ' -done' : ''}">
+          <span class="sf-step-num">${doneFirst && i === 0 ? '✓' : i + 1}</span>
+          <span class="sf-step-body"><strong>${escHtml(s.label)}</strong><span>${escHtml(s.text)}</span></span>
+        </li>`).join('')}
+    </ol>`;
+}
+
+function _sfFieldHtml(conf, f) {
+  const draft = getSubmitDraft(conf.type);
+  const v = draft[f.key] !== undefined ? String(draft[f.key]) : String(f.value || '');
+  const id = `sf-field-${f.key}`;
+  const req = f.required ? ' <span class="sf-req" aria-hidden="true">*</span>' : '';
+  const on = `oninput="_submitFlowInput('${f.key}', this.value)"`;
+  let control;
+  if (f.type === 'select') {
+    control = `<select id="${id}" data-sf-key="${f.key}"${f.required ? ' required' : ''} onchange="_submitFlowInput('${f.key}', this.value)">
+      <option value="">— bitte wählen —</option>
+      ${(f.options || []).map(o => `<option value="${escHtml(o)}"${o === v ? ' selected' : ''}>${escHtml(o)}</option>`).join('')}
+    </select>`;
+  } else if (f.type === 'textarea') {
+    control = `<textarea id="${id}" data-sf-key="${f.key}" rows="4" placeholder="${escHtml(f.placeholder || '')}"${f.required ? ' required' : ''} ${on}>${escHtml(v)}</textarea>`;
+  } else {
+    control = `<input type="text" id="${id}" data-sf-key="${f.key}" value="${escHtml(v)}" placeholder="${escHtml(f.placeholder || '')}"${f.required ? ' required' : ''} ${on}>`;
+  }
+  return `
+    <div class="sf-field">
+      <label for="${id}">${escHtml(f.label)}${req}</label>
+      ${control}
+      ${f.hint ? `<p class="sf-hint">${escHtml(f.hint)}</p>` : ''}
+    </div>`;
+}
+
+function openSubmitFlow(config) {
+  if (!config || !config.type || !config.fields) return;
+  _submitFlowConfig = config;
+  _submitFlowOpener = document.activeElement;
+  const ov = _ensureSubmitOverlay();
+  document.getElementById('sf-title').textContent = config.title || 'Beitrag einreichen';
+  const steps = config.steps || _SF_DEFAULT_STEPS;
+  document.getElementById('sf-body').innerHTML = `
+    <p class="sf-demo-note">${LU.check} Demo — deine Eingabe bleibt lokal in deinem Browser, es wird nichts gesendet.</p>
+    ${_sfStepsHtml(steps, false)}
+    ${config.intro ? `<p class="sf-intro">${escHtml(config.intro)}</p>` : ''}
+    <form class="sf-form" onsubmit="event.preventDefault(); submitFlowSend();">
+      ${config.fields.map(f => _sfFieldHtml(config, f)).join('')}
+      <div class="sf-actions">
+        <button type="submit" class="c-cta -yellow-bg">${escHtml(config.submitLabel || 'Entwurf einreichen (Demo)')}</button>
+        <button type="button" class="c-cta -black-border" onclick="closeSubmitFlow()">Abbrechen</button>
+      </div>
+    </form>`;
+  ov.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  setTimeout(() => { document.querySelector('#submit-overlay .sf-close')?.focus(); }, 50);
+}
+
+function _submitFlowInput(key, value) {
+  if (!_submitFlowConfig) return;
+  const vals = getSubmitDraft(_submitFlowConfig.type);
+  if (value && value.trim()) vals[key] = value; else delete vals[key];
+  _saveSubmitDraft(_submitFlowConfig.type, vals);
+}
+
+function submitFlowSend() {
+  const conf = _submitFlowConfig;
+  if (!conf) return;
+  // Pflichtfelder prüfen — leere markieren und fokussieren
+  for (const f of conf.fields) {
+    if (!f.required) continue;
+    const el = document.querySelector(`#sf-body [data-sf-key="${f.key}"]`);
+    if (el && !el.value.trim()) {
+      showToast(`Bitte „${f.label}“ ausfüllen.`);
+      el.focus();
+      return;
+    }
+  }
+  // Werte einsammeln und als Entwurf sichern (bleibt lokal — ehrliche Demo)
+  const vals = {};
+  conf.fields.forEach(f => {
+    const el = document.querySelector(`#sf-body [data-sf-key="${f.key}"]`);
+    if (el && el.value.trim()) vals[f.key] = el.value.trim();
+  });
+  vals._submittedAt = new Date().toISOString().slice(0, 10);
+  _saveSubmitDraft(conf.type, vals);
+
+  const steps = conf.steps || _SF_DEFAULT_STEPS;
+  document.getElementById('sf-body').innerHTML = `
+    <div class="sf-thanks" id="sf-thanks">
+      <span class="sf-thanks-ic">${LU.check}</span>
+      <h3>Danke für deinen Entwurf!</h3>
+      <p>${escHtml(conf.thanksText || 'In der echten Version ginge dein Beitrag jetzt an das Team — Schritt 2 und 3 würden von hier aus weiterlaufen.')}</p>
+      <p class="sf-thanks-note">Demo: dein Entwurf ist nur lokal in deinem Browser gespeichert, gesendet wurde nichts.</p>
+    </div>
+    ${_sfStepsHtml(steps, true)}
+    <div class="sf-actions">
+      <button type="button" class="c-cta -black-bg" onclick="closeSubmitFlow()">Schließen</button>
+    </div>`;
+  if (typeof conf.onSubmitted === 'function') conf.onSubmitted(vals);
+}
+
+function closeSubmitFlow() {
+  const ov = document.getElementById('submit-overlay');
+  if (!ov || !ov.classList.contains('open')) return;
+  ov.classList.remove('open');
+  // Scroll-Sperre nur freigeben, wenn nicht noch das Detail-Modal offen ist
+  if (!document.getElementById('modal-overlay')?.classList.contains('open')) {
+    document.body.style.overflow = '';
+  }
+  _submitFlowConfig = null;
+  if (_submitFlowOpener) { try { _submitFlowOpener.focus(); } catch (e) {} _submitFlowOpener = null; }
 }

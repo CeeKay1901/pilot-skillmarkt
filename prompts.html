@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>pilot AI Marketplace — Prompt-Sammlung</title>
+  <meta name="description" content="Kopierfertige Prompts aus dem Agentur-Alltag der pilot Agenturgruppe: mit gelb markierten Platzhaltern, Beispiel-Ergebnissen und einer Erklärung, warum jeder Prompt funktioniert — für Langdock und Claude Code.">
+  <meta name="theme-color" content="#262626">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="pilot AI Marketplace">
+  <meta property="og:title" content="pilot AI Marketplace — Prompt-Sammlung">
+  <meta property="og:description" content="Kopierfertige Prompts aus dem Agentur-Alltag: Platzhalter ausfüllen, einfügen, loslegen — mit Erklärung, warum jeder Prompt funktioniert.">
+  <meta property="og:url" content="https://ceekay1901.github.io/pilot-skillmarkt/prompts.html">
+  <meta property="og:image" content="https://ceekay1901.github.io/pilot-skillmarkt/og-image.png">
+  <link rel="preload" href="assets/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="shared/base.css">
+  <style>
+    /* ============================================================
+       prompts.html — Prompt-Sammlung (seitenspezifisch, E3).
+       Gemeinsames Design-System liegt in shared/base.css.
+       ============================================================ */
+
+    /* Plattform-Chips (Muster aus skills.html — seitenlokal, bis eine dritte Seite sie braucht) */
+    .pf-chip { font-family: var(--font-mono); font-size: 1.05rem; font-weight: 600; letter-spacing: .04em; padding: .25rem .9rem; border-radius: var(--radius-pill); border: 1px solid var(--c-gray-l); color: var(--c-gray-d); background: transparent; white-space: nowrap; }
+    .pf-chip.pf-code { background: var(--c-black); color: var(--c-yellow); border-color: var(--c-black); }
+    .card-platforms { display: inline-flex; gap: .5rem; align-items: center; }
+
+    /* ===== GELBER PLATZHALTER-MARKER [SO] ===== */
+    mark.ph {
+      background: var(--c-yellow); color: var(--c-black);
+      border-radius: var(--r-xs); padding: .05em .4em;
+      font-weight: 600; font-family: inherit;
+      box-decoration-break: clone; -webkit-box-decoration-break: clone;
+    }
+
+    /* ===== PROMPT-TEXTBLOCK (helles Register — Terminal-Optik bleibt der Vorschau vorbehalten) ===== */
+    .prompt-code {
+      font-family: var(--font-mono); font-size: 1.45rem; line-height: 1.7;
+      background: var(--c-bg); border: 1px solid var(--line); border-radius: var(--r-md);
+      padding: 1.6rem 2rem; white-space: pre-wrap; word-break: break-word;
+      color: var(--c-ink-strong, var(--c-black)); margin: 0;
+    }
+
+    /* Kopier-Zeile im Modal */
+    .prompt-copy-row { display: flex; align-items: center; gap: 1.6rem; flex-wrap: wrap; margin-bottom: 1.4rem; }
+    .prompt-copy-hint { font-size: 1.3rem; color: var(--c-gray-d); line-height: 1.5; flex: 1; min-width: 22rem; }
+
+    /* Live gefüllter Platzhalter: dezenter als der offene gelbe Marker */
+    mark.ph.-filled { background: rgba(255,224,94,.38); font-weight: 600; }
+
+    /* ===== VARIANTEN-UMSCHALTER (Standard · Kurz · Ausführlich) ===== */
+    .variant-seg { display: inline-flex; border: 1px solid var(--c-gray-l); border-radius: var(--radius-pill); overflow: hidden; margin: 0 0 1.2rem; }
+    .variant-seg button {
+      font-family: inherit; font-size: 1.3rem; font-weight: 600; cursor: pointer;
+      padding: .7rem 1.6rem; background: transparent; border: none;
+      color: var(--c-gray-d); transition: var(--trans); min-height: 3.6rem;
+    }
+    .variant-seg button + button { border-left: 1px solid var(--c-gray-l); }
+    .variant-seg button.active { background: var(--c-black); color: var(--c-yellow); }
+    .variant-hint { font-size: 1.25rem; color: var(--c-gray-m); margin: 0 0 1.2rem; }
+
+    /* ===== PROMPT-BUILDER (nur Leuchttürme) ===== */
+    .pb-wrap { border: 1px solid var(--line); background: var(--c-white); border-radius: var(--r-md); padding: 1.8rem 2rem; margin: 0 0 1.6rem; }
+    .pb-head { display: flex; align-items: baseline; justify-content: space-between; gap: 1.2rem; flex-wrap: wrap; margin-bottom: .6rem; }
+    .pb-title { font-family: var(--font-mono); font-size: 1.15rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--c-gray-d); margin: 0; }
+    .pb-reset {
+      font-family: inherit; font-size: 1.25rem; font-weight: 600; cursor: pointer;
+      background: none; border: none; color: var(--c-gray-m);
+      text-decoration: underline; text-underline-offset: .3em; padding: .4rem 0;
+    }
+    .pb-reset:hover { color: var(--c-black); }
+    .pb-lead { font-size: 1.35rem; color: var(--c-gray-d); line-height: 1.5; margin: 0 0 1.6rem; }
+    .pb-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.4rem 1.6rem; }
+    .pb-field { display: flex; flex-direction: column; gap: .5rem; min-width: 0; }
+    .pb-field.-wide { grid-column: 1 / -1; }
+    .pb-label { font-size: 1.35rem; font-weight: 700; color: var(--c-black); }
+    .pb-label mark.ph { font-size: 1.05rem; font-family: var(--font-mono); font-weight: 600; margin-left: .4rem; vertical-align: .1em; }
+    .pb-field input, .pb-field textarea, .pb-field select {
+      width: 100%; font-family: inherit; font-size: 1.5rem; line-height: 1.5;
+      border: 1px solid var(--c-gray-l); border-radius: var(--r-sm);
+      padding: 1rem 1.2rem; background: var(--c-white); color: var(--c-black);
+      resize: vertical; min-height: 4.2rem;
+    }
+    .pb-field input:focus, .pb-field textarea:focus, .pb-field select:focus { outline: none; border-color: var(--c-black); }
+    @media (max-width: 700px) {
+      .pb-form { grid-template-columns: 1fr; }
+      .pb-wrap { padding: 1.4rem 1.6rem; }
+    }
+    /* iOS Safari zoomt bei Formularfeldern < 16px automatisch hinein — deshalb
+       mobil 1.6rem (Muster: #search-m in shared/base.css). Desktop bleibt 1.5rem. */
+    @media (max-width: 1023px) {
+      .pb-field input, .pb-field textarea, .pb-field select { font-size: 1.6rem; }
+    }
+
+    /* ===== TERMINAL IM MODAL (Vorschau des Claude-Code-Leuchtturms) ===== */
+    .modal-term { margin: 0; max-width: none; box-shadow: none; }
+    .modal-term .ex-terminal-body { min-height: 22rem; max-height: 34rem; overflow-y: auto; font-size: 1.35rem; padding: 1.8rem 2rem; }
+    .ex-terminal-bar { position: relative; }
+    .demo-replay {
+      position: absolute; right: 1.4rem; top: 50%; transform: translateY(-50%);
+      background: rgba(255,255,255,.1); border: none; color: rgba(252,252,252,.8);
+      width: 2.8rem; height: 2.8rem; border-radius: 50%; cursor: pointer;
+      font-size: 1.5rem; transition: var(--trans);
+    }
+    .demo-replay:hover { background: var(--c-yellow); color: var(--c-black); }
+    @media (max-width: 767px) {
+      .demo-replay { position: relative; right: 0; top: 0; transform: none; margin-left: auto; }
+    }
+
+    /* ===== „WARUM FUNKTIONIERT DAS?“-KASTEN ===== */
+    .warum-box {
+      border-left: 3px solid var(--c-yellow); background: var(--c-bg);
+      border-radius: 0 var(--r-sm) var(--r-sm) 0;
+      padding: 1.6rem 2rem; margin: 2.4rem 0 0;
+    }
+    .warum-label {
+      font-family: var(--font-mono); font-size: 1.15rem; font-weight: 600;
+      letter-spacing: .1em; text-transform: uppercase; color: var(--c-gray-d);
+      margin: 0 0 .8rem;
+    }
+    .warum-box p:last-child { font-size: 1.5rem; line-height: 1.65; margin: 0; }
+
+    /* Skill-Querverweis */
+    .skill-xref {
+      display: flex; gap: 1.2rem; align-items: baseline; flex-wrap: wrap;
+      border: 1px solid var(--line); border-radius: var(--r-sm);
+      background: var(--c-white); padding: 1.4rem 1.8rem; margin-top: 2rem;
+      font-size: 1.4rem; line-height: 1.55; color: var(--c-gray-d);
+    }
+    .skill-xref a { color: var(--c-black); font-weight: 700; text-decoration: none; border-bottom: 2px solid var(--c-yellow); white-space: nowrap; }
+    .skill-xref a:hover { background: var(--c-yellow); }
+    .xref-label { font-family: var(--font-mono); font-size: 1.1rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--c-gray-m); white-space: nowrap; }
+
+    /* ===== KARTE: Prompt-Anriss + Kopier-Aktion + Meistkopiert ===== */
+    .card-prompt {
+      font-family: var(--font-mono); font-size: 1.15rem; line-height: 1.5;
+      color: var(--c-gray-d); background: var(--c-bg);
+      border-left: 2px solid var(--line); border-radius: var(--r-xs);
+      padding: .7rem .9rem; margin: 0 0 .4rem;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .card-prompt mark.ph { font-size: 1.05rem; padding: .02em .3em; }
+    .copy-count { font-size: 1.2rem; color: var(--c-gray-m); white-space: nowrap; font-variant-numeric: tabular-nums; }
+    .prompt-copy-chip {
+      font-family: inherit; font-size: 1.3rem; font-weight: 600; cursor: pointer;
+      background: transparent; color: var(--c-black);
+      border: 1px solid var(--c-black); border-radius: var(--radius-pill);
+      padding: .55rem 1.4rem; transition: var(--trans);
+      display: inline-flex; align-items: center; gap: .6rem;
+    }
+    .prompt-copy-chip:hover { background: var(--c-yellow); border-color: var(--c-yellow); }
+    .prompt-copy-chip .lu { width: 1.4rem; height: 1.4rem; }
+
+    /* ===== „FANG HIER AN“ (Muster aus skills.html) ===== */
+    .skill-card.start-here { border-color: var(--c-black); box-shadow: var(--shadow-md); overflow: visible; }
+    .skill-card.start-here::after { background: var(--c-yellow); }
+    .start-here-ribbon {
+      position: absolute; top: 0; right: 2rem; transform: translateY(-50%);
+      background: var(--c-black); color: var(--c-yellow);
+      font-family: var(--font-mono); font-size: 1.05rem; font-weight: 600;
+      letter-spacing: .08em; text-transform: uppercase;
+      padding: .35rem 1rem; border-radius: var(--radius-pill); z-index: 2;
+    }
+
+    /* ===== ERKLÄR-BLOCK „WAS IST EIN GUTER PROMPT?“ (Getting-Started-Muster) ===== */
+    .getting-started { background: var(--c-white); border-bottom: 1px solid var(--line); }
+    .gs-inner { max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-d); }
+    .gs-toggle {
+      display: flex; align-items: center; gap: 1.2rem; width: 100%;
+      background: none; border: none; cursor: pointer; font-family: inherit;
+      font-size: 1.6rem; font-weight: 700; color: var(--c-black);
+      padding: 1.8rem 0; text-align: left;
+    }
+    .gs-toggle:hover { color: var(--c-gray-m); }
+    .gs-arrow { margin-left: auto; font-size: 1.8rem; transition: transform .2s; }
+    .gs-toggle[aria-expanded="true"] .gs-arrow { transform: rotate(90deg); }
+    .gs-content { padding-bottom: 2.4rem; }
+    .gs-steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2.4rem; }
+    .gs-step { display: flex; gap: 1.6rem; align-items: flex-start; }
+    .gs-num {
+      width: 3.2rem; height: 3.2rem; flex-shrink: 0; background: var(--c-yellow);
+      color: var(--c-black); border-radius: 50%; display: flex; align-items: center;
+      justify-content: center; font-size: 1.5rem; font-weight: 700; font-family: var(--font-mono);
+    }
+    .gs-step strong { font-size: 1.5rem; display: block; margin-bottom: .4rem; }
+    .gs-step p { font-size: 1.4rem; color: var(--c-gray-m); line-height: 1.5; }
+    .gs-step mark.ph { font-size: 1.25rem; }
+    @media (max-width: 1023px) {
+      .gs-inner { padding: 0 var(--pad-m); }
+      .gs-steps { grid-template-columns: 1fr; gap: 1.6rem; }
+    }
+
+    /* Filtergruppen-Beschriftung in der Chip-Zeile */
+    .chip-lbl {
+      font-family: var(--font-mono); font-size: 1.1rem; font-weight: 600;
+      letter-spacing: .08em; text-transform: uppercase; color: var(--c-gray-m);
+      margin-right: .2rem; white-space: nowrap;
+    }
+    .chip-gap { width: 1.2rem; flex-shrink: 0; }
+
+    /* Beispiel-Ergebnis: ehrlicher Hinweis */
+    .example-note { font-size: 1.3rem; color: var(--c-gray-d); line-height: 1.5; margin: 0 0 1.2rem; }
+
+    /* „Variante einreichen“ im Modal (Flow-Baustein .sf-* liegt in base.css) */
+    .modal-submit-row {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 1.6rem; flex-wrap: wrap;
+      border-top: 1px solid var(--line); margin-top: 2.4rem; padding-top: 2rem;
+      font-size: 1.4rem; color: var(--c-gray-d);
+    }
+
+    /* Mitmachen-Band am Seitenende */
+    .submit-band { background: var(--paper-warm); border-top: 1px solid var(--line); padding: 6.4rem 0 6.8rem; }
+    .submit-band-inner { max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-d); }
+    .submit-band h2 { font-size: var(--fs-h2); font-weight: var(--fw-semi); letter-spacing: -.02em; margin: .6rem 0 1rem; }
+    .submit-band-text { font-size: 1.6rem; line-height: 1.6; color: var(--c-ink-body, var(--c-gray-d)); max-width: 62ch; margin: 0 0 2.4rem; }
+    .submit-band-note { font-family: var(--font-mono); font-size: 1.15rem; color: var(--c-gray-m); margin: 1.4rem 0 0; }
+    @media (max-width: 1023px) {
+      .submit-band { padding: 4.4rem 0 4.8rem; }
+      .submit-band-inner { padding: 0 var(--pad-m); }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Zum Hauptinhalt springen</a>
+
+  <!-- HEADER & FOOTER: werden von shared/base.js injiziert (renderNav, siehe Seiten-Script unten) -->
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-glow" aria-hidden="true"></div>
+    <div class="hero-inner hero-top">
+      <p class="overline" style="color:#ffe05e">pilot · Prompt-Sammlung</p>
+      <h1 class="hero-h1">Gute Prompts<br>sind kein <span style="color:var(--c-yellow)">Zufall.</span></h1>
+      <p class="subline">Kopierfertige Prompts aus dem Agentur-Alltag — mit gelb markierten <mark class="ph">[PLATZHALTERN]</mark>, ehrlichen Beispiel-Ergebnissen und einer Erklärung, <strong>warum</strong> jeder einzelne funktioniert.</p>
+      <div class="hero-stats" id="hero-stats">
+        <div class="hero-stat-box"><span class="hero-stat-num" id="stat-prompts">0</span><span class="hero-stat-label">Prompts</span></div>
+        <div class="hero-stat-box"><span class="hero-stat-num" id="stat-builder">0</span><span class="hero-stat-label">Mit Prompt-Builder</span></div>
+        <div class="hero-stat-box"><span class="hero-stat-num" id="stat-groups">0</span><span class="hero-stat-label">Aufgaben-Bereiche</span></div>
+        <div class="hero-stat-box"><span class="hero-stat-num" id="stat-platforms">0</span><span class="hero-stat-label">Plattformen</span></div>
+      </div>
+      <div class="hero-cta">
+        <button class="c-cta -yellow-bg" onclick="document.getElementById('main-content').scrollIntoView({behavior:'smooth',block:'start'})">Ersten Prompt finden</button>
+        <button class="c-cta -yellow-border" onclick="openGS()">Was ist ein guter Prompt?</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ERKLÄR-BLOCK: WAS IST EIN GUTER PROMPT? -->
+  <div class="getting-started" id="getting-started">
+    <div class="gs-inner">
+      <button class="gs-toggle" onclick="toggleGS()" aria-expanded="false" id="gs-toggle-btn">
+        <span>Was ist ein guter Prompt? Die Anatomie in vier Schritten</span>
+        <span class="gs-arrow">›</span>
+      </button>
+      <div class="gs-content" id="gs-content" hidden>
+        <div class="gs-steps">
+          <div class="gs-step">
+            <span class="gs-num">1</span>
+            <div><strong>Die Anatomie kennen</strong><p>Gute Prompts haben vier Bausteine: eine <strong>Rolle</strong> („Du bist Berater:in …“), eine klare <strong>Aufgabe</strong>, ein festes <strong>Format</strong> fürs Ergebnis und <strong>Regeln</strong> wie „Erfinde nichts“. Du findest alle vier in jedem Prompt hier wieder.</p></div>
+          </div>
+          <div class="gs-step">
+            <span class="gs-num">2</span>
+            <div><strong>Platzhalter ausfüllen</strong><p>Kopiere den Prompt und ersetze die gelben <mark class="ph">[PLATZHALTER]</mark> durch deine Angaben — Kunde, Text, Ziel. Je konkreter du sie füllst, desto besser das Ergebnis.</p></div>
+          </div>
+          <div class="gs-step">
+            <span class="gs-num">3</span>
+            <div><strong>Ergebnis nachschärfen</strong><p>Die erste Antwort ist ein Entwurf, kein Endprodukt. Frag nach: „Kürzer.“ „Konkreter bei Punkt 2.“ „Was fehlt dir noch von mir?“ — so wird aus einem Schuss ein Gespräch.</p></div>
+          </div>
+          <div class="gs-step">
+            <span class="gs-num">4</span>
+            <div><strong>Verstehen, warum</strong><p>Jeder Prompt erklärt unter „Warum funktioniert das?“ seine Technik — Format-Anker, Rollen-Priming, Prüfschleifen. Wer das dreimal gelesen hat, schreibt den vierten Prompt selbst.</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <main>
+    <!-- FILTER BAR -->
+    <div class="filter-bar" id="filter-bar">
+      <div class="filter-inner">
+        <div class="search-wrap-m">
+          <input type="search" id="search-m" aria-label="Prompts suchen" placeholder="Prompts suchen …" autocomplete="off">
+        </div>
+        <div class="cat-tabs" id="cat-tabs" role="group" aria-label="Nach Aufgabe filtern"></div>
+        <button class="filter-toggle-btn" id="filter-toggle-btn" onclick="toggleMobileFilter()" aria-expanded="true">
+          <span>Filter &amp; Sortierung <span class="ftb-count" id="ftb-count" hidden></span></span>
+          <span class="filter-toggle-arrow">▾</span>
+        </button>
+        <div class="filter-collapsible" id="filter-collapsible">
+          <div class="filter-toolbar">
+            <div class="role-chips" id="filter-chips"></div>
+            <div class="filter-controls">
+              <span class="results-count-lg" id="results-count"></span>
+              <select id="sort-select" aria-label="Prompts sortieren">
+                <option value="recommended">Empfohlen zuerst</option>
+                <option value="copies">Meistkopiert</option>
+                <option value="alpha">Name A–Z</option>
+              </select>
+            </div>
+          </div>
+          <div class="active-filters" id="active-filters" hidden></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROMPTS GRID -->
+    <div class="skills-section" id="main-content">
+      <div class="skills-inner">
+        <div class="skills-grid" id="prompts-grid"></div>
+      </div>
+    </div>
+
+    <!-- MITMACHEN: Variante einreichen (Demo-Flow aus shared/base.js) -->
+    <section class="submit-band" aria-labelledby="submit-band-h">
+      <div class="submit-band-inner">
+        <p class="section-label">Mitmachen</p>
+        <h2 id="submit-band-h">Dein Prompt funktioniert besser?</h2>
+        <p class="submit-band-text">Die Sammlung lebt von den Formulierungen, die sich im Alltag bewährt haben. Reich deine Variante ein — sie erscheint mit deinem Namen im Katalog.</p>
+        <button type="button" class="c-cta -black-bg" id="submit-band-cta" onclick="openPromptSubmit()">Variante einreichen</button>
+        <p class="submit-band-note">Demo-Flow: deine Eingabe bleibt lokal in deinem Browser.</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER: injiziert von shared/base.js (renderNav) -->
+
+  <!-- MODAL -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-name" aria-describedby="modal-body">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <h2 id="modal-name"></h2>
+        </div>
+        <button class="modal-close" onclick="closeModal()" aria-label="Prompt-Detail schließen">✕</button>
+      </div>
+      <div class="modal-meta" id="modal-meta"></div>
+      <div class="modal-tabs" role="tablist" aria-label="Prompt-Details"></div>
+      <div class="modal-body" id="modal-body"></div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="data/prompts.js"></script>
+  <script src="data/contributors.js"></script>
+  <script src="shared/base.js"></script>
+  <script>
+    // ===== DATA ===== (data/prompts.js: PROMPTS, PROMPT_PLATFORMS, PROMPT_SPOTLIGHT, PROMPT_START)
+    // ===== ENGINE ===== (Nav, Modal, Rating, Utils: shared/base.js)
+
+    // Rating-/Favoriten-/Tried-Engine dieser Seite arbeitet im prompt-Namespace
+    // (rate:prompt:<id>, comments:prompt:<id>, …) — MUSS vor jedem Engine-Aufruf stehen.
+    window.RatingConfig = { type: 'prompt' };
+
+    // ===== STATE ===== (dokumentierte Global — wird auch von der Engine in base.js gelesen)
+    const state = {
+      taskGroup: null,
+      platform: null,
+      difficulty: null,
+      sort: 'recommended',
+      search: '',
+      activeSkill: null,
+      activeTab: 'overview',
+      activeFile: 0,
+      activeVariant: 'standard', // Prompt-Variante im Modal (standard | kurz | ausfuehrlich)
+      pendingRating: {}
+    };
+
+    // ===== NAV & FOOTER (shared/base.js) =====
+    renderNav('prompts', {
+      search: { id: 'search', label: 'Prompts suchen', placeholder: 'Prompts suchen …' },
+      footerClaim: 'Von Piloten gebaut, von Piloten empfohlen. Jeder Prompt zeigt offen, warum er funktioniert — kopieren, lernen, weiterbauen.'
+    });
+
+    // ===== HELPERS =====
+    const GROUP_LABELS = { loslegen: 'Loslegen', bauen: 'Bauen', texten: 'Texten', gestalten: 'Gestalten', praesentieren: 'Präsentieren', media: 'Media' };
+    const GROUP_CARD_LABELS = { loslegen: 'Loslegen', bauen: 'Bauen', texten: 'Texten & Reden', gestalten: 'Gestalten', praesentieren: 'Präsentieren & Daten', media: 'Media & Strategie' };
+    function groupLabel(g) { return GROUP_CARD_LABELS[g] || g; }
+
+    function diffLabel(d) {
+      if (d === 'easy') return 'Einfach';
+      if (d === 'medium') return 'Mittel';
+      if (d === 'advanced') return 'Fortgeschritten';
+      return d;
+    }
+
+    function promptPlatformChips(p) {
+      return PROMPT_PLATFORMS.filter(pf => !!p.platforms[pf.id])
+        .map(pf => `<span class="pf-chip pf-${pf.id}">${pf.short}</span>`).join('');
+    }
+
+    // Platzhalter [SO-GESCHRIEBEN] gelb markieren — NUR fürs Rendern; kopiert wird immer der Rohtext.
+    function markPh(text) {
+      return escHtml(text).replace(/\[([A-ZÄÖÜ][^\]]*)\]/g, '<mark class="ph">[$1]</mark>');
+    }
+
+    // ===== MEISTKOPIERT (Seed + lokaler Zähler copies:prompt:<id>) =====
+    function localCopies(id) {
+      const n = parseInt(lsGet('copies:prompt:' + id) || '0', 10);
+      return isNaN(n) ? 0 : n;
+    }
+    function copyCountOf(p) { return (p.copyCount || 0) + localCopies(p.id); }
+
+    function copyPrompt(evt, id, textOverride, msgOverride) {
+      if (evt) evt.stopPropagation();
+      const p = PROMPTS.find(x => x.id === id);
+      if (!p) return;
+      copyToClipboard(textOverride || p.promptText, msgOverride || 'Prompt kopiert ✓ — jetzt die [PLATZHALTER] ausfüllen');
+      lsSet('copies:prompt:' + id, String(localCopies(id) + 1));
+      markTried(id); // tried:prompt:<id> — zählt fürs spätere „Meine Reise“
+      // Zähler-Anzeigen (Karte + Modal) ohne Re-Render aktualisieren
+      document.querySelectorAll(`[data-copies="${id}"]`).forEach(el => {
+        el.textContent = copyCountOf(p) + '× kopiert';
+      });
+    }
+
+    // Kopiert den AKTUELLEN Stand im Modal: gewählte Variante, Builder-Werte eingesetzt,
+    // leere Felder bleiben als [PLATZHALTER] im Text (ehrlich: nichts wird erfunden).
+    function copyCurrentPrompt(evt, id) {
+      const p = PROMPTS.find(x => x.id === id);
+      if (!p) return;
+      const applied = appliedPromptText(p);
+      const open = /\[[A-ZÄÖÜ][^\]]*\]/.test(applied);
+      copyPrompt(evt, id, applied, open
+        ? 'Prompt kopiert ✓ — offene [PLATZHALTER] noch ausfüllen'
+        : 'Prompt kopiert ✓ — fertig ausgefüllt');
+    }
+
+    // ===== „VARIANTE EINREICHEN“ — Demo-Flow-Baustein aus shared/base.js (Plan §5.4) =====
+    // Aus dem Modal kommt die Prompt-ID mit (Bezug vorbefüllt), vom Seiten-CTA ohne.
+    function openPromptSubmit(id) {
+      const p = id ? PROMPTS.find(x => x.id === id) : null;
+      openSubmitFlow({
+        type: 'prompt',
+        title: 'Prompt-Variante einreichen',
+        intro: p
+          ? `Deine Variante zu „${p.name}“ — zeig uns die Formulierung, die bei dir besser funktioniert.`
+          : 'Dein Prompt für die Sammlung — die Formulierung, die bei dir im Alltag funktioniert.',
+        fields: [
+          { key: 'name', label: 'Dein Name', required: true, placeholder: 'z. B. Kim Weber' },
+          { key: 'bezug', label: 'Bezieht sich auf', value: p ? p.name : '', placeholder: 'z. B. Briefing auf eine Seite — oder „Neuer Prompt“' },
+          { key: 'variante', label: 'Deine Prompt-Variante', type: 'textarea', required: true, placeholder: 'Der komplette Prompt-Text — Platzhalter in [ECKIGEN KLAMMERN] schreiben.', hint: 'Tipp: Rolle, Aufgabe, Format und Regeln mitgeben — wie im Erklär-Block oben.' },
+          { key: 'warum', label: 'Was macht deine Variante besser?', type: 'textarea', placeholder: 'z. B. „Liefert konkretere Ergebnisse, weil …“' }
+        ],
+        submitLabel: 'Variante einreichen (Demo)'
+      });
+    }
+
+    // ===== PROMPT-BUILDER (Leuchttürme): Eingaben füllen die [PLATZHALTER] live =====
+    // Draft je Prompt in localStorage (builder:prompt:<id>), damit beim Tab-Wechsel
+    // und beim nächsten Besuch nichts verloren geht.
+    function builderStoreKey(id) { return 'builder:prompt:' + id; }
+    function getBuilderValues(id) {
+      try { return JSON.parse(lsGet(builderStoreKey(id)) || '{}') || {}; } catch (e) { return {}; }
+    }
+    function setBuilderValue(id, key, value) {
+      const vals = getBuilderValues(id);
+      if (value) vals[key] = value; else delete vals[key];
+      lsSet(builderStoreKey(id), JSON.stringify(vals));
+    }
+    function onBuilderInput(id, key, value) {
+      setBuilderValue(id, key, value);
+      const p = PROMPTS.find(x => x.id === id);
+      const live = document.getElementById('prompt-live');
+      if (p && live) live.innerHTML = livePromptHtml(p);
+    }
+    function resetBuilder(id) {
+      lsRemove(builderStoreKey(id));
+      renderModalBody();
+      showToast('Eingaben zurückgesetzt');
+    }
+
+    // Aktive Variante des offenen Prompts ('standard' = Haupttext)
+    function activeVariantOf(p) {
+      if (!p.variants || !state.activeVariant || state.activeVariant === 'standard') return null;
+      return p.variants.find(v => v.id === state.activeVariant) || null;
+    }
+    function currentPromptText(p) {
+      const v = activeVariantOf(p);
+      return v ? v.promptText : p.promptText;
+    }
+    // Roher Text der aktiven Variante mit eingesetzten Builder-Werten — fürs Kopieren.
+    // Platzhalter, die in der Variante nicht vorkommen, bleiben einfach unberührt.
+    function appliedPromptText(p) {
+      let text = currentPromptText(p);
+      const fields = (p.builder && p.builder.fields) || [];
+      const vals = getBuilderValues(p.id);
+      fields.forEach(f => {
+        const v = String(vals[f.key] || '').trim();
+        if (v) text = text.split(f.ph).join(v);
+      });
+      return text;
+    }
+    // HTML fürs Live-Rendering: gefüllte Platzhalter dezent markiert, leere bleiben gelb.
+    function livePromptHtml(p) {
+      const fields = (p.builder && p.builder.fields) || [];
+      const vals = getBuilderValues(p.id);
+      return escHtml(currentPromptText(p)).replace(/\[([A-ZÄÖÜ][^\]]*)\]/g, m => {
+        const f = fields.find(x => x.ph === m);
+        const v = f ? String(vals[f.key] || '').trim() : '';
+        if (v) return `<mark class="ph -filled">${escHtml(v)}</mark>`;
+        return `<mark class="ph">${m}</mark>`;
+      });
+    }
+
+    function setVariant(vid) {
+      state.activeVariant = vid;
+      renderModalBody();
+    }
+
+    // ===== FILTER & SORT =====
+    function filterPrompts() {
+      let result = PROMPTS.slice();
+      if (state.taskGroup) result = result.filter(p => p.taskGroup === state.taskGroup);
+      if (state.platform) result = result.filter(p => !!p.platforms[state.platform]);
+      if (state.difficulty) result = result.filter(p => p.difficulty === state.difficulty);
+      if (state.search) {
+        const terms = state.search.toLowerCase().split(/\s+/).filter(t => t.length > 1);
+        state._searchScore = {};
+        if (terms.length) {
+          result = result.filter(p => {
+            const sc = searchScore(p, terms, [
+              [p.name, 5], [p.promptText, 4], [(p.tags || []).join(' '), 3],
+              [p.tagline, 2], [p.warum || '', 1]
+            ]);
+            if (sc > 0) state._searchScore[p.id] = sc;
+            return sc > 0;
+          });
+        }
+      }
+      result.sort((a, b) => {
+        if (state.search && state._searchScore) {
+          const d = (state._searchScore[b.id] || 0) - (state._searchScore[a.id] || 0);
+          if (d) return d;
+        }
+        if (state.sort === 'recommended') {
+          const aSpot = PROMPT_SPOTLIGHT.has(a.id) ? 1 : 0;
+          const bSpot = PROMPT_SPOTLIGHT.has(b.id) ? 1 : 0;
+          if (bSpot !== aSpot) return bSpot - aSpot;
+          return bayesScore(b) - bayesScore(a);
+        }
+        if (state.sort === 'copies') return copyCountOf(b) - copyCountOf(a);
+        if (state.sort === 'alpha') return a.name.localeCompare(b.name, 'de');
+        return 0;
+      });
+      return result;
+    }
+
+    // ===== AUFGABEN-TABS =====
+    // Zähler folgen Plattform- & Niveau-Filter, damit die Zahlen zur Kartenfläche passen.
+    function groupCount(gId) {
+      return PROMPTS.filter(p => p.taskGroup === gId
+        && (!state.platform || !!p.platforms[state.platform])
+        && (!state.difficulty || p.difficulty === state.difficulty)).length;
+    }
+    function renderCatTabs() {
+      const subs = [
+        { id: 'all', label: 'Alle' },
+        { id: 'loslegen', label: 'Loslegen' },
+        { id: 'bauen', label: 'Bauen' },
+        { id: 'texten', label: 'Texten' },
+        { id: 'gestalten', label: 'Gestalten' },
+        { id: 'praesentieren', label: 'Präsentieren' },
+        { id: 'media', label: 'Media' }
+      ];
+      const total = subs.slice(1).reduce((a, s) => a + groupCount(s.id), 0);
+      document.getElementById('cat-tabs').innerHTML = subs.map(s => {
+        const count = s.id === 'all' ? total : groupCount(s.id);
+        const isActive = state.taskGroup === (s.id === 'all' ? null : s.id);
+        if (!count && s.id !== 'all' && !isActive) return '';
+        return `<button class="cat-tab${isActive ? ' active' : ''}" aria-pressed="${isActive}" onclick="setTaskGroup('${s.id}')">${escHtml(s.label)} <span class="tab-count">${count}</span></button>`;
+      }).join('');
+    }
+    function setTaskGroup(g) {
+      state.taskGroup = g === 'all' ? null : g;
+      renderCatTabs();
+      render();
+      updateURL();
+    }
+
+    // ===== PLATTFORM- & NIVEAU-CHIPS =====
+    function renderFilterChips() {
+      const host = document.getElementById('filter-chips');
+      if (!host) return;
+      const pfChips = PROMPT_PLATFORMS.map(pf => {
+        const active = state.platform === pf.id;
+        return `<button class="role-chip${active ? ' active' : ''}" aria-pressed="${active}" onclick="setPlatform('${pf.id}')">${escHtml(pf.label)}</button>`;
+      }).join('');
+      const diffs = [['easy', 'Einfach'], ['medium', 'Mittel'], ['advanced', 'Fortgeschritten']];
+      const diffChips = diffs.map(([id, label]) => {
+        const active = state.difficulty === id;
+        return `<button class="role-chip${active ? ' active' : ''}" aria-pressed="${active}" onclick="setDifficulty('${id}')">${label}</button>`;
+      }).join('');
+      host.innerHTML = `<span class="chip-lbl">Plattform</span>${pfChips}<span class="chip-gap" aria-hidden="true"></span><span class="chip-lbl">Niveau</span>${diffChips}`;
+    }
+    function setPlatform(id) {
+      state.platform = state.platform === id ? null : id;
+      renderFilterChips();
+      renderCatTabs();
+      render();
+    }
+    function setDifficulty(id) {
+      state.difficulty = state.difficulty === id ? null : id;
+      renderFilterChips();
+      renderCatTabs();
+      render();
+    }
+
+    // ===== AKTIVE FILTER-ZUSAMMENFASSUNG =====
+    function renderActiveFilters() {
+      const bar = document.getElementById('active-filters');
+      if (!bar) return;
+      const pills = [];
+      if (state.taskGroup) pills.push({ label: GROUP_LABELS[state.taskGroup] || state.taskGroup, clear: `setTaskGroup('all')` });
+      if (state.platform) {
+        const pf = PROMPT_PLATFORMS.find(x => x.id === state.platform);
+        pills.push({ label: 'Plattform: ' + (pf ? pf.label : state.platform), clear: `setPlatform('${state.platform}')` });
+      }
+      if (state.difficulty) pills.push({ label: 'Niveau: ' + diffLabel(state.difficulty), clear: `setDifficulty('${state.difficulty}')` });
+      if (state.search) pills.push({ label: `Suche: "${escHtml(state.search)}"`, clear: `clearSearch()` });
+
+      const ftb = document.getElementById('ftb-count');
+      if (ftb) { ftb.hidden = pills.length === 0; ftb.textContent = pills.length; }
+      if (pills.length === 0) { bar.hidden = true; bar.innerHTML = ''; return; }
+      bar.hidden = false;
+      bar.innerHTML = `<span class="active-filters-label">Aktive Filter:</span>` +
+        pills.map(p => `<button class="active-pill" onclick="${p.clear}">${p.label} <span class="ap-x">✕</span></button>`).join('') +
+        `<button class="active-clear" onclick="resetFilters()">Alle zurücksetzen</button>`;
+    }
+
+    function clearSearch() {
+      state.search = '';
+      ['search', 'search-m'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+      render();
+    }
+    function resetFilters() {
+      state.taskGroup = null; state.platform = null; state.difficulty = null; state.search = '';
+      ['search', 'search-m'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+      renderCatTabs();
+      renderFilterChips();
+      render();
+    }
+
+    // ===== RENDER CARD =====
+    // Prompt-Anriss: erste inhaltliche Zeile, gelbe Platzhalter bleiben sichtbar
+    function promptSnippet(p) {
+      const line = p.promptText.split('\n').map(l => l.trim()).find(l => l.length > 3) || '';
+      const cut = line.length > 130 ? line.slice(0, 130).trimEnd() + ' …' : line;
+      return markPh(cut);
+    }
+
+    function renderCard(p, idx = 0, isStart = false) {
+      const eff = getEffectiveRating(p);
+      const _badge = itemBadge(p);
+      const badgeHtml = _badge ? `<span class="skill-badge ${_badge.cls}">${_badge.label}</span>` : '';
+      const delay = Math.min(idx, 11) * 35;
+      return `
+        <article class="skill-card prompt-card${isStart ? ' start-here' : ''}${state._noCardAnim ? '' : ' card-in'}" style="animation-delay:${state._noCardAnim ? 0 : delay}ms" onclick="openModal('${p.id}')" tabindex="0" role="button" aria-label="${escHtml(p.name)} öffnen" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openModal('${p.id}')}">
+          ${isStart ? '<span class="start-here-ribbon">Fang hier an</span>' : ''}
+          <div class="card-top">
+            <span class="card-sub">${escHtml(groupLabel(p.taskGroup))}</span>
+            ${badgeHtml}
+          </div>
+          <h3 class="skill-name">${escHtml(p.name)}</h3>
+          <p class="skill-tagline">${escHtml(p.tagline)}</p>
+          <p class="card-prompt" title="Prompt-Anfang">${promptSnippet(p)}</p>
+          <div class="skill-meta">
+            <span class="diff-badge ${p.difficulty}">${diffLabel(p.difficulty)}</span>
+            <span class="meta-dot">·</span>
+            <span class="card-platforms" role="group" aria-label="Einsetzbar in">${promptPlatformChips(p)}</span>
+            <span class="meta-dot">·</span>
+            <span class="copy-count" data-copies="${p.id}">${copyCountOf(p)}× kopiert</span>
+          </div>
+          <div class="card-footer">
+            <div class="stars-display-wrap">
+              ${renderStars(eff.average)}
+              <span class="rating-text">${eff.average.toFixed(1)} · ${eff.count} ${eff.count === 1 ? 'Bewertung' : 'Bewertungen'}</span>
+            </div>
+          </div>
+          <div class="card-actions">
+            <button class="prompt-copy-chip" onclick="copyPrompt(event,'${p.id}')" title="Prompt-Text kopieren">${LU.copy} Prompt kopieren</button>
+            <span class="card-open-hint">Details ansehen →</span>
+          </div>
+        </article>
+      `;
+    }
+
+    // ===== RENDER MAIN GRID =====
+    function resultNoun(n) { return n === 1 ? 'Prompt' : 'Prompts'; }
+
+    function render() {
+      const filtered = filterPrompts();
+      const grid = document.getElementById('prompts-grid');
+      if (!grid) return;
+      const count = document.getElementById('results-count');
+      if (count) count.innerHTML = `<strong>${filtered.length}</strong> ${resultNoun(filtered.length)}`;
+
+      renderActiveFilters();
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m13.5 8.5-5 5"/><path d="m8.5 8.5 5 5"/><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></div>
+            <h3 class="empty-title">Kein Prompt gefunden</h3>
+            <p class="empty-text">Keine Prompts passen zu deinen aktuellen Filtern. Setze Filter zurück oder probiere einen anderen Suchbegriff.</p>
+            <button class="c-cta -black-bg" onclick="resetFilters()" style="margin-top:2rem">Alle Filter zurücksetzen</button>
+          </div>
+        `;
+        return;
+      }
+      // Ohne aktive Filter/Suche und nur bei Standard-Sortierung: Redaktions-Kandidat
+      // als „Fang hier an“ anpinnen — eine explizite Sortierung (Meistkopiert, A–Z)
+      // bleibt ehrlich und wird nicht vom Pin durchbrochen.
+      const noFilter = !state.search && !state.taskGroup && !state.platform && !state.difficulty
+        && state.sort === 'recommended';
+      const start = noFilter ? filtered.find(p => p.id === PROMPT_START) : null;
+      const rest = start ? filtered.filter(p => p.id !== start.id) : filtered;
+      let html = start ? renderCard(start, 0, true) : '';
+      let idx = start ? 1 : 0;
+      html += rest.map(p => renderCard(p, idx++)).join('');
+      grid.innerHTML = html;
+    }
+
+    // ===== MODAL =====
+    // Tab-Leiste (E3): Prompt · Vorschau/Beispiel · Bewertungen.
+    // Leuchttürme mit preview-Daten bekommen die Inszenierung „So sieht's aus“
+    // (Chat bzw. Terminal), Breite-Einträge das statische „Beispiel-Ergebnis“.
+    function modalTabsFor(p) {
+      const second = p.preview
+        ? ['vorschau', 'So sieht’s aus']
+        : ['beispiel', 'Beispiel-Ergebnis'];
+      return [['overview', 'Prompt'], second, ['ratings', 'Bewertungen']];
+    }
+
+    function renderModalHead(p) {
+      state.activeVariant = 'standard'; // jedes Öffnen startet bei der Standard-Variante
+      document.getElementById('modal-name').textContent = p.name;
+      const tabBar = document.querySelector('#modal .modal-tabs');
+      if (tabBar) {
+        tabBar.innerHTML = modalTabsFor(p).map(([id, label], i) =>
+          `<button class="tab-btn${i === 0 ? ' active' : ''}" role="tab" aria-selected="${i === 0 ? 'true' : 'false'}" data-tab="${id}" onclick="switchTab('${id}')">${escHtml(label)}</button>`
+        ).join('');
+      }
+      const eff = getEffectiveRating(p);
+      document.getElementById('modal-meta').innerHTML = `
+        ${renderStars(eff.average)}
+        <span>${eff.average.toFixed(1)} (${eff.count} Bewertungen)</span>
+        <span class="modal-meta-sep">·</span>
+        <span class="diff-badge ${p.difficulty}">${diffLabel(p.difficulty)}</span>
+        <span class="modal-meta-sep">·</span>
+        <span>${escHtml(groupLabel(p.taskGroup))}</span>
+        <span class="modal-meta-sep">·</span>
+        <span class="card-platforms" role="group" aria-label="Einsetzbar in">${promptPlatformChips(p)}</span>
+        <span class="modal-meta-sep">·</span>
+        <span class="copy-count" data-copies="${p.id}">${copyCountOf(p)}× kopiert</span>
+      `;
+    }
+
+    // Ein Builder-Feld (Text, Auswahl oder Textfläche) — Tippen füllt den Prompt live.
+    function builderFieldHtml(p, f) {
+      const v = String(getBuilderValues(p.id)[f.key] || '');
+      const inputId = `pb-${p.id}-${f.key}`;
+      const on = `oninput="onBuilderInput('${p.id}','${f.key}',this.value)"`;
+      let control;
+      if (f.type === 'select') {
+        control = `<select id="${inputId}" onchange="onBuilderInput('${p.id}','${f.key}',this.value)">
+          <option value="">— bitte wählen —</option>
+          ${(f.options || []).map(o => `<option value="${escHtml(o)}"${o === v ? ' selected' : ''}>${escHtml(o)}</option>`).join('')}
+        </select>`;
+      } else if (f.type === 'textarea') {
+        control = `<textarea id="${inputId}" rows="4" placeholder="${escHtml(f.placeholder || '')}" ${on}>${escHtml(v)}</textarea>`;
+      } else {
+        control = `<input type="text" id="${inputId}" value="${escHtml(v)}" placeholder="${escHtml(f.placeholder || '')}" ${on}>`;
+      }
+      return `
+        <div class="pb-field${f.type === 'textarea' ? ' -wide' : ''}">
+          <label class="pb-label" for="${inputId}">${escHtml(f.label)}<mark class="ph">${escHtml(f.ph)}</mark></label>
+          ${control}
+        </div>`;
+    }
+
+    function renderModalPrompt(p) {
+      const hasBuilder = !!(p.builder && p.builder.fields && p.builder.fields.length);
+      const hasVariants = !!(p.variants && p.variants.length);
+
+      // Varianten-Umschalter (Standard · Kurz · Ausführlich) — nur wo Varianten existieren
+      let segHtml = '';
+      if (hasVariants) {
+        const segs = [{ id: 'standard', label: 'Standard' }].concat(p.variants);
+        segHtml = `<div class="variant-seg" role="group" aria-label="Prompt-Variante wählen">${
+          segs.map(s => `<button type="button" class="${state.activeVariant === s.id ? 'active' : ''}" aria-pressed="${state.activeVariant === s.id}" onclick="setVariant('${s.id}')">${escHtml(s.label)}</button>`).join('')
+        }</div>`;
+        const av = activeVariantOf(p);
+        if (av && av.hint) segHtml += `<p class="variant-hint">${escHtml(av.hint)}</p>`;
+      }
+
+      const builderHtml = hasBuilder ? `
+        <div class="pb-wrap">
+          <div class="pb-head">
+            <p class="pb-title">Prompt-Builder</p>
+            <button type="button" class="pb-reset" onclick="resetBuilder('${p.id}')">Zurücksetzen</button>
+          </div>
+          <p class="pb-lead">Fülle die Felder aus — deine Angaben landen live im Prompt darunter. Leere Felder bleiben als gelbe Platzhalter stehen. Deine Eingaben werden nur in diesem Browser gemerkt.</p>
+          <div class="pb-form">${p.builder.fields.map(f => builderFieldHtml(p, f)).join('')}</div>
+        </div>` : '';
+
+      const copyHint = hasBuilder
+        ? `Kopiert den aktuellen Stand: ausgefüllte Felder sind eingesetzt, leere bleiben als <mark class="ph">[PLATZHALTER]</mark> im Text.`
+        : `Kopiert den kompletten Text mitsamt <mark class="ph">[PLATZHALTERN]</mark> — die füllst du nach dem Einfügen mit deinen Angaben.`;
+
+      return `
+        <div class="prompt-copy-row">
+          <button class="c-cta -yellow-bg" onclick="copyCurrentPrompt(null,'${p.id}')">${LU.copy} Prompt kopieren</button>
+          <span class="prompt-copy-hint">${copyHint}</span>
+        </div>
+        ${segHtml}
+        ${builderHtml}
+        <pre class="prompt-code" id="prompt-live">${livePromptHtml(p)}</pre>
+        <div class="warum-box">
+          <p class="warum-label">Warum funktioniert das?</p>
+          <p>${escHtml(p.warum)}</p>
+        </div>
+        ${p.skillRef ? `
+        <p class="skill-xref">
+          <span class="xref-label">Passender Skill</span>
+          <span><a href="skills.html?skill=${encodeURIComponent(p.skillRef)}">${escHtml(p.skillRefName || p.skillRef)} →</a>${p.skillRefNote ? ' ' + escHtml(p.skillRefNote) : ''}</span>
+        </p>` : ''}
+        <div class="modal-submit-row">
+          <span>Du formulierst das anders — und es funktioniert besser?</span>
+          <button type="button" class="c-cta -black-border" onclick="openPromptSubmit('${p.id}')">Variante einreichen</button>
+        </div>
+      `;
+    }
+
+    function renderModalBeispiel(p) {
+      return `
+        <p class="example-note">So kann ein Ergebnis aussehen — nachgestelltes Beispiel mit fiktiven Marken. Dein Ergebnis hängt davon ab, wie du die Platzhalter füllst.</p>
+        <pre class="prompt-code">${escHtml(p.exampleOutput || '')}</pre>
+      `;
+    }
+
+    // ===== VORSCHAU-INSZENIERUNG „SO SIEHT'S AUS“ (nur Leuchttürme) =====
+    // **fett** aus den Redaktionsdaten wird zu <strong> (markiert die eingesetzten
+    // Angaben), *kursiv* zu <em> — alles andere bleibt escaped.
+    function chatRich(text) {
+      let h = escHtml(text);
+      h = h.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+      h = h.replace(/\*([^*\n]+)\*/g, '<em>$1</em>');
+      return h;
+    }
+
+    function renderModalVorschau(p) {
+      const pv = p.preview;
+      if (pv && pv.mode === 'terminal' && pv.script) {
+        // Terminal einhängen, dann abspielen (renderModalBody setzt das HTML erst nach diesem Aufruf)
+        queueMicrotask(startPromptPreview);
+        return `
+          <p class="example-note">Nachgestellter Ablauf in Claude Code — fiktives Beispiel, echte Mechanik: erst Rückfragen, dann eine kleine erste Version.</p>
+          <div class="ex-terminal modal-term">
+            <div class="ex-terminal-bar">
+              <span class="ex-dot"></span><span class="ex-dot"></span><span class="ex-dot"></span>
+              <span class="ex-terminal-title">claude code — dein erstes Tool</span>
+              <button class="demo-replay" onclick="startPromptPreview()" title="Demo neu abspielen" aria-label="Demo neu abspielen">↻</button>
+            </div>
+            <div class="ex-terminal-body" id="prompt-term-body"></div>
+          </div>`;
+      }
+      if (pv && pv.mode === 'chat' && pv.chat) {
+        const msgs = pv.chat.map(m => `
+          <div class="chat-msg -${m.role === 'user' ? 'user' : 'ai'}">
+            <span class="chat-meta">${m.role === 'user' ? 'Du' : 'KI-Antwort'}</span>
+            <div class="chat-bubble">${chatRich(m.text)}</div>
+          </div>`).join('');
+        return `
+          <p class="example-note">Nachgestellte Chat-Ansicht mit fiktiven Marken — so sieht der ausgefüllte Prompt in Langdock aus, und so kann die Antwort aussehen.</p>
+          <div class="chat">
+            <div class="chat-bar"><span class="chat-bar-title">Langdock — nachgestellte Ansicht</span></div>
+            <div class="chat-body">${msgs}</div>
+          </div>`;
+      }
+      return renderModalBeispiel(p); // Fallback: statisches Beispiel
+    }
+
+    // Spielt das Vorschau-Skript des offenen Prompts im Modal-Terminal ab (playScript, shared/base.js)
+    function startPromptPreview() {
+      const item = state.activeSkill;
+      if (!item || state.activeTab !== 'vorschau') return;
+      const body = document.getElementById('prompt-term-body');
+      if (!body || !item.preview || item.preview.mode !== 'terminal') return;
+      playScript(item.preview.script, { artifacts: [] }, { body, actions: null });
+    }
+
+    function renderModalRatings(p) {
+      const eff = getEffectiveRating(p);
+      const userComments = getComments(p.id);
+      const allComments = [...userComments, ...(p.comments || [])];
+      const userRating = getRating(p.id);
+      const cid = p.id;
+
+      const commentsHtml = allComments.length === 0
+        ? '<p class="no-comments">Noch keine Kommentare — schreib den ersten!</p>'
+        : allComments.map((c, i) => `
+          <div class="comment-item${i < userComments.length ? ' -own' : ''}">
+            <div class="avatar" style="flex-shrink:0;width:4rem;height:4rem;font-size:1.4rem">${escHtml(c.initials || getInitials(c.author))}</div>
+            <div style="flex:1">
+              <div class="comment-author">${escHtml(c.author)}${i < userComments.length ? ' <span class="comment-own-badge">von dir · nur auf diesem Gerät</span>' : ''}</div>
+              <div class="comment-role-date">${escHtml(c.role)} · ${formatDate(c.date)}</div>
+              ${c.rating ? `<div class="comment-stars">${renderStars(c.rating)}</div>` : ''}
+              <p class="comment-text">${escHtml(c.text)}</p>
+            </div>
+            ${i < userComments.length ? `<button type="button" class="comment-delete" onclick="deleteComment('${cid}', ${i})" aria-label="Deinen Kommentar löschen" title="Deinen Kommentar löschen">✕</button>` : ''}
+          </div>
+        `).join('');
+
+      return `
+        <div class="rating-overview" style="margin-bottom:2rem">
+          <div>
+            <div class="rating-big">${eff.average.toFixed(1)}</div>
+            <div>${renderStars(eff.average)}</div>
+            <div class="rating-sub">${eff.count} Bewertungen gesamt</div>
+          </div>
+        </div>
+
+        <form class="comment-form" onsubmit="event.preventDefault();submitComment('${cid}')">
+          <h3>Deine Bewertung & Kommentar</h3>
+          <p class="rating-form-label">Deine Sternebewertung</p>
+          ${renderInteractiveStars(`comment-${cid}`)}
+          <p class="user-rating-hint" id="rating-hint-comment-${cid}">
+            ${userRating > 0 ? `Du hast diesen Prompt bereits mit ${userRating} Sternen bewertet.` : 'Klick auf die Sterne, um zu bewerten.'}
+          </p>
+          <div class="form-row" style="margin-top:1.6rem">
+            <div>
+              <label for="comment-author-${cid}">Dein Name *</label>
+              <input type="text" id="comment-author-${cid}" autocomplete="name" required>
+            </div>
+            <div>
+              <label for="comment-role-${cid}">Deine Rolle <span style="font-weight:400;color:var(--c-gray-m)">(optional)</span></label>
+              <input type="text" id="comment-role-${cid}">
+            </div>
+          </div>
+          <label for="comment-text-${cid}" style="margin-top:1.2rem">Dein Kommentar *</label>
+          <textarea id="comment-text-${cid}" rows="3" required></textarea>
+          <button type="submit" class="c-cta -black-bg">Kommentar speichern</button>
+          <p class="comment-local-hint">Demo-Hinweis: Bewertungen &amp; Kommentare werden nur in deinem Browser gespeichert — Kolleg:innen sehen sie (noch) nicht.</p>
+        </form>
+
+        <p class="section-label">Alle Kommentare (${allComments.length})</p>
+        ${commentsHtml}
+      `;
+    }
+
+    // ===== MODAL-ENGINE-VERDRAHTUNG (shared/base.js) =====
+    window.ModalConfig = {
+      getItem: id => PROMPTS.find(p => p.id === id),
+      renderHead: p => renderModalHead(p),
+      renderers: {
+        overview: p => { stopTermScript(); return renderModalPrompt(p); },
+        beispiel: p => { stopTermScript(); return renderModalBeispiel(p); },
+        vorschau: p => { stopTermScript(); return renderModalVorschau(p); },
+        ratings:  p => { stopTermScript(); return renderModalRatings(p); }
+      },
+      updateURL: () => updateURL(),
+      pushURL:   () => pushURL(),
+      lockHash:  () => { _hashLock = true; setTimeout(() => { _hashLock = false; }, 0); }
+    };
+    // Modal schließen stoppt eine evtl. laufende Terminal-Vorschau
+    // (Engine-Falle aus E2: sonst tippt die Demo nach dem Schließen ins Leere).
+    const _engineCloseModal = closeModal;
+    closeModal = function () { stopTermScript(); _engineCloseModal(); };
+
+    // ===== DEEP-LINKING: prompts.html?p=<id> bzw. #<id>[/tab] =====
+    let _hashLock = false;
+    const MODAL_TABS = ['overview', 'beispiel', 'vorschau', 'ratings'];
+
+    function buildHash() {
+      if (!state.activeSkill) return '';
+      let h = state.activeSkill.id;
+      const tab = state.activeTab || 'overview';
+      if (tab !== 'overview') h += '/' + tab;
+      return '#' + h;
+    }
+    function writeHash(h, push) {
+      if (!h || location.hash === h) return;
+      _hashLock = true;
+      try { push ? history.pushState(null, '', h) : history.replaceState(null, '', h); }
+      catch (e) { location.hash = h; }
+      setTimeout(() => { _hashLock = false; }, 0);
+    }
+    function updateURL() { const h = buildHash(); if (h) writeHash(h, false); }
+    function pushURL()   { const h = buildHash(); if (h) writeHash(h, true); }
+
+    function applyHash() {
+      if (_hashLock) return;
+      const raw = decodeURIComponent(location.hash.slice(1));
+      if (!raw) {
+        const ov = document.getElementById('modal-overlay');
+        if (ov && ov.classList.contains('open')) closeModalSilent();
+        return;
+      }
+      const parts = raw.split('/');
+      const id = parts[0];
+      const p = PROMPTS.find(x => x.id === id);
+      if (!p) { updateURL(); return; } // unbekannter Prompt: URL nicht vom UI abweichen lassen
+      // Nur Tabs, die es für DIESEN Prompt gibt (Leuchttürme: vorschau, Breite: beispiel)
+      let tab = MODAL_TABS.includes(parts[1]) ? parts[1] : 'overview';
+      if (!modalTabsFor(p).some(([tid]) => tid === tab)) tab = 'overview';
+      if (!state.activeSkill || state.activeSkill.id !== id) openModal(id, { fromHash: true });
+      if (state.activeTab !== tab) switchTab(tab);
+    }
+    function closeModalSilent() {
+      stopTermScript();
+      const ov = document.getElementById('modal-overlay');
+      if (!ov) return;
+      ov.classList.remove('open');
+      document.body.style.overflow = '';
+      state.activeSkill = null;
+    }
+
+    // ===== ERKLÄR-BLOCK =====
+    function toggleGS() {
+      const content = document.getElementById('gs-content');
+      const btn = document.getElementById('gs-toggle-btn');
+      const isHidden = content.hidden;
+      content.hidden = !isHidden;
+      btn.setAttribute('aria-expanded', isHidden ? 'true' : 'false');
+      try { localStorage.setItem('prompts-gs-seen', '1'); } catch (e) {}
+    }
+    function openGS() {
+      const content = document.getElementById('gs-content');
+      const btn = document.getElementById('gs-toggle-btn');
+      if (content.hidden) toggleGS();
+      document.getElementById('getting-started').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (btn) btn.focus({ preventScroll: true });
+    }
+
+    // ===== MOBILE FILTER TOGGLE =====
+    function toggleMobileFilter() {
+      const btn = document.getElementById('filter-toggle-btn');
+      const panel = document.getElementById('filter-collapsible');
+      if (!btn || !panel) return;
+      const isExpanded = btn.getAttribute('aria-expanded') === 'true';
+      btn.setAttribute('aria-expanded', isExpanded ? 'false' : 'true');
+      panel.hidden = isExpanded;
+    }
+
+    // ===== INIT =====
+    document.addEventListener('DOMContentLoaded', () => {
+      // Hero-Zähler: nur real Gezähltes aus PROMPTS
+      const stats = [
+        ['stat-prompts', PROMPTS.length],
+        ['stat-builder', PROMPTS.filter(p => p.builder).length],
+        ['stat-groups', new Set(PROMPTS.map(p => p.taskGroup)).size],
+        ['stat-platforms', PROMPT_PLATFORMS.filter(pf => PROMPTS.some(p => p.platforms[pf.id])).length]
+      ];
+      stats.forEach(([id, n]) => {
+        const el = document.getElementById(id);
+        if (el) animateCount(el, n, 900);
+      });
+
+      renderCatTabs();
+      renderFilterChips();
+      render();
+
+      // Deep-Link-Schema prompts.html?p=<id>: auf die kanonische Hash-Form
+      // (#<id>) umschreiben, dann übernimmt applyHash wie bei Hash-Links.
+      try {
+        const qsPrompt = new URLSearchParams(location.search).get('p');
+        if (qsPrompt && !location.hash) {
+          history.replaceState(null, '', location.pathname + '#' + encodeURIComponent(qsPrompt));
+        }
+      } catch (e) {}
+      applyHash();
+      window.addEventListener('hashchange', applyHash);
+      window.addEventListener('popstate', applyHash);
+
+      // Erklär-Block beim allerersten Besuch offen zeigen (danach gemerkt)
+      try {
+        if (!localStorage.getItem('prompts-gs-seen')) {
+          const gsc = document.getElementById('gs-content');
+          const gsb = document.getElementById('gs-toggle-btn');
+          if (gsc && gsb) { gsc.hidden = false; gsb.setAttribute('aria-expanded', 'true'); }
+        }
+      } catch (e) {}
+
+      // Header-Suche (Desktop) und Filterleisten-Suche (Mobil) halten sich gegenseitig aktuell
+      [['search', 'search-m'], ['search-m', 'search']].forEach(([own, other]) => {
+        document.getElementById(own)?.addEventListener('input', debounce(e => {
+          state.search = e.target.value.toLowerCase().trim();
+          const o = document.getElementById(other);
+          if (o && o.value !== e.target.value) o.value = e.target.value;
+          state._noCardAnim = true; render(); state._noCardAnim = false;
+        }, 150));
+      });
+
+      document.getElementById('sort-select').addEventListener('change', e => {
+        state.sort = e.target.value;
+        render();
+      });
+
+      // Overlay-Klick, Esc und Tab-Fokus-Falle: shared/base.js
+      initModalEngine();
+      initModalSwipe();
+
+      // Seitenlokal: „/" fokussiert die Suche
+      document.addEventListener('keydown', e => {
+        if (e.key === '/' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+          e.preventDefault();
+          const search = document.getElementById('search');
+          if (search) { search.focus(); search.select(); }
+        }
+      });
+
+      // Mobil: Filterpanel startet eingeklappt — der Platz gehört den Prompts
+      if (window.matchMedia && window.matchMedia('(max-width: 1023px)').matches) {
+        const ftb = document.getElementById('filter-toggle-btn');
+        const fc = document.getElementById('filter-collapsible');
+        if (ftb && fc) { ftb.setAttribute('aria-expanded', 'false'); fc.hidden = true; }
+      }
+    });
+  </script>
+</body>
+</html>

@@ -180,6 +180,16 @@
       padding: 3rem 3rem 2.8rem;
     }
     .area-soon { background: transparent; border: 1px dashed var(--line-strong); }
+    /* Zweiter Live-Bereich (Prompt-Sammlung): solide wie der Katalog, aber im Raster-Takt */
+    .area-live-sm {
+      background: var(--paper); border: 1px solid var(--line);
+      border-top: 3px solid var(--c-yellow);
+      box-shadow: var(--shadow-sm);
+    }
+    .area-live-sm .area-count { margin: 1rem 0 .2rem; }
+    .area-live-sm .area-count-num { font-size: 3.6rem; }
+    .area-live-sm .area-spot { margin-top: 1.4rem; padding: 1.2rem 1.4rem; }
+    .area-live-sm .area-cta-row { padding-top: 1.8rem; }
     .area-head { display: flex; align-items: center; gap: 1.2rem; }
     .area-ic { color: var(--c-black); display: flex; }
     .area-ic .lu { width: 2.2rem; height: 2.2rem; }
@@ -328,12 +338,12 @@
             <span class="rt-hint">Schritt für Schritt zur eigenen Seite — ohne Vorwissen.</span>
             <span class="rt-foot"><span class="rt-dest">Zum Skill</span></span>
           </a>
-          <button type="button" class="rt-card" data-teaser="prompts" aria-expanded="false" aria-controls="rt-panel">
+          <a class="rt-card" href="prompts.html">
             <span class="rt-ic"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M7 9h10"/><path d="M7 13h6"/></svg></span>
             <span class="rt-label">Besseren Prompt schreiben</span>
             <span class="rt-hint">Kopierfertige Prompts — und warum sie funktionieren.</span>
-            <span class="rt-foot"><span class="rt-tag">In Arbeit</span></span>
-          </button>
+            <span class="rt-foot"><span class="rt-dest">Zur Sammlung</span></span>
+          </a>
           <button type="button" class="rt-card" data-teaser="showroom" aria-expanded="false" aria-controls="rt-panel">
             <span class="rt-ic"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg></span>
             <span class="rt-label">Sehen, was möglich ist</span>
@@ -381,7 +391,7 @@
         <!-- Schlanke Stats-Zeile: ausschließlich real Gezähltes aus data/skills.js -->
         <div class="hero-stats" aria-label="Zahlen aus dem Katalog, live gezählt">
           <div class="hero-stat-box"><span class="hero-stat-num" id="stat-skills">0</span><span class="hero-stat-label">Skills im Katalog</span></div>
-          <div class="hero-stat-box"><span class="hero-stat-num" id="stat-prompts">0</span><span class="hero-stat-label">Startprompts</span></div>
+          <div class="hero-stat-box"><span class="hero-stat-num" id="stat-prompts">0</span><span class="hero-stat-label">Prompts in der Sammlung</span></div>
           <div class="hero-stat-box"><span class="hero-stat-num" id="stat-demos">0</span><span class="hero-stat-label">Live-Demos</span></div>
           <div class="hero-stat-box"><span class="hero-stat-num" id="stat-bundles">0</span><span class="hero-stat-label">Skill-Pakete</span></div>
         </div>
@@ -393,7 +403,7 @@
       <div class="areas-inner">
         <p class="section-label">Die Landkarte</p>
         <h2 id="areas-h">Ein Marketplace, sieben Bereiche</h2>
-        <p class="areas-sub">Der Skill-Katalog ist fertig und wächst weiter. Sechs weitere Bereiche entstehen gerade — hier siehst du schon, was sie können werden.</p>
+        <p class="areas-sub">Skill-Katalog und Prompt-Sammlung sind live und wachsen weiter. Fünf weitere Bereiche entstehen gerade — hier siehst du schon, was sie können werden.</p>
 
         <div class="areas-grid">
           <article class="area-card area-live anim-reveal">
@@ -419,13 +429,26 @@
             </div>
           </article>
 
-          <article class="area-card area-soon anim-reveal">
+          <article class="area-card area-live-sm anim-reveal">
             <div class="area-head">
               <span class="area-ic"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M7 9h10"/><path d="M7 13h6"/></svg></span>
               <h3>Prompt-Sammlung</h3>
-              <span class="area-pill -soon">In Arbeit</span>
+              <span class="area-pill -live">Live</span>
             </div>
-            <p class="area-text">Kopierfertige Prompts mit Platzhaltern, Varianten und der Erklärung, warum sie funktionieren — für Langdock und Claude Code.</p>
+            <div class="area-count">
+              <span class="area-count-num" id="area-prompt-count">0</span>
+              <span class="area-count-label">Prompts</span>
+            </div>
+            <p class="area-text">Kopierfertige Prompts mit gelben Platzhaltern, Varianten und der Erklärung, warum sie funktionieren — für Langdock und Claude Code.</p>
+            <a class="area-spot" href="prompts.html?p=briefing-zusammenfassung">
+              <span class="area-spot-label">Leuchtturm</span>
+              <span class="area-spot-name">Briefing-Zusammenfassung</span>
+              <p class="area-spot-tag">Langes Kunden-Briefing rein, arbeitsfähige Zusammenfassung raus</p>
+              <span id="area-prompt-spot-rating"></span>
+            </a>
+            <div class="area-cta-row">
+              <a class="c-cta -yellow-bg" href="prompts.html">Sammlung öffnen</a>
+            </div>
           </article>
 
           <article class="area-card area-soon anim-reveal">
@@ -489,6 +512,13 @@
           <h2>Frisch im Marketplace</h2>
           <ul class="news-list">
             <li class="news-item">
+              <span class="news-date">16. Juli</span>
+              <div>
+                <p class="news-title">Die Prompt-Sammlung ist da</p>
+                <p class="news-text">Kopierfertige Prompts mit gelben Platzhaltern, Prompt-Builder und der Erklärung, warum jeder funktioniert. <a href="prompts.html">Zur Sammlung</a></p>
+              </div>
+            </li>
+            <li class="news-item">
               <span class="news-date">11. Juli</span>
               <div>
                 <p class="news-title">Drei Community-Skills aus obra/superpowers</p>
@@ -507,13 +537,6 @@
               <div>
                 <p class="news-title">Drei neue Anthropic-Skills</p>
                 <p class="news-text"><a href="skills.html?skill=frontend-design">frontend-design</a>, <a href="skills.html?skill=canvas-design">canvas-design</a> und <a href="skills.html?skill=doc-coauthoring">doc-coauthoring</a> — Gestaltung und Texte im Duett mit Claude.</p>
-              </div>
-            </li>
-            <li class="news-item">
-              <span class="news-date">Juli</span>
-              <div>
-                <p class="news-title">Der Katalog denkt jetzt in Aufgaben</p>
-                <p class="news-text">Neue Tabs sortieren nach dem, was du tun willst — Loslegen, Bauen, Texten, Gestalten, Präsentieren, Media — statt nach Herkunft. <a href="skills.html">Ausprobieren</a></p>
               </div>
             </li>
           </ul>
@@ -557,6 +580,7 @@
   </main>
 
   <script src="data/skills.js"></script>
+  <script src="data/prompts.js"></script>
   <script src="shared/base.js"></script>
   <script>
     // ===== STATE (base.js-Konvention; Modal-Engine läuft hier nicht) =====
@@ -575,12 +599,14 @@
       frameworks: SKILLS.filter(s => s.itemType === 'framework').length,
       prompts: Object.keys(START_PROMPTS).length,
       demos: DEMOS.reduce((sum, d) => sum + d.cases.length, 0),
-      bundles: Object.keys(BUNDLES).length
+      bundles: Object.keys(BUNDLES).length,
+      // Prompt-Sammlung (data/prompts.js, ab E3) — die kuratierten Einträge auf prompts.html
+      promptItems: PROMPTS.length
     };
 
     document.querySelectorAll('[data-live="skills-total"]').forEach(el => { el.textContent = COUNTS.skills; });
 
-    [['stat-skills', COUNTS.skills], ['stat-prompts', COUNTS.prompts],
+    [['stat-skills', COUNTS.skills], ['stat-prompts', COUNTS.promptItems],
      ['stat-demos', COUNTS.demos], ['stat-bundles', COUNTS.bundles]].forEach(([id, n]) => {
       const el = document.getElementById(id);
       if (el) animateCount(el, n, 1100);
@@ -600,9 +626,26 @@
       el.innerHTML = renderStars(e.average) + ` <span class="rating-text">${e.average.toFixed(1)} · ${e.count} Stimmen</span>`;
     })();
 
+    // Prompt-Karte: großer Zähler + Leuchtturm-Bewertung.
+    // Achtung Namespace: index setzt KEIN window.RatingConfig — Prompt-Signale
+    // deshalb explizit mit type 'prompt' lesen (rate:prompt:*, comments:prompt:*).
+    const areaPromptCount = document.getElementById('area-prompt-count');
+    if (areaPromptCount) animateCount(areaPromptCount, COUNTS.promptItems, 1100);
+    (function renderPromptSpotRating() {
+      const el = document.getElementById('area-prompt-spot-rating');
+      const p = PROMPTS.find(x => x.id === 'briefing-zusammenfassung');
+      if (!el || !p) return;
+      const seed = p.rating || { average: 0, count: 0 };
+      let sum = seed.average * seed.count, cnt = seed.count;
+      getComments(p.id, 'prompt').forEach(c => { if (c.rating) { sum += c.rating; cnt++; } });
+      const ur = getRating(p.id, 'prompt');
+      if (ur > 0) { sum += ur; cnt++; }
+      const avg = cnt > 0 ? sum / cnt : 0;
+      el.innerHTML = renderStars(avg) + ` <span class="rating-text">${avg.toFixed(1)} · ${cnt} Stimmen</span>`;
+    })();
+
     // ===== ROUTER: „In Arbeit“-Ausblicke (kein toter Link) =====
     const TEASER = {
-      prompts:   { name: 'Prompt-Sammlung',  text: 'Kopierfertige Prompts mit Platzhaltern, Varianten und der Erklärung, warum sie funktionieren — für Langdock und Claude Code.' },
       showroom:  { name: 'Showroom',         text: 'Projekte von Kolleg:innen zum Anklicken — mit der ehrlichen Geschichte, wie sie entstanden sind, und allem, was du zum Nachbauen brauchst.' },
       hilfe:     { name: 'Hilfe-Center',     text: 'Befehle und Kniffe mit Team-Ranking, ein Glossar in einfacher Sprache und Schritt-für-Schritt-Lösungen für die häufigsten Blocker.' },
       baukasten: { name: 'Baukasten',        text: 'Fertige Code-Bausteine mit Live-Vorschau und Beispieldaten zum Üben — jeder mit einem „Sag Claude einfach …“-Prompt.' },
