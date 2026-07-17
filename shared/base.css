@@ -1176,3 +1176,30 @@
     @media (max-width: 1023px) {
       .sf-field input, .sf-field textarea, .sf-field select { font-size: 1.6rem; }
     }
+
+    /* ===== E5-Nachtrag: Nav-Leiste passt mobil + Scroll-Affordance =====
+       Vor E5 hatte die Leiste drei Punkte; „Lernen“ als vierter drückte sie auf
+       schmalen Handys über die Kante, sodass „Hilfe“ aus dem Viewport rutschte
+       (die Leiste ist scrollbar, der Scrollbalken aber ausgeblendet). Diese
+       zusätzlichen Regeln (rein additiv, spätere Quellreihenfolge gewinnt)
+       verkleinern die Pills so weit, dass alle vier ab ~360 px sichtbar sind,
+       und blenden den rechten Rand weich aus — ein Hinweis, dass es weitergeht,
+       falls es doch mal knapp wird. */
+    @media (max-width: 1023px) {
+      .main-nav {
+        padding-right: .3rem;
+        -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 1.4rem), transparent);
+                mask-image: linear-gradient(to right, #000 calc(100% - 1.4rem), transparent);
+      }
+    }
+    @media (max-width: 640px) {
+      .header-inner { gap: 1.4rem; }
+      .main-nav { gap: .1rem; }
+      .nav-link { font-size: 1.15rem; padding: .5rem .7rem; }
+    }
+    @media (max-width: 400px) {
+      .header-inner { gap: 1rem; }
+      /* Marke bleibt über „pilot“ erkennbar; die Overline weicht für Platz. */
+      .overline { display: none; }
+      .nav-link { padding: .5rem .55rem; letter-spacing: -.01em; }
+    }

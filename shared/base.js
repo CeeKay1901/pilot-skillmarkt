@@ -88,9 +88,9 @@ function lsKeysWithPrefix(prefix) {
 
 /* ===== NAV & FOOTER (renderNav) =====
    Header + Footer werden per JS injiziert — eine Quelle für alle Seiten.
-   Die Nav führt nur zu Fertigem: aktuell Katalog (skills.html). Kommende
-   Sektionen (Prompts, Baukasten, Showroom, Hilfe, Mehr) erscheinen hier
-   erst, wenn sie live sind. Das Logo verlinkt auf die Startseite.
+   Die Nav führt nur zu Fertigem: Katalog, Prompts, Hilfe, Lernen. Kommende
+   Sektionen (Baukasten, Showroom, Mehr) erscheinen hier erst, wenn sie
+   live sind. Das Logo verlinkt auf die Startseite.
    opts (alle optional):
      sharedOnclick: { katalog: "showView('catalog')" }  — Seite ersetzt den
                     Link durch einen Button (z.B. View-Wechsel statt Reload)
@@ -103,9 +103,15 @@ function renderNav(activePage, opts) {
   // Idempotent: früher injizierte Header/Footer entfernen (keine Dopplung)
   document.querySelectorAll('[data-shared-nav]').forEach(el => el.remove());
 
+  // E6-Umbau-Anker (Plan §2.4): Sobald eine 5. Sektion (z. B. bibliothek.html)
+  // dazukommt, hier ein `sharedMoreItems`-Array einführen — Desktop als
+  // „Mehr ▾“-Dropdown (Klick öffnet, Esc/Außenklick schließt, aria-expanded),
+  // mobil (≤1023px) flach in die scrollende Leiste gerendert. Mit 4 Punkten
+  // wäre ein Ein-Punkt-Dropdown kaputt gewirkt — daher bis dahin direkte Links.
   const sharedItems = [
     { id: 'nav-catalog', page: 'katalog', label: 'Katalog', href: 'skills.html' },
     { id: 'nav-prompts', page: 'prompts', label: 'Prompts', href: 'prompts.html' },
+    { id: 'nav-lernen', page: 'lernen', label: 'Lernen', href: 'lernen.html' },
     { id: 'nav-hilfe', page: 'hilfe', label: 'Hilfe', href: 'hilfe.html' }
   ];
   const linkHtml = sharedItems.map(it => {
@@ -185,7 +191,16 @@ const LU = {
   "link": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>',
   "folder": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>',
   "check": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/></svg>',
-  "vote": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg>'
+  "vote": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg>',
+  /* E5 (Lernen) — additive Icons für Ressourcen-Typen + Meta; 'kurs' nutzt das
+     vorhandene 'einstieg' (Graduation-Cap) weiter, bestehende Keys unangetastet. */
+  "video": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>',
+  "artikel": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>',
+  "doku": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg>',
+  "podcast": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16.85 18.58a9 9 0 1 0-9.7 0"/><path d="M8 14a5 5 0 1 1 8 0"/><circle cx="12" cy="11" r="1"/><path d="M13 17a1 1 0 1 0-2 0l.5 4.5a.5.5 0 1 0 1 0Z"/></svg>',
+  "intern": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg>',
+  "uhr": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
+  "extern": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>'
 };
 function subIcon(sub) {
   return LU[sub] || LU.fallback;

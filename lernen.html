@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>pilot AI Marketplace — Lernen</title>
+  <meta name="description" content="Kuratierte Lern-Ressourcen für KI und Citizen Coding bei pilot: geprüfte Videos, Doku-Seiten, Artikel, Kurse und Podcasts — mit ehrlicher Dauer, Niveau und einem Satz, für wen sich jeder Link lohnt.">
+  <meta name="theme-color" content="#262626">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="pilot AI Marketplace">
+  <meta property="og:title" content="pilot AI Marketplace — Lernen">
+  <meta property="og:description" content="Kein eigener Kurs — ein Kompass: die geprüften Lern-Ressourcen, die Kolleg:innen wirklich weitergebracht haben. Filterbar nach Zeit, Niveau, Typ und Sprache.">
+  <meta property="og:url" content="https://ceekay1901.github.io/pilot-skillmarkt/lernen.html">
+  <meta property="og:image" content="https://ceekay1901.github.io/pilot-skillmarkt/og-image.png">
+  <link rel="preload" href="assets/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="shared/base.css">
+  <style>
+    /* ============================================================
+       lernen.html — Lernen (seitenspezifisch, E5).
+       Gemeinsames Design-System liegt in shared/base.css.
+       Eigenständigkeit (Plan §2.5): KEIN 3-Spalten-Karten-Grid wie
+       prompts.html — die Ressourcen liegen als 2-spaltiges editoriales
+       Regal aus breiten, flachen LINK-Karten (Typ-Icon als linke
+       Spalte). Signature-Element: die Zeit-Schnellauswahl im Hero
+       („Wie viel Zeit hast du gerade?“) — Klick setzt den Dauer-Filter.
+       ============================================================ */
+
+    /* ===== SIGNATURE: ZEIT-SCHNELLAUSWAHL (Hero) ===== */
+    .zeit-quick { position: relative; z-index: 1; margin: 0 0 4rem; }
+    .zeit-quick-label {
+      font-size: 1.4rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .14em; color: rgba(252,252,252,.5); margin: 0 0 1.4rem;
+    }
+    .zeit-tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1.2rem; max-width: 78rem; }
+    .zeit-tile {
+      display: flex; flex-direction: column; align-items: flex-start; gap: .2rem;
+      background: rgba(252,252,252,.05); border: 1px solid rgba(252,252,252,.18);
+      border-radius: var(--r-md); padding: 1.6rem 1.8rem 1.4rem;
+      font-family: inherit; color: var(--c-white); cursor: pointer;
+      text-align: left; transition: var(--trans);
+    }
+    .zeit-tile:hover { border-color: var(--c-yellow); transform: translateY(-2px); }
+    .zeit-tile.active { background: var(--c-yellow); border-color: var(--c-yellow); color: var(--c-black); }
+    .zt-num {
+      font-family: var(--font-mono); font-variant-numeric: tabular-nums;
+      font-size: 2.4rem; font-weight: 700; color: var(--c-yellow); line-height: 1.1;
+    }
+    .zeit-tile.active .zt-num { color: var(--c-black); }
+    .zt-unit { font-size: 1.3rem; font-weight: 600; letter-spacing: .04em; }
+    .zt-name { font-size: 1.4rem; font-weight: 600; margin-top: .5rem; }
+    .zt-count { font-family: var(--font-mono); font-size: 1.1rem; color: rgba(252,252,252,.5); }
+    .zeit-tile.active .zt-count { color: rgba(38,38,38,.6); }
+
+    /* ===== ERKLÄR-BLOCK „WIE LERNST DU MIT DIESEM KATALOG?“ (Getting-Started-Muster) ===== */
+    .getting-started { background: var(--c-white); border-bottom: 1px solid var(--line); }
+    .gs-inner { max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-d); }
+    .gs-toggle {
+      display: flex; align-items: center; gap: 1.2rem; width: 100%;
+      background: none; border: none; cursor: pointer; font-family: inherit;
+      font-size: 1.6rem; font-weight: 700; color: var(--c-black);
+      padding: 1.8rem 0; text-align: left;
+    }
+    .gs-toggle:hover { color: var(--c-gray-m); }
+    .gs-arrow { margin-left: auto; font-size: 1.8rem; transition: transform .2s; }
+    .gs-toggle[aria-expanded="true"] .gs-arrow { transform: rotate(90deg); }
+    .gs-content { padding-bottom: 2.4rem; }
+    .gs-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.4rem; }
+    .gs-step { display: flex; gap: 1.6rem; align-items: flex-start; }
+    .gs-num {
+      width: 3.2rem; height: 3.2rem; flex-shrink: 0; background: var(--c-yellow);
+      color: var(--c-black); border-radius: 50%; display: flex; align-items: center;
+      justify-content: center; font-size: 1.5rem; font-weight: 700; font-family: var(--font-mono);
+    }
+    .gs-step strong { font-size: 1.5rem; display: block; margin-bottom: .4rem; }
+    .gs-step p { font-size: 1.4rem; color: var(--c-gray-m); line-height: 1.5; }
+    @media (max-width: 1023px) {
+      .gs-inner { padding: 0 var(--pad-m); }
+      .gs-steps { grid-template-columns: 1fr; gap: 1.6rem; }
+    }
+
+    /* Chip-Zeile horizontal: base.css stellt .role-chips für den Katalog auf
+       column — hier tragen 3 Gruppen (Niveau/Dauer/Sprache) mit 8 Chips sonst
+       11 Zeilen Höhe. Seitenlokal, Bestandsseiten bleiben unberührt. */
+    #filter-chips { flex-direction: row; flex-wrap: wrap; align-items: center; }
+
+    /* Filtergruppen-Beschriftung in der Chip-Zeile (Muster prompts.html) */
+    .chip-lbl {
+      font-family: var(--font-mono); font-size: 1.1rem; font-weight: 600;
+      letter-spacing: .08em; text-transform: uppercase; color: var(--c-gray-m);
+      margin-right: .2rem; white-space: nowrap;
+    }
+    .chip-gap { width: 1.2rem; flex-shrink: 0; }
+
+    /* ===== RESSOURCEN-REGAL: 2-spaltige editoriale Liste aus Link-Karten ===== */
+    .res-section { padding: 5.2rem 0 8rem; background: var(--c-bg); }
+    .res-inner { max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-d); }
+    .res-note {
+      font-family: var(--font-mono); font-size: 1.15rem; line-height: 1.6;
+      color: var(--c-gray-m); margin: 0 0 2.4rem; max-width: 88ch;
+    }
+    .res-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.8rem; align-items: start; }
+    .res-card {
+      position: relative;
+      display: grid; grid-template-columns: 6.2rem 1fr;
+      background: var(--c-white); border: 1px solid var(--line); border-radius: var(--r-md);
+      transition: border-color .25s ease, box-shadow .25s ease;
+      scroll-margin-top: calc(var(--header-h) + 2.4rem);
+    }
+    .res-card:hover { border-color: var(--line-strong); }
+    .res-card.-highlight { border-color: var(--c-yellow); box-shadow: 0 0 0 3px rgba(255,224,94,.45); }
+    .res-card.start-here { border-color: var(--c-black); box-shadow: var(--shadow-md); }
+    .start-here-ribbon {
+      position: absolute; top: 0; right: 2rem; transform: translateY(-50%);
+      background: var(--c-black); color: var(--c-yellow);
+      font-family: var(--font-mono); font-size: 1.05rem; font-weight: 600;
+      letter-spacing: .08em; text-transform: uppercase;
+      padding: .35rem 1rem; border-radius: var(--radius-pill); z-index: 2;
+    }
+    .res-ico {
+      display: flex; align-items: flex-start; justify-content: center;
+      padding: 2.2rem 0 0; background: var(--paper-warm);
+      border-radius: var(--r-md) 0 0 var(--r-md);
+      border-right: 1px solid var(--line);
+    }
+    .res-card.-intern .res-ico { background: rgba(255,224,94,.25); }
+    .res-ico .lu { width: 2.2rem; height: 2.2rem; color: var(--c-gray-d); }
+    .res-main { padding: 1.8rem 2rem 1.6rem; min-width: 0; }
+    .res-kopf { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; margin-bottom: .8rem; }
+    .res-typ {
+      font-family: var(--font-mono); font-size: 1.05rem; font-weight: 600;
+      letter-spacing: .1em; text-transform: uppercase; color: var(--c-gray-m);
+    }
+    .res-quelle { font-size: 1.25rem; color: var(--c-gray-m); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .intern-tag {
+      font-family: var(--font-mono); font-size: 1.05rem; letter-spacing: .06em;
+      background: var(--c-yellow); color: var(--c-black);
+      border-radius: var(--radius-pill); padding: .25rem .9rem; white-space: nowrap;
+    }
+    .res-title {
+      display: inline; font-size: 1.8rem; font-weight: 700; letter-spacing: -.01em;
+      line-height: 1.35; color: var(--c-black); margin: 0;
+    }
+    a.res-title { text-decoration: none; }
+    a.res-title:hover { text-decoration: underline; text-decoration-color: var(--c-yellow); text-decoration-thickness: 2px; text-underline-offset: 3px; }
+    a.res-title .lu { width: 1.4rem; height: 1.4rem; vertical-align: baseline; margin-left: .5rem; color: var(--c-gray-m); }
+    a.res-title:hover .lu { color: var(--c-black); }
+    .res-fuerdich {
+      font-size: 1.45rem; line-height: 1.6; color: var(--c-ink-body);
+      border-left: 3px solid var(--c-yellow); padding: .2rem 0 .2rem 1.2rem;
+      margin: 1.2rem 0 1.4rem;
+    }
+    .res-fuerdich strong { font-weight: 700; }
+    .res-meta {
+      display: flex; align-items: center; gap: .6rem 1rem; flex-wrap: wrap;
+      font-size: 1.3rem; color: var(--c-gray-d); margin-bottom: 1.4rem;
+    }
+    .res-dauer { display: inline-flex; align-items: center; gap: .5rem; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .res-dauer .lu { width: 1.4rem; height: 1.4rem; color: var(--c-gray-m); }
+    .lang-pill {
+      font-family: var(--font-mono); font-size: 1.05rem; font-weight: 700; letter-spacing: .08em;
+      border: 1px solid var(--line-strong); border-radius: var(--radius-pill);
+      padding: .15rem .8rem; color: var(--c-gray-d);
+    }
+    .res-pf {
+      font-family: var(--font-mono); font-size: 1.05rem; letter-spacing: .06em;
+      background: rgba(38,38,38,.06); border-radius: var(--radius-pill);
+      padding: .25rem .9rem; white-space: nowrap; color: var(--c-gray-d);
+    }
+    .res-meta .meta-dot { color: var(--c-gray-l); }
+    .res-foot { display: flex; align-items: center; gap: 1rem 1.4rem; flex-wrap: wrap; }
+    .res-rating { display: flex; align-items: center; gap: .6rem; font-size: 1.25rem; color: var(--c-ink-faded); }
+    .res-rating .stars-display { font-size: 1.3rem; }
+    .res-intern-hint { font-size: 1.25rem; color: var(--c-gray-m); font-style: italic; }
+    .vote-btn {
+      display: inline-flex; align-items: center; gap: .7rem;
+      border: 1px solid var(--line-strong); background: transparent;
+      color: var(--c-black); border-radius: var(--radius-pill);
+      padding: .55rem 1.3rem; font-family: inherit; font-size: 1.25rem; font-weight: 600;
+      cursor: pointer; transition: var(--trans);
+    }
+    .vote-btn .lu { width: 1.4rem; height: 1.4rem; }
+    .vote-btn:hover { border-color: var(--c-black); }
+    .vote-btn.voted { background: var(--c-yellow); border-color: var(--c-yellow); }
+    .vote-count {
+      font-family: var(--font-mono); font-variant-numeric: tabular-nums;
+      font-size: 1.2rem; font-weight: 700;
+      background: rgba(38,38,38,.08); border-radius: var(--r-xl);
+      padding: .1rem .8rem; min-width: 2.6rem; text-align: center;
+    }
+    .vote-btn.voted .vote-count { background: rgba(38,38,38,.15); }
+    .res-toggle {
+      background: none; border: none; color: var(--c-gray-d);
+      font-family: inherit; font-size: 1.3rem; font-weight: 600;
+      cursor: pointer; display: inline-flex; align-items: center; gap: .6rem;
+      padding: .55rem .4rem; transition: var(--trans); margin-left: auto;
+    }
+    .res-toggle:hover { color: var(--c-black); }
+    .res-toggle .ct-arrow { transition: transform .2s; font-size: 1.6rem; line-height: 1; }
+    .res-toggle[aria-expanded="true"] .ct-arrow { transform: rotate(90deg); }
+
+    /* Aufgeklappter Kartenkörper (volle Breite unter Icon + Inhalt) */
+    .res-body { grid-column: 1 / -1; border-top: 1px dashed var(--line-strong); padding: 1.8rem 2rem 2rem; }
+    .res-body[hidden] { display: none; }
+    .res-body > div + div { margin-top: 1.8rem; }
+    .res-body-label {
+      display: block; font-family: var(--font-mono); font-size: 1.05rem; font-weight: 600;
+      letter-spacing: .1em; text-transform: uppercase; color: var(--c-gray-m); margin: 0 0 .6rem;
+    }
+    .res-body p { font-size: 1.4rem; line-height: 1.65; color: var(--c-ink-body); margin: 0; max-width: 78ch; }
+    .res-gelernt { margin: 0; padding-left: 2rem; display: flex; flex-direction: column; gap: .5rem; }
+    .res-gelernt li { font-size: 1.4rem; line-height: 1.55; color: var(--c-ink-body); }
+    .res-voice { border-left: 2px solid rgba(255,224,94,.7); padding: .2rem 0 .2rem 1.2rem; margin: 0 0 1.2rem; }
+    .res-voice:last-child { margin-bottom: 0; }
+    .res-voice blockquote { font-size: 1.35rem; line-height: 1.6; color: var(--c-ink-body); font-style: italic; margin: 0 0 .4rem; }
+    .res-voice figcaption { font-family: var(--font-mono); font-size: 1.1rem; color: var(--c-gray-m); }
+    .res-geprueft { font-family: var(--font-mono); font-size: 1.1rem; color: var(--c-gray-m); }
+
+    /* ===== MITMACHEN-BAND (Ressource vorschlagen, Demo-Flow aus shared/base.js) ===== */
+    .submit-band { background: var(--paper-warm); border-top: 1px solid var(--line); padding: 6.4rem 0 6.8rem; }
+    .submit-band-inner { max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-d); }
+    .submit-band h2 { font-size: var(--fs-h2); font-weight: var(--fw-semi); letter-spacing: -.02em; margin: .6rem 0 1rem; }
+    .submit-band-text { font-size: 1.6rem; line-height: 1.6; color: var(--c-ink-body); max-width: 62ch; margin: 0 0 2.4rem; }
+    .submit-band-note { font-family: var(--font-mono); font-size: 1.15rem; color: var(--c-gray-m); margin: 1.4rem 0 0; }
+
+    /* ===== RESPONSIVE & TOUCH ===== */
+    @media (max-width: 1023px) {
+      .res-inner, .submit-band-inner { padding: 0 var(--pad-m); }
+      .res-list { grid-template-columns: 1fr; }
+      .zeit-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .submit-band { padding: 4.4rem 0 4.8rem; }
+    }
+    @media (max-width: 640px) {
+      .res-card { grid-template-columns: 4.6rem 1fr; }
+      .res-main { padding: 1.6rem 1.4rem 1.4rem; }
+      .res-body { padding: 1.6rem 1.4rem 1.8rem; }
+      .res-ico { padding-top: 1.8rem; }
+      .res-ico .lu { width: 1.8rem; height: 1.8rem; }
+      .zeit-tile { padding: 1.2rem 1.4rem 1.1rem; }
+      .zt-num { font-size: 2rem; }
+    }
+    @media (hover: none) and (pointer: coarse) {
+      .vote-btn, .res-toggle, .zeit-tile { min-height: 4.4rem; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .res-card, .zeit-tile { transition: none; }
+      .zeit-tile:hover { transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Zum Hauptinhalt springen</a>
+
+  <!-- HEADER & FOOTER: werden von shared/base.js injiziert (renderNav, siehe Seiten-Script unten) -->
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-glow" aria-hidden="true"></div>
+    <div class="hero-inner hero-top">
+      <p class="overline" style="color:#ffe05e">pilot · Lernen</p>
+      <h1 class="hero-h1">Kein eigener Kurs —<br><span style="color:var(--c-yellow)">ein Kompass.</span></h1>
+      <p class="subline">Das Netz ist voll mit KI-Tutorials — vieles ist Hype, manches veraltet. Hier steht nur, was die Redaktion geprüft hat: mit ehrlicher Dauer, Niveau, Sprache und einem Satz, für wen sich jeder Link wirklich lohnt.</p>
+      <div class="hero-stats" id="hero-stats">
+        <div class="hero-stat-box"><span class="hero-stat-num" id="stat-gesamt">0</span><span class="hero-stat-label">Ressourcen</span></div>
+        <div class="hero-stat-box"><span class="hero-stat-num" id="stat-de">0</span><span class="hero-stat-label">Auf Deutsch</span></div>
+        <div class="hero-stat-box"><span class="hero-stat-num" id="stat-kurz">0</span><span class="hero-stat-label">Unter 15 Minuten</span></div>
+        <div class="hero-stat-box"><span class="hero-stat-num" id="stat-geprueft">0</span><span class="hero-stat-label">Links geprüft</span></div>
+      </div>
+      <!-- SIGNATURE: Zeit-Schnellauswahl — Klick setzt den Dauer-Filter und springt zum Regal -->
+      <div class="zeit-quick">
+        <p class="zeit-quick-label" id="zeit-quick-label">Wie viel Zeit hast du gerade?</p>
+        <div class="zeit-tiles" id="zeit-tiles" role="group" aria-labelledby="zeit-quick-label"></div>
+      </div>
+      <div class="hero-cta">
+        <button class="c-cta -yellow-bg" onclick="document.getElementById('main-content').scrollIntoView({behavior:'smooth',block:'start'})">Zum Lern-Regal</button>
+        <button class="c-cta -yellow-border" onclick="openGS()">Wie lerne ich damit?</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ERKLÄR-BLOCK: WIE LERNST DU MIT DIESEM KATALOG? -->
+  <div class="getting-started" id="getting-started">
+    <div class="gs-inner">
+      <button class="gs-toggle" onclick="toggleGS()" aria-expanded="false" id="gs-toggle-btn">
+        <span>Wie lerne ich mit diesem Katalog? Drei Handgriffe</span>
+        <span class="gs-arrow">›</span>
+      </button>
+      <div class="gs-content" id="gs-content" hidden>
+        <div class="gs-steps">
+          <div class="gs-step">
+            <span class="gs-num">1</span>
+            <div><strong>Fang beim Pin an</strong><p>Die Karte mit dem <strong>„Start hier“</strong>-Band ist der geprüfte erste Schritt: ein deutsches Einsteiger-Video ohne Entwickler-Jargon. Danach führt die Kette weiter — Terminal-Anleitung zum Installieren, Schnellstart für die ersten Aufgaben.</p></div>
+          </div>
+          <div class="gs-step">
+            <span class="gs-num">2</span>
+            <div><strong>Filtere nach deiner Zeit</strong><p>Die Zeit-Kacheln oben setzen den Dauer-Filter: vom 5-Minuten-Espresso bis zum Deep Dive. Jede Karte sagt dir dazu in einem Satz — <strong>„Für dich, wenn …“</strong> — ob sie sich für dich lohnt.</p></div>
+          </div>
+          <div class="gs-step">
+            <span class="gs-num">3</span>
+            <div><strong>Gib zurück</strong><p>Hat dich eine Ressource weitergebracht? Klick <strong>„Das hat mir geholfen“</strong> direkt auf der Karte. Und wenn dir hier ein Link fehlt, der dir wirklich etwas beigebracht hat: schlag ihn unten vor.</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <main>
+    <!-- FILTER BAR -->
+    <div class="filter-bar" id="filter-bar">
+      <div class="filter-inner">
+        <div class="search-wrap-m">
+          <input type="search" id="search-m" aria-label="Ressourcen suchen" placeholder="Ressourcen suchen …" autocomplete="off">
+        </div>
+        <div class="cat-tabs" id="cat-tabs" role="group" aria-label="Nach Typ filtern"></div>
+        <button class="filter-toggle-btn" id="filter-toggle-btn" onclick="toggleMobileFilter()" aria-expanded="true">
+          <span>Filter &amp; Sortierung <span class="ftb-count" id="ftb-count" hidden></span></span>
+          <span class="filter-toggle-arrow">▾</span>
+        </button>
+        <div class="filter-collapsible" id="filter-collapsible">
+          <div class="filter-toolbar">
+            <div class="role-chips" id="filter-chips"></div>
+            <div class="filter-controls">
+              <span class="results-count-lg" id="results-count"></span>
+              <select id="sort-select" aria-label="Ressourcen sortieren">
+                <option value="bewertung">Team-Bewertung</option>
+                <option value="dauer">Kürzeste zuerst</option>
+                <option value="alpha">Titel A–Z</option>
+              </select>
+            </div>
+          </div>
+          <div class="active-filters" id="active-filters" hidden></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESSOURCEN-REGAL -->
+    <section class="res-section" id="main-content" aria-label="Lern-Ressourcen">
+      <div class="res-inner">
+        <p class="res-note">Jeder externe Link wurde am 17. Juli 2026 redaktionell geprüft (erreichbar + hält, was die Beschreibung verspricht). Die Startwerte von Bewertung und „Das hat mir geholfen“ sind redaktionelle Demo-Werte — deine Stimme kommt lokal in deinem Browser dazu. Interne pilot-Einträge sind klar gekennzeichnet und noch ohne Link.</p>
+        <div class="res-list" id="res-list"></div>
+      </div>
+    </section>
+
+    <!-- MITMACHEN: Ressource vorschlagen (Demo-Flow aus shared/base.js) -->
+    <section class="submit-band" aria-labelledby="submit-band-h">
+      <div class="submit-band-inner">
+        <p class="section-label">Mitmachen</p>
+        <h2 id="submit-band-h">Dir hat etwas weitergeholfen, das hier fehlt?</h2>
+        <p class="submit-band-text">Dieses Regal lebt von Empfehlungen aus dem Team — nicht von Vollständigkeit. Schlag den Link vor, der dir wirklich etwas beigebracht hat: die Redaktion prüft ihn und stellt ihn dazu.</p>
+        <button type="button" class="c-cta -black-bg" id="submit-band-cta" onclick="openRessourceSubmit()">Ressource vorschlagen</button>
+        <p class="submit-band-note">Demo-Flow: deine Eingabe bleibt lokal in deinem Browser.</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER: injiziert von shared/base.js (renderNav) -->
+
+  <!-- TOAST -->
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="data/ressourcen.js"></script>
+  <script src="shared/base.js"></script>
+  <script>
+    // ===== DATA ===== (data/ressourcen.js: RESSOURCEN, RESSOURCE_START, RESSOURCE_TYPEN)
+    // ===== ENGINE ===== (Nav, Vote-Helfer, bayesScore, searchScore, openSubmitFlow: shared/base.js)
+    //
+    // BEWUSST OHNE window.RatingConfig und window.ModalConfig (Muster hilfe.html):
+    // eine Lern-Ressource ist ein externer Link — das Klick-Ziel ist die fremde
+    // Seite, kein Detail-Dialog. Es gibt keine Sterne-EINGABE (Team-Bewertung ist
+    // reiner Seed → bayesScore-Sortierung) und kein Modal; Details klappen inline
+    // auf. Votes laufen typ-explizit über vote:ressource:<id> und verändern die
+    // Sterne NIE (ein Upvote ist kein Rating — Kommentar in shared/base.js gilt).
+
+    // ===== STATE ===== (Minimal-Global, wird von base.js defensiv gelesen)
+    const state = {
+      pendingRating: {},
+      activeSkill: null,
+      activeTab: 'overview',
+      activeFile: 0,
+      typ: null,        // aktiver Typ-Tab (video | doku | artikel | kurs | podcast | intern | null)
+      niveau: null,     // einsteiger | fortgeschritten | null
+      dauer: null,      // '5' | '15' | '30' | 'ueber30' | null (kumulative Buckets aus dauerMin)
+      sprache: null,    // 'de' | 'en' | null
+      sort: 'bewertung',
+      search: ''
+    };
+    const _expanded = new Set(); // aufgeklappte Ressourcen-IDs (überlebt Re-Render)
+
+    function prefersReduce() {
+      return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    }
+    // 'auto' würde wegen html{scroll-behavior:smooth} (base.css) trotzdem gleiten —
+    // bei reduzierter Bewegung muss der Sprung wirklich sofort sein, daher 'instant'.
+    function scrollBehavior() { return prefersReduce() ? 'instant' : 'smooth'; }
+
+    // ===== NAV & FOOTER (shared/base.js) =====
+    renderNav('lernen', {
+      search: { id: 'search', label: 'Ressourcen suchen', placeholder: 'Ressourcen suchen …' },
+      footerClaim: 'Von Piloten gebaut, von Piloten empfohlen. Kein eigener Kurs — nur die Links, die uns wirklich weitergebracht haben.'
+    });
+
+    // ===== HELPERS =====
+    const TYP_CARD_LABEL = { video: 'Video', doku: 'Doku', artikel: 'Artikel', kurs: 'Kurs', podcast: 'Podcast', intern: 'pilot-intern' };
+    const NIVEAU_LABEL = { einsteiger: 'Einsteiger', fortgeschritten: 'Fortgeschritten' };
+    const PF_LABEL = { code: 'Claude Code', langdock: 'Langdock', allgemein: 'Allgemein' };
+    const SPRACHE_LABEL = { de: 'Deutsch', en: 'Englisch' };
+    // Kumulative Dauer-Buckets — identisch mit den Zeit-Kacheln im Hero:
+    // „bis X Min“ heißt dauerMin <= X, die letzte Kachel fängt den Rest.
+    const DAUER_BUCKETS = [
+      { id: '5',       label: 'bis 5 Min',   zahl: '≤ 5',  name: 'Espresso',    test: r => r.dauerMin <= 5 },
+      { id: '15',      label: 'bis 15 Min',  zahl: '≤ 15', name: 'Kaffeepause', test: r => r.dauerMin <= 15 },
+      { id: '30',      label: 'bis 30 Min',  zahl: '≤ 30', name: 'Fokus-Block', test: r => r.dauerMin <= 30 },
+      { id: 'ueber30', label: 'über 30 Min', zahl: '> 30', name: 'Deep Dive',   test: r => r.dauerMin > 30 }
+    ];
+    function bucketById(id) { return DAUER_BUCKETS.find(b => b.id === id); }
+
+    function resById(id) { return RESSOURCEN.find(r => r.id === id); }
+    function typIcon(t) { return t === 'kurs' ? LU.einstieg : (LU[t] || LU.fallback); }
+    function dauerText(r) {
+      return (r.dauerCa ? '~' : '') + r.dauerMin + ' Min' + (r.dauerProFolge ? ' pro Folge' : '');
+    }
+
+    // ===== FILTER & SORT =====
+    function matchesChips(r) {
+      if (state.niveau && r.niveau !== state.niveau) return false;
+      if (state.dauer) { const b = bucketById(state.dauer); if (b && !b.test(r)) return false; }
+      if (state.sprache && r.sprache !== state.sprache) return false;
+      return true;
+    }
+    function filterRessourcen() {
+      let result = RESSOURCEN.filter(matchesChips);
+      if (state.typ) result = result.filter(r => r.typ === state.typ);
+      if (state.search) {
+        const terms = state.search.toLowerCase().split(/\s+/).filter(t => t.length > 1);
+        state._searchScore = {};
+        if (terms.length) {
+          result = result.filter(r => {
+            const sc = searchScore(r, terms, [
+              [r.titel, 5], [r.fuerDich, 3], [(r.tags || []).join(' '), 3],
+              [r.quelle, 2], [r.beschreibung || '', 1]
+            ]);
+            if (sc > 0) state._searchScore[r.id] = sc;
+            return sc > 0;
+          });
+        }
+      }
+      result.sort((a, b) => {
+        if (state.search && state._searchScore) {
+          const d = (state._searchScore[b.id] || 0) - (state._searchScore[a.id] || 0);
+          if (d) return d;
+        }
+        if (state.sort === 'bewertung') {
+          // Interne Platzhalter haben ehrlich KEIN Rating — sie sortieren ans Ende
+          // statt den Bayes-Prior (4.2) geschenkt zu bekommen.
+          const av = a.rating ? bayesScore(a) : 0, bv = b.rating ? bayesScore(b) : 0;
+          if (bv !== av) return bv - av;
+          return (b.votes || 0) - (a.votes || 0) || a.titel.localeCompare(b.titel, 'de');
+        }
+        if (state.sort === 'dauer') return a.dauerMin - b.dauerMin || a.titel.localeCompare(b.titel, 'de');
+        if (state.sort === 'alpha') return a.titel.localeCompare(b.titel, 'de');
+        return 0;
+      });
+      return result;
+    }
+
+    // ===== TYP-TABS =====
+    // Zähler folgen Niveau-/Dauer-/Sprache-Filter, damit die Zahlen zur Regalfläche passen.
+    function typCount(t) { return RESSOURCEN.filter(r => r.typ === t && matchesChips(r)).length; }
+    function renderCatTabs() {
+      const subs = [{ id: 'all', label: 'Alle' }].concat(RESSOURCE_TYPEN);
+      const total = RESSOURCEN.filter(matchesChips).length;
+      document.getElementById('cat-tabs').innerHTML = subs.map(s => {
+        const count = s.id === 'all' ? total : typCount(s.id);
+        const isActive = state.typ === (s.id === 'all' ? null : s.id);
+        if (!count && s.id !== 'all' && !isActive) return '';
+        return `<button class="cat-tab${isActive ? ' active' : ''}" aria-pressed="${isActive}" onclick="setTyp('${s.id}')">${escHtml(s.label)} <span class="tab-count">${count}</span></button>`;
+      }).join('');
+    }
+    function setTyp(t) {
+      state.typ = t === 'all' ? null : t;
+      renderCatTabs();
+      render();
+    }
+
+    // ===== NIVEAU-/DAUER-/SPRACHE-CHIPS =====
+    function renderFilterChips() {
+      const host = document.getElementById('filter-chips');
+      if (!host) return;
+      const nivChips = ['einsteiger', 'fortgeschritten'].map(n => {
+        const active = state.niveau === n;
+        return `<button class="role-chip${active ? ' active' : ''}" aria-pressed="${active}" onclick="setNiveau('${n}')">${NIVEAU_LABEL[n]}</button>`;
+      }).join('');
+      const dauerChips = DAUER_BUCKETS.map(b => {
+        const active = state.dauer === b.id;
+        return `<button class="role-chip${active ? ' active' : ''}" aria-pressed="${active}" onclick="setDauer('${b.id}')">${b.label}</button>`;
+      }).join('');
+      const langChips = ['de', 'en'].map(s => {
+        const active = state.sprache === s;
+        return `<button class="role-chip${active ? ' active' : ''}" aria-pressed="${active}" onclick="setSprache('${s}')">${SPRACHE_LABEL[s]}</button>`;
+      }).join('');
+      host.innerHTML = `<span class="chip-lbl">Niveau</span>${nivChips}`
+        + `<span class="chip-gap" aria-hidden="true"></span><span class="chip-lbl">Dauer</span>${dauerChips}`
+        + `<span class="chip-gap" aria-hidden="true"></span><span class="chip-lbl">Sprache</span>${langChips}`;
+    }
+    function setNiveau(n) {
+      state.niveau = state.niveau === n ? null : n;
+      renderFilterChips(); renderCatTabs(); render();
+    }
+    function setDauer(id) {
+      state.dauer = state.dauer === id ? null : id;
+      renderFilterChips(); renderCatTabs(); updateZeitTiles(); render();
+    }
+    function setSprache(s) {
+      state.sprache = state.sprache === s ? null : s;
+      renderFilterChips(); renderCatTabs(); render();
+    }
+
+    // ===== SIGNATURE: ZEIT-KACHELN (Hero) =====
+    function renderZeitTiles() {
+      const host = document.getElementById('zeit-tiles');
+      if (!host) return;
+      host.innerHTML = DAUER_BUCKETS.map(b => {
+        const n = RESSOURCEN.filter(b.test).length; // echte Zählung aus dauerMin
+        const active = state.dauer === b.id;
+        return `<button type="button" class="zeit-tile${active ? ' active' : ''}" data-dauer="${b.id}" aria-pressed="${active}" onclick="quickZeit('${b.id}')">
+          <span class="zt-num">${b.zahl} <span class="zt-unit">Min</span></span>
+          <span class="zt-name">${b.name}</span>
+          <span class="zt-count">${n} ${n === 1 ? 'Ressource' : 'Ressourcen'}</span>
+        </button>`;
+      }).join('');
+    }
+    // Kein innerHTML-Tausch beim Klick (Fokus bleibt auf der Kachel) — nur Klassen.
+    function updateZeitTiles() {
+      document.querySelectorAll('#zeit-tiles .zeit-tile').forEach(el => {
+        const active = state.dauer === el.dataset.dauer;
+        el.classList.toggle('active', active);
+        el.setAttribute('aria-pressed', active ? 'true' : 'false');
+      });
+    }
+    function quickZeit(id) {
+      const wasActive = state.dauer === id;
+      setDauer(id); // togglet
+      if (!wasActive) {
+        document.getElementById('main-content').scrollIntoView({ behavior: scrollBehavior(), block: 'start' });
+      }
+    }
+
+    // ===== AKTIVE FILTER-ZUSAMMENFASSUNG =====
+    function renderActiveFilters() {
+      const bar = document.getElementById('active-filters');
+      if (!bar) return;
+      const pills = [];
+      if (state.typ) pills.push({ label: 'Typ: ' + (TYP_CARD_LABEL[state.typ] || state.typ), clear: `setTyp('all')` });
+      if (state.niveau) pills.push({ label: 'Niveau: ' + NIVEAU_LABEL[state.niveau], clear: `setNiveau('${state.niveau}')` });
+      if (state.dauer) pills.push({ label: 'Dauer: ' + bucketById(state.dauer).label, clear: `setDauer('${state.dauer}')` });
+      if (state.sprache) pills.push({ label: 'Sprache: ' + SPRACHE_LABEL[state.sprache], clear: `setSprache('${state.sprache}')` });
+      if (state.search) pills.push({ label: `Suche: "${escHtml(state.search)}"`, clear: `clearSearch()` });
+
+      const ftb = document.getElementById('ftb-count');
+      if (ftb) { ftb.hidden = pills.length === 0; ftb.textContent = pills.length; }
+      if (pills.length === 0) { bar.hidden = true; bar.innerHTML = ''; return; }
+      bar.hidden = false;
+      bar.innerHTML = `<span class="active-filters-label">Aktive Filter:</span>` +
+        pills.map(p => `<button class="active-pill" onclick="${p.clear}">${p.label} <span class="ap-x">✕</span></button>`).join('') +
+        `<button class="active-clear" onclick="resetFilters()">Alle zurücksetzen</button>`;
+    }
+    function clearSearch() {
+      state.search = '';
+      ['search', 'search-m'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+      render();
+    }
+    function resetFilters() {
+      state.typ = null; state.niveau = null; state.dauer = null; state.sprache = null; state.search = '';
+      ['search', 'search-m'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+      renderCatTabs(); renderFilterChips(); updateZeitTiles();
+      render();
+    }
+
+    // ===== KARTE (LINK-Karte: Klick-Ziel ist der externe Link, Details klappen auf) =====
+    function resBodyHtml(r) {
+      let h = `
+        <div><span class="res-body-label">Was drin ist</span><p>${escHtml(r.beschreibung)}</p></div>`;
+      if (r.gelernt && r.gelernt.length) h += `
+        <div><span class="res-body-label">Das nimmst du mit</span>
+          <ul class="res-gelernt">${r.gelernt.map(g => `<li>${escHtml(g)}</li>`).join('')}</ul>
+        </div>`;
+      if (r.stimmen && r.stimmen.length) h += `
+        <div><span class="res-body-label">Stimmen aus dem Team</span>
+          ${r.stimmen.map(v => `
+          <figure class="res-voice">
+            <blockquote>${escHtml(v.text)}</blockquote>
+            <figcaption>${escHtml(v.autor)} · ${escHtml(v.rolle)}</figcaption>
+          </figure>`).join('')}
+        </div>`;
+      h += r.intern
+        ? `<div><span class="res-geprueft">pilot-interner Eintrag — Link folgt, bis dahin: frag das KI-Enablement-Team.</span></div>`
+        : `<div><span class="res-geprueft">Link geprüft am ${formatDate(r.geprueft)}.</span></div>`;
+      return h;
+    }
+
+    function resCardHtml(r, idx, isStart) {
+      const open = _expanded.has(r.id);
+      const voted = hasVoted('ressource', r.id);
+      const delay = Math.min(idx, 11) * 35;
+      const titleHtml = r.url
+        ? `<a class="res-title" href="${escHtml(r.url)}" target="_blank" rel="noopener">${escHtml(r.titel)}${LU.extern}</a>`
+        : `<span class="res-title">${escHtml(r.titel)}</span>`;
+      const footHtml = r.intern
+        ? `<span class="res-intern-hint">Noch nicht bewertbar — der Link folgt.</span>`
+        : `<span class="res-rating">${renderStars(r.rating.average)}<span>${r.rating.average.toFixed(1)} · ${r.rating.count} ${r.rating.count === 1 ? 'Bewertung' : 'Bewertungen'}</span></span>
+           <button type="button" class="vote-btn${voted ? ' voted' : ''}" aria-pressed="${voted}" onclick="voteRessource('${r.id}')">
+             ${LU.vote}<span>Das hat mir geholfen</span><span class="vote-count">${getVotes('ressource', r.id, r.votes)}</span>
+           </button>`;
+      return `
+        <article class="res-card${r.intern ? ' -intern' : ''}${isStart ? ' start-here' : ''}${state._noCardAnim ? '' : ' card-in'}" style="animation-delay:${state._noCardAnim ? 0 : delay}ms" id="res-${r.id}" data-id="${r.id}">
+          ${isStart ? '<span class="start-here-ribbon">Start hier</span>' : ''}
+          <div class="res-ico" aria-hidden="true">${typIcon(r.typ)}</div>
+          <div class="res-main">
+            <div class="res-kopf">
+              <span class="res-typ">${TYP_CARD_LABEL[r.typ] || r.typ}</span>
+              <span class="res-quelle">${escHtml(r.quelle)}</span>
+              ${r.intern ? '<span class="intern-tag">Link folgt</span>' : ''}
+            </div>
+            ${titleHtml}
+            <p class="res-fuerdich"><strong>Für dich, wenn</strong> ${escHtml(r.fuerDich)}</p>
+            <div class="res-meta">
+              <span class="res-dauer">${LU.uhr}${dauerText(r)}</span>
+              <span class="meta-dot">·</span>
+              <span class="lang-pill">${r.sprache.toUpperCase()}</span>
+              <span class="meta-dot">·</span>
+              <span class="diff-badge ${r.niveau === 'einsteiger' ? 'easy' : 'advanced'}">${NIVEAU_LABEL[r.niveau]}</span>
+              <span class="meta-dot">·</span>
+              <span class="res-pf">${PF_LABEL[r.plattform] || r.plattform}</span>
+            </div>
+            <div class="res-foot">
+              ${footHtml}
+              <button type="button" class="res-toggle" aria-expanded="${open}" aria-controls="res-body-${r.id}" onclick="toggleRessource('${r.id}')">
+                <span>Mehr dazu</span><span class="ct-arrow" aria-hidden="true">›</span>
+              </button>
+            </div>
+          </div>
+          <div class="res-body" id="res-body-${r.id}"${open ? '' : ' hidden'}>${resBodyHtml(r)}</div>
+        </article>`;
+    }
+
+    // ===== RENDER =====
+    function resultNoun(n) { return n === 1 ? 'Ressource' : 'Ressourcen'; }
+
+    function render() {
+      const filtered = filterRessourcen();
+      const host = document.getElementById('res-list');
+      if (!host) return;
+      const count = document.getElementById('results-count');
+      if (count) count.innerHTML = `<strong>${filtered.length}</strong> ${resultNoun(filtered.length)}`;
+
+      renderActiveFilters();
+
+      if (filtered.length === 0) {
+        host.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m13.5 8.5-5 5"/><path d="m8.5 8.5 5 5"/><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></div>
+            <h3 class="empty-title">Keine Ressource gefunden</h3>
+            <p class="empty-text">Nichts passt zu deinen aktuellen Filtern. Setze Filter zurück oder probiere einen anderen Suchbegriff.</p>
+            <button class="c-cta -black-bg" onclick="resetFilters()" style="margin-top:2rem">Alle Filter zurücksetzen</button>
+          </div>`;
+        return;
+      }
+      // Ohne aktive Filter/Suche und nur bei Standard-Sortierung: Redaktions-Kandidat
+      // als „Start hier“ anpinnen — eine explizite Sortierung (Dauer, A–Z) bleibt
+      // ehrlich und wird nicht vom Pin durchbrochen.
+      const noFilter = !state.search && !state.typ && !state.niveau && !state.dauer && !state.sprache
+        && state.sort === 'bewertung';
+      const start = noFilter ? filtered.find(r => r.id === RESSOURCE_START) : null;
+      const rest = start ? filtered.filter(r => r.id !== start.id) : filtered;
+      let html = start ? resCardHtml(start, 0, true) : '';
+      let idx = start ? 1 : 0;
+      html += rest.map(r => resCardHtml(r, idx++, false)).join('');
+      host.innerHTML = html;
+    }
+
+    // ===== INTERAKTIONEN =====
+    function voteRessource(id) {
+      const r = resById(id);
+      if (!r || r.intern) return;
+      const now = toggleVote('ressource', id);
+      const btn = document.querySelector(`#res-${id} .vote-btn`);
+      if (btn) {
+        btn.classList.toggle('voted', now);
+        btn.setAttribute('aria-pressed', now ? 'true' : 'false');
+        const count = btn.querySelector('.vote-count');
+        if (count) count.textContent = getVotes('ressource', id, r.votes);
+      }
+      showToast(now ? 'Danke — deine Stimme zählt (gespeichert in deinem Browser)' : 'Stimme zurückgenommen');
+    }
+
+    function toggleRessource(id) {
+      const body = document.getElementById('res-body-' + id);
+      const btn = document.querySelector(`#res-${id} .res-toggle`);
+      if (!body) return;
+      const nowOpen = body.hidden;
+      if (nowOpen) { _expanded.add(id); body.hidden = false; }
+      else { _expanded.delete(id); body.hidden = true; }
+      if (btn) btn.setAttribute('aria-expanded', nowOpen ? 'true' : 'false');
+    }
+
+    // ===== „RESSOURCE VORSCHLAGEN“ — Demo-Flow-Baustein aus shared/base.js (Plan §5.4) =====
+    function openRessourceSubmit() {
+      openSubmitFlow({
+        type: 'ressource',
+        title: 'Ressource vorschlagen',
+        intro: 'Der Link, der dir wirklich etwas beigebracht hat — Video, Artikel, Doku, Kurs oder Podcast.',
+        fields: [
+          { key: 'titel', label: 'Titel', required: true, placeholder: 'z. B. „Large Language Models explained briefly“' },
+          { key: 'link', label: 'Link', required: true, placeholder: 'https://…' },
+          { key: 'warum', label: 'Warum hilfreich?', type: 'textarea', required: true, placeholder: 'Was hast du daraus gelernt — und für wen lohnt es sich?' }
+        ],
+        submitLabel: 'Ressource vorschlagen (Demo)'
+      });
+    }
+
+    // ===== DEEP-LINK: lernen.html?r=<id> bzw. #r/<id> (Plan §2.4) =====
+    // Kein Modal — die Karte wird aufgeklappt, angescrollt und kurz hervorgehoben.
+    // Nur replaceState (teilbare URL ohne History-Müll, keine Back-Falle nötig).
+    function scrollHighlight(elId) {
+      const scrollToEl = () => {
+        const t = document.getElementById(elId);
+        if (t) t.scrollIntoView({ behavior: scrollBehavior(), block: 'start' });
+      };
+      scrollToEl();
+      // Der Webfont lädt asynchron und verschiebt danach das Layout — einmal
+      // nachjustieren, sobald die Schriften stehen (sonst landet der Anker daneben).
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(() => setTimeout(scrollToEl, 60)).catch(() => {});
+      }
+      const el = document.getElementById(elId);
+      if (el) {
+        el.classList.add('-highlight');
+        setTimeout(() => el.classList.remove('-highlight'), 2400);
+      }
+    }
+
+    function applyDeepLink(fromLoad) {
+      if (fromLoad) {
+        try {
+          const qs = new URLSearchParams(location.search);
+          const v = qs.get('r');
+          if (v && !location.hash) {
+            history.replaceState(null, '', location.pathname + '#r/' + encodeURIComponent(v));
+          }
+        } catch (e) {}
+      }
+      const m = (location.hash || '').match(/^#r\/(.+)$/);
+      if (!m) return;
+      let id;
+      try { id = decodeURIComponent(m[1]); } catch (e) { return; }
+      const r = resById(id);
+      if (!r) return;
+      // Eintrag muss sichtbar sein: sperrende Filter/Suche werden gelöst
+      if (!filterRessourcen().some(x => x.id === id)) {
+        state.typ = null; state.niveau = null; state.dauer = null; state.sprache = null; state.search = '';
+        ['search', 'search-m'].forEach(sid => { const el = document.getElementById(sid); if (el) el.value = ''; });
+        renderCatTabs(); renderFilterChips(); updateZeitTiles();
+      }
+      _expanded.add(id);
+      state._noCardAnim = true; render(); state._noCardAnim = false;
+      scrollHighlight('res-' + id);
+    }
+
+    // ===== ERKLÄR-BLOCK =====
+    function toggleGS() {
+      const content = document.getElementById('gs-content');
+      const btn = document.getElementById('gs-toggle-btn');
+      const isHidden = content.hidden;
+      content.hidden = !isHidden;
+      btn.setAttribute('aria-expanded', isHidden ? 'true' : 'false');
+      try { localStorage.setItem('lernen-gs-seen', '1'); } catch (e) {}
+    }
+    function openGS() {
+      const content = document.getElementById('gs-content');
+      const btn = document.getElementById('gs-toggle-btn');
+      if (content.hidden) toggleGS();
+      document.getElementById('getting-started').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (btn) btn.focus({ preventScroll: true });
+    }
+
+    // ===== MOBILE FILTER TOGGLE =====
+    function toggleMobileFilter() {
+      const btn = document.getElementById('filter-toggle-btn');
+      const panel = document.getElementById('filter-collapsible');
+      if (!btn || !panel) return;
+      const isExpanded = btn.getAttribute('aria-expanded') === 'true';
+      btn.setAttribute('aria-expanded', isExpanded ? 'false' : 'true');
+      panel.hidden = isExpanded;
+    }
+
+    // ===== INIT =====
+    document.addEventListener('DOMContentLoaded', () => {
+      // Hero-Zähler: nur real Gezähltes aus RESSOURCEN (keine erfundene „Gesamt-
+      // Lernzeit“ — mit geschätzten Lesezeiten und Podcast-Folgen wäre eine
+      // Stunden-Summe nicht ehrlich).
+      const stats = [
+        ['stat-gesamt', RESSOURCEN.length],
+        ['stat-de', RESSOURCEN.filter(r => r.sprache === 'de').length],
+        ['stat-kurz', RESSOURCEN.filter(r => r.dauerMin <= 15).length],
+        ['stat-geprueft', RESSOURCEN.filter(r => !!r.url).length]
+      ];
+      stats.forEach(([id, n]) => {
+        const el = document.getElementById(id);
+        if (el) animateCount(el, n, 900);
+      });
+
+      renderZeitTiles();
+      renderCatTabs();
+      renderFilterChips();
+      render();
+
+      // Erklär-Block beim allerersten Besuch offen zeigen (danach gemerkt)
+      try {
+        if (!localStorage.getItem('lernen-gs-seen')) {
+          const gsc = document.getElementById('gs-content');
+          const gsb = document.getElementById('gs-toggle-btn');
+          if (gsc && gsb) { gsc.hidden = false; gsb.setAttribute('aria-expanded', 'true'); }
+        }
+      } catch (e) {}
+
+      // Deep-Link: ?r=<id> wird auf die kanonische Hash-Form (#r/<id>) umgeschrieben
+      applyDeepLink(true);
+      window.addEventListener('hashchange', () => applyDeepLink(false));
+
+      // Header-Suche (Desktop) und Filterleisten-Suche (Mobil) halten sich gegenseitig aktuell
+      [['search', 'search-m'], ['search-m', 'search']].forEach(([own, other]) => {
+        document.getElementById(own)?.addEventListener('input', debounce(e => {
+          state.search = e.target.value.toLowerCase().trim();
+          const o = document.getElementById(other);
+          if (o && o.value !== e.target.value) o.value = e.target.value;
+          state._noCardAnim = true; render(); state._noCardAnim = false;
+        }, 150));
+      });
+
+      document.getElementById('sort-select').addEventListener('change', e => {
+        state.sort = e.target.value;
+        render();
+      });
+
+      // Seitenlokal: „/“ fokussiert die Suche
+      document.addEventListener('keydown', e => {
+        if (e.key === '/' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+          e.preventDefault();
+          const search = document.getElementById('search');
+          if (search) { search.focus(); search.select(); }
+        }
+      });
+
+      // Mobil: Filterpanel startet eingeklappt — der Platz gehört dem Regal
+      if (window.matchMedia && window.matchMedia('(max-width: 1023px)').matches) {
+        const ftb = document.getElementById('filter-toggle-btn');
+        const fc = document.getElementById('filter-collapsible');
+        if (ftb && fc) { ftb.setAttribute('aria-expanded', 'false'); fc.hidden = true; }
+      }
+    });
+  </script>
+</body>
+</html>

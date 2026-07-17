@@ -362,12 +362,12 @@
             <span class="rt-hint">Fertige Bausteine und Beispieldaten zum Loslegen.</span>
             <span class="rt-foot"><span class="rt-tag">In Arbeit</span></span>
           </button>
-          <button type="button" class="rt-card" data-teaser="lernen" aria-expanded="false" aria-controls="rt-panel">
+          <a class="rt-card" href="lernen.html">
             <span class="rt-ic"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg></span>
             <span class="rt-label">KI verstehen</span>
-            <span class="rt-hint">Kuratierte Ressourcen — geprüft statt Linkliste.</span>
-            <span class="rt-foot"><span class="rt-tag">In Arbeit</span></span>
-          </button>
+            <span class="rt-hint">Geprüfte Videos, Doku und Kurse — gefiltert nach deiner Zeit.</span>
+            <span class="rt-foot"><span class="rt-dest">Zu den Ressourcen</span></span>
+          </a>
           <a class="rt-card is-guide" href="skills.html">
             <span class="rt-ic"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z"/></svg></span>
             <span class="rt-label">Deinen ersten Skill finden</span>
@@ -393,6 +393,7 @@
           <div class="hero-stat-box"><span class="hero-stat-num" id="stat-skills">0</span><span class="hero-stat-label">Skills im Katalog</span></div>
           <div class="hero-stat-box"><span class="hero-stat-num" id="stat-prompts">0</span><span class="hero-stat-label">Prompts in der Sammlung</span></div>
           <div class="hero-stat-box"><span class="hero-stat-num" id="stat-hilfe">0</span><span class="hero-stat-label">Einträge im Hilfe-Center</span></div>
+          <div class="hero-stat-box"><span class="hero-stat-num" id="stat-lernen">0</span><span class="hero-stat-label">Lern-Ressourcen</span></div>
           <div class="hero-stat-box"><span class="hero-stat-num" id="stat-demos">0</span><span class="hero-stat-label">Live-Demos</span></div>
           <div class="hero-stat-box"><span class="hero-stat-num" id="stat-bundles">0</span><span class="hero-stat-label">Skill-Pakete</span></div>
         </div>
@@ -404,7 +405,7 @@
       <div class="areas-inner">
         <p class="section-label">Die Landkarte</p>
         <h2 id="areas-h">Ein Marketplace, sieben Bereiche</h2>
-        <p class="areas-sub">Skill-Katalog, Prompt-Sammlung und Hilfe-Center sind live und wachsen weiter. Vier weitere Bereiche entstehen gerade — hier siehst du schon, was sie können werden.</p>
+        <p class="areas-sub">Skill-Katalog, Prompt-Sammlung, Hilfe-Center und Lernen sind live und wachsen weiter. Drei weitere Bereiche entstehen gerade — hier siehst du schon, was sie können werden.</p>
 
         <div class="areas-grid">
           <article class="area-card area-live anim-reveal">
@@ -475,13 +476,27 @@
             </div>
           </article>
 
-          <article class="area-card area-soon anim-reveal">
+          <article class="area-card area-live-sm anim-reveal">
             <div class="area-head">
               <span class="area-ic"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/></svg></span>
               <h3>Lernen</h3>
-              <span class="area-pill -soon">In Arbeit</span>
+              <span class="area-pill -live">Live</span>
             </div>
-            <p class="area-text">Ein kuratierter Katalog geprüfter Lern-Ressourcen — Videos, Doku und Kurse, gefiltert nach Niveau, Dauer und Sprache.</p>
+            <div class="area-count">
+              <span class="area-count-num" id="area-lernen-count">0</span>
+              <span class="area-count-label">Lern-Ressourcen</span>
+            </div>
+            <p class="area-meta" id="area-lernen-meta"></p>
+            <p class="area-text">Kein eigener Kurs — ein Kompass: geprüfte Videos, Doku, Artikel, Kurse und Podcasts, gefiltert nach Niveau, Dauer und Sprache. Jede Karte sagt dir in einem Satz, für wen sie sich lohnt.</p>
+            <a class="area-spot" href="lernen.html?r=code-grundkurs-keil">
+              <span class="area-spot-label">Start hier</span>
+              <span class="area-spot-name">Claude-Code-Grundkurs</span>
+              <p class="area-spot-tag">Deutsches Einsteiger-Video ohne Entwickler-Jargon — alles Wichtige in 25 Minuten</p>
+              <span id="area-lernen-spot-rating"></span>
+            </a>
+            <div class="area-cta-row">
+              <a class="c-cta -yellow-bg" href="lernen.html">Lernen öffnen</a>
+            </div>
           </article>
 
           <article class="area-card area-soon anim-reveal">
@@ -527,6 +542,13 @@
           <h2>Frisch im Marketplace</h2>
           <ul class="news-list">
             <li class="news-item">
+              <span class="news-date">17. Juli</span>
+              <div>
+                <p class="news-title">Der Lern-Bereich ist da</p>
+                <p class="news-text">Kein eigener Kurs — ein Kompass: 24 geprüfte Lern-Ressourcen (Videos, Doku, Artikel, Kurse, Podcasts) plus 3 interne Platzhalter, gefiltert nach deiner Zeit. Jede Karte sagt in einem Satz, für wen sie sich lohnt. <a href="lernen.html">Zum Lern-Bereich</a></p>
+              </div>
+            </li>
+            <li class="news-item">
               <span class="news-date">16. Juli</span>
               <div>
                 <p class="news-title">Das Hilfe-Center ist da</p>
@@ -545,13 +567,6 @@
               <div>
                 <p class="news-title">Drei Community-Skills aus obra/superpowers</p>
                 <p class="news-text"><a href="skills.html?skill=brainstorming">brainstorming</a>, <a href="skills.html?skill=systematic-debugging">systematic-debugging</a> und <a href="skills.html?skill=verification-before-completion">verification-before-completion</a> — erst denken, dann bauen, dann beweisen.</p>
-              </div>
-            </li>
-            <li class="news-item">
-              <span class="news-date">11. Juli</span>
-              <div>
-                <p class="news-title">Generative Kunst mit p5.js</p>
-                <p class="news-text">Der Anthropic-Skill <a href="skills.html?skill=algorithmic-art">algorithmic-art</a> baut Visuals aus Code — reproduzierbar per Seed, statt Stock-Material.</p>
               </div>
             </li>
           </ul>
@@ -600,6 +615,8 @@
        synchrone Seiten-Script nicht blockieren (Auswertung unten in DOMContentLoaded) -->
   <script src="data/befehle.js" defer></script>
   <script src="data/glossar.js" defer></script>
+  <!-- Lernen-Daten (E5), ebenfalls nur für die Live-Zähler — gleiches defer-Muster -->
+  <script src="data/ressourcen.js" defer></script>
   <script src="shared/base.js"></script>
   <script>
     // ===== STATE (base.js-Konvention; Modal-Engine läuft hier nicht) =====
@@ -680,11 +697,27 @@
       if (spotVotes && lh) spotVotes.innerHTML = `<span class="rating-text">${getVotes('befehl', lh.id, lh.votes)} × „Hat mir geholfen“</span>`;
     });
 
+    // Lernen-Karte + Hero-Zähler (E5): data/ressourcen.js lädt per defer — deshalb
+    // ebenfalls DOMContentLoaded. Nur real Gezähltes aus RESSOURCEN.
+    document.addEventListener('DOMContentLoaded', () => {
+      if (typeof RESSOURCEN === 'undefined') return;
+      const lernenCount = document.getElementById('area-lernen-count');
+      if (lernenCount) animateCount(lernenCount, RESSOURCEN.length, 1100);
+      const statLernen = document.getElementById('stat-lernen');
+      if (statLernen) animateCount(statLernen, RESSOURCEN.length, 1100);
+      const lernenMeta = document.getElementById('area-lernen-meta');
+      if (lernenMeta) lernenMeta.textContent = `davon ${RESSOURCEN.filter(r => r.sprache === 'de').length} auf Deutsch · ${RESSOURCEN.filter(r => r.dauerMin <= 15).length} unter 15 Minuten`;
+      // Leuchtturm: Team-Bewertung der „Start hier“-Ressource ist reiner Seed
+      // (lernen.html hat bewusst keine Sterne-Eingabe) — deshalb direkt anzeigen.
+      const spotRating = document.getElementById('area-lernen-spot-rating');
+      const lr = RESSOURCEN.find(r => r.id === (typeof RESSOURCE_START !== 'undefined' ? RESSOURCE_START : 'code-grundkurs-keil'));
+      if (spotRating && lr && lr.rating) spotRating.innerHTML = renderStars(lr.rating.average) + ` <span class="rating-text">${lr.rating.average.toFixed(1)} · ${lr.rating.count} Stimmen</span>`;
+    });
+
     // ===== ROUTER: „In Arbeit“-Ausblicke (kein toter Link) =====
     const TEASER = {
       showroom:  { name: 'Showroom',         text: 'Projekte von Kolleg:innen zum Anklicken — mit der ehrlichen Geschichte, wie sie entstanden sind, und allem, was du zum Nachbauen brauchst.' },
-      baukasten: { name: 'Baukasten',        text: 'Fertige Code-Bausteine mit Live-Vorschau und Beispieldaten zum Üben — jeder mit einem „Sag Claude einfach …“-Prompt.' },
-      lernen:    { name: 'Lernen',           text: 'Ein kuratierter Katalog geprüfter Lern-Ressourcen — Videos, Doku und Kurse, gefiltert nach Niveau, Dauer und Sprache.' }
+      baukasten: { name: 'Baukasten',        text: 'Fertige Code-Bausteine mit Live-Vorschau und Beispieldaten zum Üben — jeder mit einem „Sag Claude einfach …“-Prompt.' }
     };
     let _teaserOpen = null;
 
