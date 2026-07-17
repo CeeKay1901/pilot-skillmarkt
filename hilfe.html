@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>pilot AI Marketplace — Hilfe-Center</title>
+  <meta name="description" content="Das Sicherheitsnetz für deinen Claude-Code-Alltag bei pilot: Befehle und Kniffe als Ranking, ein Glossar, das jeden Begriff in einem Satz erklärt, und Schritt-für-Schritt-Antworten auf die häufigsten Blocker.">
+  <meta name="theme-color" content="#262626">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="pilot AI Marketplace">
+  <meta property="og:title" content="pilot AI Marketplace — Hilfe-Center">
+  <meta property="og:description" content="Wenn du festhängst, fehlt dir kein Talent — nur ein Handgriff. Befehle, Kniffe und Tastentricks für Claude Code und Langdock, sortiert nach dem, was Kolleg:innen am meisten geholfen hat.">
+  <meta property="og:url" content="https://ceekay1901.github.io/pilot-skillmarkt/hilfe.html">
+  <meta property="og:image" content="https://ceekay1901.github.io/pilot-skillmarkt/og-image.png">
+  <link rel="preload" href="assets/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="shared/base.css">
+  <style>
+    /* ============================================================
+       hilfe.html — Hilfe-Center (seitenspezifisch, E4).
+       Gemeinsames Design-System liegt in shared/base.css.
+       Drei bewusst UNGLEICHE Säulen: (1) Befehle-Ranking dunkel und
+       terminal-nah, (2) Glossar hell als Nachschlagewerk mit Suche
+       und A-Z-Sprungleiste, (3) FAQ als ruhiges Akkordeon.
+       ============================================================ */
+
+    /* ===== ERKLÄR-BLOCK „SO HILFT DIR DIESE SEITE“ (Getting-Started-Muster) ===== */
+    .getting-started { background: var(--c-white); border-bottom: 1px solid var(--line); }
+    .gs-inner { max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-d); }
+    .gs-toggle {
+      display: flex; align-items: center; gap: 1.2rem; width: 100%;
+      background: none; border: none; cursor: pointer; font-family: inherit;
+      font-size: 1.6rem; font-weight: 700; color: var(--c-black);
+      padding: 1.8rem 0; text-align: left;
+    }
+    .gs-toggle:hover { color: var(--c-gray-m); }
+    .gs-arrow { margin-left: auto; font-size: 1.8rem; transition: transform .2s; }
+    .gs-toggle[aria-expanded="true"] .gs-arrow { transform: rotate(90deg); }
+    .gs-content { padding-bottom: 2.4rem; }
+    .gs-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.4rem; }
+    .gs-step { display: flex; gap: 1.6rem; align-items: flex-start; }
+    .gs-num {
+      width: 3.2rem; height: 3.2rem; flex-shrink: 0; background: var(--c-yellow);
+      color: var(--c-black); border-radius: 50%; display: flex; align-items: center;
+      justify-content: center; font-size: 1.5rem; font-weight: 700; font-family: var(--font-mono);
+    }
+    .gs-step strong { font-size: 1.5rem; display: block; margin-bottom: .4rem; }
+    .gs-step p { font-size: 1.4rem; color: var(--c-gray-m); line-height: 1.5; }
+    @media (max-width: 1023px) {
+      .gs-inner { padding: 0 var(--pad-m); }
+      .gs-steps { grid-template-columns: 1fr; gap: 1.6rem; }
+    }
+
+    /* ===== SPRUNGNAVIGATION (drei Säulen) ===== */
+    .pillar-nav {
+      position: sticky; top: var(--header-h); z-index: 60;
+      background: var(--paper);
+      box-shadow: 0 1px 0 var(--line), 0 6px 20px -14px rgba(38,38,38,.25);
+    }
+    .pillar-inner {
+      max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-d);
+      display: flex; gap: .4rem; overflow-x: auto; scrollbar-width: none;
+    }
+    .pillar-inner::-webkit-scrollbar { display: none; }
+    .pillar-link {
+      display: inline-flex; align-items: center; gap: .8rem;
+      padding: 1.3rem 1.6rem; font-size: 1.5rem; font-weight: 600;
+      color: var(--c-black); text-decoration: none; white-space: nowrap;
+      border-bottom: 3px solid transparent; transition: var(--trans);
+    }
+    .pillar-link:hover { border-bottom-color: var(--c-yellow); }
+    .pillar-count {
+      display: inline-flex; align-items: center; justify-content: center;
+      background: var(--c-yellow); color: var(--c-black);
+      border-radius: var(--r-xl); padding: .1rem .8rem;
+      font-family: var(--font-mono); font-size: 1.15rem; font-weight: 700; min-width: 2.2rem;
+    }
+    @media (max-width: 1023px) { .pillar-inner { padding: 0 var(--pad-m); } }
+
+    /* Anker landen unter Header + Sprungleiste, nicht dahinter */
+    #befehle, #glossar, #faq { scroll-margin-top: calc(var(--header-h) + 5.4rem); }
+    .cmd-card, .faq-card { scroll-margin-top: calc(var(--header-h) + 6.6rem); }
+    /* Glossar-Ziele brauchen mehr Luft: dort klebt zusätzlich die Such-/A-Z-Leiste
+       (15rem statt 13rem: sonst schneidet die Leiste den Begriffstitel beim
+       Deep-Link-Ankommen oben an — nachgemessen auf 1280px und 390px) */
+    .g-gruppe, .g-card { scroll-margin-top: calc(var(--header-h) + 15rem); }
+
+    /* ===== SÄULE 1: BEFEHLE & KNIFFE (dunkel, terminal-nah) ===== */
+    .bef-section {
+      background: var(--c-black); color: var(--c-white);
+      padding: 6.4rem 0 8rem; position: relative; overflow: hidden;
+    }
+    .bef-section::before {
+      content: ''; position: absolute; inset: 0; pointer-events: none;
+      background: radial-gradient(52rem 30rem at 88% 0%, rgba(255,224,94,.09), transparent 60%);
+    }
+    .bef-inner { max-width: 108rem; margin: 0 auto; padding: 0 var(--pad-d); position: relative; z-index: 1; }
+    .bef-h2 {
+      font-size: var(--fs-h2); font-weight: var(--fw-semi);
+      letter-spacing: -.02em; color: var(--c-white); margin: 1rem 0 1.2rem;
+    }
+    .bef-sub { font-size: 1.6rem; line-height: 1.6; color: rgba(252,252,252,.7); max-width: 72ch; margin: 0; }
+    .bef-note {
+      font-family: var(--font-mono); font-size: 1.15rem; line-height: 1.6;
+      color: rgba(252,252,252,.42); margin: 1.4rem 0 0; max-width: 88ch;
+    }
+
+    /* Kategorie-Filter (dunkle Chips) */
+    .bef-chips { display: flex; gap: .8rem; flex-wrap: wrap; margin: 3rem 0 2.4rem; }
+    .bef-chip {
+      border: 1px solid rgba(252,252,252,.25); background: transparent;
+      color: rgba(252,252,252,.75); border-radius: var(--radius-pill);
+      padding: .6rem 1.4rem; font-family: inherit; font-size: 1.4rem;
+      cursor: pointer; transition: var(--trans);
+    }
+    .bef-chip:hover { border-color: var(--c-white); color: var(--c-white); }
+    .bef-chip.active { background: var(--c-yellow); border-color: var(--c-yellow); color: var(--c-black); font-weight: 600; }
+    .bef-chip-count { opacity: .6; font-family: var(--font-mono); font-size: 1.2rem; margin-left: .3rem; font-variant-numeric: tabular-nums; }
+    .bef-chip.active .bef-chip-count { opacity: .75; }
+
+    /* ===== RANKING-LISTE (Signature: Upvote sortiert live) ===== */
+    .rank-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 1rem; }
+    .cmd-card {
+      background: rgba(252,252,252,.045);
+      border: 1px solid rgba(252,252,252,.12);
+      border-radius: var(--r-md);
+      transition: border-color .25s ease, background .25s ease;
+    }
+    .cmd-card:hover { border-color: rgba(252,252,252,.28); }
+    .cmd-card.-moved, .cmd-card.-highlight {
+      border-color: var(--c-yellow);
+      background: rgba(255,224,94,.08);
+    }
+    .cmd-row {
+      display: grid; grid-template-columns: 6rem 1fr;
+      gap: 0 1.4rem; align-items: start;
+      padding: 1.8rem 2rem 1.6rem 0;
+    }
+    .rank-num {
+      font-family: var(--font-mono); font-variant-numeric: tabular-nums;
+      font-size: 1.8rem; font-weight: 700; color: rgba(252,252,252,.35);
+      text-align: right; padding-top: .3rem;
+    }
+    .rank-num.-top { color: var(--c-yellow); }
+    .cmd-line { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+    .cmd-code {
+      font-family: var(--font-mono); font-size: 1.7rem; font-weight: 700;
+      color: var(--c-yellow); letter-spacing: .01em; overflow-wrap: anywhere;
+    }
+    .cmd-copy {
+      display: inline-flex; align-items: center; gap: .5rem;
+      border: 1px solid rgba(252,252,252,.3); background: transparent;
+      color: rgba(252,252,252,.8); border-radius: var(--radius-pill);
+      font-family: inherit; font-size: 1.2rem; font-weight: 600;
+      padding: .35rem 1.1rem; cursor: pointer; transition: var(--trans);
+    }
+    .cmd-copy .lu { width: 1.3rem; height: 1.3rem; }
+    .cmd-copy:hover { background: var(--c-yellow); border-color: var(--c-yellow); color: var(--c-black); }
+    .pf-tag {
+      font-family: var(--font-mono); font-size: 1.05rem; letter-spacing: .06em;
+      padding: .25rem .9rem; border-radius: var(--radius-pill);
+      border: 1px solid rgba(252,252,252,.2); color: rgba(252,252,252,.55);
+      white-space: nowrap;
+    }
+    .lh-tag {
+      font-family: var(--font-mono); font-size: 1.05rem; letter-spacing: .06em;
+      background: rgba(255,224,94,.15); color: var(--c-yellow);
+      border-radius: var(--radius-pill); padding: .25rem .9rem; white-space: nowrap;
+    }
+    .cmd-nutzen { font-size: 1.5rem; line-height: 1.6; color: rgba(252,252,252,.82); margin: .8rem 0 1.2rem; max-width: 78ch; }
+    .cmd-nutzen code, .cmd-body code {
+      font-family: var(--font-mono); font-size: .92em;
+      background: rgba(252,252,252,.08); border-radius: .4rem;
+      padding: .05em .4em; color: var(--c-yellow);
+    }
+    .cmd-actions { display: flex; align-items: center; gap: 1.4rem; flex-wrap: wrap; }
+    .vote-btn {
+      display: inline-flex; align-items: center; gap: .7rem;
+      border: 1px solid rgba(252,252,252,.3); background: transparent;
+      color: var(--c-white); border-radius: var(--radius-pill);
+      padding: .7rem 1.5rem; font-family: inherit; font-size: 1.35rem; font-weight: 600;
+      cursor: pointer; transition: var(--trans);
+    }
+    .vote-btn .lu { width: 1.5rem; height: 1.5rem; }
+    .vote-btn:hover { border-color: var(--c-yellow); color: var(--c-yellow); }
+    .vote-btn.voted { background: var(--c-yellow); border-color: var(--c-yellow); color: var(--c-black); }
+    .vote-count {
+      font-family: var(--font-mono); font-variant-numeric: tabular-nums;
+      font-size: 1.25rem; font-weight: 700;
+      background: rgba(252,252,252,.12); border-radius: var(--r-xl);
+      padding: .1rem .8rem; min-width: 2.6rem; text-align: center;
+    }
+    .vote-btn.voted .vote-count { background: rgba(38,38,38,.15); }
+    .cmd-toggle {
+      background: none; border: none; color: rgba(252,252,252,.65);
+      font-family: inherit; font-size: 1.35rem; font-weight: 600;
+      cursor: pointer; display: inline-flex; align-items: center; gap: .6rem;
+      padding: .7rem .4rem; transition: var(--trans);
+    }
+    .cmd-toggle:hover { color: var(--c-white); }
+    .cmd-toggle .ct-arrow { transition: transform .2s; font-size: 1.6rem; line-height: 1; }
+    .cmd-toggle[aria-expanded="true"] .ct-arrow { transform: rotate(90deg); }
+
+    /* Aufgeklappter Kartenkörper */
+    .cmd-body { border-top: 1px solid rgba(252,252,252,.1); padding: 2rem 2rem 2.2rem 7.4rem; }
+    .cmd-body[hidden] { display: none; }
+    .cmd-body > div + div { margin-top: 2rem; }
+    .cmd-body-label {
+      display: block; font-family: var(--font-mono); font-size: 1.1rem; font-weight: 600;
+      letter-spacing: .1em; text-transform: uppercase;
+      color: rgba(252,252,252,.45); margin: 0 0 .6rem;
+    }
+    .cmd-body p { font-size: 1.45rem; line-height: 1.65; color: rgba(252,252,252,.78); margin: 0; max-width: 78ch; }
+    .cmd-voice { border-left: 2px solid rgba(255,224,94,.5); padding: .2rem 0 .2rem 1.4rem; margin: 0 0 1.4rem; }
+    .cmd-voice:last-child { margin-bottom: 0; }
+    .cmd-voice blockquote { font-size: 1.4rem; line-height: 1.6; color: rgba(252,252,252,.75); font-style: italic; margin: 0 0 .5rem; }
+    .cmd-voice figcaption { font-family: var(--font-mono); font-size: 1.15rem; color: rgba(252,252,252,.45); }
+
+    /* Kompaktes Inline-Terminal (Leuchtturm-Demos) */
+    .cmd-term { margin: 1rem 0 0; max-width: none; box-shadow: none; border-color: rgba(252,252,252,.15); }
+    .cmd-term .ex-terminal-body { min-height: 15rem; max-height: 30rem; overflow-y: auto; font-size: 1.35rem; padding: 1.8rem 2rem; }
+    .ex-terminal-bar { position: relative; }
+    .demo-replay {
+      position: absolute; right: 1.4rem; top: 50%; transform: translateY(-50%);
+      background: rgba(255,255,255,.1); border: none; color: rgba(252,252,252,.8);
+      width: 2.8rem; height: 2.8rem; border-radius: 50%; cursor: pointer;
+      font-size: 1.5rem; transition: var(--trans);
+    }
+    .demo-replay:hover { background: var(--c-yellow); color: var(--c-black); }
+    .term-play {
+      font-family: var(--font-mono); font-size: 1.3rem; font-weight: 600;
+      background: transparent; border: 1px solid rgba(255,224,94,.6);
+      color: var(--c-yellow); border-radius: var(--radius-pill);
+      padding: .8rem 1.8rem; cursor: pointer; transition: var(--trans);
+    }
+    .term-play:hover { background: var(--c-yellow); color: var(--c-black); }
+
+    /* Leerlauf, falls ein Filter nichts trifft (defensiv) */
+    .bef-empty { font-size: 1.5rem; color: rgba(252,252,252,.6); padding: 3rem 0; }
+
+    /* ===== SÄULE 2: GLOSSAR (hell, Nachschlagewerk auf Papier) ===== */
+    .glossar-section { background: var(--paper-warm); border-top: 1px solid var(--line); padding: 6.4rem 0 8rem; }
+    .glo-inner { max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-d); }
+    .glo-h2 { font-size: var(--fs-h2); font-weight: var(--fw-semi); letter-spacing: -.02em; margin: .6rem 0 1.2rem; }
+    .glo-sub { font-size: 1.6rem; line-height: 1.6; color: var(--c-ink-body); max-width: 72ch; margin: 0; }
+    .glo-note { font-family: var(--font-mono); font-size: 1.15rem; line-height: 1.6; color: var(--c-gray-m); margin: 1.4rem 0 0; max-width: 88ch; }
+
+    /* Werkzeugleiste: Suche + A-Z — klebt beim Blättern unter der Sprungnavigation */
+    .glo-tools {
+      position: sticky; top: calc(var(--header-h) + 4.6rem); z-index: 40;
+      background: var(--paper-warm); margin: 3rem 0 0; padding: 1.2rem 0 1.4rem;
+      display: flex; align-items: center; gap: 2rem; flex-wrap: wrap;
+      border-bottom: 1px solid var(--line);
+    }
+    .glo-search {
+      display: flex; align-items: center; gap: 1rem; flex: 0 1 40rem; min-width: 24rem;
+      background: var(--c-white); border: 1px solid var(--line-strong);
+      border-radius: var(--radius-pill); padding: .8rem 1.8rem; transition: var(--trans);
+    }
+    .glo-search:focus-within { border-color: var(--c-black); }
+    .glo-search input {
+      border: none; background: transparent; font-family: inherit; font-size: 1.5rem;
+      color: var(--c-black); flex: 1; min-width: 0; outline: none;
+    }
+    .az-rail { display: flex; gap: .2rem; overflow-x: auto; scrollbar-width: none; font-family: var(--font-mono); flex: 1 1 auto; }
+    .az-rail::-webkit-scrollbar { display: none; }
+    .az-btn {
+      min-width: 3rem; height: 3.2rem; border: none; background: transparent;
+      border-radius: .6rem; font-family: inherit; font-size: 1.3rem; font-weight: 700;
+      color: var(--c-black); cursor: pointer; transition: var(--trans); flex-shrink: 0;
+    }
+    .az-btn:hover:not(:disabled) { background: var(--c-yellow); }
+    .az-btn:disabled { opacity: .25; cursor: default; }
+
+    .glo-hits { font-family: var(--font-mono); font-size: 1.25rem; color: var(--c-gray-d); margin: 1.6rem 0 0; }
+    .g-gruppe { margin-top: 3.2rem; }
+    .g-letter {
+      font-family: var(--font-mono); font-size: 1.5rem; font-weight: 700;
+      letter-spacing: .12em; color: var(--c-gray-m);
+      border-bottom: 1px solid var(--line-strong); padding-bottom: .6rem; margin: 0 0 1.6rem;
+    }
+    .g-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.6rem; align-items: start; }
+    .g-card {
+      background: var(--c-white); border: 1px solid var(--line); border-radius: var(--r-md);
+      padding: 2rem 2.2rem; transition: border-color .25s ease, box-shadow .25s ease;
+    }
+    .g-card:hover { border-color: var(--line-strong); }
+    .g-card.-highlight { border-color: var(--c-yellow); box-shadow: 0 0 0 3px rgba(255,224,94,.45); }
+    .g-wort { font-size: 1.7rem; font-weight: 700; letter-spacing: -.01em; margin: 0; }
+    .g-satz { font-size: 1.45rem; line-height: 1.6; color: var(--c-ink-body); margin: .8rem 0 1.4rem; }
+    .g-satz code, .g-body code, .faq-body code {
+      font-family: var(--font-mono); font-size: .92em;
+      background: rgba(38,38,38,.07); border-radius: .4rem; padding: .05em .4em;
+    }
+    .g-actions { display: flex; align-items: center; gap: 1.2rem; flex-wrap: wrap; }
+    /* helle Variante des Vote-Buttons (Basis .vote-btn ist für die dunkle Säule gebaut) */
+    .g-vote { border-color: var(--line-strong); color: var(--c-black); font-size: 1.25rem; padding: .55rem 1.3rem; }
+    .g-vote:hover { border-color: var(--c-black); color: var(--c-black); }
+    .g-vote .vote-count { background: rgba(38,38,38,.08); }
+    .g-vote.voted { background: var(--c-yellow); border-color: var(--c-yellow); }
+    .g-toggle {
+      background: none; border: none; color: var(--c-gray-d);
+      font-family: inherit; font-size: 1.3rem; font-weight: 600;
+      cursor: pointer; display: inline-flex; align-items: center; gap: .6rem;
+      padding: .55rem .4rem; transition: var(--trans);
+    }
+    .g-toggle:hover { color: var(--c-black); }
+    .g-toggle .ct-arrow { transition: transform .2s; font-size: 1.6rem; line-height: 1; }
+    .g-toggle[aria-expanded="true"] .ct-arrow { transform: rotate(90deg); }
+    .g-body { border-top: 1px dashed var(--line-strong); margin-top: 1.6rem; padding-top: 1.6rem; }
+    .g-body[hidden] { display: none; }
+    .g-body > div + div { margin-top: 1.6rem; }
+    .g-body-label {
+      display: block; font-family: var(--font-mono); font-size: 1.05rem; font-weight: 600;
+      letter-spacing: .1em; text-transform: uppercase; color: var(--c-gray-m); margin: 0 0 .5rem;
+    }
+    .g-body p { font-size: 1.4rem; line-height: 1.65; color: var(--c-ink-body); margin: 0; }
+    .glo-empty { text-align: center; padding: 6rem 2rem; }
+    .glo-empty p { font-size: 2rem; color: var(--c-gray-m); margin: 0 0 2rem; }
+
+    /* Querverweis-Chips (Glossar + FAQ) */
+    .xref-row { display: flex; flex-wrap: wrap; gap: .8rem; margin-top: 1.6rem; }
+    .xref {
+      display: inline-flex; align-items: center; gap: .7rem;
+      font-size: 1.25rem; font-weight: 600; text-decoration: none; color: var(--c-black);
+      border: 1px solid var(--line-strong); border-radius: var(--radius-pill);
+      padding: .45rem 1.2rem; transition: var(--trans); background: var(--c-white);
+    }
+    .xref:hover { background: var(--c-yellow); border-color: var(--c-yellow); }
+    .xref-kind {
+      font-family: var(--font-mono); font-size: .95rem; letter-spacing: .06em;
+      text-transform: uppercase; color: var(--c-gray-m);
+    }
+
+    /* ===== SÄULE 3: FAQ (ruhiges Akkordeon) ===== */
+    .faq-section { background: var(--c-bg); border-top: 1px solid var(--line); padding: 6.4rem 0 8rem; }
+    .faq-inner { max-width: 86rem; margin: 0 auto; padding: 0 var(--pad-d); }
+    .faq-h2 { font-size: var(--fs-h2); font-weight: var(--fw-semi); letter-spacing: -.02em; margin: .6rem 0 1.2rem; }
+    .faq-sub { font-size: 1.6rem; line-height: 1.6; color: var(--c-ink-body); max-width: 62ch; margin: 0; }
+    .faq-list { display: flex; flex-direction: column; gap: 1.2rem; margin-top: 3.2rem; }
+    .faq-card {
+      background: var(--c-white); border: 1px solid var(--line); border-radius: var(--r-md);
+      transition: border-color .25s ease, box-shadow .25s ease;
+    }
+    .faq-card:hover { border-color: var(--line-strong); }
+    .faq-card.-highlight { border-color: var(--c-yellow); box-shadow: 0 0 0 3px rgba(255,224,94,.45); }
+    .faq-q {
+      display: flex; width: 100%; align-items: center; gap: 1.4rem; text-align: left;
+      background: none; border: none; cursor: pointer; font-family: inherit;
+      font-size: 1.6rem; font-weight: 600; color: var(--c-black); line-height: 1.4;
+      padding: 1.8rem 2.2rem;
+    }
+    .faq-q:hover { color: var(--c-gray-d); }
+    .faq-q .ct-arrow { margin-left: auto; transition: transform .2s; font-size: 1.8rem; line-height: 1; color: var(--c-gray-m); }
+    .faq-q[aria-expanded="true"] .ct-arrow { transform: rotate(90deg); }
+    .faq-body { padding: 0 2.2rem 2.4rem; }
+    .faq-body[hidden] { display: none; }
+    .faq-intro { font-size: 1.5rem; line-height: 1.6; color: var(--c-ink-body); margin: 0 0 1.6rem; }
+    .faq-steps { margin: 0; padding-left: 2.2rem; display: flex; flex-direction: column; gap: 1rem; }
+    .faq-steps li { font-size: 1.45rem; line-height: 1.65; color: var(--c-ink-body); padding-left: .4rem; }
+    .faq-steps li::marker { font-family: var(--font-mono); font-weight: 700; color: var(--c-gray-m); }
+    .faq-voice { border-left: 3px solid var(--c-yellow); padding: .2rem 0 .2rem 1.4rem; margin: 1.8rem 0 0; }
+    .faq-voice blockquote { font-size: 1.4rem; line-height: 1.6; color: var(--c-ink-body); font-style: italic; margin: 0 0 .5rem; }
+    .faq-voice figcaption { font-family: var(--font-mono); font-size: 1.15rem; color: var(--c-gray-m); }
+
+    /* ===== MITMACHEN-BAND (Kniff einreichen, Demo-Flow aus shared/base.js) ===== */
+    .submit-band { background: var(--paper-warm); border-top: 1px solid var(--line); padding: 6.4rem 0 6.8rem; }
+    .submit-band-inner { max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-d); }
+    .submit-band h2 { font-size: var(--fs-h2); font-weight: var(--fw-semi); letter-spacing: -.02em; margin: .6rem 0 1rem; }
+    .submit-band-text { font-size: 1.6rem; line-height: 1.6; color: var(--c-ink-body); max-width: 62ch; margin: 0 0 2.4rem; }
+    .submit-band-note { font-family: var(--font-mono); font-size: 1.15rem; color: var(--c-gray-m); margin: 1.4rem 0 0; }
+
+    /* ===== RESPONSIVE & TOUCH ===== */
+    @media (max-width: 1023px) {
+      .glo-inner, .faq-inner, .submit-band-inner { padding: 0 var(--pad-m); }
+      .g-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 767px) {
+      .cmd-row { grid-template-columns: 3.6rem 1fr; padding: 1.6rem 1.4rem 1.4rem 0; gap: 0 1rem; }
+      .rank-num { font-size: 1.4rem; padding-top: .5rem; }
+      .cmd-code { font-size: 1.5rem; }
+      .cmd-body { padding: 1.8rem 1.4rem 2rem; }
+      .bef-section { padding: 4.4rem 0 5.6rem; }
+      .glossar-section, .faq-section { padding: 4.4rem 0 5.6rem; }
+      .submit-band { padding: 4.4rem 0 4.8rem; }
+      .glo-tools { gap: 1.2rem; }
+      .glo-search { flex: 1 1 100%; }
+      /* A-Z-Leiste: mobil ist der Scrollbalken versteckt — eine Fade-Kante am
+         rechten Rand (sticky Flex-Kind, klassischer Overflow-Hinweis) schneidet
+         den letzten sichtbaren Buchstaben sichtbar an und signalisiert so, dass
+         die Leiste bis Z weitergeht. Am Scroll-Ende rutscht die Kante in ihre
+         natürliche Position hinter Z und verdeckt nichts mehr. */
+      .az-rail::after {
+        content: ''; flex: 0 0 3.2rem;
+        position: sticky; right: 0;
+        background: linear-gradient(to right, rgba(244,241,234,0), var(--paper-warm) 75%);
+        pointer-events: none;
+      }
+      .g-card { padding: 1.6rem 1.6rem; }
+      .faq-q { font-size: 1.5rem; padding: 1.6rem 1.6rem; }
+      .faq-body { padding: 0 1.6rem 2rem; }
+    }
+    @media (hover: none) and (pointer: coarse) {
+      .vote-btn, .cmd-toggle, .cmd-copy, .bef-chip, .term-play { min-height: 4.4rem; }
+      .pillar-link, .g-toggle, .az-btn, .xref { min-height: 4.4rem; }
+      .az-btn { min-width: 4rem; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .cmd-card, .g-card, .faq-card { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Zum Hauptinhalt springen</a>
+
+  <!-- HEADER & FOOTER: werden von shared/base.js injiziert (renderNav, siehe Seiten-Script unten) -->
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-glow" aria-hidden="true"></div>
+    <div class="hero-inner hero-top">
+      <p class="overline" style="color:#ffe05e">pilot · Hilfe-Center</p>
+      <h1 class="hero-h1">Wenn du festhängst —<br><span style="color:var(--c-yellow)">hier geht’s weiter.</span></h1>
+      <p class="subline">Dir fehlt kein Talent, nur ein Handgriff. Die Befehle und Kniffe, die am häufigsten weiterhelfen, ein Glossar, das jeden Begriff in einem Satz erklärt — und Schritt-für-Schritt-Antworten auf die häufigsten Blocker.</p>
+      <div class="hero-stats" id="hero-stats">
+        <div class="hero-stat-box"><span class="hero-stat-num" id="stat-befehle">0</span><span class="hero-stat-label">Befehle &amp; Kniffe</span></div>
+        <div class="hero-stat-box"><span class="hero-stat-num" id="stat-glossar">0</span><span class="hero-stat-label">Glossar-Begriffe</span></div>
+        <div class="hero-stat-box"><span class="hero-stat-num" id="stat-faq">0</span><span class="hero-stat-label">FAQ-Lösungen</span></div>
+      </div>
+      <div class="hero-cta">
+        <a class="c-cta -yellow-bg" href="#befehle">Zeig mir die Befehle</a>
+        <button class="c-cta -yellow-border" onclick="openGS()">So hilft dir diese Seite</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ERKLÄR-BLOCK: SO HILFT DIR DIESE SEITE -->
+  <div class="getting-started" id="getting-started">
+    <div class="gs-inner">
+      <button class="gs-toggle" onclick="toggleGS()" aria-expanded="false" id="gs-toggle-btn">
+        <span>So hilft dir diese Seite — in drei Handgriffen</span>
+        <span class="gs-arrow">›</span>
+      </button>
+      <div class="gs-content" id="gs-content" hidden>
+        <div class="gs-steps">
+          <div class="gs-step">
+            <span class="gs-num">1</span>
+            <div><strong>Finden</strong><p>Drei Säulen, ein Weg: Das Befehle-Ranking zeigt oben, was Kolleg:innen am meisten geholfen hat, das Glossar erklärt jeden Begriff in einem Satz, die FAQ lösen die häufigsten Blocker Schritt für Schritt.</p></div>
+          </div>
+          <div class="gs-step">
+            <span class="gs-num">2</span>
+            <div><strong>Ausprobieren</strong><p>Befehl kopieren oder Taste drücken, Mini-Beispiel aufklappen — die fünf wichtigsten Einträge spielen dir den Ablauf in einer kleinen Terminal-Demo vor.</p></div>
+          </div>
+          <div class="gs-step">
+            <span class="gs-num">3</span>
+            <div><strong>Zurückgeben</strong><p>Hat dich ein Eintrag weitergebracht? Klick „Hat mir geholfen“ — oder reich deinen eigenen Kniff ein. So finden die Nächsten den kürzesten Weg.</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SPRUNGNAVIGATION: DREI SÄULEN -->
+  <nav class="pillar-nav" aria-label="Bereiche des Hilfe-Centers">
+    <div class="pillar-inner">
+      <a class="pillar-link" href="#befehle">Befehle &amp; Kniffe <span class="pillar-count" id="pn-befehle">0</span></a>
+      <a class="pillar-link" href="#glossar">Glossar <span class="pillar-count" id="pn-glossar">0</span></a>
+      <a class="pillar-link" href="#faq">FAQ <span class="pillar-count" id="pn-faq">0</span></a>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main id="main-content">
+
+    <!-- SÄULE 1: BEFEHLE & KNIFFE -->
+    <section class="bef-section" id="befehle" aria-labelledby="befehle-h">
+      <div class="bef-inner">
+        <p class="overline" style="color:var(--c-yellow)">Säule 1 · Befehle &amp; Kniffe</p>
+        <h2 class="bef-h2" id="befehle-h">Die Handgriffe, die dich wieder flottmachen.</h2>
+        <p class="bef-sub"><span id="bef-count">28</span> Befehle, Flags und Tastentricks für Claude Code und Langdock — als Rangliste. Klick <strong>„Hat mir geholfen“</strong>, wenn dich ein Eintrag weitergebracht hat: deine Stimme sortiert die Liste live neu.</p>
+        <p class="bef-note">Alle Einträge sind gegen die aktuelle Claude-Code- bzw. Langdock-Doku geprüft (Stand Juli 2026). Die Startwerte der Stimmen sind redaktionelle Demo-Werte — deine Stimme kommt lokal in deinem Browser dazu.</p>
+
+        <div class="bef-chips" role="group" aria-label="Nach Kategorie filtern" id="bef-chips"></div>
+
+        <ol class="rank-list" id="rank-list"></ol>
+      </div>
+    </section>
+
+    <!-- SÄULE 2: GLOSSAR (hell — Nachschlagewerk mit Suche und A-Z-Sprungleiste) -->
+    <section class="glossar-section" id="glossar" aria-labelledby="glossar-h">
+      <div class="glo-inner">
+        <p class="section-label">Säule 2 · Glossar</p>
+        <h2 class="glo-h2" id="glossar-h">Was heißt eigentlich „Token“?</h2>
+        <p class="glo-sub"><span id="glo-count">44</span> Begriffe aus der KI-Welt — jeder in einem einfachen Satz erklärt, mit einem pilot-Beispiel dazu. Wer tiefer will, klappt auf; Querverweise führen zu passenden Skills, Prompts und Befehlen.</p>
+        <p class="glo-note">Die Startwerte von „Hat geholfen“ sind redaktionelle Demo-Werte — deine Stimme kommt lokal in deinem Browser dazu.</p>
+
+        <div class="glo-tools">
+          <div class="glo-search">
+            <input type="search" id="glo-search" placeholder="Begriff suchen — z. B. Token" aria-label="Im Glossar suchen" autocomplete="off" oninput="onGlossarSearch(this.value)">
+          </div>
+          <nav class="az-rail" id="az-rail" aria-label="Alphabetische Sprungleiste"></nav>
+        </div>
+
+        <p class="glo-hits" id="glo-hits" role="status" aria-live="polite" hidden></p>
+        <div id="glossar-liste"></div>
+      </div>
+    </section>
+
+    <!-- SÄULE 3: FAQ & TROUBLESHOOTING (ruhiges Akkordeon, nur eine Karte offen) -->
+    <section class="faq-section" id="faq" aria-labelledby="faq-h">
+      <div class="faq-inner">
+        <p class="section-label">Säule 3 · FAQ &amp; Troubleshooting</p>
+        <h2 class="faq-h2" id="faq-h">„Kontext voll“ — was jetzt?</h2>
+        <p class="faq-sub">Die <span id="faq-count">10</span> häufigsten Blocker aus dem Agentur-Alltag — jede Karte mit einer Schritt-für-Schritt-Lösung. Aufklappen, abarbeiten, weiterarbeiten.</p>
+        <div class="faq-list" id="faq-liste"></div>
+      </div>
+    </section>
+
+    <!-- MITMACHEN: Kniff einreichen (Demo-Flow aus shared/base.js) -->
+    <section class="submit-band" aria-labelledby="submit-band-h">
+      <div class="submit-band-inner">
+        <p class="section-label">Mitmachen</p>
+        <h2 id="submit-band-h">Du kennst einen Kniff, der hier fehlt?</h2>
+        <p class="submit-band-text">Das Hilfe-Center lebt von den Handgriffen, die sich im Alltag bewährt haben. Reich deinen Kniff ein — so finden die Nächsten den kürzesten Weg.</p>
+        <button type="button" class="c-cta -black-bg" id="submit-band-cta" onclick="openKniffSubmit()">Kniff einreichen</button>
+        <p class="submit-band-note">Demo-Flow: deine Eingabe bleibt lokal in deinem Browser.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER: injiziert von shared/base.js (renderNav) -->
+
+  <!-- TOAST -->
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="data/befehle.js"></script>
+  <script src="data/glossar.js"></script>
+  <script src="shared/base.js"></script>
+  <script>
+    // ===== DATA ===== (data/befehle.js: BEFEHLE, BEFEHL_LEUCHTTUERME, BEFEHL_KOMMENTARE;
+    //                   data/glossar.js: GLOSSAR, FAQ)
+    // ===== ENGINE ===== (Nav, Vote-Helfer, playScript, Utils: shared/base.js)
+    //
+    // BEWUSST OHNE window.RatingConfig und window.ModalConfig: diese Seite nutzt
+    // keine Sterne-Engine und kein Modal — alles klappt inline auf, die Votes
+    // laufen über die typ-expliziten Helfer hasVoted/getVotes/toggleVote,
+    // weil hier zwei Typen nebeneinander leben (vote:befehl:<id>, vote:begriff:<id>).
+
+    // ===== STATE ===== (Minimal-Global, wird von base.js defensiv gelesen)
+    const state = {
+      pendingRating: {},
+      activeSkill: null,
+      activeTab: 'overview',
+      activeFile: 0,
+      kategorie: null   // aktiver Kategorie-Filter (slash | cli | taste | langdock | null)
+    };
+    const _expanded = new Set();   // aufgeklappte Befehl-IDs (überlebt Re-Sort)
+    let _playingDemo = null;       // ID der gerade tippenden Leuchtturm-Demo
+    const _gExpanded = new Set();  // aufgeklappte Glossar-Begriffe (überlebt Such-Re-Render)
+    let _gQuery = '';              // aktive Glossar-Suche
+    let _faqOpen = null;           // offene FAQ-Karte (Akkordeon: höchstens eine)
+
+    function prefersReduce() {
+      return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    }
+    // 'auto' würde wegen html{scroll-behavior:smooth} (base.css) trotzdem gleiten —
+    // bei reduzierter Bewegung muss der Sprung wirklich sofort sein, daher 'instant'.
+    function scrollBehavior() { return prefersReduce() ? 'instant' : 'smooth'; }
+
+    // ===== NAV & FOOTER (shared/base.js) =====
+    renderNav('hilfe', {
+      footerClaim: 'Von Piloten gebaut, von Piloten empfohlen. Wenn du festhängst, fehlt dir kein Talent — nur ein Handgriff. Hier findest du ihn.'
+    });
+
+    // ===== HELPERS =====
+    const KAT = [
+      { id: 'all',      label: 'Alle' },
+      { id: 'slash',    label: 'Slash-Befehle' },
+      { id: 'taste',    label: 'Tastentricks' },
+      { id: 'cli',      label: 'Terminal-Flags' },
+      { id: 'langdock', label: 'Langdock' }
+    ];
+    const PF_LABEL = { code: 'Claude Code', langdock: 'Langdock' };
+
+    function befehlById(id) { return BEFEHLE.find(b => b.id === id); }
+    function votesOf(b) { return getVotes('befehl', b.id, b.votes); }
+
+    // Sortierung des Rankings: Stimmen (Seed + eigene) absteigend. Bei Gleichstand
+    // gewinnt der Eintrag mit DEINER Stimme (ehrlich gezählt bleibt +1 — aber der
+    // Klick soll sichtbar bewegen, sonst wirkt das Ranking tot), danach stabil
+    // nach Seed und Wortlaut, damit die Liste beim Toggle nicht unnötig springt.
+    function sortedBefehle() {
+      return BEFEHLE.slice().sort((a, b) =>
+        votesOf(b) - votesOf(a)
+        || (hasVoted('befehl', b.id) ? 1 : 0) - (hasVoted('befehl', a.id) ? 1 : 0)
+        || b.votes - a.votes
+        || a.cmd.localeCompare(b.cmd, 'de'));
+    }
+
+    // ===== KATEGORIE-FILTER =====
+    function setKategorie(k) {
+      state.kategorie = (k === 'all' || state.kategorie === k) ? null : k;
+      renderChips();
+      // renderChips() ersetzt alle Chips per innerHTML — der aktivierte Button
+      // ist weg und der Fokus fiele auf <body>. Den gerade geklickten Chip
+      // wieder fokussieren (auch wenn der Filter damit gelöst wurde).
+      const host = document.getElementById('bef-chips');
+      if (host) {
+        const idx = KAT.findIndex(kat => kat.id === k);
+        const target = (idx >= 0 && host.children[idx]) || host.querySelector('.bef-chip.active');
+        if (target) target.focus({ preventScroll: true });
+      }
+      renderRanking();
+    }
+    function renderChips() {
+      const host = document.getElementById('bef-chips');
+      if (!host) return;
+      host.innerHTML = KAT.map(k => {
+        const count = k.id === 'all' ? BEFEHLE.length : BEFEHLE.filter(b => b.kategorie === k.id).length;
+        const active = k.id === 'all' ? state.kategorie === null : state.kategorie === k.id;
+        return `<button type="button" class="bef-chip${active ? ' active' : ''}" aria-pressed="${active}" onclick="setKategorie('${k.id}')">${escHtml(k.label)} <span class="bef-chip-count">${count}</span></button>`;
+      }).join('');
+    }
+
+    // ===== RANKING RENDERN (mit FLIP-Bewegung beim Re-Sort) =====
+    function cardBodyHtml(b) {
+      let h = `
+        <div class="cmd-example"><span class="cmd-body-label">Mini-Beispiel</span><p>${mdInline(b.beispiel)}</p></div>`;
+      if (b.tipp) h += `
+        <div class="cmd-tipp"><span class="cmd-body-label">Gut zu wissen</span><p>${mdInline(b.tipp)}</p></div>`;
+      if (BEFEHL_LEUCHTTUERME.has(b.id) && b.demo) h += `
+        <div class="cmd-demo">
+          <span class="cmd-body-label">So sieht’s aus — nachgestellter Ablauf</span>
+          <div class="ex-terminal cmd-term">
+            <div class="ex-terminal-bar">
+              <span class="ex-dot"></span><span class="ex-dot"></span><span class="ex-dot"></span>
+              <span class="ex-terminal-title">claude code — ${escHtml(b.cmd)} in Aktion</span>
+              <button type="button" class="demo-replay" onclick="playBefehlDemo('${b.id}')" title="Demo abspielen" aria-label="Demo abspielen">↻</button>
+            </div>
+            <div class="ex-terminal-body" id="term-${b.id}">
+              <button type="button" class="term-play" onclick="playBefehlDemo('${b.id}')">▸ Demo abspielen</button>
+            </div>
+          </div>
+        </div>`;
+      const voices = BEFEHL_KOMMENTARE.filter(k => k.befehlId === b.id);
+      if (voices.length) h += `
+        <div class="cmd-voices">
+          <span class="cmd-body-label">Stimmen aus dem Team</span>
+          ${voices.map(v => `
+          <figure class="cmd-voice">
+            <blockquote>${escHtml(v.text)}</blockquote>
+            <figcaption>${escHtml(v.autor)} · ${escHtml(v.rolle)}</figcaption>
+          </figure>`).join('')}
+        </div>`;
+      return h;
+    }
+
+    function cardHtml(b, rank) {
+      const open = _expanded.has(b.id);
+      const voted = hasVoted('befehl', b.id);
+      const isLh = BEFEHL_LEUCHTTUERME.has(b.id);
+      // Kopier-Chip nur, wo Kopieren Sinn ergibt (Slash-Befehle & Terminal-Flags
+      // tippt man ein — Tasten drückt man, Langdock-Wege klickt man).
+      const copyable = b.kategorie === 'slash' || b.kategorie === 'cli';
+      return `
+        <li class="cmd-card" id="befehl-${b.id}" data-id="${b.id}">
+          <div class="cmd-row">
+            <span class="rank-num${rank <= 3 ? ' -top' : ''}" aria-label="Rang ${rank}">${rank}</span>
+            <div class="cmd-main">
+              <div class="cmd-line">
+                <code class="cmd-code">${escHtml(b.cmd)}</code>
+                ${copyable ? `<button type="button" class="cmd-copy" onclick="copyBefehl(event,'${b.id}')" title="Befehl kopieren" aria-label="Befehl ${escHtml(b.cmd)} kopieren">${LU.copy} Kopieren</button>` : ''}
+                <span class="pf-tag">${PF_LABEL[b.plattform] || b.plattform}</span>
+                ${isLh ? '<span class="lh-tag">Mini-Demo</span>' : ''}
+              </div>
+              <p class="cmd-nutzen">${mdInline(b.nutzen)}</p>
+              <div class="cmd-actions">
+                <button type="button" class="vote-btn${voted ? ' voted' : ''}" aria-pressed="${voted}" onclick="voteBefehl('${b.id}')">
+                  ${LU.vote}<span>Hat mir geholfen</span><span class="vote-count">${votesOf(b)}</span>
+                </button>
+                <button type="button" class="cmd-toggle" aria-expanded="${open}" aria-controls="cmd-body-${b.id}" onclick="toggleBefehl('${b.id}')">
+                  <span>${isLh ? 'Beispiel & Demo' : 'Mini-Beispiel'}</span><span class="ct-arrow" aria-hidden="true">›</span>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="cmd-body" id="cmd-body-${b.id}"${open ? '' : ' hidden'}>${cardBodyHtml(b)}</div>
+        </li>`;
+    }
+
+    function renderRanking(movedId, skipFlip) {
+      // Eine evtl. laufende Demo würde sonst in weggeworfene DOM-Knoten tippen
+      stopTermScript();
+      _playingDemo = null;
+      const list = document.getElementById('rank-list');
+      if (!list) return;
+      // FLIP Schritt 1: alte Positionen merken
+      const prevTop = {};
+      list.querySelectorAll('.cmd-card').forEach(el => { prevTop[el.dataset.id] = el.getBoundingClientRect().top; });
+      const all = sortedBefehle();
+      const rank = {}; all.forEach((b, i) => { rank[b.id] = i + 1; });   // globaler Rang, auch unter Filter
+      const shown = state.kategorie ? all.filter(b => b.kategorie === state.kategorie) : all;
+      list.innerHTML = shown.length
+        ? shown.map(b => cardHtml(b, rank[b.id])).join('')
+        : '<li class="bef-empty">Kein Eintrag in dieser Kategorie.</li>';
+      // FLIP Schritt 2: bewegte Karten gleiten sichtbar an ihren neuen Platz.
+      // skipFlip: bei Deep-Link-/Hash-Navigation entfällt das Gleiten — das
+      // Scroll-Anchoring des Browsers gibt den Karten beim innerHTML-Tausch sonst
+      // einen translateY-Transform, aus dem scrollIntoView ein falsches Ziel errechnet.
+      const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!reduce && !skipFlip) {
+        list.querySelectorAll('.cmd-card').forEach(el => {
+          const was = prevTop[el.dataset.id];
+          if (was === undefined) return;
+          const dy = was - el.getBoundingClientRect().top;
+          if (Math.abs(dy) < 2) return;
+          el.style.transform = `translateY(${dy}px)`;
+          el.style.transition = 'transform 0s';
+          requestAnimationFrame(() => {
+            el.style.transition = 'transform .5s var(--ae)';
+            el.style.transform = '';
+          });
+        });
+      }
+      if (movedId) {
+        const el = document.getElementById('befehl-' + movedId);
+        if (el) { el.classList.add('-moved'); setTimeout(() => el.classList.remove('-moved'), 1400); }
+        // innerHTML hat den gerade aktivierten Vote-Button zerstört — Fokus
+        // zurückgeben, sonst landen Tastatur-Nutzer auf <body> und müssen von
+        // vorn tabben. preventScroll: die FLIP-Animation bleibt ungestört.
+        const vb = document.querySelector('#befehl-' + movedId + ' .vote-btn');
+        if (vb) vb.focus({ preventScroll: true });
+      }
+    }
+
+    // ===== INTERAKTIONEN =====
+    function voteBefehl(id) {
+      const now = toggleVote('befehl', id);
+      showToast(now ? 'Danke — deine Stimme zählt (gespeichert in deinem Browser)' : 'Stimme zurückgenommen');
+      renderRanking(id);
+    }
+
+    function copyBefehl(evt, id) {
+      const b = befehlById(id);
+      if (!b) return;
+      quickCopy(evt, b.cmd);
+    }
+
+    function toggleBefehl(id) {
+      const body = document.getElementById('cmd-body-' + id);
+      const card = document.getElementById('befehl-' + id);
+      const btn = card ? card.querySelector('.cmd-toggle') : null;
+      if (!body) return;
+      const nowOpen = body.hidden;
+      if (nowOpen) { _expanded.add(id); body.hidden = false; }
+      else {
+        _expanded.delete(id); body.hidden = true;
+        // E2-Lektion: Zuklappen stoppt die eigene Demo (sonst tippt sie unsichtbar weiter)
+        if (_playingDemo === id) { stopTermScript(); _playingDemo = null; }
+      }
+      if (btn) btn.setAttribute('aria-expanded', nowOpen ? 'true' : 'false');
+    }
+
+    // Leuchtturm-Demo abspielen (kein Autoplay — Demo startet nur auf Klick)
+    function playBefehlDemo(id) {
+      const b = befehlById(id);
+      const body = document.getElementById('term-' + id);
+      if (!b || !b.demo || !body) return;
+      _playingDemo = id;
+      playScript(b.demo.script, { artifacts: [] }, { body, actions: null });
+    }
+
+    // ===== QUERVERWEISE (Glossar + FAQ) =====
+    // skill/prompt verlassen die Seite (Deep-Links der Nachbarseiten, Plan §2.4),
+    // befehl/begriff bleiben hier und laufen über den Hash-Router unten.
+    function xrefInfo(v) {
+      if (v.t === 'skill') return { href: 'skills.html?skill=' + encodeURIComponent(v.id), label: v.name || v.id, kind: 'Skill' };
+      if (v.t === 'prompt') return { href: 'prompts.html?p=' + encodeURIComponent(v.id), label: v.name || v.id, kind: 'Prompt' };
+      if (v.t === 'befehl') { const b = befehlById(v.id); return b ? { href: '#befehl/' + encodeURIComponent(v.id), label: b.cmd, kind: 'Befehl' } : null; }
+      if (v.t === 'begriff') { const g = begriffById(v.id); return g ? { href: '#begriff/' + encodeURIComponent(v.id), label: g.wort, kind: 'Glossar' } : null; }
+      return null;
+    }
+    function xrefsHtml(verweise) {
+      const items = (verweise || []).map(xrefInfo).filter(Boolean);
+      if (!items.length) return '';
+      return `<div class="xref-row">${items.map(x =>
+        `<a class="xref" href="${x.href}"><span class="xref-kind">${x.kind}</span>${escHtml(x.label)}</a>`).join('')}</div>`;
+    }
+
+    // ===== SÄULE 2: GLOSSAR =====
+    function begriffById(id) { return GLOSSAR.find(g => g.id === id); }
+
+    function glossarMatches() {
+      const q = _gQuery.trim().toLowerCase();
+      if (!q) return GLOSSAR;
+      const terms = q.split(/\s+/).filter(Boolean);
+      return GLOSSAR.filter(g => searchScore(g, terms,
+        [[g.wort, 5], [g.satz, 3], [g.beispiel, 2], [g.tiefe || '', 1]]) > 0);
+    }
+
+    function gCardHtml(g) {
+      const open = _gExpanded.has(g.id);
+      const voted = hasVoted('begriff', g.id);
+      return `
+        <article class="g-card" id="begriff-${g.id}">
+          <h4 class="g-wort">${escHtml(g.wort)}</h4>
+          <p class="g-satz">${mdInline(g.satz)}</p>
+          <div class="g-actions">
+            <button type="button" class="vote-btn g-vote${voted ? ' voted' : ''}" aria-pressed="${voted}" onclick="voteBegriff('${g.id}')">
+              ${LU.vote}<span>Hat geholfen</span><span class="vote-count">${getVotes('begriff', g.id, g.votes)}</span>
+            </button>
+            <button type="button" class="g-toggle" aria-expanded="${open}" aria-controls="g-body-${g.id}" onclick="toggleBegriff('${g.id}')">
+              <span>${g.tiefe ? 'Beispiel &amp; Vertiefung' : 'pilot-Beispiel'}</span><span class="ct-arrow" aria-hidden="true">›</span>
+            </button>
+          </div>
+          <div class="g-body" id="g-body-${g.id}"${open ? '' : ' hidden'}>
+            <div><span class="g-body-label">pilot-Beispiel</span><p>${mdInline(g.beispiel)}</p></div>
+            ${g.tiefe ? `<div><span class="g-body-label">Wenn du tiefer willst</span><p>${mdInline(g.tiefe)}</p></div>` : ''}
+            ${xrefsHtml(g.verweise)}
+          </div>
+        </article>`;
+    }
+
+    function renderGlossar() {
+      const host = document.getElementById('glossar-liste');
+      if (!host) return;
+      const shown = glossarMatches();
+      const hits = document.getElementById('glo-hits');
+      if (hits) {
+        if (_gQuery.trim()) {
+          hits.hidden = false;
+          hits.textContent = `${shown.length} Treffer für „${_gQuery.trim()}“`;
+        } else { hits.hidden = true; hits.textContent = ''; }
+      }
+      if (!shown.length) {
+        host.innerHTML = `
+          <div class="glo-empty">
+            <p>Kein Begriff gefunden — vielleicht unter anderem Namen?</p>
+            <button type="button" class="c-cta -black-border" onclick="clearGlossarSearch()">Suche zurücksetzen</button>
+          </div>`;
+        renderAzRail(shown);
+        return;
+      }
+      const groups = new Map();
+      shown.forEach(g => {
+        if (!groups.has(g.buchstabe)) groups.set(g.buchstabe, []);
+        groups.get(g.buchstabe).push(g);
+      });
+      const letters = [...groups.keys()].sort();
+      host.innerHTML = letters.map(L => `
+        <section class="g-gruppe" id="g-gruppe-${L}" aria-label="Begriffe mit ${L}">
+          <h3 class="g-letter">${L}</h3>
+          <div class="g-grid">${groups.get(L)
+            .slice().sort((a, b) => a.wort.localeCompare(b.wort, 'de'))
+            .map(gCardHtml).join('')}</div>
+        </section>`).join('');
+      renderAzRail(shown);
+    }
+
+    // A-Z-Sprungleiste: nur Buchstaben mit (sichtbaren) Einträgen sind aktiv
+    function renderAzRail(shown) {
+      const host = document.getElementById('az-rail');
+      if (!host) return;
+      const avail = new Set((shown || GLOSSAR).map(g => g.buchstabe));
+      host.innerHTML = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(L => avail.has(L)
+        ? `<button type="button" class="az-btn" onclick="jumpToLetter('${L}')" aria-label="Zu Begriffen mit ${L} springen">${L}</button>`
+        : `<button type="button" class="az-btn" disabled aria-hidden="true">${L}</button>`).join('');
+    }
+    function jumpToLetter(L) {
+      const el = document.getElementById('g-gruppe-' + L);
+      if (el) el.scrollIntoView({ behavior: scrollBehavior(), block: 'start' });
+    }
+
+    const onGlossarSearch = debounce(v => { _gQuery = v || ''; renderGlossar(); }, 120);
+    function clearGlossarSearch() {
+      _gQuery = '';
+      const inp = document.getElementById('glo-search');
+      if (inp) { inp.value = ''; inp.focus(); }
+      renderGlossar();
+    }
+
+    function voteBegriff(id) {
+      const g = begriffById(id);
+      if (!g) return;
+      const now = toggleVote('begriff', id);
+      const btn = document.querySelector(`#begriff-${id} .g-vote`);
+      if (btn) {
+        btn.classList.toggle('voted', now);
+        btn.setAttribute('aria-pressed', now ? 'true' : 'false');
+        const count = btn.querySelector('.vote-count');
+        if (count) count.textContent = getVotes('begriff', id, g.votes);
+      }
+      showToast(now ? 'Danke — deine Stimme zählt (gespeichert in deinem Browser)' : 'Stimme zurückgenommen');
+    }
+
+    function toggleBegriff(id) {
+      const body = document.getElementById('g-body-' + id);
+      const btn = document.querySelector(`#begriff-${id} .g-toggle`);
+      if (!body) return;
+      const nowOpen = body.hidden;
+      if (nowOpen) { _gExpanded.add(id); body.hidden = false; }
+      else { _gExpanded.delete(id); body.hidden = true; }
+      if (btn) btn.setAttribute('aria-expanded', nowOpen ? 'true' : 'false');
+    }
+
+    // ===== SÄULE 3: FAQ (Akkordeon — höchstens eine Karte offen) =====
+    function faqById(id) { return FAQ.find(f => f.id === id); }
+
+    function faqCardHtml(f) {
+      const open = _faqOpen === f.id;
+      return `
+        <article class="faq-card" id="faqcard-${f.id}">
+          <button type="button" class="faq-q" aria-expanded="${open}" aria-controls="faq-body-${f.id}" onclick="toggleFaq('${f.id}')">
+            <span>${escHtml(f.frage)}</span><span class="ct-arrow" aria-hidden="true">›</span>
+          </button>
+          <div class="faq-body" id="faq-body-${f.id}"${open ? '' : ' hidden'}>
+            <p class="faq-intro">${mdInline(f.intro)}</p>
+            <ol class="faq-steps">${f.schritte.map(s => `<li>${mdInline(s)}</li>`).join('')}</ol>
+            ${f.stimme ? `
+            <figure class="faq-voice">
+              <blockquote>${escHtml(f.stimme.text)}</blockquote>
+              <figcaption>${escHtml(f.stimme.autor)} · ${escHtml(f.stimme.rolle)}</figcaption>
+            </figure>` : ''}
+            ${xrefsHtml(f.verweise)}
+          </div>
+        </article>`;
+    }
+
+    function renderFaq() {
+      const host = document.getElementById('faq-liste');
+      if (host) host.innerHTML = FAQ.map(faqCardHtml).join('');
+    }
+
+    function toggleFaq(id) {
+      const prev = _faqOpen;
+      _faqOpen = (prev === id) ? null : id;
+      [prev, id].forEach(x => {
+        if (!x) return;
+        const body = document.getElementById('faq-body-' + x);
+        const btn = document.querySelector(`#faqcard-${x} .faq-q`);
+        if (body) body.hidden = (_faqOpen !== x);
+        if (btn) btn.setAttribute('aria-expanded', _faqOpen === x ? 'true' : 'false');
+      });
+    }
+
+    // ===== „KNIFF EINREICHEN“ — Demo-Flow-Baustein aus shared/base.js (Plan §5.4) =====
+    function openKniffSubmit() {
+      openSubmitFlow({
+        type: 'kniff',
+        title: 'Kniff einreichen',
+        intro: 'Dein Handgriff fürs Ranking — der Befehl, Trick oder Ablauf, der dir im Alltag wirklich hilft.',
+        fields: [
+          { key: 'titel', label: 'Titel', required: true, placeholder: 'z. B. „Screenshot direkt einfügen“' },
+          { key: 'trick', label: 'Befehl oder Trick', required: true, placeholder: 'z. B. Ctrl+V — oder der Ablauf in einem Satz' },
+          { key: 'wofuer', label: 'Wofür ist er gut?', type: 'textarea', required: true, placeholder: 'Wann hilft dir dieser Kniff — und was spart er dir?' }
+        ],
+        submitLabel: 'Kniff einreichen (Demo)'
+      });
+    }
+
+    // ===== DEEP-LINKS: ?befehl= / ?begriff= / ?faq= bzw. #befehl/ #begriff/ #faq/ (Plan §2.4) =====
+    // Kein Modal — der Eintrag wird aufgeklappt, angescrollt und kurz hervorgehoben.
+    // Nur replaceState (teilbare URL ohne History-Müll, keine Back-Falle nötig).
+    function scrollHighlight(elId) {
+      const scrollToEl = () => {
+        const t = document.getElementById(elId);
+        if (t) t.scrollIntoView({ behavior: scrollBehavior(), block: 'start' });
+      };
+      scrollToEl();
+      // Der Webfont lädt asynchron und verschiebt danach das Layout — einmal
+      // nachjustieren, sobald die Schriften stehen (sonst landet der Anker daneben).
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(() => setTimeout(scrollToEl, 60)).catch(() => {});
+      }
+      const el = document.getElementById(elId);
+      if (el) {
+        el.classList.add('-highlight');
+        setTimeout(() => el.classList.remove('-highlight'), 2400);
+      }
+    }
+
+    function applyDeepLink(fromLoad) {
+      if (fromLoad) {
+        try {
+          const qs = new URLSearchParams(location.search);
+          if (!location.hash) {
+            for (const key of ['befehl', 'begriff', 'faq']) {
+              const v = qs.get(key);
+              if (v) {
+                history.replaceState(null, '', location.pathname + '#' + key + '/' + encodeURIComponent(v));
+                break;
+              }
+            }
+          }
+        } catch (e) {}
+      }
+      const m = (location.hash || '').match(/^#(befehl|begriff|faq)\/(.+)$/);
+      if (!m) return;
+      let id;
+      try { id = decodeURIComponent(m[2]); } catch (e) { return; }
+
+      if (m[1] === 'befehl') {
+        const b = befehlById(id);
+        if (!b) return;
+        // Eintrag muss sichtbar sein: sperrender Kategorie-Filter wird gelöst
+        if (state.kategorie && state.kategorie !== b.kategorie) {
+          state.kategorie = null;
+          renderChips();
+        }
+        _expanded.add(id);
+        renderRanking(null, true);
+        scrollHighlight('befehl-' + id);
+      } else if (m[1] === 'begriff') {
+        const g = begriffById(id);
+        if (!g) return;
+        // Eintrag muss sichtbar sein: aktive Suche wird gelöst
+        if (_gQuery.trim()) {
+          _gQuery = '';
+          const inp = document.getElementById('glo-search');
+          if (inp) inp.value = '';
+        }
+        _gExpanded.add(id);
+        renderGlossar();
+        scrollHighlight('begriff-' + id);
+      } else {
+        const f = faqById(id);
+        if (!f) return;
+        if (_faqOpen !== id) toggleFaq(id);
+        scrollHighlight('faqcard-' + id);
+      }
+    }
+
+    // ===== ERKLÄR-BLOCK =====
+    function toggleGS() {
+      const content = document.getElementById('gs-content');
+      const btn = document.getElementById('gs-toggle-btn');
+      const isHidden = content.hidden;
+      content.hidden = !isHidden;
+      btn.setAttribute('aria-expanded', isHidden ? 'true' : 'false');
+      try { localStorage.setItem('hilfe-gs-seen', '1'); } catch (e) {}
+    }
+    function openGS() {
+      const content = document.getElementById('gs-content');
+      const btn = document.getElementById('gs-toggle-btn');
+      if (content.hidden) toggleGS();
+      document.getElementById('getting-started').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (btn) btn.focus({ preventScroll: true });
+    }
+
+    // ===== INIT =====
+    document.addEventListener('DOMContentLoaded', () => {
+      // Hero-Zähler: nur real Gezähltes aus den drei Säulen-Datensätzen
+      const stats = [
+        ['stat-befehle', BEFEHLE.length],
+        ['stat-glossar', GLOSSAR.length],
+        ['stat-faq', FAQ.length]
+      ];
+      stats.forEach(([id, n]) => {
+        const el = document.getElementById(id);
+        if (el) animateCount(el, n, 900);
+      });
+      [['pn-befehle', BEFEHLE.length], ['pn-glossar', GLOSSAR.length], ['pn-faq', FAQ.length],
+       ['bef-count', BEFEHLE.length], ['glo-count', GLOSSAR.length], ['faq-count', FAQ.length]
+      ].forEach(([id, n]) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = n;
+      });
+
+      renderChips();
+      renderRanking();
+      renderGlossar();
+      renderFaq();
+
+      // Erklär-Block beim allerersten Besuch offen zeigen (danach gemerkt)
+      try {
+        if (!localStorage.getItem('hilfe-gs-seen')) {
+          const gsc = document.getElementById('gs-content');
+          const gsb = document.getElementById('gs-toggle-btn');
+          if (gsc && gsb) { gsc.hidden = false; gsb.setAttribute('aria-expanded', 'true'); }
+        }
+      } catch (e) {}
+
+      // Deep-Links: ?befehl= / ?begriff= / ?faq= werden auf die kanonische Hash-Form umgeschrieben
+      applyDeepLink(true);
+      window.addEventListener('hashchange', () => applyDeepLink(false));
+    });
+  </script>
+</body>
+</html>

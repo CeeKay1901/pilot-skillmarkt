@@ -350,12 +350,12 @@
             <span class="rt-hint">Echte Projekte aus dem Team — zum Anklicken.</span>
             <span class="rt-foot"><span class="rt-tag">In Arbeit</span></span>
           </button>
-          <button type="button" class="rt-card" data-teaser="hilfe" aria-expanded="false" aria-controls="rt-panel">
+          <a class="rt-card" href="hilfe.html">
             <span class="rt-ic"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24"/><path d="m14.83 9.17 4.24-4.24"/><path d="m14.83 14.83 4.24 4.24"/><path d="m9.17 14.83-4.24 4.24"/><circle cx="12" cy="12" r="4"/></svg></span>
             <span class="rt-label">Ich hänge fest</span>
             <span class="rt-hint">Befehle, Begriffe und Lösungen für typische Blocker.</span>
-            <span class="rt-foot"><span class="rt-tag">In Arbeit</span></span>
-          </button>
+            <span class="rt-foot"><span class="rt-dest">Zum Hilfe-Center</span></span>
+          </a>
           <button type="button" class="rt-card" data-teaser="baukasten" aria-expanded="false" aria-controls="rt-panel">
             <span class="rt-ic"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg></span>
             <span class="rt-label">Etwas Hübsches bauen</span>
@@ -388,10 +388,11 @@
           <button type="button" class="rt-panel-close" onclick="closeTeaser()" aria-label="Ausblick schließen">×</button>
         </div>
 
-        <!-- Schlanke Stats-Zeile: ausschließlich real Gezähltes aus data/skills.js -->
-        <div class="hero-stats" aria-label="Zahlen aus dem Katalog, live gezählt">
+        <!-- Schlanke Stats-Zeile: ausschließlich real Gezähltes aus den data/-Dateien -->
+        <div class="hero-stats" aria-label="Zahlen aus dem Marketplace, live gezählt">
           <div class="hero-stat-box"><span class="hero-stat-num" id="stat-skills">0</span><span class="hero-stat-label">Skills im Katalog</span></div>
           <div class="hero-stat-box"><span class="hero-stat-num" id="stat-prompts">0</span><span class="hero-stat-label">Prompts in der Sammlung</span></div>
+          <div class="hero-stat-box"><span class="hero-stat-num" id="stat-hilfe">0</span><span class="hero-stat-label">Einträge im Hilfe-Center</span></div>
           <div class="hero-stat-box"><span class="hero-stat-num" id="stat-demos">0</span><span class="hero-stat-label">Live-Demos</span></div>
           <div class="hero-stat-box"><span class="hero-stat-num" id="stat-bundles">0</span><span class="hero-stat-label">Skill-Pakete</span></div>
         </div>
@@ -403,7 +404,7 @@
       <div class="areas-inner">
         <p class="section-label">Die Landkarte</p>
         <h2 id="areas-h">Ein Marketplace, sieben Bereiche</h2>
-        <p class="areas-sub">Skill-Katalog und Prompt-Sammlung sind live und wachsen weiter. Fünf weitere Bereiche entstehen gerade — hier siehst du schon, was sie können werden.</p>
+        <p class="areas-sub">Skill-Katalog, Prompt-Sammlung und Hilfe-Center sind live und wachsen weiter. Vier weitere Bereiche entstehen gerade — hier siehst du schon, was sie können werden.</p>
 
         <div class="areas-grid">
           <article class="area-card area-live anim-reveal">
@@ -451,13 +452,27 @@
             </div>
           </article>
 
-          <article class="area-card area-soon anim-reveal">
+          <article class="area-card area-live-sm anim-reveal">
             <div class="area-head">
               <span class="area-ic"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24"/><path d="m14.83 9.17 4.24-4.24"/><path d="m14.83 14.83 4.24 4.24"/><path d="m9.17 14.83-4.24 4.24"/><circle cx="12" cy="12" r="4"/></svg></span>
               <h3>Hilfe-Center</h3>
-              <span class="area-pill -soon">In Arbeit</span>
+              <span class="area-pill -live">Live</span>
             </div>
-            <p class="area-text">Befehle und Kniffe mit Team-Ranking, ein Glossar in einfacher Sprache und Schritt-für-Schritt-Lösungen für die häufigsten Blocker.</p>
+            <div class="area-count">
+              <span class="area-count-num" id="area-hilfe-count">0</span>
+              <span class="area-count-label">Befehle &amp; Kniffe</span>
+            </div>
+            <p class="area-meta" id="area-hilfe-meta"></p>
+            <p class="area-text">Befehle und Kniffe als Team-Ranking — deine Stimme sortiert live mit. Dazu ein Glossar in einfacher Sprache und Schritt-für-Schritt-Lösungen für die häufigsten Blocker.</p>
+            <a class="area-spot" href="hilfe.html?befehl=clear">
+              <span class="area-spot-label">Leuchtturm</span>
+              <span class="area-spot-name">/clear</span>
+              <p class="area-spot-tag">Der wichtigste Handgriff, wenn Claude „komisch wird“ — mit Mini-Terminal-Demo</p>
+              <span id="area-hilfe-spot-votes"></span>
+            </a>
+            <div class="area-cta-row">
+              <a class="c-cta -yellow-bg" href="hilfe.html">Hilfe-Center öffnen</a>
+            </div>
           </article>
 
           <article class="area-card area-soon anim-reveal">
@@ -514,6 +529,13 @@
             <li class="news-item">
               <span class="news-date">16. Juli</span>
               <div>
+                <p class="news-title">Das Hilfe-Center ist da</p>
+                <p class="news-text">28 Befehle und Kniffe als Team-Ranking, 44 Glossar-Begriffe in einfacher Sprache und 10 Schritt-für-Schritt-Lösungen — für alle Momente, in denen du festhängst. <a href="hilfe.html">Zum Hilfe-Center</a></p>
+              </div>
+            </li>
+            <li class="news-item">
+              <span class="news-date">16. Juli</span>
+              <div>
                 <p class="news-title">Die Prompt-Sammlung ist da</p>
                 <p class="news-text">Kopierfertige Prompts mit gelben Platzhaltern, Prompt-Builder und der Erklärung, warum jeder funktioniert. <a href="prompts.html">Zur Sammlung</a></p>
               </div>
@@ -530,13 +552,6 @@
               <div>
                 <p class="news-title">Generative Kunst mit p5.js</p>
                 <p class="news-text">Der Anthropic-Skill <a href="skills.html?skill=algorithmic-art">algorithmic-art</a> baut Visuals aus Code — reproduzierbar per Seed, statt Stock-Material.</p>
-              </div>
-            </li>
-            <li class="news-item">
-              <span class="news-date">10. Juli</span>
-              <div>
-                <p class="news-title">Drei neue Anthropic-Skills</p>
-                <p class="news-text"><a href="skills.html?skill=frontend-design">frontend-design</a>, <a href="skills.html?skill=canvas-design">canvas-design</a> und <a href="skills.html?skill=doc-coauthoring">doc-coauthoring</a> — Gestaltung und Texte im Duett mit Claude.</p>
               </div>
             </li>
           </ul>
@@ -581,6 +596,10 @@
 
   <script src="data/skills.js"></script>
   <script src="data/prompts.js"></script>
+  <!-- Hilfe-Center-Daten nur für die Live-Zähler — per defer, damit sie das
+       synchrone Seiten-Script nicht blockieren (Auswertung unten in DOMContentLoaded) -->
+  <script src="data/befehle.js" defer></script>
+  <script src="data/glossar.js" defer></script>
   <script src="shared/base.js"></script>
   <script>
     // ===== STATE (base.js-Konvention; Modal-Engine läuft hier nicht) =====
@@ -644,10 +663,26 @@
       el.innerHTML = renderStars(avg) + ` <span class="rating-text">${avg.toFixed(1)} · ${cnt} Stimmen</span>`;
     })();
 
+    // Hilfe-Center-Karte + Hero-Zähler: data/befehle.js + data/glossar.js laden per
+    // defer und sind erst NACH diesem Script ausgeführt — deshalb DOMContentLoaded.
+    // Auch hier gilt: nur real Gezähltes (BEFEHLE, GLOSSAR, FAQ) — nichts erfunden.
+    document.addEventListener('DOMContentLoaded', () => {
+      if (typeof BEFEHLE === 'undefined' || typeof GLOSSAR === 'undefined' || typeof FAQ === 'undefined') return;
+      const hilfeCount = document.getElementById('area-hilfe-count');
+      if (hilfeCount) animateCount(hilfeCount, BEFEHLE.length, 1100);
+      const hilfeMeta = document.getElementById('area-hilfe-meta');
+      if (hilfeMeta) hilfeMeta.textContent = `dazu ${GLOSSAR.length} Glossar-Begriffe · ${FAQ.length} Schritt-für-Schritt-Lösungen`;
+      const statHilfe = document.getElementById('stat-hilfe');
+      if (statHilfe) animateCount(statHilfe, BEFEHLE.length + GLOSSAR.length + FAQ.length, 1100);
+      // Leuchtturm-Hinweis: Stimmen wie auf hilfe.html gezählt (Seed + eigene, vote:befehl:*)
+      const spotVotes = document.getElementById('area-hilfe-spot-votes');
+      const lh = BEFEHLE.find(b => b.id === 'clear');
+      if (spotVotes && lh) spotVotes.innerHTML = `<span class="rating-text">${getVotes('befehl', lh.id, lh.votes)} × „Hat mir geholfen“</span>`;
+    });
+
     // ===== ROUTER: „In Arbeit“-Ausblicke (kein toter Link) =====
     const TEASER = {
       showroom:  { name: 'Showroom',         text: 'Projekte von Kolleg:innen zum Anklicken — mit der ehrlichen Geschichte, wie sie entstanden sind, und allem, was du zum Nachbauen brauchst.' },
-      hilfe:     { name: 'Hilfe-Center',     text: 'Befehle und Kniffe mit Team-Ranking, ein Glossar in einfacher Sprache und Schritt-für-Schritt-Lösungen für die häufigsten Blocker.' },
       baukasten: { name: 'Baukasten',        text: 'Fertige Code-Bausteine mit Live-Vorschau und Beispieldaten zum Üben — jeder mit einem „Sag Claude einfach …“-Prompt.' },
       lernen:    { name: 'Lernen',           text: 'Ein kuratierter Katalog geprüfter Lern-Ressourcen — Videos, Doku und Kurse, gefiltert nach Niveau, Dauer und Sprache.' }
     };
