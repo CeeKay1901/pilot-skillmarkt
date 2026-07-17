@@ -103,27 +103,49 @@ function renderNav(activePage, opts) {
   // Idempotent: früher injizierte Header/Footer entfernen (keine Dopplung)
   document.querySelectorAll('[data-shared-nav]').forEach(el => el.remove());
 
-  // E6-Umbau-Anker (Plan §2.4): Sobald eine 5. Sektion (z. B. bibliothek.html)
-  // dazukommt, hier ein `sharedMoreItems`-Array einführen — Desktop als
-  // „Mehr ▾“-Dropdown (Klick öffnet, Esc/Außenklick schließt, aria-expanded),
-  // mobil (≤1023px) flach in die scrollende Leiste gerendert. Mit 4 Punkten
-  // wäre ein Ein-Punkt-Dropdown kaputt gewirkt — daher bis dahin direkte Links.
+  // E6-Umbau (Plan §2.4): Mit der 5. Sektion (bibliothek.html) wird die Leiste
+  // umgebaut. Primäre Direkt-Links bleiben Katalog/Prompts/Hilfe; die sekundären
+  // Sektionen (Lernen, Asset-Bibliothek) wandern in ein „Mehr ▾“-Dropdown
+  // (Desktop: Klick öffnet, Esc/Außenklick schließt, aria-expanded). Mobil
+  // (≤1023px) lösen die CSS-Regeln das Dropdown flach in die scrollende Leiste
+  // auf. HARTE REGRESSIONS-GARANTIE: nav-catalog/nav-prompts/nav-hilfe/nav-lernen
+  // (+ neu nav-bibliothek) stehen IMMER im DOM (auch im geschlossenen Dropdown),
+  // das aktive Item trägt class="active" + aria-current="page" + exakten Labeltext.
   const sharedItems = [
     { id: 'nav-catalog', page: 'katalog', label: 'Katalog', href: 'skills.html' },
     { id: 'nav-prompts', page: 'prompts', label: 'Prompts', href: 'prompts.html' },
-    { id: 'nav-lernen', page: 'lernen', label: 'Lernen', href: 'lernen.html' },
     { id: 'nav-hilfe', page: 'hilfe', label: 'Hilfe', href: 'hilfe.html' }
   ];
-  const linkHtml = sharedItems.map(it => {
+  const sharedMoreItems = [
+    { id: 'nav-lernen', page: 'lernen', label: 'Lernen', href: 'lernen.html' },
+    { id: 'nav-bibliothek', page: 'bibliothek', label: 'Asset-Bibliothek', href: 'bibliothek.html' }
+  ];
+  // Ein Item → <a>/<button>. sharedOnclick-Fähigkeit für BEIDE Listen erhalten
+  // (skills.html nutzt sharedOnclick.katalog). menuitem=true rendert die
+  // Dropdown-Variante (role="menuitem") — sonst der klassische .nav-link.
+  function itemToHtml(it, menuitem) {
     const active = it.page === activePage;
-    const cls = 'nav-link' + (active ? ' active' : '');
+    const cls = 'nav-link' + (active ? ' active' : '') + (menuitem ? ' nav-more-item' : '');
+    const roleAttr = menuitem ? ' role="menuitem"' : '';
     const onclick = opts.sharedOnclick && opts.sharedOnclick[it.page];
-    if (onclick) return `<button type="button" class="${cls}" id="${it.id}" onclick="${onclick}">${it.label}</button>`;
-    return `<a class="${cls}" id="${it.id}" href="${it.href}"${active ? ' aria-current="page"' : ''}>${it.label}</a>`;
-  });
+    if (onclick) return `<button type="button" class="${cls}" id="${it.id}"${roleAttr} onclick="${onclick}">${it.label}</button>`;
+    return `<a class="${cls}" id="${it.id}" href="${it.href}"${roleAttr}${active ? ' aria-current="page"' : ''}>${it.label}</a>`;
+  }
+  const linkHtml = sharedItems.map(it => itemToHtml(it, false));
   (opts.extraItems || []).forEach(it => {
     linkHtml.push(`<button type="button" class="nav-link" id="${it.id}" onclick="${it.onclick}">${it.label}</button>`);
   });
+  // „Mehr ▾“-Dropdown mit den sekundären Sektionen. Der Button bekommt aktiven
+  // Look, wenn die aktive Seite in den moreItems liegt (lernen/bibliothek).
+  const moreActive = sharedMoreItems.some(it => it.page === activePage);
+  const moreMenuHtml = sharedMoreItems.map(it => itemToHtml(it, true)).join('\n          ');
+  const moreHtml = `<div class="nav-more" data-nav-more>
+        <button type="button" class="nav-link nav-more-btn${moreActive ? ' active' : ''}" id="nav-more-btn" aria-expanded="false" aria-haspopup="true" aria-controls="nav-more-menu">Mehr <span class="nav-more-caret" aria-hidden="true">▾</span></button>
+        <div class="nav-more-menu" id="nav-more-menu" role="menu" aria-label="Weitere Bereiche" hidden>
+          ${moreMenuHtml}
+        </div>
+      </div>`;
+  linkHtml.push(moreHtml);
 
   const searchHtml = opts.search ? `
       <div class="search-wrap">
@@ -169,6 +191,64 @@ function renderNav(activePage, opts) {
   if (skip) skip.insertAdjacentHTML('afterend', headerHtml);
   else document.body.insertAdjacentHTML('afterbegin', headerHtml);
   document.body.insertAdjacentHTML('beforeend', footerHtml);
+
+  initNavMore();
+}
+
+/* „Mehr ▾“-Dropdown der Hauptnav (E6): Klick togglet, Esc schließt (Fokus zurück
+   auf den Button), Außenklick schließt, Pfeil-runter/-hoch bewegt in den Menü-
+   punkten. Auf Mobile (≤1023px) ist der Button per CSS ausgeblendet und die
+   Menüpunkte liegen flach in der Leiste — die Handler laufen dann ins Leere.
+   Idempotent: die document-Listener werden nur einmal pro Seite gebunden. */
+function initNavMore() {
+  const btn = document.getElementById('nav-more-btn');
+  const menu = document.getElementById('nav-more-menu');
+  if (!btn || !menu) return;
+  const isDesktop = () => !(window.matchMedia && window.matchMedia('(max-width: 1023px)').matches);
+  const open = () => {
+    if (!isDesktop()) return;
+    menu.hidden = false;
+    btn.setAttribute('aria-expanded', 'true');
+  };
+  const close = (focusBtn) => {
+    menu.hidden = true;
+    btn.setAttribute('aria-expanded', 'false');
+    if (focusBtn) btn.focus();
+  };
+  btn.addEventListener('click', e => {
+    e.stopPropagation();
+    (btn.getAttribute('aria-expanded') === 'true') ? close(false) : open();
+  });
+  btn.addEventListener('keydown', e => {
+    if (e.key === 'ArrowDown') {
+      e.preventDefault(); open();
+      const first = menu.querySelector('.nav-more-item');
+      if (first) first.focus();
+    }
+  });
+  menu.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { close(true); return; }
+    const items = [...menu.querySelectorAll('.nav-more-item')];
+    const i = items.indexOf(document.activeElement);
+    if (e.key === 'ArrowDown') { e.preventDefault(); (items[i + 1] || items[0]).focus(); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); (items[i - 1] || btn).focus(); }
+  });
+  if (!document._navMoreBound) {
+    document._navMoreBound = true;
+    document.addEventListener('click', e => {
+      const wrap = document.querySelector('[data-nav-more]');
+      const m = document.getElementById('nav-more-menu');
+      const b = document.getElementById('nav-more-btn');
+      if (!wrap || !m || m.hidden) return;
+      if (!wrap.contains(e.target)) { m.hidden = true; if (b) b.setAttribute('aria-expanded', 'false'); }
+    });
+    document.addEventListener('keydown', e => {
+      if (e.key !== 'Escape') return;
+      const m = document.getElementById('nav-more-menu');
+      const b = document.getElementById('nav-more-btn');
+      if (m && !m.hidden) { m.hidden = true; if (b) { b.setAttribute('aria-expanded', 'false'); b.focus(); } }
+    });
+  }
 }
 
 /* ===== LUCIDE-ICON-MAP (inline SVGs — statt Emojis, editorialer Look) ===== */
@@ -200,7 +280,16 @@ const LU = {
   "podcast": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16.85 18.58a9 9 0 1 0-9.7 0"/><path d="M8 14a5 5 0 1 1 8 0"/><circle cx="12" cy="11" r="1"/><path d="M13 17a1 1 0 1 0-2 0l.5 4.5a.5.5 0 1 0 1 0Z"/></svg>',
   "intern": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg>',
   "uhr": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
-  "extern": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>'
+  "extern": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>',
+  /* E6 (Asset-Bibliothek) — additive Sektions-Icons; bestehende Keys unangetastet. */
+  "font": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h16"/><path d="m6 16 6-12 6 12"/><path d="M8 12h8"/></svg>',
+  "palette": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z"/><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/></svg>',
+  "iconset": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>',
+  "pattern": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/><path d="M15 3v18"/></svg>',
+  "brand": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2z"/><path d="M13 5v2"/><path d="M13 17v2"/><path d="M13 11v2"/></svg>',
+  "kontrast": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 18a6 6 0 0 0 0-12z" fill="currentColor"/></svg>',
+  "text-size": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 7V5H3v2"/><path d="M8.5 5v14"/><path d="M6.5 19h4"/><path d="M21 13v-2h-6v2"/><path d="M18 11v8"/><path d="M16.5 19h3"/></svg>',
+  "download": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg>'
 };
 function subIcon(sub) {
   return LU[sub] || LU.fallback;

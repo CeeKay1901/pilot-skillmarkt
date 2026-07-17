@@ -356,12 +356,12 @@
             <span class="rt-hint">Befehle, Begriffe und Lösungen für typische Blocker.</span>
             <span class="rt-foot"><span class="rt-dest">Zum Hilfe-Center</span></span>
           </a>
-          <button type="button" class="rt-card" data-teaser="baukasten" aria-expanded="false" aria-controls="rt-panel">
+          <a class="rt-card" href="bibliothek.html">
             <span class="rt-ic"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg></span>
             <span class="rt-label">Etwas Hübsches bauen</span>
-            <span class="rt-hint">Fertige Bausteine und Beispieldaten zum Loslegen.</span>
-            <span class="rt-foot"><span class="rt-tag">In Arbeit</span></span>
-          </button>
+            <span class="rt-hint">Fonts, Icons, Farbpaletten — startklar fürs nächste Projekt.</span>
+            <span class="rt-foot"><span class="rt-dest">Zur Bibliothek</span></span>
+          </a>
           <a class="rt-card" href="lernen.html">
             <span class="rt-ic"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg></span>
             <span class="rt-label">KI verstehen</span>
@@ -405,7 +405,7 @@
       <div class="areas-inner">
         <p class="section-label">Die Landkarte</p>
         <h2 id="areas-h">Ein Marketplace, sieben Bereiche</h2>
-        <p class="areas-sub">Skill-Katalog, Prompt-Sammlung, Hilfe-Center und Lernen sind live und wachsen weiter. Drei weitere Bereiche entstehen gerade — hier siehst du schon, was sie können werden.</p>
+        <p class="areas-sub">Skill-Katalog, Prompt-Sammlung, Hilfe-Center, Lernen und die Asset-Bibliothek sind live und wachsen weiter. Zwei weitere Bereiche entstehen gerade — hier siehst du schon, was sie können werden.</p>
 
         <div class="areas-grid">
           <article class="area-card area-live anim-reveal">
@@ -499,13 +499,27 @@
             </div>
           </article>
 
-          <article class="area-card area-soon anim-reveal">
+          <article class="area-card area-live-sm anim-reveal">
             <div class="area-head">
               <span class="area-ic"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 6 4 14"/><path d="M12 6v14"/><path d="M8 8v12"/><path d="M4 4v16"/></svg></span>
               <h3>Asset-Bibliothek</h3>
-              <span class="area-pill -soon">In Arbeit</span>
+              <span class="area-pill -live">Live</span>
             </div>
-            <p class="area-text">Fonts mit Live-Vorschau, ein durchsuchbarer Icon-Browser, Farbpaletten mit Kontrast-Check und pilot-Brand-Vorlagen zum Download.</p>
+            <div class="area-count">
+              <span class="area-count-num" id="area-bibliothek-count">0</span>
+              <span class="area-count-label">Assets</span>
+            </div>
+            <p class="area-meta" id="area-bibliothek-meta"></p>
+            <p class="area-text">Frei nutzbares Material für deine Projekte: Schriften mit Live-Vorschau, ein durchsuchbarer Icon-Browser, Farbpaletten mit WCAG-Kontrast-Check, Muster und der pilot-CI-Spickzettel. Nur OFL/MIT/ISC/CC0 — Lizenz sichtbar an jedem Asset.</p>
+            <a class="area-spot" href="bibliothek.html?a=inter">
+              <span class="area-spot-label">Leuchtturm</span>
+              <span class="area-spot-name">Inter — Live-Vorschau</span>
+              <p class="area-spot-tag">Beispieltext antippen, Größe live regeln, @font-face &amp; Download direkt daneben</p>
+              <span id="area-bibliothek-spot-rating"></span>
+            </a>
+            <div class="area-cta-row">
+              <a class="c-cta -yellow-bg" href="bibliothek.html">Bibliothek öffnen</a>
+            </div>
           </article>
 
           <article class="area-card area-soon anim-reveal">
@@ -563,10 +577,10 @@
               </div>
             </li>
             <li class="news-item">
-              <span class="news-date">11. Juli</span>
+              <span class="news-date">17. Juli</span>
               <div>
-                <p class="news-title">Drei Community-Skills aus obra/superpowers</p>
-                <p class="news-text"><a href="skills.html?skill=brainstorming">brainstorming</a>, <a href="skills.html?skill=systematic-debugging">systematic-debugging</a> und <a href="skills.html?skill=verification-before-completion">verification-before-completion</a> — erst denken, dann bauen, dann beweisen.</p>
+                <p class="news-title">Die Asset-Bibliothek ist da</p>
+                <p class="news-text">Frei nutzbares Material zum Loslegen: 9 Schriften mit Live-Vorschau, ein durchsuchbarer Icon-Browser, 7 Farbpaletten mit WCAG-Kontrast-Check, Muster und der pilot-CI-Spickzettel. Nur OFL/MIT/ISC/CC0 — Lizenz sichtbar an jedem Asset. <a href="bibliothek.html">Zur Asset-Bibliothek</a></p>
               </div>
             </li>
           </ul>
@@ -617,6 +631,8 @@
   <script src="data/glossar.js" defer></script>
   <!-- Lernen-Daten (E5), ebenfalls nur für die Live-Zähler — gleiches defer-Muster -->
   <script src="data/ressourcen.js" defer></script>
+  <!-- Asset-Bibliothek-Daten (E6), nur für die Live-Zähler — gleiches defer-Muster -->
+  <script src="data/assets.js" defer></script>
   <script src="shared/base.js"></script>
   <script>
     // ===== STATE (base.js-Konvention; Modal-Engine läuft hier nicht) =====
@@ -714,10 +730,26 @@
       if (spotRating && lr && lr.rating) spotRating.innerHTML = renderStars(lr.rating.average) + ` <span class="rating-text">${lr.rating.average.toFixed(1)} · ${lr.rating.count} Stimmen</span>`;
     });
 
+    // Asset-Bibliothek-Karte + Hero-Zähler (E6): data/assets.js lädt per defer —
+    // deshalb ebenfalls DOMContentLoaded. Nur real Gezähltes aus ASSETS/den Arrays.
+    document.addEventListener('DOMContentLoaded', () => {
+      if (typeof ASSETS === 'undefined') return;
+      const bibCount = document.getElementById('area-bibliothek-count');
+      if (bibCount) animateCount(bibCount, ASSETS.length, 1100);
+      const bibMeta = document.getElementById('area-bibliothek-meta');
+      if (bibMeta) bibMeta.textContent = `${FONTS.length} Schriften · ${ICONSETS.length} Icon-Sets · ${PALETTES.length} Paletten · ${PATTERNS.length} Muster & Verläufe`;
+      // Leuchtturm: Seed-Bewertung der Inter-Schrift (rate:asset:* wird auf
+      // bibliothek.html gepflegt) — hier direkt aus dem Seed angezeigt.
+      const spotRating = document.getElementById('area-bibliothek-spot-rating');
+      const lh = ASSETS.find(a => a.id === 'inter');
+      if (spotRating && lh && lh.rating) spotRating.innerHTML = renderStars(lh.rating.average) + ` <span class="rating-text">${lh.rating.average.toFixed(1)} · ${lh.rating.count} Stimmen</span>`;
+    });
+
     // ===== ROUTER: „In Arbeit“-Ausblicke (kein toter Link) =====
+    // Baukasten ist jetzt ein echter Link zur Asset-Bibliothek (eigene Baukasten-
+    // Kachel folgt in E7) — deshalb nur noch Showroom als Teaser.
     const TEASER = {
-      showroom:  { name: 'Showroom',         text: 'Projekte von Kolleg:innen zum Anklicken — mit der ehrlichen Geschichte, wie sie entstanden sind, und allem, was du zum Nachbauen brauchst.' },
-      baukasten: { name: 'Baukasten',        text: 'Fertige Code-Bausteine mit Live-Vorschau und Beispieldaten zum Üben — jeder mit einem „Sag Claude einfach …“-Prompt.' }
+      showroom:  { name: 'Showroom',         text: 'Projekte von Kolleg:innen zum Anklicken — mit der ehrlichen Geschichte, wie sie entstanden sind, und allem, was du zum Nachbauen brauchst.' }
     };
     let _teaserOpen = null;
 
