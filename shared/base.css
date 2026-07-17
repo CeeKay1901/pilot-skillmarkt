@@ -1443,3 +1443,162 @@
       .font-card, .icon-cell, .swatch { transition: none; }
       .icon-cell:hover { transform: none; }
     }
+
+    /* ============================================================
+       E7 (Baukasten) — additive Komponenten für baukasten.html.
+       Baustein-Grid & -Karten, iframe-Live-Vorschau (.preview-frame),
+       Code-Ansicht mit Copy, „Sag Claude"-Prompt-Block, Meistkopiert-
+       Ranking, Beispieldaten-Karten, Filter/Sort-Leiste. pilot-CI,
+       nur additiv — bestehende Regeln bleiben unangetastet.
+       ============================================================ */
+
+    /* ----- Filter/Sort-Leiste ----- */
+    .bk-toolbar {
+      display: flex; align-items: center; gap: 1.6rem 2rem; flex-wrap: wrap;
+      margin: 0 0 2.4rem; padding-bottom: 1.6rem; border-bottom: 1px solid var(--line);
+    }
+    .bk-cats { display: flex; gap: .6rem; flex-wrap: wrap; }
+    .bk-cat {
+      display: inline-flex; align-items: center; gap: .5rem;
+      border: 1px solid var(--line-strong); background: transparent; color: var(--c-gray-m);
+      border-radius: var(--radius-pill); padding: .6rem 1.3rem;
+      font-family: inherit; font-size: 1.3rem; font-weight: 600; cursor: pointer; transition: var(--trans);
+    }
+    .bk-cat:hover { border-color: var(--c-black); color: var(--c-black); }
+    .bk-cat.active { background: var(--c-black); border-color: var(--c-black); color: var(--c-white); }
+    .bk-cat .lu { width: 1.4rem; height: 1.4rem; }
+    .bk-cat .tab-count { font-family: var(--font-mono); font-size: 1.05rem; opacity: .75; }
+    .bk-sort { display: flex; align-items: center; gap: .8rem; margin-left: auto; }
+    .bk-sort label { font-size: 1.3rem; color: var(--c-gray-m); font-weight: 600; }
+    .bk-sort select {
+      font-family: inherit; font-size: 1.4rem; padding: .7rem 1rem;
+      border: 1px solid var(--line-strong); border-radius: var(--r-sm);
+      background: var(--c-white); color: var(--c-black); cursor: pointer;
+    }
+    .bk-sort select:focus { outline: none; border-color: var(--c-yellow); }
+
+    /* ----- Baustein-Grid & -Karten ----- */
+    .bk-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2rem; }
+    .baustein-card {
+      display: flex; flex-direction: column;
+      background: var(--paper); border: 1px solid var(--line); border-radius: var(--r-md);
+      overflow: hidden; transition: border-color .25s ease, box-shadow .25s ease, transform .2s ease;
+      scroll-margin-top: calc(var(--header-h) + 2.4rem);
+    }
+    .baustein-card:hover { border-color: var(--line-strong); transform: translateY(-2px); box-shadow: 0 14px 30px -22px rgba(38,38,38,.5); }
+    .baustein-card.-highlight { border-color: var(--c-yellow); box-shadow: 0 0 0 3px rgba(255,224,94,.45); }
+    .baustein-thumb {
+      position: relative; border-bottom: 1px solid var(--line);
+      background: repeating-conic-gradient(#eeede5 0% 25%, #f6f5ef 0% 50%) 50% / 1.6rem 1.6rem;
+      overflow: hidden;
+    }
+    .baustein-thumb .preview-frame { height: 20rem; }
+    .baustein-lh-pill {
+      position: absolute; top: 1rem; left: 1rem; z-index: 2;
+      display: inline-flex; align-items: center; gap: .4rem;
+      background: var(--c-yellow); color: var(--c-black);
+      font-family: var(--font-mono); font-size: 1.05rem; font-weight: 700;
+      letter-spacing: .06em; text-transform: uppercase;
+      border-radius: var(--radius-pill); padding: .3rem .9rem;
+    }
+    .baustein-lh-pill .lu { width: 1.2rem; height: 1.2rem; }
+    .baustein-body { display: flex; flex-direction: column; gap: .8rem; padding: 1.6rem 1.8rem 1.8rem; }
+    .baustein-kopf { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+    .baustein-name { font-size: 1.8rem; font-weight: 700; letter-spacing: -.01em; }
+    .baustein-schwer {
+      font-family: var(--font-mono); font-size: 1.05rem; font-weight: 600;
+      letter-spacing: .06em; text-transform: uppercase; color: var(--c-gray-m);
+    }
+    .baustein-desc { font-size: 1.4rem; line-height: 1.55; color: var(--c-ink-body); margin: 0; }
+    .baustein-meta { display: flex; align-items: center; gap: .8rem 1.2rem; flex-wrap: wrap; margin-top: .2rem; }
+    .baustein-actions { display: flex; align-items: center; gap: .8rem; flex-wrap: wrap; margin-top: .6rem; }
+
+    /* Meistkopiert-Zähler (Namespace copies:baustein:<id>) */
+    .copy-count {
+      display: inline-flex; align-items: center; gap: .4rem;
+      font-family: var(--font-mono); font-size: 1.15rem; font-weight: 600; color: var(--c-gray-d);
+    }
+    .copy-count .lu { width: 1.3rem; height: 1.3rem; color: var(--c-gray-m); }
+
+    /* ----- iframe-Live-Vorschau ----- */
+    .preview-frame-wrap {
+      position: relative; width: 100%;
+      border: 1px solid var(--line); border-radius: var(--r-sm); overflow: hidden;
+      background: repeating-conic-gradient(#eeede5 0% 25%, #f6f5ef 0% 50%) 50% / 1.6rem 1.6rem;
+    }
+    .preview-frame {
+      display: block; width: 100%; border: 0; background: #fff;
+      height: 34rem;
+    }
+    .modal-body .preview-frame-wrap { margin: .4rem 0 1.2rem; }
+    .modal-body .preview-frame { height: 40rem; }
+    .preview-note {
+      font-size: 1.25rem; color: var(--c-gray-m); line-height: 1.5; margin: .4rem 0 0;
+    }
+
+    /* ----- „Sag Claude"-Prompt-Block ----- */
+    .bk-prompt-block {
+      background: var(--paper); border: 1px solid var(--line); border-left: 3px solid var(--c-yellow);
+      border-radius: var(--r-sm); padding: 1.4rem 1.6rem; margin: .6rem 0 1.2rem;
+    }
+    .bk-prompt-block p { font-size: 1.45rem; line-height: 1.6; color: var(--c-ink-strong); margin: 0 0 1rem; }
+    .bk-prompt-actions { display: flex; gap: .8rem; flex-wrap: wrap; }
+
+    /* ----- Meistkopiert-Ranking (Podest) ----- */
+    .bk-rank { display: flex; flex-direction: column; gap: .4rem; }
+    .bk-rank-item {
+      display: flex; align-items: center; gap: 1.2rem;
+      border: 1px solid var(--line); border-radius: var(--r-sm); background: var(--paper);
+      padding: 1rem 1.4rem; text-align: left; cursor: pointer; transition: var(--trans);
+      font-family: inherit; color: var(--c-black); width: 100%;
+    }
+    .bk-rank-item:hover { border-color: var(--c-black); }
+    .bk-rank-pos { font-family: var(--font-mono); font-size: 1.6rem; font-weight: 700; color: var(--c-gray-m); min-width: 2.4rem; }
+    .bk-rank-name { font-size: 1.45rem; font-weight: 600; }
+    .bk-rank-copies { margin-left: auto; }
+
+    /* ----- Beispieldaten-Karten ----- */
+    .bk-data-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.8rem; }
+    .bk-data-card {
+      display: flex; flex-direction: column; gap: 1rem;
+      background: var(--paper); border: 1px solid var(--line); border-radius: var(--r-md);
+      padding: 1.8rem 2rem; scroll-margin-top: calc(var(--header-h) + 2.4rem);
+    }
+    .bk-data-kopf { display: flex; align-items: center; gap: 1rem; }
+    .bk-data-ic { color: var(--c-black); }
+    .bk-data-ic .lu { width: 2.2rem; height: 2.2rem; }
+    .bk-data-name { font-family: var(--font-mono); font-size: 1.55rem; font-weight: 700; overflow-wrap: anywhere; }
+    .bk-data-format {
+      margin-left: auto; font-family: var(--font-mono); font-size: 1.05rem; font-weight: 700;
+      letter-spacing: .06em; text-transform: uppercase; color: var(--c-black);
+      background: var(--c-yellow); border-radius: var(--radius-pill); padding: .2rem .8rem; white-space: nowrap;
+    }
+    .bk-data-facts { display: flex; gap: .6rem 1.4rem; flex-wrap: wrap; font-family: var(--font-mono); font-size: 1.2rem; color: var(--c-gray-d); }
+    .bk-data-desc { font-size: 1.4rem; line-height: 1.55; color: var(--c-ink-body); margin: 0; }
+    .bk-data-uebung {
+      border-top: 1px solid var(--line); padding-top: 1rem; margin-top: .2rem;
+      display: flex; flex-direction: column; gap: .8rem;
+    }
+    .bk-data-uebung-label { font-family: var(--font-mono); font-size: 1.1rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--c-gray-m); }
+    .bk-data-uebung p { font-size: 1.35rem; line-height: 1.55; color: var(--c-ink-body); margin: 0; }
+    .bk-data-xref { display: flex; gap: .8rem; flex-wrap: wrap; }
+    .bk-data-actions { display: flex; gap: .8rem; flex-wrap: wrap; margin-top: .4rem; }
+    .bk-data-hinweis {
+      font-family: var(--font-mono); font-size: 1.15rem; line-height: 1.55; color: var(--c-gray-m);
+      border-left: 3px solid var(--c-yellow); padding: .4rem 0 .4rem 1.2rem; margin: 2rem 0 0; max-width: 92ch;
+    }
+
+    /* ----- Responsive ----- */
+    @media (max-width: 1023px) {
+      .bk-grid, .bk-data-grid { grid-template-columns: minmax(0, 1fr); }
+      .bk-sort { margin-left: 0; }
+    }
+    @media (max-width: 640px) {
+      .baustein-body, .bk-data-card { padding: 1.4rem 1.4rem; }
+      .preview-frame { height: 26rem; }
+      .modal-body .preview-frame { height: 32rem; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .baustein-card, .bk-cat, .bk-rank-item { transition: none; }
+      .baustein-card:hover { transform: none; }
+    }

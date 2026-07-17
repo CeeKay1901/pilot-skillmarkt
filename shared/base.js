@@ -118,7 +118,8 @@ function renderNav(activePage, opts) {
   ];
   const sharedMoreItems = [
     { id: 'nav-lernen', page: 'lernen', label: 'Lernen', href: 'lernen.html' },
-    { id: 'nav-bibliothek', page: 'bibliothek', label: 'Asset-Bibliothek', href: 'bibliothek.html' }
+    { id: 'nav-bibliothek', page: 'bibliothek', label: 'Asset-Bibliothek', href: 'bibliothek.html' },
+    { id: 'nav-baukasten', page: 'baukasten', label: 'Baukasten', href: 'baukasten.html' }
   ];
   // Ein Item → <a>/<button>. sharedOnclick-Fähigkeit für BEIDE Listen erhalten
   // (skills.html nutzt sharedOnclick.katalog). menuitem=true rendert die
@@ -193,6 +194,22 @@ function renderNav(activePage, opts) {
   document.body.insertAdjacentHTML('beforeend', footerHtml);
 
   initNavMore();
+
+  // Mobile (≤1023px): die Nav ist ein horizontal scrollender Streifen mit allen
+  // Sektionen flach (der „Mehr“-Button ist ausgeblendet). Ab 6 Zielen kann der
+  // aktive Punkt außerhalb des Viewports starten — beim Laden mittig scrollen,
+  // damit die aktuelle Seite sofort sichtbar ist. Rect-basiert (positions-agnostisch).
+  if (window.matchMedia && window.matchMedia('(max-width: 1023px)').matches) {
+    const nav = document.querySelector('.main-nav');
+    // Nicht den ersten Treffer nehmen: der „Mehr“-Button trägt auf Sekundär-Seiten
+    // ebenfalls .active, ist mobil aber display:none. Das sichtbare aktive Item wählen.
+    const active = nav && [...nav.querySelectorAll('.nav-link.active')].filter(a => a.offsetParent !== null).pop();
+    if (nav && active && nav.scrollWidth > nav.clientWidth + 1) {
+      const navRect = nav.getBoundingClientRect();
+      const aRect = active.getBoundingClientRect();
+      nav.scrollLeft += (aRect.left - navRect.left) - (nav.clientWidth - aRect.width) / 2;
+    }
+  }
 }
 
 /* „Mehr ▾“-Dropdown der Hauptnav (E6): Klick togglet, Esc schließt (Fokus zurück
@@ -289,7 +306,19 @@ const LU = {
   "brand": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2z"/><path d="M13 5v2"/><path d="M13 17v2"/><path d="M13 11v2"/></svg>',
   "kontrast": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 18a6 6 0 0 0 0-12z" fill="currentColor"/></svg>',
   "text-size": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 7V5H3v2"/><path d="M8.5 5v14"/><path d="M6.5 19h4"/><path d="M21 13v-2h-6v2"/><path d="M18 11v8"/><path d="M16.5 19h3"/></svg>',
-  "download": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg>'
+  "download": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg>',
+  /* E7 (Baukasten) — additive Icons für Baustein-Kategorien, Sektionen und die
+     Beispieldaten-Karten; bestehende Keys unangetastet. */
+  "blocks": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="7" height="7" x="14" y="3" rx="1"/><path d="M10 21V8a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-5a1 1 0 0 0-1-1H3"/></svg>',
+  "layout": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>',
+  "table": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v18"/><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/></svg>',
+  "form": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M7 8h10"/><path d="M7 12h6"/><path d="M7 16h3"/></svg>',
+  "chart": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><rect x="7" y="13" width="3" height="5" rx="1"/><rect x="12" y="9" width="3" height="9" rx="1"/><rect x="17" y="5" width="3" height="13" rx="1"/></svg>',
+  "footer": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 15h18"/><path d="M7 19h4"/></svg>',
+  "hero": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M8 14h8"/><path d="M9 17.5h6"/></svg>',
+  "database": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/></svg>',
+  "copy-check": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 15 2 2 4-4"/><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>',
+  "file-text": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>'
 };
 function subIcon(sub) {
   return LU[sub] || LU.fallback;

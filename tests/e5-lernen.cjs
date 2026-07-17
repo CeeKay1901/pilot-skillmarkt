@@ -472,7 +472,7 @@ async function runIndexChecks(browser) {
   check('i4_area_card_clickable',
     indexInfo.areaCta && indexInfo.areaSpotHref === 'lernen.html?r=' + EXPECTED_START
       && indexInfo.areaSpotRating.trim().length > 0 && indexInfo.navLernen
-      && indexInfo.livePills === 5 && indexInfo.soonPills === 2,
+      && indexInfo.livePills === 6 && indexInfo.soonPills === 1,
     { areaCta: indexInfo.areaCta, areaSpotHref: indexInfo.areaSpotHref,
       areaSpotRating: indexInfo.areaSpotRating, navLernen: indexInfo.navLernen,
       livePills: indexInfo.livePills, soonPills: indexInfo.soonPills });
