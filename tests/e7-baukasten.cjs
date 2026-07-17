@@ -410,7 +410,7 @@ async function runIndexChecks(browser) {
   check('i4_area_card_clickable',
     indexInfo.areaCta && indexInfo.areaSpotHref === 'baukasten.html?b=' + LEUCHTTURM
       && indexInfo.areaSpotRating.trim().length > 0 && indexInfo.navBaukasten
-      && indexInfo.livePills === 6 && indexInfo.soonPills === 1,
+      && indexInfo.livePills === 7 && indexInfo.soonPills === 0,
     { areaCta: indexInfo.areaCta, areaSpotHref: indexInfo.areaSpotHref,
       areaSpotRating: indexInfo.areaSpotRating, navBaukasten: indexInfo.navBaukasten,
       livePills: indexInfo.livePills, soonPills: indexInfo.soonPills });

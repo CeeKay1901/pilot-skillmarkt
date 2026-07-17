@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Umfrage-Dashboard · pilot (Beispiel-Projekt)</title>
+<style>
+  :root{--black:#262626;--white:#fcfcfc;--yellow:#ffe05e;--bg:#f1f1ec;--paper:#f4f1ea;--gray:#7b7a71;--gray-l:#bab8ab}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{font-size:62.5%}
+  body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--black);min-height:100vh;padding:3rem 1.6rem;line-height:1.5;-webkit-text-size-adjust:100%}
+  .wrap{max-width:74rem;margin:0 auto}
+  .badge{display:inline-flex;align-items:center;gap:.7rem;font-size:1.2rem;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--black);background:var(--yellow);border:.15rem solid var(--black);border-radius:3rem;padding:.4rem 1rem;margin-bottom:1.4rem}
+  .badge svg{width:1.4rem;height:1.4rem}
+  h1{font-size:3.2rem;font-weight:700;letter-spacing:-.02em;margin-bottom:.6rem}
+  .sub{font-size:1.6rem;color:var(--gray);margin-bottom:2.4rem;max-width:56rem}
+  .panel{background:var(--white);border:.1rem solid var(--gray-l);border-radius:1.4rem;padding:2.2rem;margin-bottom:2rem}
+  label{display:block;font-size:1.4rem;font-weight:600;margin-bottom:.8rem}
+  textarea{width:100%;min-height:13rem;padding:1.4rem;font-family:ui-monospace,"SFMono-Regular","Cascadia Code",Menlo,Consolas,monospace;font-size:1.35rem;border:.1rem solid var(--gray-l);border-radius:.8rem;background:var(--bg);resize:vertical;color:var(--black)}
+  textarea:focus{outline:none;border-color:var(--black);background:var(--white)}
+  .row{display:flex;gap:1rem;flex-wrap:wrap;margin-top:1.2rem}
+  button{font-family:inherit;font-size:1.4rem;font-weight:600;padding:.9rem 1.8rem;border-radius:3rem;border:.2rem solid var(--black);cursor:pointer;transition:.15s}
+  .btn-p{background:var(--black);color:var(--white)}.btn-p:hover{background:#3d3d3d}
+  .btn-s{background:transparent;color:var(--black)}.btn-s:hover{background:rgba(0,0,0,.06)}
+  .hint{font-size:1.3rem;color:var(--gray);margin-top:1.2rem}
+  .hint b{color:var(--black)}
+  .section-title{font-size:1.3rem;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--gray);margin-bottom:1.2rem;display:flex;align-items:center;gap:.7rem}
+  .section-title svg{width:1.6rem;height:1.6rem;stroke:var(--gray)}
+  /* Kennzahlen-Band */
+  .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:1.2rem}
+  .kpi{border:.1rem solid var(--gray-l);border-radius:1rem;padding:1.6rem 1.4rem;background:var(--paper);position:relative;overflow:hidden}
+  .kpi::before{content:'';position:absolute;left:0;top:0;bottom:0;width:.5rem;background:var(--yellow)}
+  .kpi-label{font-size:1.25rem;font-weight:600;color:var(--gray);margin-bottom:.6rem;line-height:1.3}
+  .kpi-val{font-size:3rem;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums;line-height:1.05;word-break:break-word}
+  .kpi-val.text{font-size:2rem;line-height:1.15}
+  .kpi-note{font-size:1.15rem;color:var(--gray);margin-top:.5rem;font-style:italic}
+  /* Skala-Legende */
+  .legend{margin-top:1.6rem;border-top:.1rem dashed var(--gray-l);padding-top:1.4rem}
+  .legend-head{font-size:1.3rem;font-weight:600;margin-bottom:.8rem}
+  .legend-items{display:flex;flex-wrap:wrap;gap:.7rem}
+  .chip{font-size:1.25rem;background:var(--bg);border:.1rem solid var(--gray-l);border-radius:2rem;padding:.35rem .9rem;font-variant-numeric:tabular-nums}
+  .chip b{color:var(--black)}
+  /* Verteilung */
+  .q{margin-bottom:2.6rem}
+  .q:last-child{margin-bottom:0}
+  .q-title{font-size:1.8rem;font-weight:700;margin-bottom:.3rem;letter-spacing:-.01em}
+  .q-meta{font-size:1.3rem;color:var(--gray);margin-bottom:1.3rem}
+  .bar-row{display:grid;grid-template-columns:13rem 1fr 5.4rem;gap:1rem;align-items:center;margin-bottom:.85rem}
+  .bar-label{font-size:1.4rem;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .bar-track{background:var(--bg);border-radius:.6rem;height:2.6rem;overflow:hidden;border:.1rem solid var(--gray-l)}
+  .bar-fill{height:100%;background:var(--yellow);border-radius:.5rem 0 0 .5rem;transition:width .6s cubic-bezier(.17,.67,.35,1);min-width:.3rem}
+  .bar-val{font-size:1.4rem;font-weight:700;font-variant-numeric:tabular-nums;text-align:right}
+  .empty{color:var(--gray);font-size:1.5rem;font-style:italic}
+  .foot{font-size:1.3rem;color:var(--gray);text-align:center;margin-top:2.4rem;line-height:1.7}
+  .foot a{color:var(--black);font-weight:600}
+  .foot .disc{display:block;margin-top:.6rem;max-width:52rem;margin-left:auto;margin-right:auto}
+  @media(max-width:520px){
+    body{padding:2.4rem 1.2rem}
+    h1{font-size:2.6rem}
+    .bar-row{grid-template-columns:8.5rem 1fr 4.6rem;gap:.7rem}
+    .bar-label{font-size:1.3rem}
+    .kpi-val{font-size:2.6rem}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="badge">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 11-6 6v3h9l3-3"/><path d="m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4"/></svg>
+    Beispiel-Projekt
+  </div>
+  <h1>Umfrage-Dashboard</h1>
+  <p class="sub">CSV einwerfen, Kennzahlen und Verteilung sehen. Ein Feierabend-Werkzeug, das zählt und mittelt — nicht mehr, aber ehrlich. Erste Spalte ist die Frage, der Rest die Antwort.</p>
+
+  <div class="panel">
+    <label for="csv">Umfrage-Rohdaten (CSV)</label>
+    <textarea id="csv" spellcheck="false"></textarea>
+    <div class="row">
+      <button class="btn-p" onclick="run()">Auswerten</button>
+      <button class="btn-s" onclick="loadSample()">Beispieldaten laden</button>
+      <button class="btn-s" onclick="clearAll()">Leeren</button>
+    </div>
+    <p class="hint">Format je Zeile: <b>Frage;Antwort</b> — eine Zeile pro abgegebener Antwort. Trennzeichen <b>;</b> oder <b>,</b>. Bei Komma in der Antwort zählt die erste Spalte als Frage, der Rest wird zusammengefügt.</p>
+  </div>
+
+  <div class="panel" id="kpi-panel">
+    <div class="section-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M7 16h2v3H7z" fill="currentColor" stroke="none"/><path d="M12 11h2v8h-2z" fill="currentColor" stroke="none"/><path d="M17 7h2v12h-2z" fill="currentColor" stroke="none"/></svg>
+      Kennzahlen-Band
+    </div>
+    <div class="kpi-grid" id="kpis"></div>
+    <div class="legend">
+      <div class="legend-head">Skala-Zuordnung für die Zufriedenheit (offen gelegt, fest):</div>
+      <div class="legend-items">
+        <span class="chip">Sehr zufrieden = <b>5</b></span>
+        <span class="chip">Zufrieden = <b>4</b></span>
+        <span class="chip">Neutral = <b>3</b></span>
+        <span class="chip">Unzufrieden = <b>2</b></span>
+        <span class="chip">Sehr unzufrieden = <b>1</b></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="section-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="14" y2="6"/><line x1="3" y1="12" x2="20" y2="12"/><line x1="3" y1="18" x2="10" y2="18"/></svg>
+      Verteilung je Frage
+    </div>
+    <div id="result"><p class="empty">Noch keine Daten. Lade Beispieldaten oder füge eigene ein.</p></div>
+  </div>
+
+  <p class="foot">
+    <a href="../../showroom.html">&larr; zum Showroom</a> &nbsp;·&nbsp; <a href="../../skills.html">zurück zum Katalog</a>
+    <span class="disc">Beispiel-Projekt: Diese Demo ist echt und klickbar, dient aber der Illustration, was ein kleines Feierabend-Tool leisten kann. Stimmen und Beispiel-Cases im Showroom sind redaktionelle Demo-Daten.</span>
+  </p>
+</div>
+<script>
+  const SAMPLE = `Wie zufrieden bist du mit dem Tool?;Sehr zufrieden
+Wie zufrieden bist du mit dem Tool?;Zufrieden
+Wie zufrieden bist du mit dem Tool?;Sehr zufrieden
+Wie zufrieden bist du mit dem Tool?;Neutral
+Wie zufrieden bist du mit dem Tool?;Zufrieden
+Wie zufrieden bist du mit dem Tool?;Unzufrieden
+Welchen Kanal nutzt du am meisten?;LinkedIn
+Welchen Kanal nutzt du am meisten?;Instagram
+Welchen Kanal nutzt du am meisten?;LinkedIn
+Welchen Kanal nutzt du am meisten?;TikTok
+Würdest du das Tool weiterempfehlen?;Ja
+Würdest du das Tool weiterempfehlen?;Ja
+Würdest du das Tool weiterempfehlen?;Vielleicht`;
+
+  // Feste Text -> Wert Zuordnung (1-5). Schluessel normalisiert (lowercase, getrimmt).
+  const SCALE = {
+    'sehr zufrieden':5,
+    'zufrieden':4,
+    'neutral':3,
+    'unzufrieden':2,
+    'sehr unzufrieden':1
+  };
+
+  function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+
+  function parseLines(text){
+    // Liefert Array von {q, a} sowie map q -> {a: count}
+    const rows=[];
+    const map={};
+    text.split(/\r?\n/).forEach(line=>{
+      if(!line.trim())return;
+      const parts=line.split(/[;,]/).map(s=>s.trim());
+      const q=parts[0];
+      if(!q)return;
+      const a=parts.slice(1).join(', ').trim()||'(leer)';
+      rows.push({q,a});
+      (map[q]=map[q]||{})[a]=(map[q][a]||0)+1;
+    });
+    return {rows,map};
+  }
+
+  function computeKpis(rows,map){
+    const total=rows.length;
+    // Durchschnitts-Zufriedenheit: nur Antworten in SCALE
+    let sum=0,cnt=0;
+    rows.forEach(r=>{
+      const key=r.a.toLowerCase();
+      if(Object.prototype.hasOwnProperty.call(SCALE,key)){sum+=SCALE[key];cnt++;}
+    });
+    const avg = cnt>0 ? (sum/cnt).toFixed(1).replace('.',',') : null;
+    // Haeufigste Antwort insgesamt
+    const allAns={};
+    rows.forEach(r=>{allAns[r.a]=(allAns[r.a]||0)+1;});
+    let topAns=null,topN=0;
+    Object.entries(allAns).forEach(([a,n])=>{if(n>topN){topN=n;topAns=a;}});
+    const distinctQ=Object.keys(map).length;
+    return {total,avg,avgCnt:cnt,topAns,topN,distinctQ};
+  }
+
+  function renderKpis(k){
+    const el=document.getElementById('kpis');
+    if(k.total===0){el.innerHTML='<p class="empty">Keine gültigen Zeilen erkannt.</p>';return;}
+    const avgCell = k.avg!==null
+      ? `<div class="kpi-val">${k.avg}<span style="font-size:1.6rem;color:var(--gray)"> / 5</span></div><div class="kpi-note">Näherung aus 1–5-Skala · ${k.avgCnt} passende Antworten</div>`
+      : `<div class="kpi-val">—</div><div class="kpi-note">Keine Skala-Antworten gefunden</div>`;
+    el.innerHTML=`
+      <div class="kpi"><div class="kpi-label">Antworten gesamt</div><div class="kpi-val">${k.total}</div><div class="kpi-note">gezählte Zeilen</div></div>
+      <div class="kpi"><div class="kpi-label">Zufriedenheit</div>${avgCell}</div>
+      <div class="kpi"><div class="kpi-label">Häufigste Antwort</div><div class="kpi-val text">${esc(k.topAns)}</div><div class="kpi-note">${k.topN}&times; genannt</div></div>
+      <div class="kpi"><div class="kpi-label">Verschiedene Fragen</div><div class="kpi-val">${k.distinctQ}</div><div class="kpi-note">unterschiedliche Fragen</div></div>
+    `;
+  }
+
+  function renderDist(map){
+    const el=document.getElementById('result');
+    const qs=Object.keys(map);
+    if(!qs.length){el.innerHTML='<p class="empty">Keine gültigen Zeilen erkannt. Format: Frage;Antwort</p>';return;}
+    el.innerHTML=qs.map(q=>{
+      const ans=map[q], total=Object.values(ans).reduce((a,b)=>a+b,0);
+      const rows=Object.entries(ans).sort((a,b)=>b[1]-a[1]).map(([a,n])=>{
+        const pct=Math.round(n/total*100);
+        return `<div class="bar-row"><div class="bar-label" title="${esc(a)}">${esc(a)}</div><div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div><div class="bar-val">${pct}%</div></div>`;
+      }).join('');
+      return `<div class="q"><div class="q-title">${esc(q)}</div><div class="q-meta">${total} Antworten</div>${rows}</div>`;
+    }).join('');
+  }
+
+  function run(){
+    const {rows,map}=parseLines(document.getElementById('csv').value);
+    renderKpis(computeKpis(rows,map));
+    renderDist(map);
+  }
+  function loadSample(){document.getElementById('csv').value=SAMPLE;run();}
+  function clearAll(){document.getElementById('csv').value='';run();}
+  loadSample();
+</script>
+</body>
+</html>

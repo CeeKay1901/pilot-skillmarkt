@@ -344,12 +344,12 @@
             <span class="rt-hint">Kopierfertige Prompts — und warum sie funktionieren.</span>
             <span class="rt-foot"><span class="rt-dest">Zur Sammlung</span></span>
           </a>
-          <button type="button" class="rt-card" data-teaser="showroom" aria-expanded="false" aria-controls="rt-panel">
+          <a class="rt-card" href="showroom.html">
             <span class="rt-ic"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg></span>
             <span class="rt-label">Sehen, was möglich ist</span>
             <span class="rt-hint">Echte Projekte aus dem Team — zum Anklicken.</span>
-            <span class="rt-foot"><span class="rt-tag">In Arbeit</span></span>
-          </button>
+            <span class="rt-foot"><span class="rt-dest">Zum Showroom</span></span>
+          </a>
           <a class="rt-card" href="hilfe.html">
             <span class="rt-ic"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24"/><path d="m14.83 9.17 4.24-4.24"/><path d="m14.83 14.83 4.24 4.24"/><path d="m9.17 14.83-4.24 4.24"/><circle cx="12" cy="12" r="4"/></svg></span>
             <span class="rt-label">Ich hänge fest</span>
@@ -411,7 +411,7 @@
       <div class="areas-inner">
         <p class="section-label">Die Landkarte</p>
         <h2 id="areas-h">Ein Marketplace, sieben Bereiche</h2>
-        <p class="areas-sub">Skill-Katalog, Prompt-Sammlung, Hilfe-Center, Lernen, die Asset-Bibliothek und der Baukasten sind live und wachsen weiter. Nur noch ein Bereich entsteht gerade — hier siehst du schon, was er können wird.</p>
+        <p class="areas-sub">Skill-Katalog, Prompt-Sammlung, Hilfe-Center, Lernen, die Asset-Bibliothek, der Baukasten und der Showroom sind alle sieben live und wachsen weiter — nichts mehr in Arbeit.</p>
 
         <div class="areas-grid">
           <article class="area-card area-live anim-reveal">
@@ -551,13 +551,27 @@
             </div>
           </article>
 
-          <article class="area-card area-soon anim-reveal">
+          <article class="area-card area-live-sm anim-reveal">
             <div class="area-head">
               <span class="area-ic"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 7.75a.75.75 0 0 1 1.142-.638l3.664 2.249a.75.75 0 0 1 0 1.278l-3.664 2.25a.75.75 0 0 1-1.142-.64z"/><path d="M12 17v4"/><path d="M8 21h8"/><rect x="2" y="3" width="20" height="14" rx="2"/></svg></span>
               <h3>Showroom</h3>
-              <span class="area-pill -soon">In Arbeit</span>
+              <span class="area-pill -live">Live</span>
             </div>
+            <div class="area-count">
+              <span class="area-count-num" id="area-showroom-count">0</span>
+              <span class="area-count-label">Projekte</span>
+            </div>
+            <p class="area-meta" id="area-showroom-meta"></p>
             <p class="area-text">Projekte von Kolleg:innen zum Anklicken — mit der ehrlichen Geschichte, wie sie entstanden sind, und allem, was du zum Nachbauen brauchst.</p>
+            <a class="area-spot" href="showroom.html?case=umfrage-auswerter">
+              <span class="area-spot-label">Leuchtturm</span>
+              <span class="area-spot-name">Umfrage-Auswerter</span>
+              <p class="area-spot-tag">Ein echtes Feierabend-Tool: CSV rein, Antwortverteilung als Balken raus — ganz ohne Excel</p>
+              <span id="area-showroom-spot-react"></span>
+            </a>
+            <div class="area-cta-row">
+              <a class="c-cta -yellow-bg" href="showroom.html">Showroom öffnen</a>
+            </div>
           </article>
         </div>
       </div>
@@ -590,10 +604,10 @@
               </div>
             </li>
             <li class="news-item">
-              <span class="news-date">16. Juli</span>
+              <span class="news-date">17. Juli</span>
               <div>
-                <p class="news-title">Das Hilfe-Center ist da</p>
-                <p class="news-text">28 Befehle und Kniffe als Team-Ranking, 44 Glossar-Begriffe in einfacher Sprache und 10 Schritt-für-Schritt-Lösungen — für alle Momente, in denen du festhängst. <a href="hilfe.html">Zum Hilfe-Center</a></p>
+                <p class="news-title">Der Showroom ist da</p>
+                <p class="news-text">Echte Projekte aus dem Team zum Anklicken — mit der ehrlichen Geschichte, wie sie entstanden sind, und allem zum Nachbauen. <a href="showroom.html">Zum Showroom</a>, wer festhängt, findet Rat im <a href="hilfe.html">Hilfe-Center</a>.</p>
               </div>
             </li>
             <li class="news-item">
@@ -655,6 +669,8 @@
   <script src="data/assets.js" defer></script>
   <!-- Baukasten-Daten (E7), nur für die Live-Zähler — gleiches defer-Muster -->
   <script src="data/bausteine.js" defer></script>
+  <!-- Showroom-Daten (E8), nur für die Live-Zähler — gleiches defer-Muster -->
+  <script src="data/cases.js" defer></script>
   <script src="shared/base.js"></script>
   <script>
     // ===== STATE (base.js-Konvention; Modal-Engine läuft hier nicht) =====
@@ -782,12 +798,26 @@
       if (spotRating && lh && lh.rating) spotRating.innerHTML = renderStars(lh.rating.average) + ` <span class="rating-text">${lh.rating.average.toFixed(1)} · ${lh.rating.count} Stimmen</span>`;
     });
 
+    // Showroom-Karte + Zähler (E8): data/cases.js lädt per defer — deshalb
+    // ebenfalls DOMContentLoaded. Nur real Gezähltes aus CASES / CASE_STATS.
+    document.addEventListener('DOMContentLoaded', () => {
+      if (typeof CASES === 'undefined') return;
+      const srCount = document.getElementById('area-showroom-count');
+      if (srCount) animateCount(srCount, CASES.length, 1100);
+      const srMeta = document.getElementById('area-showroom-meta');
+      if (srMeta) srMeta.textContent = `davon ${CASE_STATS.echt} echte Team-Tools · ${CASE_STATS.beispiel} Beispiel-Projekte · ${CASE_STATS.saeulen} Säulen`;
+      // Leuchtturm: „Will ich auch"-Reaktionen des echten Umfrage-Auswerters (Seed +
+      // eigene Stimme über vote:reaktion:*, aus base.js).
+      const react = document.getElementById('area-showroom-spot-react');
+      const lhCase = CASES.find(c => c.id === 'umfrage-auswerter');
+      if (react && lhCase) react.innerHTML = `<span class="rating-text">${getVotes('reaktion', lhCase.id, lhCase.reaktionSeed)} × „Will ich auch"</span>`;
+    });
+
     // ===== ROUTER: „In Arbeit“-Ausblicke (kein toter Link) =====
-    // Baukasten ist jetzt ein echter Link zur Asset-Bibliothek (eigene Baukasten-
-    // Kachel folgt in E7) — deshalb nur noch Showroom als Teaser.
-    const TEASER = {
-      showroom:  { name: 'Showroom',         text: 'Projekte von Kolleg:innen zum Anklicken — mit der ehrlichen Geschichte, wie sie entstanden sind, und allem, was du zum Nachbauen brauchst.' }
-    };
+    // E8: Mit dem Live-Gang des Showrooms ist die letzte Teaser-Kachel ein echter
+    // Link geworden — es gibt keinen „In Arbeit"-Ausblick mehr. Das TEASER-Objekt
+    // bleibt leer, showTeaser/closeTeaser laufen ins Leere (harmloser Rest-Code).
+    const TEASER = {};
     let _teaserOpen = null;
 
     function closeTeaser() {

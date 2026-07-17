@@ -440,7 +440,7 @@ async function runIndexChecks(browser) {
   check('i4_area_card_clickable',
     indexInfo.areaCta && indexInfo.areaSpotHref === 'bibliothek.html?a=' + LEUCHTTURM
       && indexInfo.areaSpotRating.trim().length > 0 && indexInfo.navBibliothek
-      && indexInfo.livePills === 6 && indexInfo.soonPills === 1,
+      && indexInfo.livePills === 7 && indexInfo.soonPills === 0,
     { areaCta: indexInfo.areaCta, areaSpotHref: indexInfo.areaSpotHref,
       areaSpotRating: indexInfo.areaSpotRating, navBibliothek: indexInfo.navBibliothek,
       livePills: indexInfo.livePills, soonPills: indexInfo.soonPills });

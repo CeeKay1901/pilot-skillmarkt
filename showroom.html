@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>pilot AI Marketplace — Showroom</title>
+  <meta name="description" content="Projekte aus dem Team zum Anklicken — echte Werkzeuge und Beispiel-Projekte, die zeigen, was mit KI möglich ist. Mit der ehrlichen Geschichte, wie sie entstanden sind, und allem zum Nachbauen.">
+  <meta name="theme-color" content="#262626">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="pilot AI Marketplace">
+  <meta property="og:title" content="pilot AI Marketplace — Showroom">
+  <meta property="og:description" content="Echte Team-Tools und Beispiel-Projekte zum Anklicken — mit Story, Live-Vorschau und allem zum Nachbauen. Stimmen & Beispiele sind redaktionelle Demo-Daten.">
+  <meta property="og:url" content="https://ceekay1901.github.io/pilot-skillmarkt/showroom.html">
+  <meta property="og:image" content="https://ceekay1901.github.io/pilot-skillmarkt/og-image.png">
+  <link rel="preload" href="assets/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="shared/base.css">
+  <style>
+    /* ============================================================
+       showroom.html — seitenspezifisch (E8). Das Design-System und
+       alle .sr-*/.case-*/.preview-frame-Klassen liegen additiv in
+       shared/base.css. Inter + JetBrains Mono @font-face stehen dort
+       ebenfalls schon — hier NICHT duplizieren. Nur ein paar seiten-
+       lokale Feinheiten für den ehrlichen Hero-Hinweis.
+       ============================================================ */
+    .sr-lead {
+      display: inline-flex; align-items: center; gap: .8rem;
+      font-family: var(--font-mono); font-size: 1.25rem; line-height: 1.6;
+      color: rgba(252,252,252,.72); background: rgba(252,252,252,.06);
+      border: 1px solid rgba(252,252,252,.16); border-radius: var(--r-pill);
+      padding: .7rem 1.4rem; margin-top: 2rem; max-width: 72ch;
+    }
+    .sr-lead .lu { width: 1.6rem; height: 1.6rem; color: var(--c-yellow); flex-shrink: 0; }
+    .sr-desc { display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+    .modal-body .sr-desc { display: block; overflow: visible; }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Zum Hauptinhalt springen</a>
+
+  <!-- HEADER & FOOTER: werden von shared/base.js injiziert (renderNav, siehe Seiten-Script) -->
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-glow" aria-hidden="true"></div>
+    <div class="hero-inner hero-top">
+      <p class="overline" style="color:#ffe05e">pilot · Showroom</p>
+      <h1 class="hero-h1">Sehen, was<br><span style="color:var(--c-yellow)">möglich ist.</span></h1>
+      <p class="subline">Der Showroom sammelt Projekte zum Anklicken — echte Werkzeuge, die im Team schon laufen, und Beispiel-Projekte, die zeigen, wohin die Reise geht. Jedes bringt seine ehrliche Geschichte mit: das Ausgangsproblem, den ersten Prompt, den Stolperstein und das Ergebnis. Und alles, was du brauchst, um es selbst nachzubauen.</p>
+      <div class="hero-stats" id="hero-stats">
+        <div class="hero-stat-box"><span class="hero-stat-num" id="sr-stat-total">0</span><span class="hero-stat-label">Projekte</span></div>
+        <div class="hero-stat-box"><span class="hero-stat-num" id="sr-stat-echt">0</span><span class="hero-stat-label">Echte Team-Tools</span></div>
+        <div class="hero-stat-box"><span class="hero-stat-num" id="sr-stat-beispiel">0</span><span class="hero-stat-label">Beispiel-Projekte</span></div>
+        <div class="hero-stat-box"><span class="hero-stat-num" id="sr-stat-saeulen">0</span><span class="hero-stat-label">Säulen</span></div>
+      </div>
+      <p class="sr-lead">
+        <span class="lu-slot" id="sr-lead-ic" aria-hidden="true"></span>
+        Ehrlich gehalten: Ein Marker unterscheidet echte Team-Tools von illustrativen Beispiel-Projekten. Die Beispiel-Projekte sind einer Persona aus dem Team redaktionell zugeordnet, nicht von ihr gebaut — Stimmen &amp; Beispiele sind Demo-Daten. Die Mini-Demos selbst sind echt und laufen.
+      </p>
+      <div class="hero-cta">
+        <button class="c-cta -yellow-bg" onclick="document.getElementById('main-content').scrollIntoView({behavior:'smooth',block:'start'})">Zu den Projekten</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJEKT DES MONATS (Spotlight) -->
+  <section class="sr-spotlight" aria-labelledby="sr-spot-h">
+    <div class="sr-spot-inner" id="sr-spot-mount" role="group" aria-labelledby="sr-spot-h">
+      <h2 id="sr-spot-h" class="sr-only">Projekt des Monats</h2>
+    </div>
+  </section>
+
+  <main>
+    <!-- (a) CASE-GRID -->
+    <section class="lib-section" id="main-content" aria-labelledby="cases-h">
+      <div class="lib-inner">
+        <div class="lib-sec-head">
+          <span class="lib-sec-ic lu-slot" id="cases-ic"></span>
+          <h2 id="cases-h">Projekte im Showroom</h2>
+          <span class="lib-sec-count" id="cases-count"></span>
+        </div>
+        <p class="lib-note">Jede Karte zeigt ein skaliertes, nicht interaktives Vorschaubild der echten Demo. „Ansehen" öffnet die echte, klickbare Datei in einem neuen Tab; „Details" öffnet die ganze Geschichte samt Nachbau-Anleitung. Filter nach Säule, Art und Aufwand, sortier nach „Meistgewollt" — die Reaktions-Zähler zählen lokal in deinem Browser.</p>
+        <div class="sr-toolbar">
+          <div class="sr-cats" id="sr-cats" role="group" aria-label="Projekte nach Säule filtern"></div>
+          <div class="sr-selects">
+            <div class="sr-select">
+              <label for="sr-art">Art</label>
+              <select id="sr-art" aria-label="Projekte nach Art filtern">
+                <option value="all">Alle Arten</option>
+              </select>
+            </div>
+            <div class="sr-select">
+              <label for="sr-aufwand">Aufwand</label>
+              <select id="sr-aufwand" aria-label="Projekte nach Aufwand filtern">
+                <option value="all">Jeder Aufwand</option>
+              </select>
+            </div>
+            <div class="sr-select">
+              <label for="sr-sort">Sortierung</label>
+              <select id="sr-sort" aria-label="Projekte sortieren">
+                <option value="recommended">Empfohlen zuerst</option>
+                <option value="meistgewollt">Meistgewollt</option>
+                <option value="alpha">Name A–Z</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="sr-grid" id="sr-grid"></div>
+      </div>
+    </section>
+
+    <!-- (b) MEISTGEWOLLT -->
+    <section class="lib-section -alt" aria-labelledby="rank-h">
+      <div class="lib-inner">
+        <div class="lib-sec-head">
+          <span class="lib-sec-ic lu-slot" id="rank-ic"></span>
+          <h2 id="rank-h">Meistgewollt im Team</h2>
+        </div>
+        <p class="lib-note">Ein kleines Ranking nach „Will ich auch!"-Reaktionen. Die Startwerte sind ehrliche Demo-Seeds; jede Reaktion, die du auslöst, zählt lokal dazu. Klick einen Eintrag an, um das Projekt zu öffnen.</p>
+        <div class="sr-rank" id="sr-rank"></div>
+      </div>
+    </section>
+
+    <!-- MITMACHEN — prominentester Einreichen-Flow der Seite -->
+    <section class="lib-submit" aria-labelledby="sr-submit-h">
+      <div class="lib-submit-inner">
+        <p class="section-label">Mitmachen</p>
+        <h2 id="sr-submit-h">Zeig, was du gebaut hast</h2>
+        <p>Der Showroom lebt von den Projekten des Teams. Egal ob Feierabend-Tool oder halber-Tag-Dashboard — wenn du etwas gebaut hast, das anderen zeigt, was möglich ist, reich es hier ein. Am liebsten mit der ehrlichen Geschichte dahinter: Was war das Problem, was ging schief, was kam am Ende raus.</p>
+        <button type="button" class="c-cta -yellow-bg" id="sr-submit-cta" onclick="openCaseSubmit()">Projekt einreichen</button>
+        <p class="lib-submit-note">Demo-Flow: deine Eingabe bleibt lokal in deinem Browser, es wird nichts gesendet.</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER: injiziert von shared/base.js (renderNav) -->
+
+  <!-- CASE-DETAIL-MODAL -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-name" aria-describedby="modal-body">
+      <div class="modal-header">
+        <div class="modal-title-wrap"><h2 id="modal-name"></h2></div>
+        <button class="modal-close" onclick="closeModal()" aria-label="Projekt-Detail schließen">✕</button>
+      </div>
+      <div class="modal-meta" id="modal-meta"></div>
+      <div class="modal-tabs" role="tablist" aria-label="Projekt-Details"></div>
+      <div class="modal-body" id="modal-body"></div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="data/cases.js"></script>          <!-- CASES + CASE_STATS -->
+  <script src="data/contributors.js"></script>   <!-- PILOTS (Personas der inszenierten Cases) -->
+  <script src="data/skills.js"></script>          <!-- SKILLS — Querverweis-Ziele (Nachbauen) -->
+  <script src="data/prompts.js"></script>         <!-- PROMPTS — Querverweis-Ziele (Nachbauen) -->
+  <script src="data/bausteine.js"></script>       <!-- BAUSTEINE + BEISPIELDATEN — Querverweis-Ziele -->
+  <script src="shared/base.js"></script>
+  <script>
+    // ===== STATE (base.js-Konvention) =====
+    const state = {
+      pendingRating: {},
+      activeSkill: null,     // hält den aktiven Case (Modal-Engine-Konvention)
+      activeTab: 'overview',
+      activeFile: 0,
+      saeule: null,          // null = alle Säulen | 'insights' | 'media' | …
+      art: 'all',            // 'all' | 'tool' | 'dashboard' | …
+      aufwand: 'all',        // 'all' | 'mini' | 'halber-tag'
+      sort: 'recommended'
+    };
+    // KEIN window.RatingConfig — Cases nutzen keine Sterne, nur Reaktionen (vote:reaktion:<id>).
+
+    function prefersReduce() { return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches; }
+    function scrollBehavior() { return prefersReduce() ? 'instant' : 'smooth'; }
+
+    // ===== NAV & FOOTER =====
+    renderNav('showroom', {
+      footerClaim: 'Von Piloten gebaut, von Piloten empfohlen. Echte Projekte aus dem Team — mit der Geschichte dahinter. Stimmen & Beispiele sind redaktionelle Demo-Daten.'
+    });
+
+    // ===== LABELS & ICONS =====
+    const SAEULE_LABEL = { insights: 'Insights & Daten', media: 'Media', performance: 'Performance', creation: 'Kreation', office: 'Office & Orga', strategy: 'Strategie' };
+    const SAEULE_ORDER = ['insights', 'media', 'performance', 'creation', 'office', 'strategy'];
+    function saeuleIcon(s) {
+      const map = { insights: LU.data, media: LU.media, performance: LU.analytics, creation: LU.content, office: LU.productivity, strategy: LU.strategy };
+      return map[s] || LU.fallback;
+    }
+    const ART_LABEL = { tool: 'Tool', dashboard: 'Dashboard', helfer: 'Helfer', visualisierung: 'Visualisierung', generator: 'Generator' };
+    const ART_ORDER = ['tool', 'dashboard', 'helfer', 'visualisierung', 'generator'];
+    const AUFWAND_LABEL = { mini: 'Feierabend-Projekt', 'halber-tag': 'Halber Tag' };
+    const AUFWAND_ORDER = ['mini', 'halber-tag'];
+
+    function caseById(id) { return CASES.find(c => c.id === id); }
+    function personaRolle(name) {
+      if (typeof PILOTS !== 'undefined') { const p = PILOTS.find(x => x.name === name); if (p) return p.role; }
+      if (name === 'pilot-Tool') return 'automatisch vom pilot-Tool erzeugt';
+      return '';
+    }
+    function markerHtml(c, inline) {
+      const st = inline ? ' style="position:static"' : '';
+      return c.istEcht
+        ? `<span class="sr-badge -echt"${st}>${LU.check}Echtes Team-Tool</span>`
+        : `<span class="sr-badge -beispiel"${st}>${LU.sparkles}Beispiel-Projekt</span>`;
+    }
+    function reactVotes(c) { return getVotes('reaktion', c.id, c.reaktionSeed); }
+
+    // ===== REAKTION „Will ich auch!" (vote:reaktion:<id>, KEINE Sterne) =====
+    function reactionBtnHtml(c) {
+      const voted = hasVoted('reaktion', c.id);
+      return `<button type="button" class="sr-react${voted ? ' -on' : ''}" aria-pressed="${voted}"
+        data-react="${c.id}" onclick="toggleReaction(event,'${c.id}')">
+        ${LU.heart}<span class="sr-react-count" data-react-count="${c.id}">${reactVotes(c)}</span>
+        <span class="sr-react-label">Will ich auch</span></button>`;
+    }
+    function toggleReaction(evt, id) {
+      if (evt) evt.stopPropagation();
+      const now = toggleVote('reaktion', id);
+      const c = caseById(id);
+      document.querySelectorAll(`[data-react-count="${id}"]`).forEach(el => { el.textContent = reactVotes(c); });
+      document.querySelectorAll(`[data-react="${id}"]`).forEach(b => {
+        b.classList.toggle('-on', now); b.setAttribute('aria-pressed', String(now));
+      });
+      showToast(now ? 'Notiert — „Will ich auch!"' : 'Reaktion zurückgenommen');
+      renderRanking();
+    }
+
+    // ===== (a) FILTER/SORT + CASE-GRID =====
+    function renderCats() {
+      const host = document.getElementById('sr-cats');
+      if (!host) return;
+      const cats = [{ id: 'all', label: 'Alle', ic: LU.rocket }]
+        .concat(SAEULE_ORDER.filter(s => CASES.some(c => c.saeule === s)).map(s => ({ id: s, label: SAEULE_LABEL[s], ic: saeuleIcon(s) })));
+      host.innerHTML = cats.map(c => {
+        const active = state.saeule === (c.id === 'all' ? null : c.id);
+        const count = c.id === 'all' ? CASES.length : CASES.filter(x => x.saeule === c.id).length;
+        return `<button class="sr-cat${active ? ' active' : ''}" aria-pressed="${active}" onclick="setSaeule('${c.id}')">${c.ic}${escHtml(c.label)} <span class="tab-count">${count}</span></button>`;
+      }).join('');
+    }
+    function fillSelect(id, order, labels, allLabel) {
+      const sel = document.getElementById(id);
+      if (!sel) return;
+      const present = order.filter(v => CASES.some(c => (id === 'sr-art' ? c.art : c.aufwandStufe) === v));
+      sel.innerHTML = `<option value="all">${allLabel}</option>`
+        + present.map(v => `<option value="${v}">${escHtml(labels[v])}</option>`).join('');
+    }
+    function setSaeule(k) { state.saeule = k === 'all' ? null : k; renderCats(); renderCases(); }
+
+    function filteredCases() {
+      return CASES.filter(c =>
+        (!state.saeule || c.saeule === state.saeule) &&
+        (state.art === 'all' || c.art === state.art) &&
+        (state.aufwand === 'all' || c.aufwandStufe === state.aufwand));
+    }
+    function sortedCases(list) {
+      const arr = list.slice();
+      const v = c => reactVotes(c);
+      if (state.sort === 'meistgewollt') {
+        arr.sort((a, b) => v(b) - v(a) || a.titel.localeCompare(b.titel, 'de'));
+      } else if (state.sort === 'alpha') {
+        arr.sort((a, b) => a.titel.localeCompare(b.titel, 'de'));
+      } else {
+        // Empfohlen: Spotlight zuerst, dann echte Team-Tools, dann nach Reaktionen
+        arr.sort((a, b) => (b.spotlight ? 1 : 0) - (a.spotlight ? 1 : 0) || (b.istEcht ? 1 : 0) - (a.istEcht ? 1 : 0) || v(b) - v(a) || a.titel.localeCompare(b.titel, 'de'));
+      }
+      return arr;
+    }
+
+    function caseCardHtml(c) {
+      const rolle = personaRolle(c.persona);
+      return `
+        <article class="sr-card" id="case-${c.id}" data-id="${c.id}" data-saeule="${c.saeule}" data-art="${c.art}" data-aufwand="${c.aufwandStufe}">
+          <div class="sr-thumb">
+            ${markerHtml(c, false)}
+            <iframe class="sr-frame" src="${c.liveUrl}" loading="lazy" sandbox="allow-scripts allow-same-origin"
+                    tabindex="-1" aria-hidden="true" title="Vorschau (nicht interaktiv): ${escHtml(c.titel)}"></iframe>
+          </div>
+          <div class="sr-body">
+            <div class="sr-kopf">
+              <span class="sr-name">${escHtml(c.titel)}</span>
+              <span class="sr-sub">${escHtml(ART_LABEL[c.art] || c.art)}</span>
+            </div>
+            <p class="sr-persona"><strong>${escHtml(c.persona)}</strong>${rolle ? ' · ' + escHtml(rolle) : ''} · ${escHtml(SAEULE_LABEL[c.saeule] || c.saeule)}</p>
+            <p class="sr-desc">${escHtml(c.kurz)}</p>
+            <div class="sr-tags"><span class="sr-tag">${escHtml(c.aufwand)}</span></div>
+            <div class="sr-actions">
+              ${reactionBtnHtml(c)}
+              <a class="lib-btn -primary" href="${c.liveUrl}" target="_blank" rel="noopener">${LU.eye}Ansehen</a>
+              <button class="lib-btn" onclick="openModal('${c.id}')">${LU['layout-dashboard']}Details</button>
+            </div>
+          </div>
+        </article>`;
+    }
+    function renderCases() {
+      const host = document.getElementById('sr-grid');
+      if (!host) return;
+      host.innerHTML = sortedCases(filteredCases()).map(caseCardHtml).join('');
+      const c = document.getElementById('cases-count');
+      if (c) c.textContent = `${CASE_STATS.total} Projekte · ${CASE_STATS.echt} echte Team-Tools · ${CASE_STATS.beispiel} Beispiel-Projekte`;
+    }
+
+    // ===== (b) MEISTGEWOLLT-RANKING (nach Reaktionen) =====
+    function renderRanking() {
+      const host = document.getElementById('sr-rank');
+      if (!host) return;
+      const top = CASES.slice().sort((a, b) => reactVotes(b) - reactVotes(a) || a.titel.localeCompare(b.titel, 'de')).slice(0, 5);
+      host.innerHTML = top.map((c, i) => `
+        <button type="button" class="sr-rank-item" onclick="openModal('${c.id}')">
+          <span class="sr-rank-pos">${i + 1}</span>
+          <span class="sr-rank-name">${escHtml(c.titel)}</span>
+          <span class="sr-rank-count" data-react-count="${c.id}">${LU.heart}${reactVotes(c)}</span>
+        </button>`).join('');
+    }
+
+    // ===== PROJEKT DES MONATS (Spotlight: case mit spotlight:true) =====
+    function renderSpotlight() {
+      const host = document.getElementById('sr-spot-mount');
+      const c = CASES.find(x => x.spotlight);
+      if (!host || !c) return;
+      host.innerHTML = `
+        <div class="sr-spot-body">
+          <p class="section-label sr-spot-label">Projekt des Monats</p>
+          <h2 id="sr-spot-h">${escHtml(c.titel)}</h2>
+          <p class="sr-spot-text">${escHtml(c.kurz)}</p>
+          <div class="sr-spot-meta">${markerHtml(c, true)}<span class="sr-tag">${escHtml(c.aufwand)}</span></div>
+          <div class="sr-spot-actions">
+            ${reactionBtnHtml(c)}
+            <a class="c-cta -yellow-bg" href="${c.liveUrl}" target="_blank" rel="noopener">Ansehen</a>
+            <button class="c-cta -yellow-border" onclick="openModal('${c.id}')">Die ganze Geschichte</button>
+          </div>
+        </div>
+        <div class="sr-spot-frame-wrap">
+          <iframe class="sr-spot-frame" src="${c.liveUrl}" loading="lazy" sandbox="allow-scripts allow-same-origin"
+                  tabindex="-1" aria-hidden="true" title="Vorschau (nicht interaktiv): ${escHtml(c.titel)}"></iframe>
+        </div>`;
+    }
+
+    // ===== MODAL-ENGINE: Überblick · So entstanden · Nachbauen · Vorschau =====
+    function renderCaseHead(item) {
+      document.getElementById('modal-name').textContent = item.titel;
+      const rolle = personaRolle(item.persona);
+      document.getElementById('modal-meta').innerHTML =
+        markerHtml(item, true)
+        + `<span class="modal-meta-sep">·</span><span>${escHtml(item.persona)}${rolle ? ' · ' + escHtml(rolle) : ''}</span>`
+        + `<span class="modal-meta-sep">·</span><span>${escHtml(item.aufwand)}</span>`;
+      const tabBar = document.querySelector('#modal .modal-tabs');
+      if (tabBar) {
+        tabBar.innerHTML = [['overview', 'Überblick'], ['story', 'So ist es entstanden'], ['nachbauen', 'Nachbauen'], ['vorschau', 'Vorschau']]
+          .map(([id, label], i) => `<button class="tab-btn${i === 0 ? ' active' : ''}" role="tab" aria-selected="${i === 0 ? 'true' : 'false'}" data-tab="${id}" onclick="switchTab('${id}')">${label}</button>`).join('');
+      }
+    }
+    function renderCaseOverview(item) {
+      const rolle = personaRolle(item.persona);
+      const fb = item.faktenBox || {};
+      return `
+        <p class="sr-desc" style="font-size:1.55rem;line-height:1.6">${escHtml(item.kurz)}</p>
+        ${item.zitat ? `<blockquote class="sr-quote">${escHtml(item.zitat)}</blockquote>` : ''}
+        <div class="sr-facts">
+          <div><span class="sr-fact-label">Aufwand</span><div class="sr-fact-val">${escHtml(fb.dauer || item.aufwand)}</div></div>
+          <div><span class="sr-fact-label">Von</span><div class="sr-fact-val">${escHtml(item.persona)}${rolle ? ' · ' + escHtml(rolle) : ''}</div></div>
+          <div><span class="sr-fact-label">Genutzte Skills</span><div class="sr-fact-val">${(fb.skills || []).map(escHtml).join(', ') || '—'}</div></div>
+          <div><span class="sr-fact-label">Prompts &amp; Bausteine</span><div class="sr-fact-val">${(fb.prompts || []).length} Prompts · ${(fb.bausteine || []).length} Bausteine</div></div>
+        </div>
+        <div class="sr-actions" style="margin-top:1.6rem">
+          ${reactionBtnHtml(item)}
+          <a class="lib-btn -primary" href="${item.liveUrl}" target="_blank" rel="noopener">${LU.eye}Ansehen (neuer Tab)</a>
+          <button class="lib-btn" onclick="switchTab('nachbauen')">${LU['layout-dashboard']}Nachbauen</button>
+        </div>`;
+    }
+    function renderCaseStory(item) {
+      const s = item.story || {};
+      return `
+        <div class="sr-story-block"><p class="section-label">Ausgangsproblem</p><p>${escHtml(s.ausgangsproblem || '')}</p></div>
+        <div class="sr-story-block"><p class="section-label">Der erste Prompt</p>
+          <div class="sr-prompt-box"><p>${escHtml(s.ersterPrompt || '')}</p>
+            <button class="lib-btn -primary" onclick="copyToClipboard(caseById('${item.id}').story.ersterPrompt, 'Prompt kopiert — in Claude einfügen')">${LU.copy}Ersten Prompt kopieren</button>
+          </div></div>
+        <div class="sr-story-block"><p class="section-label">Der Stolperstein</p><p>${escHtml(s.stolperstein || '')}</p></div>
+        <div class="sr-story-block"><p class="section-label">Das Ergebnis</p><p>${escHtml(s.ergebnis || '')}</p></div>`;
+    }
+    function renderCaseNachbauen(item) {
+      const q = item.querverweise || {};
+      const grp = (label, chips) => chips ? `<div class="sr-xref-group"><span class="sr-xref-label">${label}</span><div class="sr-xref">${chips}</div></div>` : '';
+      const skillChips = (q.skills || []).map(z => `<a class="lib-btn" href="skills.html?skill=${encodeURIComponent(z.id)}">${LU.strategy}${escHtml(z.label)}</a>`).join('');
+      const promptChips = (q.prompts || []).map(z => `<a class="lib-btn" href="prompts.html?p=${encodeURIComponent(z.id)}">${LU.ai}${escHtml(z.label)}</a>`).join('');
+      const bausteinChips = (q.bausteine || []).map(z => `<a class="lib-btn" href="baukasten.html?b=${encodeURIComponent(z.id)}">${LU.blocks}${escHtml(z.label)}</a>`).join('');
+      const datenChips = (q.beispieldaten || []).map(z => `<a class="lib-btn" href="baukasten.html#bk-data-${encodeURIComponent(z.id)}">${LU.database}${escHtml(z.label)}</a>`).join('');
+      return `
+        <p class="section-label" style="margin-top:0">Startprompt zum Nachbauen</p>
+        <div class="sr-prompt-box"><p>${escHtml(item.nachbauStartprompt || '')}</p>
+          <button class="lib-btn -primary" onclick="copyToClipboard(caseById('${item.id}').nachbauStartprompt, 'Startprompt kopiert — in Claude einfügen')">${LU.copy}Startprompt kopieren</button>
+        </div>
+        <p class="sr-persona" style="margin-top:1.4rem">Die Zutaten, mit denen dieses Projekt entstanden ist — jede führt direkt zum passenden Baustein im Marketplace:</p>
+        ${grp('Skills', skillChips)}
+        ${grp('Prompts', promptChips)}
+        ${grp('Bausteine', bausteinChips)}
+        ${grp('Beispieldaten', datenChips)}`;
+    }
+    function renderCaseVorschau(item) {
+      return `
+        <div class="preview-frame-wrap"><iframe class="preview-frame" src="${item.liveUrl}"
+           sandbox="allow-scripts allow-same-origin" title="Live-Vorschau: ${escHtml(item.titel)}"></iframe></div>
+        <p class="preview-note">Läuft in einem isolierten Rahmen. „Ansehen" öffnet die echte Datei in einem neuen Tab.</p>
+        <div class="sr-actions" style="margin-top:1rem">
+          <a class="lib-btn -primary" href="${item.liveUrl}" target="_blank" rel="noopener">${LU.eye}Ansehen (neuer Tab)</a>
+        </div>`;
+    }
+
+    window.ModalConfig = {
+      getItem: id => caseById(id),
+      renderHead: item => renderCaseHead(item),
+      renderers: {
+        overview: item => renderCaseOverview(item),
+        story: item => renderCaseStory(item),
+        nachbauen: item => renderCaseNachbauen(item),
+        vorschau: item => renderCaseVorschau(item)
+      },
+      updateURL: () => updateURL(),
+      pushURL: () => pushURL(),
+      lockHash: () => { _hashLock = true; setTimeout(() => { _hashLock = false; }, 0); }
+    };
+
+    // ===== DEEP-LINK: showroom.html?case=<id> bzw. #case/<id> =====
+    let _hashLock = false;
+    function buildHash() { return state.activeSkill ? '#case/' + encodeURIComponent(state.activeSkill.id) : ''; }
+    function writeHash(h, push) {
+      if (location.hash === h) return;
+      _hashLock = true;
+      try { push ? history.pushState(null, '', h || location.pathname + location.search) : history.replaceState(null, '', h || location.pathname + location.search); }
+      catch (e) {}
+      setTimeout(() => { _hashLock = false; }, 0);
+    }
+    function updateURL() { const h = buildHash(); if (h) writeHash(h, false); }
+    function pushURL() { const h = buildHash(); if (h) writeHash(h, true); }
+
+    function highlightCard(id) {
+      const anchor = () => {
+        const el = document.getElementById('case-' + id);
+        if (el) el.scrollIntoView({ behavior: scrollBehavior(), block: 'center' });
+      };
+      anchor();
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(() => setTimeout(anchor, 60)).catch(() => {});
+      }
+      const el = document.getElementById('case-' + id);
+      if (el) { el.classList.add('-highlight'); setTimeout(() => el.classList.remove('-highlight'), 2400); }
+    }
+
+    function applyDeepLink(fromLoad) {
+      if (fromLoad) {
+        try {
+          const qs = new URLSearchParams(location.search);
+          const v = qs.get('case');
+          if (v && !location.hash) history.replaceState(null, '', location.pathname + '#case/' + encodeURIComponent(v));
+        } catch (e) {}
+      }
+      if (_hashLock) return;
+      const m = (location.hash || '').match(/^#case\/(.+)$/);
+      if (!m) {
+        const ov = document.getElementById('modal-overlay');
+        if (ov && ov.classList.contains('open')) closeModal();
+        return;
+      }
+      let id;
+      try { id = decodeURIComponent(m[1]); } catch (e) { return; }
+      const item = caseById(id);
+      if (!item) return;
+      // Case liegt evtl. hinter einem Filter — für den Deep-Link lösen
+      if ((state.saeule && item.saeule !== state.saeule) || (state.art !== 'all' && item.art !== state.art) || (state.aufwand !== 'all' && item.aufwandStufe !== state.aufwand)) {
+        state.saeule = null; state.art = 'all'; state.aufwand = 'all';
+        const artSel = document.getElementById('sr-art'); if (artSel) artSel.value = 'all';
+        const aufSel = document.getElementById('sr-aufwand'); if (aufSel) aufSel.value = 'all';
+        renderCats(); renderCases();
+      }
+      openModal(id, { fromHash: true });
+      highlightCard(id);
+    }
+
+    // ===== „PROJEKT EINREICHEN" (prominentester Demo-Flow der Seite) =====
+    function openCaseSubmit() {
+      openSubmitFlow({
+        type: 'case',
+        title: 'Zeig, was du gebaut hast',
+        intro: 'Ein Projekt, das anderen zeigt, was mit KI möglich ist — mit der ehrlichen Geschichte dahinter.',
+        fields: [
+          { key: 'name', label: 'Projektname', required: true, placeholder: 'z. B. „Reporting-Generator"' },
+          { key: 'problem', label: 'Welches Problem löst es?', type: 'textarea', required: true, placeholder: 'Was war der Anlass — und was tut das Projekt?' },
+          { key: 'aufwand', label: 'Grober Aufwand', placeholder: 'z. B. „Feierabend-Projekt, ~2 Stunden"' },
+          { key: 'link', label: 'Link zur Demo (optional)', placeholder: 'https://…' }
+        ],
+        submitLabel: 'Projekt einreichen (Demo)'
+      });
+    }
+
+    // ===== INIT =====
+    document.addEventListener('DOMContentLoaded', () => {
+      // Sektions-Icons setzen (Lucide aus der LU-Map)
+      const icons = { 'sr-lead-ic': LU.check, 'cases-ic': LU.rocket, 'rank-ic': LU.trophy };
+      Object.entries(icons).forEach(([id, svg]) => { const el = document.getElementById(id); if (el) el.innerHTML = svg; });
+
+      // Hero-Zahlen — nur real Gezähltes aus CASE_STATS
+      [['sr-stat-total', CASE_STATS.total], ['sr-stat-echt', CASE_STATS.echt],
+       ['sr-stat-beispiel', CASE_STATS.beispiel], ['sr-stat-saeulen', CASE_STATS.saeulen]].forEach(([id, n]) => {
+        const el = document.getElementById(id);
+        if (el) animateCount(el, n, 1000);
+      });
+
+      renderSpotlight();
+      renderCats();
+      fillSelect('sr-art', ART_ORDER, ART_LABEL, 'Alle Arten');
+      fillSelect('sr-aufwand', AUFWAND_ORDER, AUFWAND_LABEL, 'Jeder Aufwand');
+      renderCases();
+      renderRanking();
+
+      const artSel = document.getElementById('sr-art');
+      if (artSel) artSel.addEventListener('change', e => { state.art = e.target.value; renderCases(); });
+      const aufSel = document.getElementById('sr-aufwand');
+      if (aufSel) aufSel.addEventListener('change', e => { state.aufwand = e.target.value; renderCases(); });
+      const sortSel = document.getElementById('sr-sort');
+      if (sortSel) sortSel.addEventListener('change', e => { state.sort = e.target.value; renderCases(); });
+
+      initModalEngine();
+      initModalSwipe();
+
+      applyDeepLink(true);
+      window.addEventListener('hashchange', () => applyDeepLink(false));
+    });
+  </script>
+</body>
+</html>

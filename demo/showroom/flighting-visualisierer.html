@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Flighting-Visualisierer — Beispiel-Projekt</title>
+<style>
+  :root{
+    --c-black:#262626;
+    --c-yellow:#ffe05e;
+    --c-paper:#f1f1ec;
+    --c-card:#fcfcfc;
+    --c-line:#e2e0d8;
+    --c-line-strong:#cfccc0;
+    --c-muted:#6f6c63;
+    --radius:10px;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:var(--sans);
+    color:var(--c-black);
+    background:var(--c-paper);
+    line-height:1.5;
+    -webkit-text-size-adjust:100%;
+  }
+  .wrap{
+    max-width:940px;
+    margin:0 auto;
+    padding:24px 18px 40px;
+  }
+  header.page{
+    margin-bottom:22px;
+  }
+  .badge{
+    display:inline-block;
+    font-size:12px;
+    font-weight:600;
+    letter-spacing:.02em;
+    padding:4px 10px;
+    border-radius:999px;
+    background:var(--c-black);
+    color:var(--c-yellow);
+    margin-bottom:12px;
+  }
+  h1{
+    font-size:clamp(22px,5vw,30px);
+    line-height:1.15;
+    margin:0 0 8px;
+    font-weight:700;
+    letter-spacing:-.01em;
+  }
+  .lede{
+    margin:0;
+    max-width:60ch;
+    color:var(--c-muted);
+    font-size:15px;
+  }
+  .card{
+    background:var(--c-card);
+    border:1px solid var(--c-line);
+    border-radius:var(--radius);
+    padding:18px;
+    margin-top:20px;
+  }
+  .card h2{
+    font-size:15px;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    margin:0 0 14px;
+    color:var(--c-muted);
+    font-weight:700;
+  }
+
+  /* ---- Eingabe-Tabelle ---- */
+  .table-scroll{overflow-x:auto}
+  table.plan{
+    width:100%;
+    border-collapse:collapse;
+    min-width:460px;
+  }
+  table.plan th{
+    text-align:left;
+    font-size:12px;
+    letter-spacing:.03em;
+    color:var(--c-muted);
+    font-weight:600;
+    padding:0 8px 8px;
+    white-space:nowrap;
+  }
+  table.plan td{
+    padding:4px 8px;
+    vertical-align:middle;
+  }
+  table.plan tr.invalid td{opacity:.55}
+  table.plan input{
+    font-family:var(--sans);
+    font-size:14px;
+    color:var(--c-black);
+    background:var(--c-paper);
+    border:1px solid var(--c-line-strong);
+    border-radius:7px;
+    padding:7px 9px;
+    width:100%;
+  }
+  table.plan input:focus{
+    outline:none;
+    border-color:var(--c-black);
+    box-shadow:0 0 0 2px rgba(255,224,94,.55);
+  }
+  table.plan input[type=number]{width:88px}
+  .col-num{width:96px}
+  .col-x{width:34px}
+  .btn-x{
+    width:28px;height:28px;
+    border:1px solid var(--c-line-strong);
+    background:var(--c-card);
+    border-radius:7px;
+    cursor:pointer;
+    color:var(--c-muted);
+    display:inline-flex;align-items:center;justify-content:center;
+    padding:0;
+  }
+  .btn-x:hover{border-color:var(--c-black);color:var(--c-black)}
+  .btn-x svg{width:15px;height:15px;display:block}
+  .row-actions{margin-top:14px;display:flex;gap:10px;flex-wrap:wrap}
+  .btn{
+    font-family:var(--sans);
+    font-size:14px;
+    font-weight:600;
+    border:1px solid var(--c-black);
+    background:var(--c-black);
+    color:var(--c-yellow);
+    border-radius:8px;
+    padding:9px 14px;
+    cursor:pointer;
+  }
+  .btn:hover{background:#000}
+  .btn.ghost{
+    background:transparent;
+    color:var(--c-black);
+    border-color:var(--c-line-strong);
+  }
+  .btn.ghost:hover{border-color:var(--c-black)}
+
+  /* ---- Flight-Raster ---- */
+  .flight-scroll{overflow-x:auto}
+  .flight{min-width:520px}
+  .flight-head,
+  .flight-row{
+    display:grid;
+    align-items:center;
+    gap:0;
+  }
+  .lbl{
+    padding:6px 12px 6px 0;
+    font-size:13px;
+    font-weight:600;
+    white-space:nowrap;
+    min-width:0;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .weeks{
+    display:grid;
+    border-left:1px solid var(--c-line);
+  }
+  .flight-head .wk{
+    font-size:11px;
+    color:var(--c-muted);
+    text-align:center;
+    padding:2px 0;
+    border-right:1px solid var(--c-line);
+    white-space:nowrap;
+  }
+  .track{
+    position:relative;
+    height:30px;
+    border-right:1px solid var(--c-line);
+    border-bottom:1px solid var(--c-line);
+    background:
+      repeating-linear-gradient(
+        90deg,
+        transparent 0,
+        transparent calc(var(--wcol) - 1px),
+        var(--c-line) calc(var(--wcol) - 1px),
+        var(--c-line) var(--wcol)
+      );
+  }
+  .bar{
+    position:absolute;
+    top:5px;bottom:5px;
+    background:var(--c-yellow);
+    border-radius:5px;
+    display:flex;
+    align-items:center;
+    padding:0 8px;
+    font-size:11px;
+    font-weight:700;
+    color:var(--c-black);
+    white-space:nowrap;
+    overflow:hidden;
+    box-shadow:inset 0 0 0 1px rgba(38,38,38,.14);
+  }
+  .flight-row.sum .lbl{color:var(--c-black);font-weight:700}
+  .cell-sum{
+    text-align:center;
+    font-size:10.5px;
+    font-weight:600;
+    color:var(--c-muted);
+    padding:5px 1px;
+    border-right:1px solid var(--c-line);
+    border-bottom:1px solid var(--c-line);
+    line-height:1.15;
+    white-space:nowrap;
+  }
+  .cell-sum.peak{color:var(--c-black)}
+  .cell-sum b{display:block;font-weight:800;color:var(--c-black)}
+  .legend{
+    display:flex;
+    flex-wrap:wrap;
+    gap:14px 20px;
+    align-items:center;
+    margin-top:16px;
+    font-size:12.5px;
+    color:var(--c-muted);
+  }
+  .legend .swatch{
+    display:inline-flex;align-items:center;gap:7px;
+  }
+  .swatch i{
+    width:34px;height:12px;border-radius:3px;display:inline-block;
+    background:linear-gradient(90deg,rgba(255,224,94,.35),var(--c-yellow));
+    box-shadow:inset 0 0 0 1px rgba(38,38,38,.14);
+  }
+  .total-line{
+    margin-top:14px;
+    font-size:14px;
+  }
+  .total-line b{font-weight:700}
+  .empty-hint{
+    color:var(--c-muted);
+    font-size:14px;
+    padding:8px 0;
+  }
+  footer.page{
+    margin-top:30px;
+    padding-top:18px;
+    border-top:1px solid var(--c-line);
+    font-size:13px;
+    color:var(--c-muted);
+  }
+  footer.page a{color:var(--c-black);font-weight:600}
+  footer.page p{margin:6px 0 0;max-width:64ch}
+  @media (max-width:560px){
+    table.plan input[type=number]{width:100%}
+    .col-num{width:auto}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="page">
+    <span class="badge">Beispiel-Projekt</span>
+    <h1>Flighting-Visualisierer</h1>
+    <p class="lede">Trag deinen Media-Flightplan in die Tabelle ein — je Kanal eine Zeile mit Laufzeit und Wochenbudget. Darunter zeichnet das Tool live ein Wochenraster mit Balken; die Deckkraft eines Balkens steigt mit seinem Wochenbudget. Es plant nichts, es zeigt nur, was du eingibst.</p>
+  </header>
+
+  <section class="card">
+    <h2>Flightplan</h2>
+    <div class="table-scroll">
+      <table class="plan">
+        <thead>
+          <tr>
+            <th>Kanal</th>
+            <th class="col-num">Start-KW</th>
+            <th class="col-num">End-KW</th>
+            <th class="col-num">Wochenbudget (€)</th>
+            <th class="col-x"></th>
+          </tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+    <div class="row-actions">
+      <button class="btn" id="add">Zeile hinzufügen</button>
+      <button class="btn ghost" id="reset">Beispiel zurücksetzen</button>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Flight-Raster</h2>
+    <div class="flight-scroll">
+      <div class="flight" id="flight"></div>
+    </div>
+    <div class="legend">
+      <span class="swatch"><i></i> Deckkraft = relative Höhe des Wochenbudgets</span>
+    </div>
+    <p class="total-line" id="total"></p>
+  </section>
+
+  <footer class="page">
+    <a href="../../skills.html">zurück zum Katalog</a>
+    <p>Beispiel-Projekt aus dem Showroom — ein kleines Feierabend-Tool, das zeigt, was mit wenig Aufwand möglich ist. Die Zahlen sind Demo-Testdaten, keine echten Kampagnen. Läuft komplett offline im Browser, ohne Server und ohne externe Dienste.</p>
+  </footer>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var beispiel = [
+    {kanal:"Paid Social", start:1,  end:12, budget:8000},
+    {kanal:"Search (SEA)",start:1,  end:12, budget:5000},
+    {kanal:"Display",     start:3,  end:8,  budget:3000},
+    {kanal:"Out of Home", start:5,  end:7,  budget:12000},
+    {kanal:"Newsletter",  start:9,  end:12, budget:1500}
+  ];
+
+  var rowsEl   = document.getElementById("rows");
+  var flightEl = document.getElementById("flight");
+  var totalEl  = document.getElementById("total");
+
+  function euro(n){
+    return n.toLocaleString("de-DE") + " €";
+  }
+  function kurz(n){
+    // kompakte Euro-Angabe fuer schmale Zellen
+    if(n >= 1000){
+      var v = n/1000;
+      var s = (Math.round(v*10)/10).toLocaleString("de-DE");
+      return s + "k";
+    }
+    return String(n);
+  }
+  function esc(s){
+    return String(s).replace(/[&<>"']/g,function(c){
+      return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c];
+    });
+  }
+
+  function makeRow(d){
+    d = d || {kanal:"",start:"",end:"",budget:""};
+    var tr = document.createElement("tr");
+    tr.innerHTML =
+      '<td><input type="text" data-f="kanal" placeholder="z. B. Paid Social" value="'+esc(d.kanal)+'"></td>'+
+      '<td class="col-num"><input type="number" min="1" step="1" data-f="start" value="'+esc(d.start)+'"></td>'+
+      '<td class="col-num"><input type="number" min="1" step="1" data-f="end" value="'+esc(d.end)+'"></td>'+
+      '<td class="col-num"><input type="number" min="0" step="100" data-f="budget" value="'+esc(d.budget)+'"></td>'+
+      '<td class="col-x">'+
+        '<button class="btn-x" title="Zeile entfernen" aria-label="Zeile entfernen">'+
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>'+
+        '</button>'+
+      '</td>';
+    tr.querySelector(".btn-x").addEventListener("click",function(){
+      tr.parentNode.removeChild(tr);
+      render();
+    });
+    return tr;
+  }
+
+  function readRows(){
+    var out = [];
+    var trs = rowsEl.querySelectorAll("tr");
+    for(var i=0;i<trs.length;i++){
+      var tr = trs[i];
+      var g = function(f){ return tr.querySelector('[data-f="'+f+'"]').value.trim(); };
+      var kanal  = g("kanal");
+      var start  = parseInt(g("start"),10);
+      var end    = parseInt(g("end"),10);
+      var budget = parseFloat(g("budget"));
+      var valid = kanal !== "" &&
+                  isFinite(start) && start >= 1 &&
+                  isFinite(end)   && end   >= start &&
+                  isFinite(budget)&& budget > 0;
+      out.push({tr:tr, kanal:kanal, start:start, end:end, budget:budget, valid:valid});
+    }
+    return out;
+  }
+
+  function render(){
+    var data = readRows();
+    var valid = [];
+    for(var i=0;i<data.length;i++){
+      var r = data[i];
+      if(r.valid){ r.tr.className=""; valid.push(r); }
+      else { r.tr.className = (data[i].kanal||isFinite(data[i].start)||isFinite(data[i].end)||isFinite(data[i].budget)) ? "invalid" : ""; }
+    }
+
+    if(valid.length === 0){
+      flightEl.innerHTML = '<p class="empty-hint">Sobald eine Zeile vollständig ist (Kanal, Start-KW, End-KW ≥ Start, Budget), erscheint hier das Flight-Raster.</p>';
+      totalEl.textContent = "";
+      return;
+    }
+
+    var maxWeek = 1, maxBudget = 0, minBudget = Infinity;
+    for(var j=0;j<valid.length;j++){
+      if(valid[j].end > maxWeek) maxWeek = valid[j].end;
+      if(valid[j].budget > maxBudget) maxBudget = valid[j].budget;
+      if(valid[j].budget < minBudget) minBudget = valid[j].budget;
+    }
+    var weeks = maxWeek; // relativ ab KW 1
+
+    // Spaltenbreite: label-Spalte + n Wochenspalten
+    var labelW = 132;
+    var wcol = 40; // px je Woche
+    var gridStyle = "grid-template-columns:"+labelW+"px 1fr;";
+    var weeksTpl = "grid-template-columns:repeat("+weeks+","+wcol+"px);";
+
+    var html = "";
+
+    // Kopf
+    html += '<div class="flight-head" style="'+gridStyle+'">';
+    html += '<div class="lbl">Kanal</div>';
+    html += '<div class="weeks" style="'+weeksTpl+'">';
+    for(var w=1;w<=weeks;w++){
+      html += '<div class="wk">KW '+w+'</div>';
+    }
+    html += '</div></div>';
+
+    // Kanal-Zeilen
+    var span = 100/weeks;
+    for(var k=0;k<valid.length;k++){
+      var r2 = valid[k];
+      var opacity = 0.35;
+      if(maxBudget > minBudget){
+        opacity = 0.35 + 0.65 * ((r2.budget - minBudget)/(maxBudget - minBudget));
+      } else {
+        opacity = 1;
+      }
+      var left  = (r2.start - 1) * span;
+      var width = (r2.end - r2.start + 1) * span;
+      html += '<div class="flight-row" style="'+gridStyle+'">';
+      html += '<div class="lbl" title="'+esc(r2.kanal)+'">'+esc(r2.kanal)+'</div>';
+      html += '<div class="track" style="--wcol:'+wcol+'px">';
+      html += '<div class="bar" style="left:'+left+'%;width:'+width+'%;opacity:'+opacity.toFixed(3)+'" title="'+esc(r2.kanal)+': KW '+r2.start+'–'+r2.end+', '+euro(r2.budget)+'/Woche">'+euro(r2.budget)+'</div>';
+      html += '</div></div>';
+    }
+
+    // Summenzeile: Gesamtbudget je Woche
+    var perWeek = new Array(weeks+1).join("0").split("").map(function(){return 0;});
+    // sicheres Nullen-Array
+    perWeek = [];
+    for(var z=0;z<weeks;z++) perWeek.push(0);
+    var grand = 0;
+    for(var m=0;m<valid.length;m++){
+      var r3 = valid[m];
+      for(var wk=r3.start; wk<=r3.end; wk++){
+        perWeek[wk-1] += r3.budget;
+        grand += r3.budget;
+      }
+    }
+    var peak = Math.max.apply(null, perWeek);
+
+    html += '<div class="flight-row sum" style="'+gridStyle+'">';
+    html += '<div class="lbl">Budget/Woche</div>';
+    html += '<div class="weeks" style="'+weeksTpl+'">';
+    for(var s=0;s<weeks;s++){
+      var isPeak = perWeek[s] === peak && peak > 0;
+      html += '<div class="cell-sum'+(isPeak?' peak':'')+'"><b>'+kurz(perWeek[s])+'</b></div>';
+    }
+    html += '</div></div>';
+
+    flightEl.innerHTML = html;
+
+    totalEl.innerHTML =
+      'Aktive Kanäle: <b>'+valid.length+'</b> · Laufzeit: <b>KW 1–'+weeks+'</b> · '+
+      'Spitzenwoche: <b>'+euro(peak)+'</b> · Gesamtbudget über alle Wochen: <b>'+euro(grand)+'</b>';
+  }
+
+  function load(data){
+    rowsEl.innerHTML = "";
+    for(var i=0;i<data.length;i++){
+      rowsEl.appendChild(makeRow(data[i]));
+    }
+    render();
+  }
+
+  // Live-Neuzeichnung bei jeder Eingabe
+  rowsEl.addEventListener("input", render);
+
+  document.getElementById("add").addEventListener("click",function(){
+    rowsEl.appendChild(makeRow());
+    render();
+  });
+  document.getElementById("reset").addEventListener("click",function(){
+    load(beispiel);
+  });
+
+  load(beispiel);
+})();
+</script>
+</body>
+</html>

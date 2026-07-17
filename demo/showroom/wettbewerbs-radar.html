@@ -1,0 +1,462 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wettbewerbs-Radar — Beispiel-Projekt</title>
+<style>
+  :root{
+    --c-black:#262626;
+    --c-yellow:#ffe05e;
+    --c-paper:#f1f1ec;
+    --c-card:#fcfcfc;
+    --c-line:#e2e0d8;
+    --c-muted:#6a675f;
+    --r1:#5b6b7a;   /* ruhiges Blaugrau */
+    --r2:#8a8375;   /* warmes Grau */
+    --r3:#4f7a6b;   /* gedämpftes Grün */
+    --r4:#7a5b6b;   /* gedämpftes Mauve */
+    --font: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    font-family:var(--font);
+    color:var(--c-black);
+    background:var(--c-paper);
+    line-height:1.5;
+    -webkit-text-size-adjust:100%;
+  }
+  .wrap{max-width:960px;margin:0 auto;padding:24px 18px 64px}
+
+  header.top{
+    display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap;
+    margin-bottom:20px;
+  }
+  .mark{
+    flex:0 0 auto;width:44px;height:44px;border-radius:10px;
+    background:var(--c-yellow);display:grid;place-items:center;
+    box-shadow:inset 0 0 0 1.5px rgba(38,38,38,.12);
+  }
+  .mark svg{width:26px;height:26px;stroke:var(--c-black)}
+  .headtext{flex:1 1 240px;min-width:0}
+  h1{font-size:1.5rem;line-height:1.2;margin:0 0 4px}
+  .sub{color:var(--c-muted);font-size:.95rem;margin:0}
+  .badge{
+    display:inline-flex;align-items:center;gap:6px;
+    font-size:.72rem;font-weight:600;letter-spacing:.02em;
+    text-transform:uppercase;
+    background:var(--c-black);color:var(--c-yellow);
+    padding:5px 10px;border-radius:999px;white-space:nowrap;
+  }
+  .badge svg{width:13px;height:13px;stroke:var(--c-yellow)}
+
+  .grid{display:grid;grid-template-columns:1fr;gap:18px}
+  @media(min-width:760px){.grid{grid-template-columns:minmax(0,1fr) minmax(0,1.1fr)}}
+
+  .card{
+    background:var(--c-card);border:1px solid var(--c-line);
+    border-radius:14px;padding:16px;
+  }
+  .card h2{font-size:.82rem;text-transform:uppercase;letter-spacing:.05em;
+    color:var(--c-muted);margin:0 0 12px;font-weight:700}
+
+  /* Radar */
+  .radar-wrap{width:100%;max-width:100%}
+  svg.radar{width:100%;height:auto;display:block;max-width:100%;overflow:visible}
+  .ring{fill:none;stroke:var(--c-line);stroke-width:1}
+  .spoke{stroke:var(--c-line);stroke-width:1}
+  .axlabel{font-size:11px;fill:var(--c-black);font-family:var(--font)}
+  .poly{stroke-width:2;fill-opacity:.16}
+
+  .legend{display:flex;flex-wrap:wrap;gap:10px 16px;margin-top:12px}
+  .legend .item{display:flex;align-items:center;gap:7px;font-size:.85rem}
+  .swatch{width:14px;height:14px;border-radius:4px;flex:0 0 auto;border:1px solid rgba(0,0,0,.15)}
+
+  /* Editor */
+  .axhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+  .axhead .n{font-size:.75rem;color:var(--c-muted)}
+  .axis-row{display:flex;gap:6px;align-items:center;margin-bottom:6px}
+  .axis-row input[type=text]{flex:1 1 auto;min-width:0}
+  input[type=text]{
+    font:inherit;font-size:.9rem;padding:7px 9px;border:1px solid var(--c-line);
+    border-radius:8px;background:#fff;color:var(--c-black);width:100%;
+  }
+  input[type=text]:focus{outline:2px solid var(--c-yellow);outline-offset:0;border-color:var(--c-yellow)}
+  .iconbtn{
+    flex:0 0 auto;width:32px;height:32px;border:1px solid var(--c-line);background:#fff;
+    border-radius:8px;display:grid;place-items:center;cursor:pointer;color:var(--c-black);
+  }
+  .iconbtn:hover{background:var(--c-paper)}
+  .iconbtn svg{width:16px;height:16px;stroke:currentColor}
+  .iconbtn:disabled{opacity:.35;cursor:not-allowed}
+  .addbtn{
+    font:inherit;font-size:.85rem;font-weight:600;cursor:pointer;
+    display:inline-flex;align-items:center;gap:6px;
+    background:var(--c-yellow);color:var(--c-black);border:none;
+    padding:8px 12px;border-radius:8px;margin-top:4px;
+  }
+  .addbtn svg{width:15px;height:15px;stroke:var(--c-black)}
+  .addbtn:disabled{opacity:.4;cursor:not-allowed}
+
+  .comp{border:1px solid var(--c-line);border-radius:10px;padding:12px;margin-bottom:12px;background:#fff}
+  .comp-head{display:flex;gap:8px;align-items:center;margin-bottom:10px}
+  .comp-head .dot{width:12px;height:12px;border-radius:4px;flex:0 0 auto;border:1px solid rgba(0,0,0,.15)}
+  .comp-head input{flex:1 1 auto}
+  .val-row{display:flex;align-items:center;gap:10px;margin:7px 0}
+  .val-row label{flex:0 0 40%;font-size:.85rem;color:var(--c-black);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .val-row input[type=range]{flex:1 1 auto;min-width:0;accent-color:var(--c-black)}
+  .val-row .v{flex:0 0 22px;text-align:center;font-variant-numeric:tabular-nums;
+    font-weight:700;font-size:.9rem}
+
+  .section-t{font-size:.82rem;text-transform:uppercase;letter-spacing:.05em;
+    color:var(--c-muted);margin:22px 0 10px;font-weight:700}
+
+  .tablewrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--c-line);border-radius:12px;background:var(--c-card)}
+  table{border-collapse:collapse;width:100%;font-size:.88rem;min-width:340px}
+  th,td{padding:9px 11px;text-align:center;border-bottom:1px solid var(--c-line);white-space:nowrap}
+  th:first-child,td:first-child{text-align:left;position:sticky;left:0;background:var(--c-card)}
+  thead th{background:var(--c-black);color:#fff;font-weight:600}
+  thead th:first-child{background:var(--c-black)}
+  tbody tr:last-child td{border-bottom:none}
+  td .rowdot{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:7px;vertical-align:middle}
+  .avg{font-weight:700}
+  .wir-row td:first-child{color:var(--c-black);font-weight:700}
+
+  .honesty{
+    display:flex;gap:10px;align-items:flex-start;
+    background:#fff7d6;border:1px solid #ecd873;border-radius:12px;
+    padding:12px 14px;margin-top:22px;font-size:.9rem;color:#5c531f;
+  }
+  .honesty svg{width:18px;height:18px;flex:0 0 auto;stroke:#8a7a1f;margin-top:1px}
+
+  footer{margin-top:34px;padding-top:18px;border-top:1px solid var(--c-line);
+    font-size:.85rem;color:var(--c-muted)}
+  footer .links{display:flex;gap:18px;flex-wrap:wrap;margin-bottom:8px}
+  footer a{color:var(--c-black);text-decoration:none;border-bottom:1px solid var(--c-yellow);padding-bottom:1px}
+  footer a:hover{background:var(--c-yellow)}
+  .disclaimer{font-size:.8rem;line-height:1.5}
+
+  @media(max-width:420px){
+    .wrap{padding:18px 14px 56px}
+    h1{font-size:1.3rem}
+    .val-row label{flex-basis:34%}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="mark" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="12 3 21 8.5 21 15.5 12 21 3 15.5 3 8.5"></polygon>
+        <line x1="12" y1="3" x2="12" y2="21"></line>
+        <line x1="3" y1="8.5" x2="21" y2="15.5"></line>
+        <line x1="21" y1="8.5" x2="3" y2="15.5"></line>
+      </svg>
+    </div>
+    <div class="headtext">
+      <h1>Wettbewerbs-Radar</h1>
+      <p class="sub">Achsen und Wettbewerber eintragen — Radar und Vergleichstabelle aktualisieren sich sofort.</p>
+    </div>
+    <span class="badge">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 8h.01M11 12h1v4h1"></path></svg>
+      Beispiel-Projekt
+    </span>
+  </header>
+
+  <div class="grid">
+    <!-- Radar -->
+    <section class="card">
+      <h2>Radar</h2>
+      <div class="radar-wrap">
+        <svg class="radar" id="radar" viewBox="0 0 400 360" role="img" aria-label="Radar-Diagramm der Wettbewerber"></svg>
+      </div>
+      <div class="legend" id="legend"></div>
+    </section>
+
+    <!-- Editor -->
+    <section class="card">
+      <h2>Eingabe</h2>
+
+      <div class="axhead">
+        <strong style="font-size:.9rem">Achsen</strong>
+        <span class="n" id="axcount"></span>
+      </div>
+      <div id="axes"></div>
+      <button class="addbtn" id="addAxis" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        Achse hinzufügen
+      </button>
+
+      <div class="axhead" style="margin-top:22px">
+        <strong style="font-size:.9rem">Wettbewerber</strong>
+        <span class="n" id="compcount"></span>
+      </div>
+      <div id="comps"></div>
+      <button class="addbtn" id="addComp" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        Wettbewerber hinzufügen
+      </button>
+    </section>
+  </div>
+
+  <h3 class="section-t">Vergleichstabelle</h3>
+  <div class="tablewrap">
+    <table id="table"><thead></thead><tbody></tbody></table>
+  </div>
+
+  <div class="honesty">
+    <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4"></path><path d="M12 17h.01"></path><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"></path></svg>
+    <span>Die Werte sind eigene Einschätzungen, keine gemessenen Marktdaten. Das Tool strukturiert und visualisiert subjektive Bewertungen — es misst nichts und holt keine externen Daten.</span>
+  </div>
+
+  <footer>
+    <div class="links">
+      <a href="../../showroom.html">&larr; zum Showroom</a>
+      <a href="../../skills.html">zur&uuml;ck zum Katalog</a>
+    </div>
+    <p class="disclaimer">Beispiel-Projekt aus dem Showroom des pilot AI Marketplace — ein kleines, echtes Feierabend-Tool (grobe Einordnung: rund zwei Stunden), das zeigt, was mit wenig Aufwand m&ouml;glich ist. Es ist illustrativ, kein Produkt und liefert keine gemessenen Kennzahlen.</p>
+  </footer>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var MAXV = 5, MINAX = 3, MAXAX = 6, MINCOMP = 2, MAXCOMP = 5;
+  var COLORS = ["var(--r1)","var(--r2)","var(--r3)","var(--r4)"];
+  var YELLOW = "var(--c-yellow)";
+
+  // --- Datenmodell (vorgeladene Beispieldaten) ---
+  var axes = ["Preis","Reichweite","Innovation","Markenstärke"];
+  var comps = [
+    { name:"Wir", wir:true,  vals:[3,4,5,3] },
+    { name:"Wettbewerber A", wir:false, vals:[4,5,2,4] },
+    { name:"Wettbewerber B", wir:false, vals:[2,3,3,5] }
+  ];
+
+  var $ = function(id){ return document.getElementById(id); };
+  function el(tag, cls){ var e=document.createElement(tag); if(cls) e.className=cls; return e; }
+  function clamp(v,a,b){ return Math.max(a, Math.min(b, v)); }
+
+  function colorFor(i){
+    var c = comps[i];
+    if(c.wir) return YELLOW;
+    // vergebe ruhige Farben in Reihenfolge der Nicht-Wir-Wettbewerber
+    var idx = 0;
+    for(var k=0;k<i;k++){ if(!comps[k].wir) idx++; }
+    return COLORS[idx % COLORS.length];
+  }
+
+  // --- Radar zeichnen ---
+  function drawRadar(){
+    var svg = $("radar");
+    while(svg.firstChild) svg.removeChild(svg.firstChild);
+    var SVGNS="http://www.w3.org/2000/svg";
+    var cx=200, cy=185, rMax=125;
+    var n=axes.length;
+
+    function pt(angle, r){ return [cx + r*Math.cos(angle), cy + r*Math.sin(angle)]; }
+    function angleOf(i){ return i/n*2*Math.PI - Math.PI/2; }
+
+    // Ringe 1..5 als Polygone
+    for(var ring=1; ring<=MAXV; ring++){
+      var r = ring/MAXV*rMax;
+      var pts=[];
+      for(var i=0;i<n;i++){ var p=pt(angleOf(i), r); pts.push(p[0].toFixed(1)+","+p[1].toFixed(1)); }
+      var poly=document.createElementNS(SVGNS,"polygon");
+      poly.setAttribute("class","ring");
+      poly.setAttribute("points", pts.join(" "));
+      svg.appendChild(poly);
+    }
+    // Speichen + Achsbeschriftung
+    for(var i=0;i<n;i++){
+      var a=angleOf(i);
+      var outer=pt(a, rMax);
+      var line=document.createElementNS(SVGNS,"line");
+      line.setAttribute("class","spoke");
+      line.setAttribute("x1",cx); line.setAttribute("y1",cy);
+      line.setAttribute("x2",outer[0].toFixed(1)); line.setAttribute("y2",outer[1].toFixed(1));
+      svg.appendChild(line);
+
+      var lp=pt(a, rMax+16);
+      var t=document.createElementNS(SVGNS,"text");
+      t.setAttribute("class","axlabel");
+      t.setAttribute("x", lp[0].toFixed(1));
+      t.setAttribute("y", lp[1].toFixed(1));
+      var cos=Math.cos(a);
+      var anchor = cos>0.25?"start":(cos<-0.25?"end":"middle");
+      t.setAttribute("text-anchor", anchor);
+      t.setAttribute("dominant-baseline","middle");
+      var name=axes[i];
+      if(name.length>12) name=name.slice(0,11)+"…";
+      t.textContent=name;
+      svg.appendChild(t);
+    }
+    // Wettbewerber-Polygone (Wir zuletzt = oben)
+    var order=[];
+    for(var c=0;c<comps.length;c++){ if(!comps[c].wir) order.push(c); }
+    for(var c2=0;c2<comps.length;c2++){ if(comps[c2].wir) order.push(c2); }
+
+    order.forEach(function(ci){
+      var comp=comps[ci];
+      var pts=[];
+      for(var i=0;i<n;i++){
+        var v=clamp(comp.vals[i]||0,0,MAXV);
+        var r=v/MAXV*rMax;
+        var p=pt(angleOf(i), r);
+        pts.push(p[0].toFixed(1)+","+p[1].toFixed(1));
+      }
+      var poly=document.createElementNS(SVGNS,"polygon");
+      poly.setAttribute("class","poly");
+      poly.setAttribute("points", pts.join(" "));
+      var col=colorFor(ci);
+      poly.setAttribute("stroke", col);
+      poly.setAttribute("fill", col);
+      if(comp.wir){ poly.setAttribute("fill-opacity","0.34"); poly.setAttribute("stroke-width","2.5"); }
+      svg.appendChild(poly);
+    });
+  }
+
+  function drawLegend(){
+    var lg=$("legend"); lg.innerHTML="";
+    comps.forEach(function(c,i){
+      var item=el("div","item");
+      var sw=el("span","swatch");
+      sw.style.background=colorFor(i);
+      var label=el("span"); label.textContent=c.name||"(ohne Namen)";
+      item.appendChild(sw); item.appendChild(label);
+      lg.appendChild(item);
+    });
+  }
+
+  // --- Tabelle ---
+  function drawTable(){
+    var thead=$("table").tHead, tbody=$("table").tBodies[0];
+    thead.innerHTML=""; tbody.innerHTML="";
+    var tr=el("tr");
+    tr.appendChild(mkTh("Wettbewerber"));
+    axes.forEach(function(a){ tr.appendChild(mkTh(a)); });
+    tr.appendChild(mkTh("Ø"));
+    thead.appendChild(tr);
+
+    comps.forEach(function(c,i){
+      var row=el("tr");
+      if(c.wir) row.className="wir-row";
+      var first=el("td");
+      var dot=el("span","rowdot"); dot.style.background=colorFor(i);
+      first.appendChild(dot);
+      first.appendChild(document.createTextNode(c.name||"(ohne Namen)"));
+      row.appendChild(first);
+      var sum=0;
+      axes.forEach(function(a,ai){
+        var v=clamp(c.vals[ai]||0,0,MAXV); sum+=v;
+        var td=el("td"); td.textContent=v; row.appendChild(td);
+      });
+      var avg=el("td","avg");
+      avg.textContent=(axes.length?(sum/axes.length):0).toFixed(1);
+      row.appendChild(avg);
+      tbody.appendChild(row);
+    });
+  }
+  function mkTh(txt){ var th=el("th"); th.textContent=txt; return th; }
+
+  // --- Editor: Achsen ---
+  function renderAxes(){
+    var wrap=$("axes"); wrap.innerHTML="";
+    axes.forEach(function(name,i){
+      var row=el("div","axis-row");
+      var inp=el("input"); inp.type="text"; inp.value=name;
+      inp.setAttribute("aria-label","Achsenname "+(i+1));
+      inp.addEventListener("input", function(){ axes[i]=inp.value; renderAll(false); });
+      var rm=el("button","iconbtn"); rm.type="button";
+      rm.title="Achse entfernen"; rm.setAttribute("aria-label","Achse entfernen");
+      rm.innerHTML=trashSVG();
+      rm.disabled = axes.length<=MINAX;
+      rm.addEventListener("click", function(){
+        if(axes.length<=MINAX) return;
+        axes.splice(i,1);
+        comps.forEach(function(c){ c.vals.splice(i,1); });
+        renderAll(true);
+      });
+      row.appendChild(inp); row.appendChild(rm);
+      wrap.appendChild(row);
+    });
+    $("axcount").textContent = axes.length+" von "+MAXAX;
+    $("addAxis").disabled = axes.length>=MAXAX;
+  }
+
+  // --- Editor: Wettbewerber ---
+  function renderComps(){
+    var wrap=$("comps"); wrap.innerHTML="";
+    comps.forEach(function(c,ci){
+      var box=el("div","comp");
+      var head=el("div","comp-head");
+      var dot=el("span","dot"); dot.style.background=colorFor(ci);
+      var nm=el("input"); nm.type="text"; nm.value=c.name;
+      nm.setAttribute("aria-label","Name Wettbewerber "+(ci+1));
+      nm.addEventListener("input", function(){ c.name=nm.value; renderAll(false); });
+      var rm=el("button","iconbtn"); rm.type="button";
+      rm.title="Wettbewerber entfernen"; rm.setAttribute("aria-label","Wettbewerber entfernen");
+      rm.innerHTML=trashSVG();
+      rm.disabled = comps.length<=MINCOMP;
+      rm.addEventListener("click", function(){
+        if(comps.length<=MINCOMP) return;
+        comps.splice(ci,1); renderAll(true);
+      });
+      head.appendChild(dot); head.appendChild(nm); head.appendChild(rm);
+      box.appendChild(head);
+
+      axes.forEach(function(a,ai){
+        var vr=el("div","val-row");
+        var lab=el("label"); lab.textContent=a||("Achse "+(ai+1));
+        var rng=el("input"); rng.type="range"; rng.min=1; rng.max=MAXV; rng.step=1;
+        rng.value=clamp(c.vals[ai]||1,1,MAXV);
+        rng.setAttribute("aria-label", (c.name||"Wettbewerber")+" — "+a);
+        var vv=el("span","v"); vv.textContent=rng.value;
+        rng.addEventListener("input", function(){
+          c.vals[ai]=parseInt(rng.value,10); vv.textContent=rng.value;
+          drawRadar(); drawTable();
+        });
+        vr.appendChild(lab); vr.appendChild(rng); vr.appendChild(vv);
+        box.appendChild(vr);
+      });
+      wrap.appendChild(box);
+    });
+    $("compcount").textContent = comps.length+" von "+MAXCOMP;
+    $("addComp").disabled = comps.length>=MAXCOMP;
+  }
+
+  function trashSVG(){
+    return '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>';
+  }
+
+  function renderAll(rebuildInputs){
+    if(rebuildInputs){ renderAxes(); renderComps(); }
+    else { $("axcount").textContent=axes.length+" von "+MAXAX; $("compcount").textContent=comps.length+" von "+MAXCOMP; }
+    drawRadar(); drawLegend(); drawTable();
+  }
+
+  // --- Aktionen ---
+  $("addAxis").addEventListener("click", function(){
+    if(axes.length>=MAXAX) return;
+    axes.push("Achse "+(axes.length+1));
+    comps.forEach(function(c){ c.vals.push(3); });
+    renderAll(true);
+  });
+  $("addComp").addEventListener("click", function(){
+    if(comps.length>=MAXCOMP) return;
+    var vals=axes.map(function(){ return 3; });
+    comps.push({ name:"Wettbewerber "+String.fromCharCode(64+comps.length), wir:false, vals:vals });
+    renderAll(true);
+  });
+
+  // Erststart: alles rendern (Radar + Tabelle sofort sichtbar)
+  renderAxes(); renderComps(); drawRadar(); drawLegend(); drawTable();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,412 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UTM-Link-Baukasten — pilot Showroom</title>
+<style>
+  :root{
+    --c-black:#262626;
+    --c-yellow:#ffe05e;
+    --c-paper:#f1f1ec;
+    --c-card:#fcfcfc;
+    --c-line:#e2e0d8;
+    --c-muted:#6b6a63;
+    --c-error:#b23b2e;
+    --c-ok:#2f7d43;
+    --font: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --mono: ui-monospace, "Cascadia Code", Consolas, monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:var(--font);
+    color:var(--c-black);
+    background:var(--c-paper);
+    line-height:1.5;
+    -webkit-text-size-adjust:100%;
+    overflow-x:hidden;
+  }
+  .wrap{max-width:760px;margin:0 auto;padding:28px 20px 56px}
+  header.top{margin-bottom:24px}
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:8px;
+    font-size:12px;letter-spacing:.06em;text-transform:uppercase;
+    color:var(--c-muted);font-weight:600;margin-bottom:12px;
+  }
+  .eyebrow svg{width:15px;height:15px}
+  h1{font-size:26px;line-height:1.15;margin:0 0 8px;font-weight:700;letter-spacing:-.01em}
+  .lede{color:#3f3e38;font-size:15px;margin:0;max-width:56ch}
+  .badge{
+    display:inline-flex;align-items:center;gap:7px;
+    background:var(--c-yellow);color:var(--c-black);
+    border:1px solid #e6c94f;border-radius:999px;
+    padding:4px 11px;font-size:12px;font-weight:700;
+    margin-top:14px;
+  }
+  .badge svg{width:14px;height:14px}
+
+  .card{
+    background:var(--c-card);border:1px solid var(--c-line);
+    border-radius:14px;padding:22px;margin-top:20px;
+  }
+  .card h2{font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--c-muted);margin:0 0 16px;font-weight:700}
+
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .field{display:flex;flex-direction:column;gap:5px;min-width:0}
+  .field.full{grid-column:1 / -1}
+  label{font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px}
+  .req{color:var(--c-error);font-weight:700}
+  .opt{color:var(--c-muted);font-weight:500;font-size:12px}
+  input[type=text]{
+    font-family:var(--font);font-size:15px;color:var(--c-black);
+    background:#fff;border:1px solid var(--c-line);border-radius:9px;
+    padding:10px 12px;width:100%;transition:border-color .15s, box-shadow .15s;
+  }
+  input[type=text]:focus{outline:none;border-color:var(--c-black);box-shadow:0 0 0 3px rgba(38,38,38,.08)}
+  input.invalid{border-color:var(--c-error);box-shadow:0 0 0 3px rgba(178,59,46,.1)}
+  .hint{font-size:12px;color:var(--c-muted);min-height:1px}
+  .hint.clean{color:var(--c-ok)}
+  .hint.miss{color:var(--c-error)}
+  .hint .mono{font-family:var(--mono);font-size:11px}
+
+  .result{
+    background:var(--c-black);color:#f4f1ea;border-radius:14px;
+    padding:20px;margin-top:20px;
+  }
+  .result .label{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:#9d9c93;font-weight:700;margin-bottom:10px}
+  .link-out{
+    font-family:var(--mono);font-size:14px;line-height:1.55;
+    color:var(--c-yellow);word-break:break-all;
+    background:rgba(255,255,255,.04);border:1px solid rgba(255,224,94,.22);
+    border-radius:9px;padding:13px 14px;min-height:20px;
+  }
+  .link-out.empty{color:#c9683f;font-style:italic}
+  .actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+  button{
+    font-family:var(--font);font-size:14px;font-weight:600;cursor:pointer;
+    border-radius:9px;padding:10px 16px;border:1px solid transparent;
+    transition:transform .05s, background .15s, opacity .15s;
+  }
+  button:active{transform:translateY(1px)}
+  button:disabled{opacity:.45;cursor:not-allowed}
+  .btn-primary{background:var(--c-yellow);color:var(--c-black);border-color:#e6c94f}
+  .btn-primary:hover:not(:disabled){background:#ffe87e}
+  .btn-ghost{background:transparent;color:#f4f1ea;border-color:rgba(255,255,255,.28)}
+  .btn-ghost:hover:not(:disabled){background:rgba(255,255,255,.08)}
+  .toast{font-size:13px;color:var(--c-ok);font-weight:600;align-self:center;opacity:0;transition:opacity .2s}
+  .toast.show{opacity:1}
+  .result .toast{color:#8fe0a2}
+
+  .history{margin-top:20px}
+  .history .empty-note{color:var(--c-muted);font-size:14px;margin:0}
+  ul.hist-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+  ul.hist-list li{
+    display:flex;gap:10px;align-items:flex-start;
+    border:1px solid var(--c-line);border-radius:10px;padding:11px 12px;background:#fff;
+  }
+  ul.hist-list .h-link{font-family:var(--mono);font-size:12.5px;color:#3f3e38;word-break:break-all;flex:1;min-width:0;line-height:1.5}
+  ul.hist-list .h-time{font-size:11px;color:var(--c-muted);white-space:nowrap}
+  .mini-copy{
+    flex-shrink:0;background:var(--c-paper);border:1px solid var(--c-line);
+    border-radius:7px;padding:6px 9px;font-size:12px;color:var(--c-black);
+    display:inline-flex;align-items:center;gap:5px;
+  }
+  .mini-copy:hover{background:#e9e7df}
+  .mini-copy svg{width:13px;height:13px}
+  .mini-copy.done{color:var(--c-ok);border-color:#bfe0c7;background:#eef7f0}
+
+  footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--c-line);font-size:13px;color:var(--c-muted)}
+  footer .links{display:flex;flex-wrap:wrap;gap:8px 20px;margin-bottom:12px}
+  footer a{color:var(--c-black);text-decoration:none;font-weight:600;display:inline-flex;align-items:center;gap:6px}
+  footer a:hover{text-decoration:underline}
+  footer a svg{width:14px;height:14px}
+  footer .disclaimer{margin:0;line-height:1.55;max-width:60ch}
+
+  @media (max-width:560px){
+    .grid{grid-template-columns:1fr}
+    h1{font-size:22px}
+    .wrap{padding:22px 16px 48px}
+  }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <span class="eyebrow">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+      pilot Showroom · Performance
+    </span>
+    <h1>UTM-Link-Baukasten</h1>
+    <p class="lede">Aus Ziel-URL und UTM-Parametern wird ein sauber kodierter Tracking-Link — Werte werden automatisch normalisiert, Pflichtfelder geprüft. Kein Kampagnen-Management, kein Kürzer, nur der eine Handgriff, der sonst nervt.</p>
+    <span class="badge">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+      Beispiel-Projekt
+    </span>
+  </header>
+
+  <section class="card">
+    <h2>Link zusammenbauen</h2>
+    <div class="grid">
+      <div class="field full">
+        <label for="url">Ziel-URL <span class="req" title="Pflichtfeld">*</span></label>
+        <input type="text" id="url" inputmode="url" spellcheck="false" autocomplete="off" placeholder="https://www.beispiel.de/seite">
+        <div class="hint" data-hint="url"></div>
+      </div>
+      <div class="field">
+        <label for="source">utm_source <span class="req" title="Pflichtfeld">*</span></label>
+        <input type="text" id="source" spellcheck="false" autocomplete="off" placeholder="newsletter">
+        <div class="hint" data-hint="source"></div>
+      </div>
+      <div class="field">
+        <label for="medium">utm_medium <span class="req" title="Pflichtfeld">*</span></label>
+        <input type="text" id="medium" spellcheck="false" autocomplete="off" placeholder="email">
+        <div class="hint" data-hint="medium"></div>
+      </div>
+      <div class="field">
+        <label for="campaign">utm_campaign <span class="req" title="Pflichtfeld">*</span></label>
+        <input type="text" id="campaign" spellcheck="false" autocomplete="off" placeholder="herbst-2026">
+        <div class="hint" data-hint="campaign"></div>
+      </div>
+      <div class="field">
+        <label for="content">utm_content <span class="opt">optional</span></label>
+        <input type="text" id="content" spellcheck="false" autocomplete="off" placeholder="header-cta">
+        <div class="hint" data-hint="content"></div>
+      </div>
+      <div class="field full">
+        <label for="term">utm_term <span class="opt">optional</span></label>
+        <input type="text" id="term" spellcheck="false" autocomplete="off" placeholder="rabatt">
+        <div class="hint" data-hint="term"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="result">
+    <div class="label">Fertiger Tracking-Link</div>
+    <div class="link-out" id="out" aria-live="polite"></div>
+    <div class="actions">
+      <button class="btn-primary" id="copyBtn">Link kopieren</button>
+      <button class="btn-ghost" id="rememberBtn">Merken</button>
+      <span class="toast" id="toast">Kopiert</span>
+    </div>
+  </section>
+
+  <section class="card history">
+    <h2>Zuletzt gebaut</h2>
+    <p class="empty-note" id="histEmpty">Noch nichts gemerkt. Über „Link kopieren" oder „Merken" landet ein Link hier.</p>
+    <ul class="hist-list" id="histList"></ul>
+  </section>
+
+  <footer>
+    <div class="links">
+      <a href="../../showroom.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+        zum Showroom
+      </a>
+      <a href="../../skills.html">zurück zum Katalog</a>
+    </div>
+    <p class="disclaimer">Beispiel-Projekt im pilot-Showroom: ein ehrlich kleines Feierabend-Tool (grobe Einordnung ~2 Stunden), das zeigt, was mit wenig Aufwand möglich ist. Die Demo ist echt und klickbar, die zugeordnete Persona ist eine redaktionelle Demo-Angabe. Es werden keine Daten gesendet und nichts gespeichert — alles läuft offline in deinem Browser.</p>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var ids = ["url","source","medium","campaign","content","term"];
+  var els = {};
+  ids.forEach(function(id){ els[id] = document.getElementById(id); });
+  var out = document.getElementById("out");
+  var copyBtn = document.getElementById("copyBtn");
+  var rememberBtn = document.getElementById("rememberBtn");
+  var toast = document.getElementById("toast");
+  var histList = document.getElementById("histList");
+  var histEmpty = document.getElementById("histEmpty");
+
+  var reqFields = ["url","source","medium","campaign"];
+  var paramFields = ["source","medium","campaign","content","term"];
+  var utmKey = {source:"utm_source",medium:"utm_medium",campaign:"utm_campaign",content:"utm_content",term:"utm_term"};
+
+  // Wert normalisieren: trimmen, lowercase, innere Leerzeichen -> "-"
+  function normalize(raw){
+    return raw.trim().toLowerCase().replace(/\s+/g,"-");
+  }
+
+  function setHint(field, text, cls){
+    var h = document.querySelector('[data-hint="'+field+'"]');
+    if(!h) return;
+    h.className = "hint" + (cls ? " " + cls : "");
+    h.innerHTML = text || "";
+  }
+
+  function esc(s){
+    return String(s).replace(/[&<>"]/g, function(c){
+      return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];
+    });
+  }
+
+  var lastLink = null;
+
+  function build(){
+    // Pflichtfelder prüfen + Feld-Markierung
+    var missing = [];
+    reqFields.forEach(function(f){
+      var v = els[f].value.trim();
+      if(v === ""){ missing.push(f); els[f].classList.add("invalid"); }
+      else { els[f].classList.remove("invalid"); }
+    });
+
+    // Hinweise für Parameter-Felder (Bereinigung anzeigen)
+    paramFields.forEach(function(f){
+      var raw = els[f].value;
+      var trimmed = raw.trim();
+      if(trimmed === ""){
+        setHint(f, reqFields.indexOf(f) > -1 && missing.indexOf(f) > -1 ? "Pflichtfeld fehlt" : "", reqFields.indexOf(f) > -1 && missing.indexOf(f) > -1 ? "miss" : "");
+        return;
+      }
+      var norm = normalize(trimmed);
+      var hadUpper = /[A-Z]/.test(trimmed);
+      var hadSpace = /\s/.test(trimmed);
+      if(hadUpper || hadSpace){
+        setHint(f, 'bereinigt zu <span class="mono">'+esc(norm)+'</span>', "clean");
+      } else {
+        setHint(f, "");
+      }
+    });
+
+    // URL-Hinweis
+    var urlRaw = els.url.value.trim();
+    if(urlRaw === ""){
+      setHint("url", missing.indexOf("url") > -1 ? "Pflichtfeld fehlt" : "", "miss");
+    } else if(!/^https?:\/\//i.test(urlRaw)){
+      setHint("url", "Tipp: mit http:// oder https:// beginnen", "");
+    } else {
+      setHint("url", "");
+    }
+
+    if(missing.length > 0){
+      out.textContent = "— Pflichtfeld fehlt —";
+      out.classList.add("empty");
+      lastLink = null;
+      copyBtn.disabled = true;
+      rememberBtn.disabled = true;
+      return;
+    }
+
+    // Query zusammenbauen
+    var parts = [];
+    paramFields.forEach(function(f){
+      var v = els[f].value.trim();
+      if(v === "") return; // leere optionale weglassen
+      var val = normalize(v);
+      parts.push(utmKey[f] + "=" + encodeURIComponent(val));
+    });
+    var query = parts.join("&");
+
+    // Fragment abtrennen, an bestehendem ? berücksichtigen
+    var url = urlRaw;
+    var fragment = "";
+    var hashIdx = url.indexOf("#");
+    if(hashIdx > -1){
+      fragment = url.slice(hashIdx);
+      url = url.slice(0, hashIdx);
+    }
+    var sep = url.indexOf("?") > -1 ? "&" : "?";
+    var link = url + (query ? sep + query : "") + fragment;
+
+    out.textContent = link;
+    out.classList.remove("empty");
+    lastLink = link;
+    copyBtn.disabled = false;
+    rememberBtn.disabled = false;
+  }
+
+  // Kopieren mit Fallback (offline / file:// ohne clipboard-API)
+  function copyText(text, cb){
+    function fallback(){
+      try{
+        var ta = document.createElement("textarea");
+        ta.value = text;
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.select();
+        var ok = document.execCommand("copy");
+        document.body.removeChild(ta);
+        cb(ok);
+      }catch(e){ cb(false); }
+    }
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(function(){ cb(true); }, fallback);
+    } else {
+      fallback();
+    }
+  }
+
+  var toastTimer = null;
+  function showToast(msg){
+    toast.textContent = msg;
+    toast.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toast.classList.remove("show"); }, 1600);
+  }
+
+  function timeLabel(){
+    var d = new Date();
+    function p(n){ return (n<10?"0":"")+n; }
+    return p(d.getHours()) + ":" + p(d.getMinutes());
+  }
+
+  function addToHistory(link){
+    if(!link) return;
+    histEmpty.style.display = "none";
+    var li = document.createElement("li");
+    var a = document.createElement("span");
+    a.className = "h-link";
+    a.textContent = link;
+    var t = document.createElement("span");
+    t.className = "h-time";
+    t.textContent = timeLabel();
+    var btn = document.createElement("button");
+    btn.className = "mini-copy";
+    btn.type = "button";
+    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span>Kopieren</span>';
+    btn.addEventListener("click", function(){
+      copyText(link, function(ok){
+        if(ok){
+          btn.classList.add("done");
+          btn.querySelector("span").textContent = "Kopiert";
+          setTimeout(function(){
+            btn.classList.remove("done");
+            btn.querySelector("span").textContent = "Kopieren";
+          }, 1400);
+        }
+      });
+    });
+    li.appendChild(a);
+    li.appendChild(t);
+    li.appendChild(btn);
+    histList.insertBefore(li, histList.firstChild);
+  }
+
+  copyBtn.addEventListener("click", function(){
+    if(!lastLink) return;
+    copyText(lastLink, function(ok){
+      showToast(ok ? "Kopiert" : "Bitte manuell markieren");
+      if(ok) addToHistory(lastLink);
+    });
+  });
+
+  rememberBtn.addEventListener("click", function(){
+    if(!lastLink) return;
+    addToHistory(lastLink);
+    showToast("Gemerkt");
+  });
+
+  ids.forEach(function(id){
+    els[id].addEventListener("input", build);
+  });
+
+  // Beispiel-Inhalte vorladen
+  els.url.value = "https://www.pilot.de/kampagne";
+  els.source.value = "newsletter";
+  els.medium.value = "email";
+  els.campaign.value = "Herbst 2026";
+  els.content.value = "header-cta";
+  build();
+})();
+</script>
