@@ -282,7 +282,7 @@
     <div class="filter-bar" id="filter-bar">
       <div class="filter-inner">
         <div class="search-wrap-m">
-          <input type="search" id="search-m" aria-label="Prompts suchen" placeholder="Prompts suchen …" autocomplete="off">
+          <input type="search" id="search-m" aria-label="Nur diese Seite: Prompts filtern" placeholder="Nur Prompts filtern …" autocomplete="off">
         </div>
         <div class="cat-tabs" id="cat-tabs" role="group" aria-label="Nach Aufgabe filtern"></div>
         <button class="filter-toggle-btn" id="filter-toggle-btn" onclick="toggleMobileFilter()" aria-expanded="true">
@@ -372,7 +372,7 @@
 
     // ===== NAV & FOOTER (shared/base.js) =====
     renderNav('prompts', {
-      search: { id: 'search', label: 'Prompts suchen', placeholder: 'Prompts suchen …' },
+      search: { id: 'search', label: 'Nur diese Seite: Prompts filtern', placeholder: 'Nur Prompts filtern …' },
       footerClaim: 'Von Piloten gebaut, von Piloten empfohlen. Jeder Prompt zeigt offen, warum er funktioniert — kopieren, lernen, weiterbauen.'
     });
 
@@ -1070,7 +1070,7 @@
       try {
         const qsPrompt = new URLSearchParams(location.search).get('p');
         if (qsPrompt && !location.hash) {
-          history.replaceState(null, '', location.pathname + '#' + encodeURIComponent(qsPrompt));
+          history.replaceState(null, '', location.pathname + location.search + '#' + encodeURIComponent(qsPrompt));
         }
       } catch (e) {}
       applyHash();

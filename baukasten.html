@@ -71,6 +71,33 @@
     </div>
   </section>
 
+  <!-- ERKLÄR-BLOCK (E9-Angleichung an lernen/hilfe): So funktioniert diese Seite in drei Handgriffen -->
+  <div class="getting-started" id="getting-started">
+    <div class="gs-inner">
+      <button class="gs-toggle" onclick="toggleGS()" aria-expanded="false" id="gs-toggle-btn">
+        <span>So funktioniert diese Seite — in drei Handgriffen</span>
+        <span class="gs-arrow">›</span>
+      </button>
+      <div class="gs-content" id="gs-content" hidden>
+        <div class="gs-steps">
+          <div class="gs-step">
+            <span class="gs-num">1</span>
+            <div><strong>Such dir einen Baustein</strong><p>Header, Preistabelle, Kontaktformular und mehr — nach Typ gefiltert. Jeder Baustein zeigt dir live in der Vorschau, wie er aussieht, bevor du ihn nimmst.</p></div>
+          </div>
+          <div class="gs-step">
+            <span class="gs-num">2</span>
+            <div><strong>Kopier den „Sag Claude einfach …“-Prompt</strong><p>Zu jedem Baustein gehört ein kopierfertiger Prompt. Der beschreibt Claude genau, was der Baustein ist und wie er ihn für dich anpassen soll.</p></div>
+          </div>
+          <div class="gs-step">
+            <span class="gs-num">3</span>
+            <div><strong>Lass ihn anpassen</strong><p>Gib den Prompt an Claude, ergänz deine Farben, deine Texte, deine Struktur — und du hast einen Startpunkt statt einer leeren Seite. Nichts hier ist in Stein gemeißelt.</p></div>
+          </div>
+        </div>
+        <button type="button" class="gs-start-pin" onclick="document.getElementById('main-content').scrollIntoView({behavior:'smooth',block:'start'})">Fang hier an</button>
+      </div>
+    </div>
+  </div>
+
   <main>
     <!-- (a) BAUSTEINE -->
     <section class="lib-section" id="main-content" aria-labelledby="bausteine-h">
@@ -455,7 +482,7 @@
         try {
           const qs = new URLSearchParams(location.search);
           const v = qs.get('b');
-          if (v && !location.hash) history.replaceState(null, '', location.pathname + '#b/' + encodeURIComponent(v));
+          if (v && !location.hash) history.replaceState(null, '', location.pathname + location.search + '#b/' + encodeURIComponent(v));
         } catch (e) {}
       }
       if (_hashLock) return;

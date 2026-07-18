@@ -1204,7 +1204,7 @@
     <div class="tv-inner">
       <div class="tv-label">
         <p class="overline">Stimmen aus dem Team</p>
-        <p class="tv-hint">Aus den Bewertungen im Katalog — klick dich zum Eintrag.</p>
+        <p class="tv-hint">Aus den Bewertungen im Katalog — klick dich zum Eintrag. Die Startwerte von Bewertungen, Stimmen und dem „Team-Favorit“-Siegel sind redaktionelle Demo-Werte — deine Bewertung kommt lokal in deinem Browser dazu.</p>
       </div>
       <div class="tv-stage" id="tv-stage" aria-live="off"></div>
     </div>
@@ -1216,7 +1216,7 @@
     <div class="filter-bar" id="filter-bar">
       <div class="filter-inner">
         <div class="search-wrap-m">
-          <input type="search" id="search-m" aria-label="Skills suchen" placeholder="Skills suchen …" autocomplete="off">
+          <input type="search" id="search-m" aria-label="Nur diese Seite: Skills filtern" placeholder="Nur Katalog filtern …" autocomplete="off">
         </div>
         <div class="type-row">
           <div class="type-tabs" id="type-tabs" role="group" aria-label="Nach Typ filtern"></div>
@@ -1795,7 +1795,7 @@ Gib einen priorisierten Report aus:
         { id: 'nav-explainer', label: 'Was sind Skills?', onclick: "showView('explainer')" },
         { id: 'nav-builder', label: 'Skill bauen', onclick: "showView('builder')" }
       ],
-      search: { id: 'search', label: 'Skills suchen', placeholder: 'Skills suchen …' },
+      search: { id: 'search', label: 'Nur diese Seite: Skills filtern', placeholder: 'Nur Katalog filtern …' },
       footerExtra: [
         { label: 'Was sind Skills?', onclick: "showView('explainer')" },
         { label: 'Eigenen Skill bauen', onclick: "showView('builder')" }
@@ -3627,7 +3627,7 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
           <label for="comment-text-${commentSkillId}" style="margin-top:1.2rem">Dein Kommentar *</label>
           <textarea id="comment-text-${commentSkillId}" rows="3" required></textarea>
           <button type="submit" class="c-cta -black-bg">Kommentar speichern</button>
-          <p class="comment-local-hint">Demo-Hinweis: Bewertungen &amp; Kommentare werden nur in deinem Browser gespeichert — Kolleg:innen sehen sie (noch) nicht.</p>
+          <p class="comment-local-hint">Demo-Hinweis: Die angezeigten Startwerte (Sterne, Anzahl, „Team-Favorit“) sind redaktionelle Demo-Werte. Deine Bewertung &amp; Kommentare werden nur in deinem Browser gespeichert — Kolleg:innen sehen sie (noch) nicht.</p>
         </form>
 
         <p class="section-label">Alle Kommentare (${allComments.length})</p>
@@ -4397,7 +4397,7 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
       try {
         const qsSkill = new URLSearchParams(location.search).get('skill');
         if (qsSkill && !location.hash) {
-          history.replaceState(null, '', location.pathname + '#' + encodeURIComponent(qsSkill));
+          history.replaceState(null, '', location.pathname + location.search + '#' + encodeURIComponent(qsSkill));
         }
       } catch (e) {}
       restoreFromURL();

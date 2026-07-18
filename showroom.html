@@ -62,6 +62,33 @@
     </div>
   </section>
 
+  <!-- ERKLÄR-BLOCK (E9-Angleichung an lernen/hilfe): So funktioniert diese Seite in drei Handgriffen -->
+  <div class="getting-started" id="getting-started">
+    <div class="gs-inner">
+      <button class="gs-toggle" onclick="toggleGS()" aria-expanded="false" id="gs-toggle-btn">
+        <span>So funktioniert diese Seite — in drei Handgriffen</span>
+        <span class="gs-arrow">›</span>
+      </button>
+      <div class="gs-content" id="gs-content" hidden>
+        <div class="gs-steps">
+          <div class="gs-step">
+            <span class="gs-num">1</span>
+            <div><strong>Klick dich durch die Projekte</strong><p>Echte Team-Tools und illustrative Beispiel-Projekte, sichtbar durch einen Marker getrennt. Öffne eines, das nach deinem Alltag klingt — „bringt mir das was?“ beantwortet es selbst.</p></div>
+          </div>
+          <div class="gs-step">
+            <span class="gs-num">2</span>
+            <div><strong>Lies die ehrliche Geschichte</strong><p>Jedes Projekt zeigt Ausgangsproblem, ersten Prompt, Stolperstein und Ergebnis — nicht nur das Hochglanz-Resultat. So siehst du, wie der Weg wirklich lief.</p></div>
+          </div>
+          <div class="gs-step">
+            <span class="gs-num">3</span>
+            <div><strong>Bau es nach</strong><p>Zu jedem Projekt gehören die Querverweise zum Nachbauen — Prompts, Bausteine, Skills. Ein Klick bringt dich zum passenden Werkzeug, statt bei null zu starten.</p></div>
+          </div>
+        </div>
+        <button type="button" class="gs-start-pin" onclick="document.getElementById('main-content').scrollIntoView({behavior:'smooth',block:'start'})">Fang hier an</button>
+      </div>
+    </div>
+  </div>
+
   <!-- PROJEKT DES MONATS (Spotlight) -->
   <section class="sr-spotlight" aria-labelledby="sr-spot-h">
     <div class="sr-spot-inner" id="sr-spot-mount" role="group" aria-labelledby="sr-spot-h">
@@ -450,7 +477,7 @@
         try {
           const qs = new URLSearchParams(location.search);
           const v = qs.get('case');
-          if (v && !location.hash) history.replaceState(null, '', location.pathname + '#case/' + encodeURIComponent(v));
+          if (v && !location.hash) history.replaceState(null, '', location.pathname + location.search + '#case/' + encodeURIComponent(v));
         } catch (e) {}
       }
       if (_hashLock) return;

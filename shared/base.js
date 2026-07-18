@@ -98,6 +98,17 @@ function lsKeysWithPrefix(prefix) {
      search:        { id, label, placeholder } — Suchfeld im Header
      footerExtra:   [{ label, onclick }] — seitenlokale Footer-Buttons
      footerClaim:   eigener Claim-Satz im Footer */
+/* Plattform-neutrales Kürzel-Label für den globalen Such-Button. Mac zeigt das
+   vertraute ⌘K, alle anderen (pilot: Windows-Mehrheit) sehen „Strg K“, damit das
+   Tastenkürzel nicht hinter dem Apfel-Command-Zeichen versteckt bleibt. */
+function _gsShortcutLabel() {
+  try {
+    var p = (navigator.platform || '') + ' ' + (navigator.userAgent || '');
+    if (/Mac|iPhone|iPad|iPod/i.test(p)) return '⌘K';
+  } catch (e) {}
+  return 'Strg K';
+}
+
 function renderNav(activePage, opts) {
   opts = opts || {};
   // Idempotent: früher injizierte Header/Footer entfernen (keine Dopplung)
@@ -163,6 +174,7 @@ function renderNav(activePage, opts) {
         <span class="overline">AI Marketplace</span>
       </a>
       <nav class="main-nav" aria-label="Hauptnavigation">${linkHtml.join('\n        ')}</nav>
+      <button type="button" class="nav-suche-btn" id="nav-suche-btn" aria-label="Marketplace durchsuchen (Cmd/Ctrl+K)" aria-haspopup="dialog" onclick="openGlobalSearch()">${LU.search}<span class="nav-suche-kbd" aria-hidden="true"><kbd>${_gsShortcutLabel()}</kbd></span></button>
       ${searchHtml}
     </div>
   </header>`;
@@ -180,6 +192,7 @@ function renderNav(activePage, opts) {
         </div>
         <nav class="footer-nav" aria-label="Footer">
           ${footerExtra}
+          <button type="button" id="footer-about" onclick="openAboutModal()">Über diese Seite</button>
           <a href="hilfe.html" id="footer-hilfe"><svg class="brand-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24"/><path d="m14.83 9.17 4.24-4.24"/><path d="m14.83 14.83 4.24 4.24"/><path d="m9.17 14.83-4.24 4.24"/><circle cx="12" cy="12" r="4"/></svg>Du hängst fest? Zum Hilfe-Center</a>
           <a href="https://github.com/CeeKay1901/pilot-skillmarkt" target="_blank" rel="noopener"><svg class="brand-ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>Repo auf GitHub</a>
           <a href="https://code.claude.com/docs" target="_blank" rel="noopener"><svg class="brand-ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21 10.5h3v3h-3v3h-1.5v3H18v-3h-1.5v3H15v-3H9v3H7.5v-3H6v3H4.5v-3H3v-3H0v-3h3v-6h18Zm-15 0h1.5v-3H6Zm10.5 0H18v-3h-1.5z"/></svg>Claude-Code-Doku</a>
@@ -195,6 +208,7 @@ function renderNav(activePage, opts) {
   document.body.insertAdjacentHTML('beforeend', footerHtml);
 
   initNavMore();
+  initGlobalSearch();
 
   // Mobile (≤1023px): die Nav ist ein horizontal scrollender Streifen mit allen
   // Sektionen flach (der „Mehr“-Button ist ausgeblendet). Ab 6 Zielen kann der
@@ -211,6 +225,21 @@ function renderNav(activePage, opts) {
       nav.scrollLeft += (aRect.left - navRect.left) - (nav.clientWidth - aRect.width) / 2;
     }
   }
+}
+
+/* Shared Getting-Started-Toggle (E9-Angleichung). Bestandsseiten (lernen/skills/
+   hilfe/prompts) definieren toggleGS seitenlokal — deren Inline-Script lädt nach
+   base.js und überschreibt diese generische Variante. bibliothek/baukasten/showroom
+   nutzen genau diese: klappt #gs-content auf/zu und pflegt aria-expanded. */
+if (typeof window.toggleGS === 'undefined') {
+  window.toggleGS = function () {
+    var content = document.getElementById('gs-content');
+    var btn = document.getElementById('gs-toggle-btn');
+    if (!content) return;
+    var isHidden = content.hidden;
+    content.hidden = !isHidden;
+    if (btn) btn.setAttribute('aria-expanded', isHidden ? 'true' : 'false');
+  };
 }
 
 /* „Mehr ▾“-Dropdown der Hauptnav (E6): Klick togglet, Esc schließt (Fokus zurück
@@ -328,7 +357,9 @@ const LU = {
   "heart": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>',
   "sparkles": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg>',
   "trophy": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>',
-  "layout-dashboard": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>'
+  "layout-dashboard": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>',
+  /* E9 (globales Such-Overlay) — reines Lupen-Icon (NICHT 'qa', das ist Lupe-mit-Häkchen). */
+  "search": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>'
 };
 function subIcon(sub) {
   return LU[sub] || LU.fallback;
@@ -809,6 +840,25 @@ function renderModalBody() {
   const body = document.getElementById('modal-body');
   const renderer = conf.renderers && conf.renderers[state.activeTab];
   if (body && renderer) body.innerHTML = renderer(item);
+  _syncTabPanelAria();
+}
+
+/* E9 · Modal-ARIA-Fix (additiv, nicht-destruktiv): role="tab"-Buttons brauchen
+   aria-controls="modal-body"; #modal-body wird role="tabpanel" + aria-labelledby=<aktive
+   Tab-id>. IDs werden zur Laufzeit gesetzt (kein Seiten-HTML-Edit). Die aria-selected-
+   Logik in switchTab/openModal bleibt unberührt. */
+function _syncTabPanelAria() {
+  const btns = document.querySelectorAll('.tab-btn');
+  btns.forEach(btn => {
+    if (!btn.id && btn.dataset && btn.dataset.tab) btn.id = 'tab-btn-' + btn.dataset.tab;
+    btn.setAttribute('aria-controls', 'modal-body');
+  });
+  const body = document.getElementById('modal-body');
+  if (body) {
+    body.setAttribute('role', 'tabpanel');
+    const act = document.querySelector('.tab-btn.active');
+    if (act && act.id) body.setAttribute('aria-labelledby', act.id);
+  }
 }
 
 /* Overlay-Klick, Esc und Tab-Fokus-Falle — einmal pro Seite binden */
@@ -1221,4 +1271,359 @@ function closeSubmitFlow() {
   }
   _submitFlowConfig = null;
   if (_submitFlowOpener) { try { _submitFlowOpener.focus(); } catch (e) {} _submitFlowOpener = null; }
+}
+
+/* ===== GLOBALES SUCH-OVERLAY (E9, additiv) =====
+   Eine Lupe in renderNav (immer da) + Cmd/Ctrl+K öffnen ein Dialog-Overlay, das
+   ALLE Typen durchsucht. Die Seiten laden nicht alle data/*.js — beim ERSTEN
+   Öffnen werden die fehlenden Globals per <script>-Injektion nachgeladen (kein
+   Doppel-Load), dann der Index EINMALIG gebaut. Alles null-sicher: fehlt ein
+   Global, entfällt still die Gruppe — nie ein JS-Fehler. searchScore wird mit den
+   typ-spezifischen Feldern wiederverwendet; Deep-Links exakt nach E9-Vertrag.
+   Die lokale opts.search-Suche der Seiten bleibt unberührt (Cmd/Ctrl+K statt „/“). */
+const GSEARCH_SOURCES = [
+  { glob: 'SKILLS',     src: 'data/skills.js'     },
+  { glob: 'PROMPTS',    src: 'data/prompts.js'    },
+  { glob: 'BEFEHLE',    src: 'data/befehle.js'    },
+  { glob: 'GLOSSAR',    src: 'data/glossar.js'    },
+  { glob: 'RESSOURCEN', src: 'data/ressourcen.js' },
+  { glob: 'ASSETS',     src: 'data/assets.js'     },
+  { glob: 'BAUSTEINE',  src: 'data/bausteine.js'  },
+  { glob: 'CASES',      src: 'data/cases.js'      },
+];
+
+// Feste Reihenfolge der Trefferschubladen. Jede Gruppe kennt ihr Global, ihren
+// Deep-Link, Titel/Kurzinfo-Felder und die searchScore-Felder (aus dem Vertrag).
+const GSEARCH_GROUPS = [
+  { key: 'skill', label: 'Skills', glob: 'SKILLS',
+    filter: it => !it.itemType || it.itemType === 'skill',
+    href: it => 'skills.html?skill=' + encodeURIComponent(it.id),
+    title: it => it.name, sub: it => it.tagline, fields: null },
+  { key: 'plugin', label: 'Plugins & Frameworks', glob: 'SKILLS',
+    filter: it => it.itemType === 'plugin' || it.itemType === 'framework',
+    href: it => 'skills.html?skill=' + encodeURIComponent(it.id),
+    title: it => it.name, sub: it => it.tagline, fields: null },
+  { key: 'prompt', label: 'Prompts', glob: 'PROMPTS',
+    href: it => 'prompts.html?p=' + encodeURIComponent(it.id),
+    title: it => it.name, sub: it => it.tagline,
+    fields: it => [[it.name || '', 5], [(it.tags || []).join(' '), 3], [it.tagline || '', 2], [it.promptText || '', 1]] },
+  { key: 'befehl', label: 'Befehle', glob: 'BEFEHLE',
+    href: it => 'hilfe.html?befehl=' + encodeURIComponent(it.id),
+    title: it => it.cmd, sub: it => it.nutzen,
+    fields: it => [[it.cmd || '', 5], [it.nutzen || '', 3], [it.beispiel || '', 1], [it.tipp || '', 1]] },
+  { key: 'begriff', label: 'Begriffe', glob: 'GLOSSAR',
+    href: it => 'hilfe.html?begriff=' + encodeURIComponent(it.id),
+    title: it => it.wort, sub: it => it.satz,
+    fields: it => [[it.wort || '', 5], [it.satz || '', 2], [it.beispiel || '', 1], [it.tiefe || '', 1]] },
+  { key: 'ressource', label: 'Ressourcen', glob: 'RESSOURCEN',
+    href: it => 'lernen.html?r=' + encodeURIComponent(it.id),
+    title: it => it.titel, sub: it => it.fuerDich || it.beschreibung,
+    fields: it => [[it.titel || '', 5], [(it.tags || []).join(' '), 3], [it.beschreibung || '', 1], [it.fuerDich || '', 1]] },
+  { key: 'asset', label: 'Assets', glob: 'ASSETS',
+    href: it => 'bibliothek.html?a=' + encodeURIComponent(it.id),
+    title: it => it.name, sub: it => it.typ,
+    fields: it => [[it.name || '', 5], [it.typ || '', 2], [it.kategorie || '', 2]] },
+  { key: 'baustein', label: 'Bausteine', glob: 'BAUSTEINE',
+    href: it => 'baukasten.html?b=' + encodeURIComponent(it.id),
+    title: it => it.name, sub: it => it.beschreibung,
+    fields: it => [[it.name || '', 5], [(it.tags || []).join(' '), 3], [it.beschreibung || '', 2], [it.einsatz || '', 1]] },
+  { key: 'case', label: 'Projekte', glob: 'CASES',
+    href: it => 'showroom.html?case=' + encodeURIComponent(it.id),
+    title: it => it.titel, sub: it => it.kurz,
+    fields: it => [[it.titel || '', 5], [it.kurz || '', 2], [it.persona || '', 1], [it.saeule || '', 1]] },
+];
+
+// WICHTIG: die data/*.js deklarieren ihre Globals mit `const` (SKILLS, PROMPTS, …).
+// const auf oberster Ebene erzeugt eine globale LEXIKALISCHE Bindung, aber KEINE
+// window-Eigenschaft — window[name] wäre also immer undefined. Deshalb per typeof
+// über den Bezeichner selbst lesen (klassische Scripts teilen sich das globale
+// Lexikal-Environment; auch dynamisch injizierte data/*.js landen dort).
+function _gsGlobal(name) {
+  try {
+    switch (name) {
+      case 'SKILLS':     return (typeof SKILLS     !== 'undefined') ? SKILLS     : undefined;
+      case 'PROMPTS':    return (typeof PROMPTS    !== 'undefined') ? PROMPTS    : undefined;
+      case 'BEFEHLE':    return (typeof BEFEHLE    !== 'undefined') ? BEFEHLE    : undefined;
+      case 'GLOSSAR':    return (typeof GLOSSAR    !== 'undefined') ? GLOSSAR    : undefined;
+      case 'RESSOURCEN': return (typeof RESSOURCEN !== 'undefined') ? RESSOURCEN : undefined;
+      case 'ASSETS':     return (typeof ASSETS     !== 'undefined') ? ASSETS     : undefined;
+      case 'BAUSTEINE':  return (typeof BAUSTEINE  !== 'undefined') ? BAUSTEINE  : undefined;
+      case 'CASES':      return (typeof CASES      !== 'undefined') ? CASES      : undefined;
+    }
+  } catch (e) {}
+  return undefined;
+}
+
+let _gsIndex = [];
+let _gsIndexBuilt = false;
+let _gsLoading = false;
+let _gsOpts = [];        // IDs der aktuell sichtbaren role="option"-Treffer
+let _gsActiveIdx = -1;   // aktiver Treffer (Tastatur-Navigation)
+
+// Fehlende data/*.js dynamisch nachladen — kein Doppel-Load (typeof-Guard +
+// <script src>-Abgleich), onerror still überspringen (kein throw).
+function _gsLoadScript(src) {
+  return new Promise(resolve => {
+    try {
+      if ([...document.scripts].some(s => (s.getAttribute('src') || '').indexOf(src) !== -1)) { resolve(); return; }
+    } catch (e) {}
+    const el = document.createElement('script');
+    el.src = src; el.async = false;
+    el.onload = () => resolve();
+    el.onerror = () => resolve();
+    (document.head || document.body).appendChild(el);
+  });
+}
+function _gsEnsureData() {
+  const need = GSEARCH_SOURCES.filter(s => _gsGlobal(s.glob) === undefined);
+  if (!need.length) return Promise.resolve();
+  return Promise.all(need.map(s => _gsLoadScript(s.src)));
+}
+
+// Einmaliger Index über alle vorhandenen Globals (fehlende Gruppen entfallen still).
+function _gsBuildIndex() {
+  if (_gsIndexBuilt) return;
+  _gsIndex = [];
+  GSEARCH_GROUPS.forEach(g => {
+    const arr = _gsGlobal(g.glob);
+    if (!Array.isArray(arr)) return;
+    arr.forEach(it => {
+      if (!it || it.id == null) return;
+      if (g.filter && !g.filter(it)) return;
+      _gsIndex.push({ group: g, item: it });
+    });
+  });
+  _gsIndexBuilt = true;
+}
+
+function _gsSearch(q) {
+  const terms = q.toLowerCase().trim().split(/\s+/).filter(Boolean);
+  if (!terms.length) return [];
+  const scored = [];
+  _gsIndex.forEach(entry => {
+    let sc = 0;
+    try {
+      const f = entry.group.fields ? entry.group.fields(entry.item) : null;
+      sc = searchScore(entry.item, terms, f || undefined);
+    } catch (e) { sc = 0; }
+    if (sc > 0) scored.push({ entry, sc });
+  });
+  scored.sort((a, b) => b.sc - a.sc);
+  return scored;
+}
+
+function _gsRenderResults(q) {
+  const results = document.getElementById('gsearch-results');
+  const input = document.getElementById('gsearch-input');
+  if (!results) return;
+  _gsActiveIdx = -1; _gsOpts = [];
+  if (input) input.removeAttribute('aria-activedescendant');
+  if (!q || !q.trim()) { results.innerHTML = ''; if (input) input.setAttribute('aria-expanded', 'false'); return; }
+  if (!_gsIndexBuilt) { results.innerHTML = '<li class="gs-status" role="presentation">Suche wird vorbereitet …</li>'; return; }
+  const scored = _gsSearch(q);
+  const byGroup = {};
+  scored.forEach(s => { const k = s.entry.group.key; (byGroup[k] = byGroup[k] || []).push(s); });
+  const PER = 6;
+  let html = ''; let n = 0;
+  GSEARCH_GROUPS.forEach(g => {
+    const list = (byGroup[g.key] || []).slice(0, PER);
+    if (!list.length) return;
+    html += `<li class="gs-group" role="presentation"><span class="gs-group-label">${escHtml(g.label)}</span></li>`;
+    list.forEach(s => {
+      const it = s.entry.item;
+      let href = '#';
+      try { href = g.href(it); } catch (e) { href = '#'; }
+      const title = escHtml(String(g.title(it) || it.id));
+      const sub = escHtml(String(g.sub(it) || '').slice(0, 120));
+      const path = String(href).split('?')[0];
+      const id = 'gsearch-opt-' + n; _gsOpts.push(id);
+      html += `<li role="presentation"><a class="gs-opt" role="option" id="${id}" href="${escHtml(href)}" tabindex="-1">`
+        + `<span class="gs-opt-title">${title}</span>`
+        + (sub ? `<span class="gs-opt-sub">${sub}</span>` : '')
+        + `<span class="gs-opt-path">${escHtml(path)}</span></a></li>`;
+      n++;
+    });
+  });
+  if (!html) html = `<li class="gs-status" role="presentation">Nichts gefunden für „${escHtml(q)}“.</li>`;
+  results.innerHTML = html;
+  if (input) input.setAttribute('aria-expanded', _gsOpts.length ? 'true' : 'false');
+}
+
+function _gsHighlight() {
+  const input = document.getElementById('gsearch-input');
+  _gsOpts.forEach((id, i) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const on = i === _gsActiveIdx;
+    el.classList.toggle('is-active', on);
+    if (on) { el.scrollIntoView({ block: 'nearest' }); if (input) input.setAttribute('aria-activedescendant', id); }
+  });
+  if (_gsActiveIdx < 0 && input) input.removeAttribute('aria-activedescendant');
+}
+
+function _gsInputKeydown(e) {
+  if (e.key === 'Escape') { e.preventDefault(); closeGlobalSearch(); return; }
+  if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+    if (!_gsOpts.length) return;
+    e.preventDefault();
+    if (e.key === 'ArrowDown') _gsActiveIdx = (_gsActiveIdx + 1) % _gsOpts.length;
+    else _gsActiveIdx = (_gsActiveIdx - 1 + _gsOpts.length) % _gsOpts.length;
+    _gsHighlight();
+  } else if (e.key === 'Enter') {
+    if (_gsActiveIdx >= 0 && _gsOpts[_gsActiveIdx]) {
+      const el = document.getElementById(_gsOpts[_gsActiveIdx]);
+      if (el && el.getAttribute('href')) { e.preventDefault(); location.href = el.getAttribute('href'); }
+    }
+  }
+}
+
+function _gsEnsureOverlay() {
+  let ov = document.getElementById('gsearch-overlay');
+  if (ov) return ov;
+  ov = document.createElement('div');
+  ov.className = 'gsearch-overlay';
+  ov.id = 'gsearch-overlay';
+  ov.innerHTML = `
+    <div class="gsearch-panel" role="dialog" aria-modal="true" aria-labelledby="gsearch-title">
+      <h2 id="gsearch-title" class="gs-visually-hidden">Marketplace durchsuchen</h2>
+      <div class="gsearch-inputwrap">
+        ${LU.search}
+        <input type="search" id="gsearch-input" role="combobox" aria-expanded="false" aria-controls="gsearch-results" aria-autocomplete="list" autocomplete="off" placeholder="Skills, Prompts, Befehle, Projekte …" aria-label="Marketplace durchsuchen">
+        <button type="button" class="gsearch-close" aria-label="Suche schließen" onclick="closeGlobalSearch()">✕</button>
+      </div>
+      <ul id="gsearch-results" role="listbox" aria-label="Suchergebnisse"></ul>
+      <p class="gsearch-foot" aria-hidden="true"><kbd>↑</kbd><kbd>↓</kbd> wählen · <kbd>Enter</kbd> öffnen · <kbd>Esc</kbd> schließen</p>
+    </div>`;
+  document.body.appendChild(ov);
+  ov.addEventListener('click', e => { if (e.target === ov) closeGlobalSearch(); });
+  const input = ov.querySelector('#gsearch-input');
+  if (input) {
+    const onInput = debounce(() => _gsRenderResults(input.value), 120);
+    input.addEventListener('input', onInput);
+    input.addEventListener('keydown', _gsInputKeydown);
+  }
+  return ov;
+}
+
+function openGlobalSearch() {
+  const ov = _gsEnsureOverlay();
+  if (ov.classList.contains('open')) return;
+  window._gsOpener = document.activeElement;
+  ov.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  const input = document.getElementById('gsearch-input');
+  const results = document.getElementById('gsearch-results');
+  if (input) setTimeout(() => { try { input.focus(); if (input.value) input.select(); } catch (e) {} }, 40);
+  if (!_gsIndexBuilt) {
+    if (results && !(input && input.value.trim())) {
+      results.innerHTML = '<li class="gs-status" role="presentation">Suche wird vorbereitet …</li>';
+    }
+    if (!_gsLoading) {
+      _gsLoading = true;
+      _gsEnsureData().then(() => {
+        _gsBuildIndex();
+        _gsLoading = false;
+        const inp = document.getElementById('gsearch-input');
+        const stillOpen = document.getElementById('gsearch-overlay') && document.getElementById('gsearch-overlay').classList.contains('open');
+        if (inp && stillOpen) _gsRenderResults(inp.value);
+      });
+    }
+  } else if (input && input.value.trim()) {
+    _gsRenderResults(input.value);
+  }
+}
+
+function closeGlobalSearch() {
+  const ov = document.getElementById('gsearch-overlay');
+  if (!ov || !ov.classList.contains('open')) return;
+  ov.classList.remove('open');
+  // Scroll-Sperre nur freigeben, wenn kein anderes Overlay offen ist (Vertrags-Muster).
+  const modalOpen = document.getElementById('modal-overlay') && document.getElementById('modal-overlay').classList.contains('open');
+  const submitOpen = document.getElementById('submit-overlay') && document.getElementById('submit-overlay').classList.contains('open');
+  const aboutOpen = document.getElementById('about-overlay') && document.getElementById('about-overlay').classList.contains('open');
+  if (!modalOpen && !submitOpen && !aboutOpen) document.body.style.overflow = '';
+  if (window._gsOpener) { try { window._gsOpener.focus(); } catch (e) {} window._gsOpener = null; }
+}
+
+// Idempotent (einmal pro Seite): Cmd/Ctrl+K togglet das Overlay; capture-keydown
+// hält Esc + Tab-Fokusfalle im Dialog. NICHT „/“ (Konflikt mit lokaler Seiten-Suche).
+function initGlobalSearch() {
+  if (document._gsBound) return;
+  document._gsBound = true;
+  document.addEventListener('keydown', e => {
+    if ((e.key === 'k' || e.key === 'K') && (e.metaKey || e.ctrlKey)) {
+      e.preventDefault();
+      const ov = document.getElementById('gsearch-overlay');
+      if (ov && ov.classList.contains('open')) closeGlobalSearch(); else openGlobalSearch();
+    }
+  });
+  document.addEventListener('keydown', e => {
+    const ov = document.getElementById('gsearch-overlay');
+    if (!ov || !ov.classList.contains('open')) return;
+    if (e.key === 'Escape') { e.stopPropagation(); closeGlobalSearch(); return; }
+    if (e.key === 'Tab') {
+      const panel = ov.querySelector('.gsearch-panel');
+      const focusable = panel ? [...panel.querySelectorAll('input, button')].filter(el => el.offsetParent !== null) : [];
+      if (!focusable.length) return;
+      const first = focusable[0], last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+  }, true);
+}
+
+/* ===== „ÜBER DIESE SEITE“-MODAL (E9, additiv) — zentrale, ehrliche Demo-Kennzeichnung.
+   Absender-Regel §1.1 wörtlich. Dynamisch erzeugtes #about-overlay, role="dialog",
+   Esc + Backdrop + Fokus zurück; Scroll-Sperre nur freigeben, wenn kein anderes Overlay offen. */
+function _ensureAboutOverlay() {
+  let ov = document.getElementById('about-overlay');
+  if (ov) return ov;
+  ov = document.createElement('div');
+  ov.className = 'about-overlay';
+  ov.id = 'about-overlay';
+  ov.innerHTML = `
+    <div class="about-modal" role="dialog" aria-modal="true" aria-labelledby="about-title">
+      <button type="button" class="about-close" onclick="closeAboutModal()" aria-label="Dialog schließen">✕</button>
+      <h2 id="about-title">Über diesen Marketplace</h2>
+      <p>Der pilot AI Marketplace ist eine <strong>Citizen-Coding-Demo</strong> der pilot Agenturgruppe — ein statischer Katalog auf GitHub Pages, ohne Backend, ohne Login, ohne Datenbank. Alles läuft in deinem Browser.</p>
+      <p class="about-note">Bewertungen, Stimmen und Beispiel-Projekte sind redaktionelle Demo-Daten — deine Eingaben bleiben lokal in deinem Browser, es wird nichts gesendet.</p>
+    </div>`;
+  document.body.appendChild(ov);
+  ov.addEventListener('click', e => { if (e.target === ov) closeAboutModal(); });
+  if (!document._aboutKeyBound) {
+    document._aboutKeyBound = true;
+    document.addEventListener('keydown', e => {
+      const open = document.getElementById('about-overlay') && document.getElementById('about-overlay').classList.contains('open');
+      if (!open) return;
+      if (e.key === 'Escape') { e.stopPropagation(); closeAboutModal(); return; }
+      if (e.key === 'Tab') {
+        const dlg = document.querySelector('#about-overlay .about-modal');
+        const focusable = dlg ? [...dlg.querySelectorAll('button, a[href]')] : [];
+        if (!focusable.length) return;
+        const first = focusable[0], last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+      }
+    }, true);
+  }
+  return ov;
+}
+
+function openAboutModal() {
+  const ov = _ensureAboutOverlay();
+  window._aboutOpener = document.activeElement;
+  ov.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  setTimeout(() => { const c = document.querySelector('#about-overlay .about-close'); if (c) c.focus(); }, 40);
+}
+
+function closeAboutModal() {
+  const ov = document.getElementById('about-overlay');
+  if (!ov || !ov.classList.contains('open')) return;
+  ov.classList.remove('open');
+  const modalOpen = document.getElementById('modal-overlay') && document.getElementById('modal-overlay').classList.contains('open');
+  const submitOpen = document.getElementById('submit-overlay') && document.getElementById('submit-overlay').classList.contains('open');
+  const gsOpen = document.getElementById('gsearch-overlay') && document.getElementById('gsearch-overlay').classList.contains('open');
+  if (!modalOpen && !submitOpen && !gsOpen) document.body.style.overflow = '';
+  if (window._aboutOpener) { try { window._aboutOpener.focus(); } catch (e) {} window._aboutOpener = null; }
 }

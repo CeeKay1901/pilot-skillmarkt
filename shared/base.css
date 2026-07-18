@@ -445,7 +445,7 @@
     }
     .footer-brand .logo-mark { font-size: 2.4rem; font-weight: 800; color: var(--c-white); letter-spacing: -.02em; }
     .footer-brand .logo-sub { display: block; font-family: var(--font-mono); font-size: 1.1rem; letter-spacing: .22em; color: var(--c-yellow); text-transform: uppercase; margin-top: .2rem; }
-    .footer-claim { margin-top: 1.4rem; max-width: 34rem; line-height: 1.55; color: rgba(252,252,252,.45); }
+    .footer-claim { margin-top: 1.4rem; max-width: 34rem; line-height: 1.55; color: rgba(252,252,252,.55); }
     .footer-nav { display: flex; gap: 2.8rem; flex-wrap: wrap; }
     .footer-nav a, .footer-nav button {
       display: inline-flex; align-items: center; gap: .6em;
@@ -458,7 +458,7 @@
     .brand-ico { width: 1.15em; height: 1.15em; flex-shrink: 0; }
     .footer-nav a:hover, .footer-nav button:hover,
     .footer-nav a:focus-visible, .footer-nav button:focus-visible { color: var(--c-yellow); border-bottom-color: var(--c-yellow); }
-    .footer-legal { border-top: 1px solid rgba(255,255,255,.08); padding-top: 2rem; color: rgba(252,252,252,.35); }
+    .footer-legal { border-top: 1px solid rgba(255,255,255,.08); padding-top: 2rem; color: rgba(252,252,252,.55); }
     @media (max-width: 640px) { .footer-top { flex-direction: column; } }
 
     /* ===== MODAL ===== */
@@ -1776,4 +1776,159 @@
     @media (prefers-reduced-motion: reduce) {
       .sr-card, .sr-cat, .sr-react, .sr-rank-item { transition: none; }
       .sr-card:hover { transform: none; }
+    }
+
+    /* ===== GLOBAL SEARCH (E9, additiv) ===== */
+    /* Lupe im schwarzen Header — immer sichtbar, unabhängig von opts.search. */
+    .nav-suche-btn {
+      display: inline-flex; align-items: center; gap: .8rem;
+      min-height: 4.4rem; padding: 0 1.2rem;
+      background: transparent; border: 1px solid rgba(252,252,252,.2);
+      border-radius: var(--r-pill);
+      color: rgba(252,252,252,.72); cursor: pointer;
+      flex-shrink: 0; transition: var(--trans);
+    }
+    .nav-suche-btn:hover,
+    .nav-suche-btn:focus-visible { color: var(--c-yellow); border-color: var(--c-yellow); outline: none; }
+    .nav-suche-btn .lu { width: 2rem; height: 2rem; }
+    .nav-suche-kbd kbd {
+      font-family: var(--font-mono); font-size: 1.1rem;
+      background: rgba(252,252,252,.12); border: 1px solid rgba(252,252,252,.2);
+      border-radius: .4rem; padding: .1rem .5rem; color: inherit;
+    }
+    @media (max-width: 1023px) { .nav-suche-kbd { display: none; } }
+
+    .gsearch-overlay {
+      position: fixed; inset: 0; z-index: 260;
+      background: rgba(30,30,28,.55); backdrop-filter: blur(4px);
+      display: none; align-items: flex-start; justify-content: center;
+      padding: 8vh 2rem 2rem;
+    }
+    .gsearch-overlay.open { display: flex; }
+    .gsearch-panel {
+      max-width: 64rem; width: 100%;
+      background: var(--c-white); border-radius: var(--r-xl);
+      box-shadow: var(--shadow-lg);
+      max-height: 80vh; overflow: hidden;
+      display: flex; flex-direction: column;
+      animation: slideUp .2s ease;
+    }
+    .gsearch-panel:focus-within { box-shadow: var(--shadow-lg), 0 0 0 2px var(--c-yellow); }
+    .gs-visually-hidden {
+      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+    }
+    .gsearch-inputwrap {
+      display: flex; align-items: center; gap: 1.2rem;
+      padding: 1.8rem 2rem; border-bottom: 1px solid var(--line);
+    }
+    .gsearch-inputwrap .lu { width: 2.2rem; height: 2.2rem; color: var(--c-gray-m); flex-shrink: 0; }
+    #gsearch-input {
+      flex: 1; min-width: 0; border: none; outline: none; background: transparent;
+      font-family: inherit; font-size: 1.9rem; color: var(--c-black);
+    }
+    #gsearch-input::placeholder { color: var(--c-gray-l); }
+    .gsearch-close {
+      flex-shrink: 0; width: 3.4rem; height: 3.4rem; border-radius: 50%;
+      border: none; background: var(--c-bg); color: var(--c-gray-d);
+      font-size: 1.5rem; cursor: pointer; line-height: 1;
+    }
+    .gsearch-close:hover { background: var(--c-yellow); color: var(--c-black); }
+    #gsearch-results { list-style: none; margin: 0; padding: .8rem 0; overflow-y: auto; flex: 1; }
+    .gs-status { padding: 1.6rem 2rem; color: var(--c-gray-m); font-size: 1.5rem; }
+    .gs-group { padding: 1.2rem 2rem .4rem; }
+    .gs-group-label {
+      font-family: var(--font-mono); font-size: 1.1rem; letter-spacing: .12em;
+      text-transform: uppercase; color: var(--c-gray-m);
+    }
+    .gs-opt {
+      display: block; padding: 1rem 2rem; text-decoration: none; color: var(--c-black);
+      border-left: 3px solid transparent;
+    }
+    .gs-opt:hover,
+    .gs-opt.is-active { background: rgba(255,224,94,.22); border-left-color: var(--c-yellow); }
+    .gs-opt-title { display: block; font-size: 1.6rem; font-weight: 600; }
+    .gs-opt-sub {
+      display: block; font-size: 1.35rem; color: var(--c-ink-body); margin-top: .1rem;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .gs-opt-path { display: block; font-family: var(--font-mono); font-size: 1.15rem; color: var(--c-gray-d); margin-top: .2rem; }
+    .gsearch-foot {
+      padding: 1rem 2rem; border-top: 1px solid var(--line);
+      font-size: 1.2rem; color: var(--c-gray-m);
+      display: flex; gap: .6rem; align-items: center; flex-wrap: wrap;
+    }
+    .gsearch-foot kbd {
+      font-family: var(--font-mono); font-size: 1.05rem; background: var(--c-bg);
+      border: 1px solid var(--c-gray-l); border-radius: .3rem; padding: .1rem .5rem;
+    }
+    @media (max-width: 640px) {
+      .gsearch-overlay { padding: 0; }
+      .gsearch-panel { max-width: none; max-height: 100vh; height: 100%; border-radius: 0; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .gsearch-panel { animation: none; }
+      .nav-suche-btn { transition: none; }
+    }
+
+    /* ----- „Über diese Seite“-Modal ----- */
+    .about-overlay {
+      position: fixed; inset: 0; z-index: 260;
+      background: rgba(30,30,28,.55); backdrop-filter: blur(4px);
+      display: none; align-items: center; justify-content: center; padding: 2rem;
+    }
+    .about-overlay.open { display: flex; }
+    .about-modal {
+      position: relative; background: var(--c-white); border-radius: var(--r-lg);
+      max-width: 52rem; width: 100%; padding: 3.2rem; box-shadow: var(--shadow-lg);
+      animation: slideUp .2s ease;
+    }
+    .about-close {
+      position: absolute; top: 1.4rem; right: 1.4rem;
+      width: 4.4rem; height: 4.4rem; display: flex; align-items: center; justify-content: center;
+      border: none; background: transparent; color: var(--c-gray-d); font-size: 1.7rem; cursor: pointer; border-radius: 50%;
+    }
+    .about-close:hover { background: var(--c-bg); color: var(--c-black); }
+    .about-modal h2 { font-size: 2.6rem; font-weight: 700; margin-bottom: 1.6rem; padding-right: 3rem; }
+    .about-modal p { font-size: 1.6rem; line-height: 1.6; color: var(--c-ink-strong); margin-bottom: 1.2rem; }
+    .about-modal .about-note {
+      background: var(--c-bg); border-left: 3px solid var(--c-yellow);
+      padding: 1.4rem 1.6rem; border-radius: var(--r-sm); color: var(--c-black); margin-bottom: 0;
+    }
+    @media (prefers-reduced-motion: reduce) { .about-modal { animation: none; } }
+
+    /* ===== GETTING-STARTED / ERKLÄR-BLOCK (E9-Angleichung: bibliothek/baukasten/showroom) =====
+       Additiv & shared. Bestandsseiten (lernen/skills/hilfe/prompts) definieren dieselben
+       Klassen seitenlokal — deren <style> lädt nach base.css und gewinnt, Werte sind identisch. */
+    .getting-started { background: var(--c-white); border-bottom: 1px solid var(--line); }
+    .gs-inner { max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-d); }
+    .gs-toggle {
+      display: flex; align-items: center; gap: 1.2rem; width: 100%;
+      background: none; border: none; cursor: pointer; font-family: inherit;
+      font-size: 1.6rem; font-weight: 700; color: var(--c-black);
+      padding: 1.8rem 0; text-align: left;
+    }
+    .gs-toggle:hover { color: var(--c-gray-m); }
+    .gs-arrow { margin-left: auto; font-size: 1.8rem; transition: transform .2s; }
+    .gs-toggle[aria-expanded="true"] .gs-arrow { transform: rotate(90deg); }
+    .gs-content { padding-bottom: 2.4rem; }
+    .gs-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.4rem; }
+    .gs-step { display: flex; gap: 1.6rem; align-items: flex-start; }
+    .gs-num {
+      width: 3.2rem; height: 3.2rem; flex-shrink: 0; background: var(--c-yellow);
+      color: var(--c-black); border-radius: 50%; display: flex; align-items: center;
+      justify-content: center; font-size: 1.5rem; font-weight: 700; font-family: var(--font-mono);
+    }
+    .gs-step strong { font-size: 1.5rem; display: block; margin-bottom: .4rem; }
+    .gs-step p { font-size: 1.4rem; color: var(--c-gray-m); line-height: 1.5; }
+    .gs-start-pin {
+      display: inline-flex; align-items: center; gap: .6rem; margin-top: 2rem;
+      background: var(--c-yellow); color: var(--c-black); font-weight: 700;
+      font-size: 1.4rem; padding: .9rem 1.6rem; border-radius: 999px; border: none;
+      cursor: pointer; font-family: inherit; text-decoration: none;
+    }
+    .gs-start-pin:hover { background: var(--c-black); color: var(--c-yellow); }
+    @media (max-width: 1023px) {
+      .gs-inner { padding: 0 var(--pad-m); }
+      .gs-steps { grid-template-columns: 1fr; gap: 1.6rem; }
     }

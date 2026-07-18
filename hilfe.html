@@ -987,7 +987,7 @@
             for (const key of ['befehl', 'begriff', 'faq']) {
               const v = qs.get(key);
               if (v) {
-                history.replaceState(null, '', location.pathname + '#' + key + '/' + encodeURIComponent(v));
+                history.replaceState(null, '', location.pathname + location.search + '#' + key + '/' + encodeURIComponent(v));
                 break;
               }
             }

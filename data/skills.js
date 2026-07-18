@@ -1869,7 +1869,7 @@
         ],
         "comments": [],
         "filesMirrored": true,
-        "source": "https://github.com/anthropics/claude-plugins-public/tree/main/plugins/frontend-design",
+        "source": "https://github.com/anthropics/claude-plugins-official/tree/main/plugins/frontend-design",
         "installCmd": "/plugin install frontend-design@claude-plugins-official",
         "contains": "Genau 1 Skill (frontend-design) mit Design-Leitlinien zu Typografie, Farbwahl und Layout. Keine Slash-Befehle — der Skill springt automatisch an, sobald Claude Oberflächen baut.",
         "installDemo": [
@@ -2244,7 +2244,7 @@
         ],
         "featured": false,
         "badge": null,
-        "source": "https://github.com/anthropics/claude-plugins-public/tree/main/plugins/ralph-loop",
+        "source": "https://github.com/anthropics/claude-plugins-official/tree/main/plugins/ralph-loop",
         "installCmd": "/plugin install ralph-loop@claude-plugins-official",
         "contains": "3 Befehle — /ralph-loop:ralph-loop (Loop starten), /ralph-loop:cancel-ralph (abbrechen), /ralph-loop:help — plus der Stop-Hook, der den Loop am Laufen hält. Keine Skills, kein MCP.",
         "installDemo": [

@@ -309,7 +309,7 @@
     <div class="filter-bar" id="filter-bar">
       <div class="filter-inner">
         <div class="search-wrap-m">
-          <input type="search" id="search-m" aria-label="Ressourcen suchen" placeholder="Ressourcen suchen …" autocomplete="off">
+          <input type="search" id="search-m" aria-label="Nur diese Seite: Ressourcen filtern" placeholder="Nur Ressourcen filtern …" autocomplete="off">
         </div>
         <div class="cat-tabs" id="cat-tabs" role="group" aria-label="Nach Typ filtern"></div>
         <button class="filter-toggle-btn" id="filter-toggle-btn" onclick="toggleMobileFilter()" aria-expanded="true">
@@ -395,7 +395,7 @@
 
     // ===== NAV & FOOTER (shared/base.js) =====
     renderNav('lernen', {
-      search: { id: 'search', label: 'Ressourcen suchen', placeholder: 'Ressourcen suchen …' },
+      search: { id: 'search', label: 'Nur diese Seite: Ressourcen filtern', placeholder: 'Nur Ressourcen filtern …' },
       footerClaim: 'Von Piloten gebaut, von Piloten empfohlen. Kein eigener Kurs — nur die Links, die uns wirklich weitergebracht haben.'
     });
 
@@ -745,7 +745,7 @@
           const qs = new URLSearchParams(location.search);
           const v = qs.get('r');
           if (v && !location.hash) {
-            history.replaceState(null, '', location.pathname + '#r/' + encodeURIComponent(v));
+            history.replaceState(null, '', location.pathname + location.search + '#r/' + encodeURIComponent(v));
           }
         } catch (e) {}
       }

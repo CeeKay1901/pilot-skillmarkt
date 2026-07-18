@@ -2,10 +2,10 @@
 <!--
   Startseite pilot AI Marketplace (Etappe E1).
   Layout-These: Die Startseite ist ein Verteiler, kein zweiter Katalog — der Outcome-Router
-  („Was willst du tun?“) IST der Hero: eine dunkle Bühne mit acht Ziel-Kacheln direkt im
-  Sichtfeld; fertige Ziele verlinken sofort, kommende zeigen ihren Ausblick an Ort und Stelle
-  statt ins Leere zu führen. Danach wird es Sektion für Sektion ruhiger: asymmetrische
-  Bereichs-Landkarte (Katalog groß und solide, sechs „In Arbeit“-Teaser gestrichelt),
+  („Was willst du tun?“) IST der Hero: eine dunkle Bühne mit neun Ziel-Kacheln direkt im
+  Sichtfeld; alle Ziele sind live und verlinken sofort ins passende Werkzeug. Danach wird es
+  Sektion für Sektion ruhiger: asymmetrische
+  Bereichs-Landkarte (Katalog groß und solide, alle sieben Bereiche live),
   editoriale Doppelspalte aus „Meine Reise“ und „Neu dazugekommen“, Getting-Started als
   nummerierte Zeile — Rhythmus statt Karten-Schema F.
 -->
@@ -258,6 +258,8 @@
     }
     .jr-chip:hover, .jr-chip:focus-visible { border-color: var(--c-black); background: var(--c-white); }
     .jr-chip .jr-star { color: var(--c-yellow); }
+    /* Typ-Kürzel im Chip: die Favoriten kommen jetzt aus allen Bereichen */
+    .jr-chip-type { font-family: var(--font-mono); font-size: 1rem; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--c-gray-m); }
     .jr-more { font-size: 1.3rem; color: var(--c-gray-m); align-self: center; }
     /* Empty-State: einladend, nicht leer */
     .jr-empty { max-width: 46rem; }
@@ -323,7 +325,7 @@
       <div class="router-inner">
         <p class="overline">pilot AI Marketplace</p>
         <h1 id="router-h" class="anim-fade-up">Was willst du tun?</h1>
-        <p class="router-sub anim-fade-up">Ein Ort für alles, was ihr mit KI baut: Wähl dein Ziel — der Marketplace bringt dich zum passenden Werkzeug. Fertiges öffnet sich sofort, Kommendes zeigt dir hier schon seinen Ausblick.</p>
+        <p class="router-sub anim-fade-up">Ein Ort für alles, was ihr mit KI baut: Wähl dein Ziel — der Marketplace bringt dich sofort zum passenden Werkzeug.</p>
 
         <div class="rt-grid anim-stagger">
           <a class="rt-card" href="skills.html?skill=pptx">
@@ -401,7 +403,7 @@
           <div class="hero-stat-box"><span class="hero-stat-num" id="stat-hilfe">0</span><span class="hero-stat-label">Einträge im Hilfe-Center</span></div>
           <div class="hero-stat-box"><span class="hero-stat-num" id="stat-lernen">0</span><span class="hero-stat-label">Lern-Ressourcen</span></div>
           <div class="hero-stat-box"><span class="hero-stat-num" id="stat-demos">0</span><span class="hero-stat-label">Live-Demos</span></div>
-          <div class="hero-stat-box"><span class="hero-stat-num" id="stat-bundles">0</span><span class="hero-stat-label">Skill-Pakete</span></div>
+          <div class="hero-stat-box"><span class="hero-stat-num" id="stat-bundles">0</span><span class="hero-stat-label">Showroom-Projekte</span></div>
         </div>
       </div>
     </section>
@@ -696,8 +698,10 @@
 
     document.querySelectorAll('[data-live="skills-total"]').forEach(el => { el.textContent = COUNTS.skills; });
 
+    // stat-bundles läuft nicht hier, sondern im Showroom-DOMContentLoaded-Block:
+    // die Box zeigt jetzt „Showroom-Projekte" (CASES.length), und CASES lädt per defer.
     [['stat-skills', COUNTS.skills], ['stat-prompts', COUNTS.promptItems],
-     ['stat-demos', COUNTS.demos], ['stat-bundles', COUNTS.bundles]].forEach(([id, n]) => {
+     ['stat-demos', COUNTS.demos]].forEach(([id, n]) => {
       const el = document.getElementById(id);
       if (el) animateCount(el, n, 1100);
     });
@@ -804,6 +808,9 @@
       if (typeof CASES === 'undefined') return;
       const srCount = document.getElementById('area-showroom-count');
       if (srCount) animateCount(srCount, CASES.length, 1100);
+      // Hero-Box „Showroom-Projekte" (id historisch stat-bundles) — real aus CASES.
+      const statBundles = document.getElementById('stat-bundles');
+      if (statBundles) animateCount(statBundles, CASES.length, 1100);
       const srMeta = document.getElementById('area-showroom-meta');
       if (srMeta) srMeta.textContent = `davon ${CASE_STATS.echt} echte Team-Tools · ${CASE_STATS.beispiel} Beispiel-Projekte · ${CASE_STATS.saeulen} Säulen`;
       // Leuchtturm: „Will ich auch"-Reaktionen des echten Umfrage-Auswerters (Seed +
@@ -848,45 +855,82 @@
     });
 
     // ===== MEINE REISE (sektionsübergreifend aus localStorage, via base.js) =====
-    (function renderJourney() {
+    // Aggregiert ehrlich ALLE Typen: Favoriten & Ausprobiert über skill/prompt/asset/
+    // baustein/case, Bewertungen (eigene Sterne rate:* + eigene Kommentare comments:*)
+    // über die Stern-Typen, und Reaktionen/Stimmen (jede abgegebene vote:<typ>:*, u. a.
+    // die Showroom-„Will ich auch"-Reaktion). Läuft in DOMContentLoaded, weil die Namens-
+    // Auflösung der Chips ASSETS/BAUSTEINE/CASES braucht (die per defer laden).
+    document.addEventListener('DOMContentLoaded', function renderJourney() {
       const body = document.getElementById('journey-body');
       if (!body) return;
-      const favs = getFavorites('skill');
-      const tried = getTried('skill');
-      // Bewertungen: Sterne (rate:skill:* + Alt-Keys) und eigene Kommentare
-      const rated = new Set(lsKeysWithPrefix('rate:skill:').map(k => k.slice('rate:skill:'.length)));
-      lsKeysWithPrefix('skill-rating-').forEach(k => rated.add(k.slice('skill-rating-'.length)));
+
+      const FAV_TYPES = ['skill', 'prompt', 'asset', 'baustein', 'case'];
+      const TYPE_LABEL = { skill: 'Skill', prompt: 'Prompt', asset: 'Asset', baustein: 'Baustein', case: 'Projekt' };
+      const linkFor = {
+        skill:    id => 'skills.html?skill=' + encodeURIComponent(id),
+        prompt:   id => 'prompts.html?p=' + encodeURIComponent(id),
+        asset:    id => 'bibliothek.html?a=' + encodeURIComponent(id),
+        baustein: id => 'baukasten.html?b=' + encodeURIComponent(id),
+        case:     id => 'showroom.html?case=' + encodeURIComponent(id)
+      };
+      const nameFor = (type, id) => {
+        try {
+          if (type === 'skill'    && typeof SKILLS    !== 'undefined') { const x = SKILLS.find(s => s.id === id);    if (x) return x.name; }
+          if (type === 'prompt'   && typeof PROMPTS   !== 'undefined') { const x = PROMPTS.find(s => s.id === id);   if (x) return x.name; }
+          if (type === 'asset'    && typeof ASSETS    !== 'undefined') { const x = ASSETS.find(s => s.id === id);    if (x) return x.name; }
+          if (type === 'baustein' && typeof BAUSTEINE !== 'undefined') { const x = BAUSTEINE.find(s => s.id === id); if (x) return x.name; }
+          if (type === 'case'     && typeof CASES     !== 'undefined') { const x = CASES.find(s => s.id === id);     if (x) return x.titel; }
+        } catch (e) {}
+        return id;
+      };
+
+      // Favoriten & Ausprobiert über alle Typen (Alt-Keys deckt getFavorites/getTried mit ab)
+      const favItems = [];
+      let triedCount = 0;
+      FAV_TYPES.forEach(t => {
+        getFavorites(t).forEach(id => favItems.push({ id, type: t }));
+        triedCount += getTried(t).length;
+      });
+
+      // Bewertungen = eigene Sterne (rate:<typ>:*) + eigene Kommentare (comments:<typ>:*),
+      // typübergreifend. Identität „typ:id", damit Alt-Key skill-rating-* nicht doppelt zählt.
+      const rated = new Set();
+      lsKeysWithPrefix('rate:').forEach(k => rated.add(k.slice('rate:'.length)));
+      lsKeysWithPrefix('skill-rating-').forEach(k => rated.add('skill:' + k.slice('skill-rating-'.length)));
       let ownComments = 0;
-      lsKeysWithPrefix('comments:skill:').forEach(k => {
+      lsKeysWithPrefix('comments:').forEach(k => {
         try { ownComments += (JSON.parse(lsGet(k)) || []).length; } catch (e) {}
       });
-      const votes = rated.size + ownComments;
+      const bewertungen = rated.size + ownComments;
 
-      if (favs.length + tried.length + votes === 0) {
+      // Reaktionen/Stimmen: jede abgegebene vote:<typ>:* (Showroom-„Will ich auch",
+      // Hilfe-„Hat mir geholfen", Lern-Stimmen …) — binär, kein Stern, eigene Kennzahl.
+      const reaktionen = lsKeysWithPrefix('vote:').filter(k => lsGet(k) === '1').length;
+
+      if (favItems.length + triedCount + bewertungen + reaktionen === 0) {
         body.innerHTML = `
           <div class="jr-empty">
-            <p>Hier wächst dein Fortschritt mit: Favoriten, ausprobierte Skills und deine Bewertungen — über alle Bereiche hinweg. Noch ist die Seite leer, aber der erste Schritt dauert keine zehn Minuten.</p>
+            <p>Hier wächst dein Fortschritt mit: Favoriten, ausprobierte Skills, deine Bewertungen und Reaktionen — über alle Bereiche hinweg. Noch ist die Seite leer, aber der erste Schritt dauert keine zehn Minuten.</p>
             <a class="c-cta -black-border" href="skills.html?skill=erste-schritte">Starte mit „Erste Schritte“</a>
           </div>`;
         return;
       }
 
-      const favChips = favs.slice(0, 6).map(id => {
-        const s = SKILLS.find(x => x.id === id);
-        const name = s ? s.name : id;
-        return `<a class="jr-chip" href="skills.html?skill=${encodeURIComponent(id)}"><span class="jr-star" aria-hidden="true">★</span>${escHtml(name)}</a>`;
-      }).join('');
-      const more = favs.length > 6 ? `<span class="jr-more">+${favs.length - 6} weitere</span>` : '';
+      const favChips = favItems.slice(0, 6).map(({ id, type }) =>
+        `<a class="jr-chip" href="${linkFor[type](id)}"><span class="jr-star" aria-hidden="true">★</span>${escHtml(nameFor(type, id))}<span class="jr-chip-type" aria-hidden="true">${TYPE_LABEL[type]}</span></a>`
+      ).join('');
+      const more = favItems.length > 6 ? `<span class="jr-more">+${favItems.length - 6} weitere</span>` : '';
 
       body.innerHTML = `
         <div class="jr-stats">
-          <div class="jr-stat"><span class="jr-num">${favs.length}</span><span class="jr-label">Favoriten</span></div>
-          <div class="jr-stat"><span class="jr-num">${tried.length}</span><span class="jr-label">Ausprobiert</span></div>
-          <div class="jr-stat"><span class="jr-num">${votes}</span><span class="jr-label">Bewertungen</span></div>
+          <div class="jr-stat"><span class="jr-num">${favItems.length}</span><span class="jr-label">Favoriten</span></div>
+          <div class="jr-stat"><span class="jr-num">${triedCount}</span><span class="jr-label">Ausprobiert</span></div>
+          <div class="jr-stat"><span class="jr-num">${bewertungen}</span><span class="jr-label">Bewertungen</span></div>
+          <div class="jr-stat"><span class="jr-num">${reaktionen}</span><span class="jr-label">Reaktionen</span></div>
         </div>
-        ${favs.length ? `<div class="jr-favs">${favChips}${more}</div>`
-          : `<p class="area-text">Markiere Skills im Katalog mit ★, dann tauchen sie hier auf.</p>`}`;
-    })();
+        ${favItems.length ? `<div class="jr-favs">${favChips}${more}</div>`
+          : `<p class="area-text">Markiere Einträge im Marketplace mit ★, dann tauchen sie hier auf.</p>`}`;
+    });
 
     // ===== SCROLL-REVEAL (.anim-reveal aus base.css) =====
     (function () {
