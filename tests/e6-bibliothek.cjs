@@ -7,7 +7,7 @@
  * Hex-Klick-Kopie, WCAG-Kontrast-Badges (echte Formel), Icon-Suche, Detail-Modal
  * mit Tabs, Bewertung (rate:asset:*), Deep-Link ?a=<id>, „Asset vorschlagen“-Demo,
  * die Nav-Regression (Mehr-Dropdown + IDs) und die Verzahnung mit der Startseite.
- * Muster: tests/e5-lernen.cjs.
+ * Muster: tests/e10-lernenhilfe.cjs.
  *
  * Aufruf:
  *   PLAYWRIGHT_BROWSERS_PATH=$HOME/.cache/ms-playwright node tests/e6-bibliothek.cjs [URL]
@@ -348,9 +348,8 @@ async function runViewport(browser, vp) {
       hasCatalog: !!document.getElementById('nav-catalog'),
       hasPrompts: !!document.getElementById('nav-prompts'),
       hasHilfe: !!document.getElementById('nav-hilfe'),
-      hasLernen: !!document.getElementById('nav-lernen'),
+      // E10-Merge: nav-lernen ist entfallen (Lernen ging in „Lernen & Hilfe"/nav-hilfe auf).
       hasMoreBtn: !!document.getElementById('nav-more-btn'),
-      moreHasLernen: !!(menu && menu.querySelector('#nav-lernen')),
       moreHasBibliothek: !!(menu && menu.querySelector('#nav-bibliothek')),
       moreBtnActive: !!(document.getElementById('nav-more-btn') || {}).classList && document.getElementById('nav-more-btn').classList.contains('active'),
       footer: !!document.querySelector('.site-footer'),
@@ -358,8 +357,8 @@ async function runViewport(browser, vp) {
   });
   check('14_nav_bibliothek_active',
     navInfo.exists && navInfo.label === 'Asset-Bibliothek' && navInfo.active && navInfo.ariaCurrent === 'page'
-      && navInfo.hasCatalog && navInfo.hasPrompts && navInfo.hasHilfe && navInfo.hasLernen
-      && navInfo.hasMoreBtn && navInfo.moreHasLernen && navInfo.moreHasBibliothek
+      && navInfo.hasCatalog && navInfo.hasPrompts && navInfo.hasHilfe
+      && navInfo.hasMoreBtn && navInfo.moreHasBibliothek
       && navInfo.moreBtnActive && navInfo.footer,
     navInfo);
 
@@ -382,16 +381,14 @@ async function runViewport(browser, vp) {
     // Mobil: Mehr-Button ausgeblendet, die moreItems liegen flach/sichtbar in der Leiste
     const mobileNav = await page.evaluate(() => {
       const btn = document.getElementById('nav-more-btn');
-      const lernen = document.getElementById('nav-lernen');
       const biblio = document.getElementById('nav-bibliothek');
       return {
         moreBtnHidden: !btn || getComputedStyle(btn).display === 'none',
-        lernenVisible: !!lernen && lernen.offsetParent !== null,
         biblioVisible: !!biblio && biblio.offsetParent !== null,
       };
     });
     check('15_more_flat_mobile',
-      mobileNav.moreBtnHidden && mobileNav.lernenVisible && mobileNav.biblioVisible,
+      mobileNav.moreBtnHidden && mobileNav.biblioVisible,
       mobileNav);
   }
 
@@ -457,7 +454,7 @@ async function runIndexChecks(browser) {
   check('i4_area_card_clickable',
     indexInfo.areaCta && indexInfo.areaSpotHref === 'bibliothek.html?a=' + LEUCHTTURM
       && indexInfo.areaSpotRating.trim().length > 0 && indexInfo.navBibliothek
-      && indexInfo.livePills === 7 && indexInfo.soonPills === 0,
+      && indexInfo.livePills === 6 && indexInfo.soonPills === 0,
     { areaCta: indexInfo.areaCta, areaSpotHref: indexInfo.areaSpotHref,
       areaSpotRating: indexInfo.areaSpotRating, navBibliothek: indexInfo.navBibliothek,
       livePills: indexInfo.livePills, soonPills: indexInfo.soonPills });
@@ -474,7 +471,7 @@ async function runIndexChecks(browser) {
 
   // Nav-Regression: nav-bibliothek auf allen Bestandsseiten vorhanden, nicht aktiv
   const navPages = {};
-  for (const p of ['skills.html', 'prompts.html', 'hilfe.html', 'lernen.html']) {
+  for (const p of ['skills.html', 'prompts.html', 'lernen-hilfe.html']) {
     await page.goto(INDEX_TARGET.replace(/index\.html.*$/, p), { waitUntil: 'load' });
     await page.waitForSelector('#nav-bibliothek', { timeout: 10000 }).catch(() => {});
     navPages[p] = await page.evaluate(() => {
@@ -483,12 +480,11 @@ async function runIndexChecks(browser) {
         exists: !!el,
         href: el ? el.getAttribute('href') : '',
         notActive: !!el && !el.classList.contains('active'),
-        hasLernen: !!document.getElementById('nav-lernen'),
       };
     });
   }
   check('i7_nav_bibliothek_on_all_pages',
-    Object.values(navPages).every(n => n.exists && n.href === 'bibliothek.html' && n.notActive && n.hasLernen),
+    Object.values(navPages).every(n => n.exists && n.href === 'bibliothek.html' && n.notActive),
     navPages);
 
   await context.close();

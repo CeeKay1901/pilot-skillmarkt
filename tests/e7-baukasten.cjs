@@ -301,10 +301,9 @@ async function runViewport(browser, vp) {
       hasCatalog: !!document.getElementById('nav-catalog'),
       hasPrompts: !!document.getElementById('nav-prompts'),
       hasHilfe: !!document.getElementById('nav-hilfe'),
-      hasLernen: !!document.getElementById('nav-lernen'),
+      // E10-Merge: nav-lernen ist entfallen (Lernen ging in „Lernen & Hilfe"/nav-hilfe auf).
       hasBibliothek: !!document.getElementById('nav-bibliothek'),
       hasMoreBtn: !!document.getElementById('nav-more-btn'),
-      moreHasLernen: !!(menu && menu.querySelector('#nav-lernen')),
       moreHasBibliothek: !!(menu && menu.querySelector('#nav-bibliothek')),
       moreHasBaukasten: !!(menu && menu.querySelector('#nav-baukasten')),
       moreBtnActive: !!document.getElementById('nav-more-btn') && document.getElementById('nav-more-btn').classList.contains('active'),
@@ -313,8 +312,8 @@ async function runViewport(browser, vp) {
   });
   check('12_nav_baukasten_active',
     navInfo.exists && navInfo.label === 'Baukasten' && navInfo.active && navInfo.ariaCurrent === 'page'
-      && navInfo.hasCatalog && navInfo.hasPrompts && navInfo.hasHilfe && navInfo.hasLernen && navInfo.hasBibliothek
-      && navInfo.hasMoreBtn && navInfo.moreHasLernen && navInfo.moreHasBibliothek && navInfo.moreHasBaukasten
+      && navInfo.hasCatalog && navInfo.hasPrompts && navInfo.hasHilfe && navInfo.hasBibliothek
+      && navInfo.hasMoreBtn && navInfo.moreHasBibliothek && navInfo.moreHasBaukasten
       && navInfo.moreBtnActive && navInfo.footer,
     navInfo);
 
@@ -410,7 +409,7 @@ async function runIndexChecks(browser) {
   check('i4_area_card_clickable',
     indexInfo.areaCta && indexInfo.areaSpotHref === 'baukasten.html?b=' + LEUCHTTURM
       && indexInfo.areaSpotRating.trim().length > 0 && indexInfo.navBaukasten
-      && indexInfo.livePills === 7 && indexInfo.soonPills === 0,
+      && indexInfo.livePills === 6 && indexInfo.soonPills === 0,
     { areaCta: indexInfo.areaCta, areaSpotHref: indexInfo.areaSpotHref,
       areaSpotRating: indexInfo.areaSpotRating, navBaukasten: indexInfo.navBaukasten,
       livePills: indexInfo.livePills, soonPills: indexInfo.soonPills });
@@ -427,7 +426,7 @@ async function runIndexChecks(browser) {
 
   // Nav-Regression: nav-baukasten auf allen Bestandsseiten vorhanden, nicht aktiv
   const navPages = {};
-  for (const p of ['skills.html', 'prompts.html', 'hilfe.html', 'lernen.html', 'bibliothek.html']) {
+  for (const p of ['skills.html', 'prompts.html', 'lernen-hilfe.html', 'bibliothek.html']) {
     await page.goto(INDEX_TARGET.replace(/index\.html.*$/, p), { waitUntil: 'load' });
     await page.waitForSelector('#nav-baukasten', { timeout: 10000 }).catch(() => {});
     navPages[p] = await page.evaluate(() => {
@@ -436,13 +435,12 @@ async function runIndexChecks(browser) {
         exists: !!el,
         href: el ? el.getAttribute('href') : '',
         notActive: !!el && !el.classList.contains('active'),
-        hasLernen: !!document.getElementById('nav-lernen'),
         hasBibliothek: !!document.getElementById('nav-bibliothek'),
       };
     });
   }
   check('i7_nav_baukasten_on_all_pages',
-    Object.values(navPages).every(n => n.exists && n.href === 'baukasten.html' && n.notActive && n.hasLernen && n.hasBibliothek),
+    Object.values(navPages).every(n => n.exists && n.href === 'baukasten.html' && n.notActive && n.hasBibliothek),
     navPages);
 
   await context.close();

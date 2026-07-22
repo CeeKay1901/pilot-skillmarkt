@@ -9,7 +9,7 @@
 //   BEFEHL_LEUCHTTUERME  — Set der 5 IDs mit Mini-Terminal-Demo (playScript-Zeilenformat)
 //   BEFEHL_KOMMENTARE    — seeded Kurz-Kommentare der PILOTS-Personas (nur Leuchttürme)
 // Felder je Eintrag:
-//   id         URL-tauglich, eindeutig (Deep-Link hilfe.html?befehl=<id>)
+//   id         URL-tauglich, eindeutig (Deep-Link lernen-hilfe.html?befehl=<id>)
 //   cmd        exakt kopier-/drückbarer Wortlaut (JetBrains Mono im UI)
 //   kategorie  'slash' | 'cli' | 'taste' | 'langdock'  → Filter-Chips
 //   plattform  'code' | 'langdock'

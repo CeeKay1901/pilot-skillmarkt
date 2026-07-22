@@ -107,9 +107,6 @@
     .am-comment { border-top: 1px solid var(--line); padding: 1.2rem 0; }
     .am-comment-head { font-size: 1.3rem; color: var(--c-gray-m); margin-bottom: .4rem; }
     .am-comment-text { font-size: 1.4rem; line-height: 1.55; color: var(--c-ink-body); }
-    /* Ein-Satz-Orientierung (ersetzt den früheren aufklappbaren „drei Handgriffe“-Block) */
-    .gs-oneline { font-size: 1.5rem; line-height: 1.55; color: var(--c-gray-m); padding: 1.8rem 0; margin: 0; }
-    .gs-oneline strong { color: var(--c-black); font-weight: 700; }
   </style>
 </head>
 <body>
@@ -140,12 +137,25 @@
     </div>
   </section>
 
-  <!-- SEITEN-ORIENTIERUNG: knappe, kontextuelle Ein-Satz-Einordnung (statt generischem Erklär-Block) -->
-  <div class="getting-started" id="getting-started">
-    <div class="gs-inner">
-      <p class="gs-oneline"><strong>Material zum Nachschlagen.</strong> Stöber durch Schriften, Icons, Farben und Muster — jedes mit sichtbarer Lizenz, per Klick kopiert oder direkt an Claude weitergereicht.</p>
+  <!-- KURZ ERKLÄRT: kompaktes Erklär-Modul je Bereich (E10, ersetzt den früheren Ein-Satz-Intro) -->
+  <section class="area-intro" aria-label="Kurz erklärt">
+    <div class="area-intro-inner">
+      <div class="area-intro-grid">
+        <div class="area-intro-part">
+          <p class="area-intro-label">Was ist das?</p>
+          <p class="area-intro-text">Ein Materiallager fürs Gestalten: frei nutzbare Schriften mit Live-Vorschau, ein Icon-Browser, Farbpaletten mit Kontrast-Check und dezente Muster und Verläufe — jedes mit sichtbarer Lizenz.</p>
+        </div>
+        <div class="area-intro-part">
+          <p class="area-intro-label">Wofür nutze ich es?</p>
+          <p class="area-intro-text">Wenn ein Projekt Oberfläche bekommt — ein Pitch-Deck-Web-Snippet, ein Kampagnen-Tool, ein Report — greifst du hier auf Material zu, das du bedenkenlos einsetzen darfst, ohne die Lizenzfrage jedes Mal neu zu klären. Nur OFL, MIT, ISC oder CC0, Quelle und Lizenz stehen am Asset.</p>
+        </div>
+        <div class="area-intro-part">
+          <p class="area-intro-label">So fange ich an.</p>
+          <p class="area-intro-text">Stöber durch die vier Bereiche, tipp einen Font-Beispieltext an oder klick eine Farbe bzw. ein Icon — der Wert landet direkt in deiner Zwischenablage, zum Einfügen oder Weiterreichen an <a class="area-intro-link" href="skills.html?view=explainer">Claude Code</a>.</p>
+        </div>
+      </div>
     </div>
-  </div>
+  </section>
 
   <main>
     <!-- (a) FONTS -->
@@ -618,9 +628,9 @@
             <div class="am-comment-head">${escHtml(c.author)}${c.role ? ' · ' + escHtml(c.role) : ''}${c.rating ? ' · ' + renderStars(c.rating) : ''} · ${formatDate(c.date)}</div>
             <div class="am-comment-text">${escHtml(c.text)}</div>
           </div>`).join('')
-        : '<p class="am-hint">Noch keine Kommentare — sei die erste Stimme.</p>';
+        : '<p class="am-hint">Noch keine Kommentare — schreib den ersten!</p>';
       return `
-        <p class="am-source">${renderStars(e.average)} <strong>${e.average.toFixed(1)}</strong> · ${e.count} ${e.count === 1 ? 'Stimme' : 'Stimmen'}${item.rating ? '' : ' (noch ohne Seed — deine Bewertung startet die Zählung)'}</p>
+        <p class="am-source">${renderStars(e.average)} <strong>${e.average.toFixed(1)}</strong> · ${e.count} ${e.count === 1 ? 'Bewertung' : 'Bewertungen'}${item.rating ? '' : ' (noch ohne Seed — deine Bewertung startet die Zählung)'}</p>
         <span class="am-label">Deine Bewertung</span>
         ${renderInteractiveStars(item.id)}
         <p class="am-hint" id="rating-hint-${item.id}"></p>

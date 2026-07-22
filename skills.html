@@ -108,6 +108,21 @@
     .type-info strong { color: var(--c-black); }
     .type-info[hidden] { display: none; }
     .type-info-link { background: none; border: none; padding: 0; font: inherit; color: var(--c-black); text-decoration: underline; cursor: pointer; }
+    /* Seiten-lokale Sub-Nav (Tablist über den drei Views) — pilot-CI, editorial */
+    .skills-subnav { border-bottom: 1px solid var(--c-gray-l); background: var(--c-bg); }
+    .skills-subnav-inner {
+      max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-d);
+      display: flex; gap: .2rem; overflow-x: auto; scrollbar-width: none;
+    }
+    .skills-subnav-inner::-webkit-scrollbar { display: none; }
+    .skills-subtab {
+      appearance: none; background: none; border: none; cursor: pointer;
+      font: inherit; font-size: 1.45rem; font-weight: 600; white-space: nowrap;
+      color: var(--c-gray-m); padding: 1.3rem 1.6rem;
+      border-bottom: 2px solid transparent; margin-bottom: -1px; transition: var(--trans);
+    }
+    .skills-subtab:hover { color: var(--c-black); }
+    .skills-subtab.active, .skills-subtab[aria-selected="true"] { color: var(--c-black); border-bottom-color: var(--c-yellow); }
     /* Anthropic-Skills: eingebaut vs. nachinstallieren */
     .install-badge { font-family: var(--font-mono); font-size: 1.15rem; font-weight: 600; padding: .3rem 1rem; border-radius: var(--radius-pill); white-space: nowrap; }
     .install-badge.builtin { background: rgba(45,138,78,.1); color: #1e6b3a; border: 1px solid rgba(45,138,78,.35); }
@@ -1096,8 +1111,25 @@
 
   <!-- HEADER & FOOTER: werden von shared/base.js injiziert (renderNav, siehe Seiten-Script unten) -->
 
+  <!-- ===================== SEITEN-LOKALE SUB-NAV =====================
+       Katalog | Was sind Skills? | Skill bauen. Ersetzt die früheren
+       Header-Nav-Peers (nav-explainer/nav-builder). Persistent über allen
+       drei Views; der aktive Tab spiegelt den aktiven View (showView). -->
+  <nav class="skills-subnav">
+    <div class="skills-subnav-inner" role="tablist" aria-label="Skills-Bereiche" onkeydown="skillsSubnavKey(event)">
+      <button type="button" class="skills-subtab active" id="subtab-catalog" role="tab" aria-selected="true" aria-controls="view-catalog" tabindex="0" onclick="showView('catalog')">Katalog</button>
+      <button type="button" class="skills-subtab" id="subtab-explainer" role="tab" aria-selected="false" aria-controls="view-explainer" tabindex="-1" onclick="showView('explainer')">Was sind Skills?</button>
+      <button type="button" class="skills-subtab" id="subtab-builder" role="tab" aria-selected="false" aria-controls="view-builder" tabindex="-1" onclick="showView('builder')">Skill bauen</button>
+    </div>
+  </nav>
+
+  <!-- MAIN-LANDMARK: umschließt alle drei Sub-Tab-Views (Katalog/Explainer/Builder),
+       damit der <main>-Landmark und das Skip-Link-Ziel #main-content auf jeder View
+       sichtbar bleiben — auch wenn view-catalog per hidden ausgeblendet ist. -->
+  <main id="main-content">
+
   <!-- ===================== VIEW: KATALOG ===================== -->
-  <div id="view-catalog">
+  <div id="view-catalog" role="tabpanel" aria-labelledby="subtab-catalog">
 
   <!-- RECENTLY VIEWED -->
   <div id="recently-viewed" class="recently-viewed" hidden></div>
@@ -1210,8 +1242,8 @@
     </div>
   </section>
 
-  <!-- MAIN -->
-  <main>
+  <!-- KATALOG-INHALT (Filter + Grid + Piloten); der <main>-Landmark umschließt weiter oben alle Views -->
+  <div class="catalog-main">
     <!-- FILTER BAR -->
     <div class="filter-bar" id="filter-bar">
       <div class="filter-inner">
@@ -1268,7 +1300,7 @@
     </div>
 
     <!-- SKILLS GRID -->
-    <div class="skills-section" id="main-content">
+    <div class="skills-section" id="catalog-top">
       <div class="skills-inner">
         <div class="skills-grid" id="skills-grid"></div>
         <div class="empty-state" id="empty-state" style="display:none">
@@ -1286,11 +1318,11 @@
         <div class="pilots-grid" id="pilots-grid"></div>
       </div>
     </section>
-  </main>
+  </div><!-- /catalog-main -->
   </div><!-- /view-catalog -->
 
   <!-- ===================== VIEW: WAS SIND SKILLS ===================== -->
-  <div id="view-explainer" hidden>
+  <div id="view-explainer" role="tabpanel" aria-labelledby="subtab-explainer" hidden>
 
     <!-- Explainer Hero -->
     <section class="ex-hero">
@@ -1644,7 +1676,7 @@ Gib einen priorisierten Report aus:
   </div><!-- /view-explainer -->
 
   <!-- ===================== VIEW: SKILL BAUEN ===================== -->
-  <div id="view-builder" hidden>
+  <div id="view-builder" role="tabpanel" aria-labelledby="subtab-builder" hidden>
     <section class="bld-hero">
       <div class="ex-wrap">
         <p class="overline" style="color:var(--c-yellow)">Beitragen</p>
@@ -1732,6 +1764,7 @@ Gib einen priorisierten Report aus:
       </div>
     </section>
   </div><!-- /view-builder -->
+  </main><!-- /main-content -->
 
   <!-- FOOTER: injiziert von shared/base.js (renderNav) -->
 
@@ -1787,14 +1820,11 @@ Gib einen priorisierten Report aus:
     };
 
     // ===== NAV & FOOTER (shared/base.js) =====
-    // Geteilte Nav: nur fertige Sektionen (Katalog). Seitenlokale View-Punkte
-    // („Was sind Skills?", „Skill bauen") hängen wir als Extra-Items an.
+    // Geteilte Nav trägt global nur noch „Katalog". Die View-Punkte
+    // („Was sind Skills?", „Skill bauen") leben seitenlokal als Sub-Tabs
+    // über dem Katalog (Tablist #skills-subnav) — nicht mehr in der Header-Nav.
     renderNav('katalog', {
       sharedOnclick: { katalog: "showView('catalog')" }, // gleiche Seite: View-Wechsel statt Reload
-      extraItems: [
-        { id: 'nav-explainer', label: 'Was sind Skills?', onclick: "showView('explainer')" },
-        { id: 'nav-builder', label: 'Skill bauen', onclick: "showView('builder')" }
-      ],
       search: { id: 'search', label: 'Nur diese Seite: Skills filtern', placeholder: 'Nur Katalog filtern …' },
       footerExtra: [
         { label: 'Was sind Skills?', onclick: "showView('explainer')" },
@@ -2129,7 +2159,7 @@ Gib einen priorisierten Report aus:
     // Outcome-Router: Ziel wählen → passenden Skill öffnen
     function pickOutcome(id) {
       if (SKILLS.some(s => s.id === id)) openModal(id);
-      else document.getElementById('main-content').scrollIntoView({behavior:'smooth'});
+      else document.getElementById('catalog-top').scrollIntoView({behavior:'smooth'});
     }
     function copyStartPrompt(evt, id) {
       if (evt) evt.stopPropagation();
@@ -4181,12 +4211,37 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
     }
 
     // ===================== EXPLAINER: WAS SIND SKILLS =====================
+    // Tastatur-Navigation der Sub-Tab-Leiste (WAI-ARIA Tabs): Links/Rechts +
+    // Hoch/Runter bewegen zwischen den Tabs und aktivieren sie; Home/End springen
+    // an die Ränder. Enter/Space lösen als <button> nativ das onclick aus.
+    function skillsSubnavKey(e) {
+      const tabs = Array.prototype.slice.call(document.querySelectorAll('.skills-subtab'));
+      const i = tabs.indexOf(document.activeElement);
+      if (i < 0) return;
+      let n = -1;
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') n = (i + 1) % tabs.length;
+      else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') n = (i - 1 + tabs.length) % tabs.length;
+      else if (e.key === 'Home') n = 0;
+      else if (e.key === 'End') n = tabs.length - 1;
+      else return;
+      e.preventDefault();
+      tabs[n].focus();
+      tabs[n].click(); // schaltet den View + setzt aria-selected/tabindex via showView
+    }
+
     function showView(view) {
       const views = { catalog: 'view-catalog', explainer: 'view-explainer', builder: 'view-builder' };
-      const navs  = { catalog: 'nav-catalog',  explainer: 'nav-explainer',  builder: 'nav-builder' };
+      // Sub-Tabs (seiten-lokale Tablist) statt der früheren Header-Nav-Peers.
+      const subtabs = { catalog: 'subtab-catalog', explainer: 'subtab-explainer', builder: 'subtab-builder' };
       if (!views[view]) view = 'catalog';
       Object.entries(views).forEach(([k, id]) => { const el = document.getElementById(id); if (el) el.hidden = (k !== view); });
-      Object.entries(navs).forEach(([k, id]) => { const el = document.getElementById(id); if (el) el.classList.toggle('active', k === view); });
+      Object.entries(subtabs).forEach(([k, id]) => {
+        const el = document.getElementById(id); if (!el) return;
+        const on = (k === view);
+        el.classList.toggle('active', on);
+        el.setAttribute('aria-selected', on ? 'true' : 'false');
+        el.tabIndex = on ? 0 : -1; // Roving-Tabindex: nur der aktive Tab ist tabbierbar
+      });
       window.scrollTo({ top: 0, behavior: 'auto' });
       if (window._filterCheck) requestAnimationFrame(window._filterCheck); // fixierte Filterleiste beim View-Wechsel lösen
       if (view !== 'explainer') stopTermScript(); // Demo tippt sonst unsichtbar weiter

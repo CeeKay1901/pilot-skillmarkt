@@ -337,7 +337,12 @@
     .star.half { position: relative; color: var(--c-gray-l); }
     .star.half::before { content: '★'; position: absolute; left: 0; top: 0; width: 50%; overflow: hidden; color: var(--c-yellow); }
     .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
-    .rating-text { font-size: 1.3rem; color: var(--c-ink-faded); }
+    /* UX5-Fix (WCAG AA): informative Rating-Meta-Zahlen (Ø + Anzahl) müssen lesbar sein.
+       Vorher --c-ink-faded (#8d8b80): nur 3.02–3.34:1 auf hellen Karten (< AA 4.5:1).
+       Jetzt --c-gray-m (#66655d): 5.71:1 auf --c-white, 5.65:1 auf --paper, 5.17:1 auf --c-bg,
+       4.86:1 auf --paper-deep — überall ≥4.5:1. --c-ink-faded bleibt für dekorative
+       Nicht-Text-Labels (z.B. .chat-meta) unangetastet. */
+    .rating-text { font-size: 1.3rem; color: var(--c-gray-m); }
     .pilot-avatars { display: flex; }
     .avatar {
       width: 2.8rem; height: 2.8rem;
@@ -1563,7 +1568,9 @@
       display: flex; flex-direction: column; gap: 1rem;
       background: var(--paper); border: 1px solid var(--line); border-radius: var(--r-md);
       padding: 1.8rem 2rem; scroll-margin-top: calc(var(--header-h) + 2.4rem);
+      transition: var(--trans);
     }
+    .bk-data-card.-highlight { border-color: var(--c-yellow); box-shadow: 0 0 0 3px rgba(255,224,94,.45); }
     .bk-data-kopf { display: flex; align-items: center; gap: 1rem; }
     .bk-data-ic { color: var(--c-black); }
     .bk-data-ic .lu { width: 2.2rem; height: 2.2rem; }
@@ -1931,4 +1938,56 @@
     @media (max-width: 1023px) {
       .gs-inner { padding: 0 var(--pad-m); }
       .gs-steps { grid-template-columns: 1fr; gap: 1.6rem; }
+    }
+
+    /* ============================================================
+       E10 — KOMPAKTES ERKLÄR-MODUL JE BEREICH (.area-intro)
+       Ruhiger, editorialer Kopf-Block direkt unter dem Hero. Drei knappe
+       Teile: „Was ist das? · Wofür nutze ich es? · So fange ich an."
+       Ersetzt die alten Ein-Satz-Intros (.gs-oneline / .sr-orient / .gs-line).
+       Selbsttragende Bandbreite (eigene Fläche + max-width + Padding), damit
+       ALLE 5 Bereiche (Prompts, Lernen&Hilfe, Bibliothek, Baukasten, Showroom)
+       dieselbe Klasse identisch nutzen. Nur additiv, pilot-CI, kein Emoji.
+       Querbegriffe verlinken via .area-intro-link auf skills.html?view=explainer
+       (Single Source) statt neu zu erklären. Skills selbst bekommt KEIN Modul.
+       ============================================================ */
+    .area-intro {
+      background: var(--c-white);
+      border-bottom: 1px solid var(--line);
+    }
+    .area-intro-inner {
+      max-width: var(--max-w); margin: 0 auto;
+      padding: 3.2rem var(--pad-d);
+    }
+    .area-intro-grid {
+      display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 2.4rem 4rem;
+    }
+    .area-intro-part { display: flex; flex-direction: column; gap: .8rem; }
+    /* Label: mono-Overline mit gelbem Takt-Strich (Motiv aus .hero-spotlight-label) */
+    .area-intro-label {
+      position: relative; padding-top: 1.4rem; margin: 0;
+      font-family: var(--font-mono); font-weight: 600;
+      font-size: 1.2rem; letter-spacing: .1em; text-transform: uppercase;
+      color: var(--c-gray-m);           /* #66655d — AA: 5.71:1 auf --c-white */
+    }
+    .area-intro-label::before {
+      content: ''; position: absolute; top: 0; left: 0;
+      width: 2.4rem; height: 2px; background: var(--c-yellow);
+    }
+    .area-intro-text {
+      margin: 0; font-size: 1.5rem; line-height: 1.6;
+      color: var(--c-ink-body);         /* #555 — ~7:1 auf --c-white */
+    }
+    .area-intro-link {
+      color: var(--c-black); font-weight: 600; text-decoration: underline;
+      text-decoration-color: var(--c-yellow); text-decoration-thickness: 2px;
+      text-underline-offset: .25em; transition: var(--trans);
+    }
+    .area-intro-link:hover, .area-intro-link:focus-visible {
+      text-decoration-color: var(--c-black);
+    }
+    @media (max-width: 1023px) {
+      .area-intro-inner { padding: 2.4rem var(--pad-m); }
+      .area-intro-grid { grid-template-columns: 1fr; gap: 2rem; }
     }

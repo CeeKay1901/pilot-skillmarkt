@@ -8,7 +8,7 @@
 //   RESSOURCE_TYPEN  — Typ-Labels fürs UI (Reihenfolge = Tab-Reihenfolge)
 //
 // Felder je Eintrag:
-//   id            URL-tauglich, eindeutig (Deep-Link lernen.html?r=<id>)
+//   id            URL-tauglich, eindeutig (Deep-Link lernen-hilfe.html?r=<id>)
 //   titel         redaktioneller Titel (nicht zwingend der Original-Seitentitel)
 //   url           VERIFIZIERT erreichbar; null nur bei typ 'intern' (Platzhalter)
 //   typ           'video' | 'artikel' | 'doku' | 'kurs' | 'podcast' | 'intern'

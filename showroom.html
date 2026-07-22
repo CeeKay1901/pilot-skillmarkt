@@ -33,13 +33,6 @@
     .sr-desc { display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
     .modal-body .sr-desc { display: block; overflow: visible; }
 
-    /* Kontext-Orientierung: eine ruhige Zeile im weißen Erklär-Band (ersetzt den Toggle) */
-    .sr-orient {
-      max-width: var(--max-w); margin: 0 auto; padding: 1.6rem var(--pad-d);
-      font-size: 1.45rem; line-height: 1.6; color: var(--c-gray-m);
-    }
-    @media (max-width: 767px) { .sr-orient { padding: 1.4rem var(--pad-m); } }
-
     /* Feedback-Geste an das kanonische Vote-Muster angeglichen (LU.vote + Zähl-Chip),
        damit die „Will ich auch"-Reaktion aussieht wie die Zustimmungs-Votes in
        hilfe/lernen. Speicherung (vote:reaktion:<id>) und Logik bleiben unverändert. */
@@ -51,6 +44,12 @@
       padding: .1rem .8rem; min-width: 2.6rem; text-align: center;
     }
     .sr-react.-on .sr-react-count { background: rgba(38,38,38,.15); }
+
+    /* UX: Touch-Trefffläche ≥44px (WCAG 2.5.5), analog zur Vote-Geste in Lernen & Hilfe —
+       min-height statt größerem Padding, damit das Karten-Layout nicht springt. */
+    @media (hover: none) and (pointer: coarse) {
+      .sr-react { min-height: 4.4rem; padding-top: .9rem; padding-bottom: .9rem; }
+    }
   </style>
 </head>
 <body>
@@ -81,10 +80,25 @@
     </div>
   </section>
 
-  <!-- KONTEXT-ORIENTIERUNG: eine knappe Zeile, was die Seite ist (statt aufklappbarem Erklär-Block) -->
-  <div class="getting-started">
-    <p class="sr-orient">Showroom heißt: echte Team-Tools und Beispiel-Projekte ansehen, die ehrliche Geschichte dahinter lesen und mit den verlinkten Bausteinen selbst nachbauen.</p>
-  </div>
+  <!-- KURZ ERKLÄRT (E10): einheitliches Erklär-Modul direkt unter dem Hero (ersetzt den alten Ein-Satz-Intro) -->
+  <section class="area-intro" aria-label="Kurz erklärt">
+    <div class="area-intro-inner">
+      <div class="area-intro-grid">
+        <div class="area-intro-part">
+          <p class="area-intro-label">Was ist das?</p>
+          <p class="area-intro-text">Eine Galerie von Projekten zum Anklicken — echte Werkzeuge, die im Team schon laufen, und illustrative Beispiel-Projekte, jeweils mit der ehrlichen Geschichte dahinter: Ausgangsproblem, erster Prompt, Stolperstein, Ergebnis.</p>
+        </div>
+        <div class="area-intro-part">
+          <p class="area-intro-label">Wofür nutze ich es?</p>
+          <p class="area-intro-text">Wenn du sehen willst, was mit eigenem Bauen realistisch drin ist, und Anregung für dein nächstes Media-, Account-, Kreations-, Strategie- oder Data-Projekt suchst. Jedes Projekt zeigt dir nicht nur das Ergebnis, sondern auch, wie du es selbst nachbaust.</p>
+        </div>
+        <div class="area-intro-part">
+          <p class="area-intro-label">So fange ich an.</p>
+          <p class="area-intro-text">Filter die Projekte nach Säule, Art und Aufwand, öffne „Details“ für die ganze Geschichte samt Nachbau-Anleitung — und folg den verlinkten Bausteinen, um selbst loszulegen. <a class="area-intro-link" href="skills.html?view=explainer">Was ist ein Skill?</a></p>
+        </div>
+      </div>
+    </div>
+  </section>
 
   <!-- PROJEKT DES MONATS (Spotlight) -->
   <section class="sr-spotlight" aria-labelledby="sr-spot-h">
@@ -381,7 +395,7 @@
         <div class="sr-facts">
           <div><span class="sr-fact-label">Aufwand</span><div class="sr-fact-val">${escHtml(fb.dauer || item.aufwand)}</div></div>
           <div><span class="sr-fact-label">Von</span><div class="sr-fact-val">${escHtml(item.persona)}${rolle ? ' · ' + escHtml(rolle) : ''}</div></div>
-          <div><span class="sr-fact-label">Genutzte Skills</span><div class="sr-fact-val">${(fb.skills || []).map(escHtml).join(', ') || '—'}</div></div>
+          <div><span class="sr-fact-label">Genutzte Skills</span><div class="sr-fact-val">${(fb.skills || []).map(id => { const s = SKILLS.find(x => x.id === id); return escHtml(s ? s.name : id); }).join(', ') || '—'}</div></div>
           <div><span class="sr-fact-label">Prompts &amp; Bausteine</span><div class="sr-fact-val">${(fb.prompts || []).length} Prompts · ${(fb.bausteine || []).length} Bausteine</div></div>
         </div>
         <div class="sr-actions" style="margin-top:1.6rem">

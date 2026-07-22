@@ -69,8 +69,8 @@
   const fmtE=n=>isFinite(n)?n.toLocaleString('de-DE',{style:'currency',currency:'EUR',maximumFractionDigits:2}):'–';
   const fmtN=n=>isFinite(n)?Math.round(n).toLocaleString('de-DE'):'–';
   function calc(){
-    const reach=+document.getElementById('reach').value||0;
-    const tkp=+document.getElementById('tkp').value||0;
+    const reach=Math.max(0,+document.getElementById('reach').value||0);
+    const tkp=Math.max(0,+document.getElementById('tkp').value||0);
     const waste=Math.min(100,Math.max(0,+document.getElementById('waste').value||0));
     const cost=reach/1000*tkp;
     const net=reach*(1-waste/100);

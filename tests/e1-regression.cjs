@@ -194,34 +194,85 @@ async function runViewport(browser, vp) {
   await page.keyboard.press('Escape');
   await page.waitForTimeout(300);
 
-  // ---------- (8) View-Wechsel 'Was sind Skills?' und 'Skill bauen' ----------
-  await page.click('#nav-explainer');
-  await page.waitForTimeout(400);
-  const explainerVisible = await page.evaluate(() => {
-    const v = document.getElementById('view-explainer');
-    return !!v && !v.hidden && v.offsetHeight > 0;
+  // ---------- (8) View-Wechsel via seiten-lokale Sub-Tabs 'Was sind Skills?' und 'Skill bauen' ----------
+  // E10 Stage 1 (Nav-Verlagerung): „Was sind Skills?"/„Skill bauen" sind KEINE
+  // globalen Header-Nav-Peers (#nav-explainer/#nav-builder) mehr, sondern
+  // seiten-lokale Sub-Tabs (#subtab-*) in einer Tablist über dem Katalog.
+  // nav-catalog bleibt global im Header (HARTE REGEL: aktive IDs im DOM).
+  const navPeerState = await page.evaluate(() => {
+    const header = document.querySelector('.site-header .main-nav');
+    return {
+      headerHasExplainer: !!(header && header.querySelector('#nav-explainer')),
+      headerHasBuilder: !!(header && header.querySelector('#nav-builder')),
+      hasGlobalCatalog: !!document.querySelector('.site-header #nav-catalog'),
+      hasSubtabCatalog: !!document.getElementById('subtab-catalog'),
+      hasSubtabExplainer: !!document.getElementById('subtab-explainer'),
+      hasSubtabBuilder: !!document.getElementById('subtab-builder'),
+    };
   });
+  // (a) kein globaler Explainer/Builder-Peer mehr; (b) nav-catalog global vorhanden.
+  check('08a_nav_peers_moved_to_subtabs',
+    !navPeerState.headerHasExplainer && !navPeerState.headerHasBuilder
+      && navPeerState.hasGlobalCatalog && navPeerState.hasSubtabCatalog
+      && navPeerState.hasSubtabExplainer && navPeerState.hasSubtabBuilder,
+    navPeerState);
+
+  // (c) Klick auf den Sub-Tab schaltet den View + setzt den Tab aktiv (aria-selected).
+  await page.click('#subtab-explainer');
+  await page.waitForTimeout(400);
+  const explainerState = await page.evaluate(() => {
+    const v = document.getElementById('view-explainer');
+    const t = document.getElementById('subtab-explainer');
+    return {
+      visible: !!v && !v.hidden && v.offsetHeight > 0,
+      tabActive: !!t && t.getAttribute('aria-selected') === 'true' && t.classList.contains('active'),
+    };
+  });
+  const explainerVisible = explainerState.visible && explainerState.tabActive;
   // ---------- (10) Bundle-Download-Buttons vorhanden (im Explainer-View) ----------
   const bundleInfo = await page.evaluate(() => ({
     starter: !!document.querySelector('[onclick*="downloadStarterPack"]'),
     power: !!document.querySelector('[onclick*="downloadPowerPack"]'),
   }));
-  await page.click('#nav-builder');
+  await page.click('#subtab-builder');
   await page.waitForTimeout(400);
   const builderVisible = await page.evaluate(() => {
     const v = document.getElementById('view-builder');
-    return !!v && !v.hidden && v.offsetHeight > 0;
+    const t = document.getElementById('subtab-builder');
+    return !!v && !v.hidden && v.offsetHeight > 0
+      && !!t && t.getAttribute('aria-selected') === 'true';
   });
-  await page.click('#nav-catalog');
+  await page.click('#subtab-catalog');
   await page.waitForTimeout(400);
   const catalogBack = await page.evaluate(() => {
     const v = document.getElementById('view-catalog');
-    return !!v && !v.hidden;
+    const t = document.getElementById('subtab-catalog');
+    return !!v && !v.hidden && !!t && t.getAttribute('aria-selected') === 'true';
   });
   check('08_view_switch_explainer_builder',
     explainerVisible && builderVisible && catalogBack,
-    { explainerVisible, builderVisible, catalogBack });
+    { explainerState, builderVisible, catalogBack });
   check('10_bundle_download_buttons', bundleInfo.starter && bundleInfo.power, bundleInfo);
+
+  // ---------- (8d) Deep-Link ?view=explainer öffnet den Explainer-Sub-Tab aktiv ----------
+  await page.goto('about:blank');
+  await page.goto(TARGET + '?view=explainer', { waitUntil: 'load' });
+  await page.waitForTimeout(800);
+  const viewParamState = await page.evaluate(() => {
+    const v = document.getElementById('view-explainer');
+    const t = document.getElementById('subtab-explainer');
+    return {
+      explainerVisible: !!v && !v.hidden && v.offsetHeight > 0,
+      tabActive: !!t && t.getAttribute('aria-selected') === 'true' && t.classList.contains('active'),
+    };
+  });
+  check('08d_view_param_opens_explainer',
+    viewParamState.explainerVisible && viewParamState.tabActive, viewParamState);
+  // Zurück auf Katalog-Grundzustand für die restlichen Checks
+  await page.goto('about:blank');
+  await page.goto(TARGET, { waitUntil: 'load' });
+  await page.waitForSelector('#skills-grid .skill-card', { timeout: 10000 });
+  await page.waitForTimeout(400);
 
   // ---------- (9) Favorit setzen ----------
   await page.locator('#skills-grid .skill-card .fav-btn').first().click();

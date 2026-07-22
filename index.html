@@ -5,7 +5,7 @@
   („Was willst du tun?“) IST der Hero: eine dunkle Bühne mit neun Ziel-Kacheln direkt im
   Sichtfeld; alle Ziele sind live und verlinken sofort ins passende Werkzeug. Danach wird es
   Sektion für Sektion ruhiger: asymmetrische
-  Bereichs-Landkarte (Katalog groß und solide, alle sieben Bereiche live),
+  Bereichs-Landkarte (Katalog groß und solide, alle sechs Bereiche live),
   editoriale Doppelspalte aus „Meine Reise“ und „Neu dazugekommen“, Getting-Started als
   nummerierte Zeile — Rhythmus statt Karten-Schema F.
 -->
@@ -36,7 +36,7 @@
     })();
   </script>
   <title>pilot AI Marketplace — Ein Ort für alles, was ihr mit KI baut</title>
-  <meta name="description" content="Die Startseite des internen pilot AI Marketplace: Skill-Katalog, Prompt-Sammlung, Hilfe-Center, Lernen, Asset-Bibliothek, Baukasten und Showroom — Citizen Coding für die pilot Agenturgruppe.">
+  <meta name="description" content="Die Startseite des internen pilot AI Marketplace: Skill-Katalog, Prompt-Sammlung, Lernen & Hilfe, Asset-Bibliothek, Baukasten und Showroom — Citizen Coding für die pilot Agenturgruppe.">
   <meta name="theme-color" content="#262626">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="pilot AI Marketplace">
@@ -130,7 +130,7 @@
       .rt-foot { padding-top: .8rem; }
     }
 
-    /* ===== BEREICHS-LANDKARTE (asymmetrisch: 1 fertig, 6 in Arbeit) ===== */
+    /* ===== BEREICHS-LANDKARTE (asymmetrisch: Katalog groß, fünf Bereiche im Raster-Takt — alle sechs live) ===== */
     .areas { padding: 7.6rem 0 7.2rem; border-bottom: 1px solid var(--line); }
     .areas-inner { max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-d); }
     .areas h2 { font-size: var(--fs-h2); font-weight: var(--fw-semi); letter-spacing: -.02em; margin: .6rem 0 1rem; }
@@ -140,7 +140,7 @@
       margin-top: 3.6rem;
     }
     .area-card { border-radius: var(--r-lg); padding: 2.4rem 2.4rem 2.2rem; display: flex; flex-direction: column; gap: .8rem; }
-    /* Fertig = solide Fläche mit gelber Kante; in Arbeit = gestrichelte Kontur */
+    /* Live-Bereich = solide Fläche mit gelber Kante */
     .area-live {
       grid-row: 1 / span 3;
       background: var(--paper); border: 1px solid var(--line);
@@ -148,7 +148,6 @@
       box-shadow: var(--shadow-md);
       padding: 3rem 3rem 2.8rem;
     }
-    .area-soon { background: transparent; border: 1px dashed var(--line-strong); }
     /* Zweiter Live-Bereich (Prompt-Sammlung): solide wie der Katalog, aber im Raster-Takt */
     .area-live-sm {
       background: var(--paper); border: 1px solid var(--line);
@@ -162,7 +161,6 @@
     .area-head { display: flex; align-items: center; gap: 1.2rem; }
     .area-ic { color: var(--c-black); display: flex; }
     .area-ic .lu { width: 2.2rem; height: 2.2rem; }
-    .area-soon .area-ic { color: var(--c-gray-d); }
     .area-card h3 { font-size: 1.9rem; font-weight: var(--fw-semi); letter-spacing: -.01em; }
     .area-live h3 { font-size: 2.4rem; }
     .area-pill {
@@ -172,7 +170,6 @@
       border-radius: var(--r-pill); padding: .3rem 1rem;
     }
     .area-pill.-live { background: var(--c-yellow); color: var(--c-black); }
-    .area-pill.-soon { border: 1px solid var(--line-strong); color: var(--c-gray-m); }
     .area-text { font-size: 1.45rem; line-height: 1.55; color: var(--c-ink-body); }
     .area-live .area-text { font-size: 1.55rem; }
     .area-count { display: flex; align-items: baseline; gap: 1rem; margin: 1.6rem 0 .2rem; }
@@ -321,11 +318,11 @@
             <span class="rt-hint">Echte Projekte aus dem Team — zum Anklicken.</span>
             <span class="rt-foot"><span class="rt-dest">Zum Showroom</span></span>
           </a>
-          <a class="rt-card" href="hilfe.html">
+          <a class="rt-card" href="lernen-hilfe.html#befehle">
             <span class="rt-ic"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24"/><path d="m14.83 9.17 4.24-4.24"/><path d="m14.83 14.83 4.24 4.24"/><path d="m9.17 14.83-4.24 4.24"/><circle cx="12" cy="12" r="4"/></svg></span>
             <span class="rt-label">Ich hänge fest</span>
             <span class="rt-hint">Befehle, Begriffe und Lösungen für typische Blocker.</span>
-            <span class="rt-foot"><span class="rt-dest">Zum Hilfe-Center</span></span>
+            <span class="rt-foot"><span class="rt-dest">Zu Lernen &amp; Hilfe</span></span>
           </a>
           <a class="rt-card" href="bibliothek.html">
             <span class="rt-ic"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg></span>
@@ -339,11 +336,11 @@
             <span class="rt-hint">Fertige Bausteine, die Claude für dich anpasst — mit Live-Vorschau.</span>
             <span class="rt-foot"><span class="rt-dest">Zum Baukasten</span></span>
           </a>
-          <a class="rt-card" href="lernen.html">
+          <a class="rt-card" href="lernen-hilfe.html#ressourcen">
             <span class="rt-ic"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg></span>
             <span class="rt-label">KI verstehen</span>
             <span class="rt-hint">Geprüfte Videos, Doku und Kurse — gefiltert nach deiner Zeit.</span>
-            <span class="rt-foot"><span class="rt-dest">Zu den Ressourcen</span></span>
+            <span class="rt-foot"><span class="rt-dest">Zu Lernen &amp; Hilfe</span></span>
           </a>
           <a class="rt-card is-guide" href="skills.html">
             <span class="rt-ic"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z"/></svg></span>
@@ -365,8 +362,8 @@
     <section class="areas" id="bereiche" aria-labelledby="areas-h">
       <div class="areas-inner">
         <p class="section-label">Die Landkarte</p>
-        <h2 id="areas-h">Ein Marketplace, sieben Bereiche</h2>
-        <p class="areas-sub">Skill-Katalog, Prompt-Sammlung, Hilfe-Center, Lernen, die Asset-Bibliothek, der Baukasten und der Showroom sind alle sieben live und wachsen weiter — nichts mehr in Arbeit.</p>
+        <h2 id="areas-h">Ein Marketplace, sechs Bereiche</h2>
+        <p class="areas-sub">Skill-Katalog, Prompt-Sammlung, Lernen &amp; Hilfe, die Asset-Bibliothek, der Baukasten und der Showroom sind alle sechs live und wachsen weiter — nichts mehr in Arbeit.</p>
 
         <div class="areas-grid">
           <article class="area-card area-live anim-reveal">
@@ -416,47 +413,24 @@
 
           <article class="area-card area-live-sm anim-reveal">
             <div class="area-head">
-              <span class="area-ic"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24"/><path d="m14.83 9.17 4.24-4.24"/><path d="m14.83 14.83 4.24 4.24"/><path d="m9.17 14.83-4.24 4.24"/><circle cx="12" cy="12" r="4"/></svg></span>
-              <h3>Hilfe-Center</h3>
+              <span class="area-ic"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/></svg></span>
+              <h3>Lernen &amp; Hilfe</h3>
               <span class="area-pill -live">Live</span>
             </div>
             <div class="area-count">
-              <span class="area-count-num" id="area-hilfe-count">0</span>
-              <span class="area-count-label">Befehle &amp; Kniffe</span>
+              <span class="area-count-num" id="area-lernenhilfe-count">0</span>
+              <span class="area-count-label">Ressourcen &amp; Hilfe-Einträge</span>
             </div>
-            <p class="area-meta" id="area-hilfe-meta"></p>
-            <p class="area-text">Befehle und Kniffe als Team-Ranking — deine Stimme sortiert live mit. Dazu ein Glossar in einfacher Sprache und Schritt-für-Schritt-Lösungen für die häufigsten Blocker.</p>
-            <a class="area-spot" href="hilfe.html?befehl=clear">
+            <p class="area-meta" id="area-lernenhilfe-meta"></p>
+            <p class="area-text">Alles zum Verstehen und Weiterkommen an einem Ort: geprüfte Lern-Ressourcen als Kompass, Befehle und Kniffe im Team-Ranking, ein Glossar in einfacher Sprache und Schritt-für-Schritt-Lösungen für die häufigsten Blocker.</p>
+            <a class="area-spot" href="lernen-hilfe.html?befehl=clear">
               <span class="area-spot-label">Leuchtturm</span>
               <span class="area-spot-name">/clear</span>
               <p class="area-spot-tag">Der wichtigste Handgriff, wenn Claude „komisch wird“ — mit Mini-Terminal-Demo</p>
-              <span id="area-hilfe-spot-votes"></span>
+              <span id="area-lernenhilfe-spot-votes"></span>
             </a>
             <div class="area-cta-row">
-              <a class="c-cta -yellow-bg" href="hilfe.html">Hilfe-Center öffnen</a>
-            </div>
-          </article>
-
-          <article class="area-card area-live-sm anim-reveal">
-            <div class="area-head">
-              <span class="area-ic"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/></svg></span>
-              <h3>Lernen</h3>
-              <span class="area-pill -live">Live</span>
-            </div>
-            <div class="area-count">
-              <span class="area-count-num" id="area-lernen-count">0</span>
-              <span class="area-count-label">Lern-Ressourcen</span>
-            </div>
-            <p class="area-meta" id="area-lernen-meta"></p>
-            <p class="area-text">Kein eigener Kurs — ein Kompass: geprüfte Videos, Doku, Artikel, Kurse und Podcasts, gefiltert nach Niveau, Dauer und Sprache. Jede Karte sagt dir in einem Satz, für wen sie sich lohnt.</p>
-            <a class="area-spot" href="lernen.html?r=code-grundkurs-keil">
-              <span class="area-spot-label">Start hier</span>
-              <span class="area-spot-name">Claude-Code-Grundkurs</span>
-              <p class="area-spot-tag">Deutsches Einsteiger-Video ohne Entwickler-Jargon — alles Wichtige in 25 Minuten</p>
-              <span id="area-lernen-spot-rating"></span>
-            </a>
-            <div class="area-cta-row">
-              <a class="c-cta -yellow-bg" href="lernen.html">Lernen öffnen</a>
+              <a class="c-cta -yellow-bg" href="lernen-hilfe.html">Lernen &amp; Hilfe öffnen</a>
             </div>
           </article>
 
@@ -555,14 +529,14 @@
               <span class="news-date">17. Juli</span>
               <div>
                 <p class="news-title">Der Lern-Bereich ist da</p>
-                <p class="news-text">Kein eigener Kurs — ein Kompass: 24 geprüfte Lern-Ressourcen (Videos, Doku, Artikel, Kurse, Podcasts) plus 3 interne Platzhalter, gefiltert nach deiner Zeit. Jede Karte sagt in einem Satz, für wen sie sich lohnt. <a href="lernen.html">Zum Lern-Bereich</a></p>
+                <p class="news-text">Kein eigener Kurs — ein Kompass: 24 geprüfte Lern-Ressourcen (Videos, Doku, Artikel, Kurse, Podcasts) plus 3 interne Platzhalter, gefiltert nach deiner Zeit. Jede Karte sagt in einem Satz, für wen sie sich lohnt. <a href="lernen-hilfe.html#ressourcen">Zu Lernen &amp; Hilfe</a></p>
               </div>
             </li>
             <li class="news-item">
               <span class="news-date">17. Juli</span>
               <div>
                 <p class="news-title">Der Showroom ist da</p>
-                <p class="news-text">Echte Projekte aus dem Team zum Anklicken — mit der ehrlichen Geschichte, wie sie entstanden sind, und allem zum Nachbauen. <a href="showroom.html">Zum Showroom</a>, wer festhängt, findet Rat im <a href="hilfe.html">Hilfe-Center</a>.</p>
+                <p class="news-text">Echte Projekte aus dem Team zum Anklicken — mit der ehrlichen Geschichte, wie sie entstanden sind, und allem zum Nachbauen. <a href="showroom.html">Zum Showroom</a>, wer festhängt, findet Rat unter <a href="lernen-hilfe.html">Lernen &amp; Hilfe</a>.</p>
               </div>
             </li>
             <li class="news-item">
@@ -669,7 +643,7 @@
       const skill = SKILLS.find(s => s.id === 'erste-schritte');
       if (!el || !skill) return;
       const e = getEffectiveRating(skill);
-      el.innerHTML = renderStars(e.average) + ` <span class="rating-text">${e.average.toFixed(1)} · ${e.count} Stimmen</span>`;
+      el.innerHTML = renderStars(e.average) + ` <span class="rating-text">${e.average.toFixed(1)} · ${e.count} Bewertungen</span>`;
     })();
 
     // Prompt-Karte: großer Zähler + Leuchtturm-Bewertung.
@@ -687,37 +661,25 @@
       const ur = getRating(p.id, 'prompt');
       if (ur > 0) { sum += ur; cnt++; }
       const avg = cnt > 0 ? sum / cnt : 0;
-      el.innerHTML = renderStars(avg) + ` <span class="rating-text">${avg.toFixed(1)} · ${cnt} Stimmen</span>`;
+      el.innerHTML = renderStars(avg) + ` <span class="rating-text">${avg.toFixed(1)} · ${cnt} Bewertungen</span>`;
     })();
 
-    // Hilfe-Center-Karte + Hero-Zähler: data/befehle.js + data/glossar.js laden per
-    // defer und sind erst NACH diesem Script ausgeführt — deshalb DOMContentLoaded.
-    // Auch hier gilt: nur real Gezähltes (BEFEHLE, GLOSSAR, FAQ) — nichts erfunden.
+    // Lernen-&-Hilfe-Karte + Zähler (E10-Merge aus Lernen + Hilfe): data/ressourcen.js
+    // + data/befehle.js + data/glossar.js laden per defer und sind erst NACH diesem
+    // Script ausgeführt — deshalb DOMContentLoaded. Alle Zahlen real gezählt
+    // (RESSOURCEN, BEFEHLE, GLOSSAR, FAQ) — nichts erfunden oder hardcodiert.
     document.addEventListener('DOMContentLoaded', () => {
-      if (typeof BEFEHLE === 'undefined' || typeof GLOSSAR === 'undefined' || typeof FAQ === 'undefined') return;
-      const hilfeCount = document.getElementById('area-hilfe-count');
-      if (hilfeCount) animateCount(hilfeCount, BEFEHLE.length, 1100);
-      const hilfeMeta = document.getElementById('area-hilfe-meta');
-      if (hilfeMeta) hilfeMeta.textContent = `dazu ${GLOSSAR.length} Glossar-Begriffe · ${FAQ.length} Schritt-für-Schritt-Lösungen`;
-      // Leuchtturm-Hinweis: Stimmen wie auf hilfe.html gezählt (Seed + eigene, vote:befehl:*)
-      const spotVotes = document.getElementById('area-hilfe-spot-votes');
+      if (typeof RESSOURCEN === 'undefined' || typeof BEFEHLE === 'undefined'
+          || typeof GLOSSAR === 'undefined' || typeof FAQ === 'undefined') return;
+      const count = document.getElementById('area-lernenhilfe-count');
+      const total = RESSOURCEN.length + BEFEHLE.length + GLOSSAR.length + FAQ.length;
+      if (count) animateCount(count, total, 1100);
+      const meta = document.getElementById('area-lernenhilfe-meta');
+      if (meta) meta.textContent = `${RESSOURCEN.length} Lern-Ressourcen · ${BEFEHLE.length} Befehle · ${GLOSSAR.length} Glossar-Begriffe · ${FAQ.length} Schritt-für-Schritt-Lösungen`;
+      // Leuchtturm /clear: Stimmen wie auf lernen-hilfe.html gezählt (Seed + eigene, vote:befehl:*)
+      const spotVotes = document.getElementById('area-lernenhilfe-spot-votes');
       const lh = BEFEHLE.find(b => b.id === 'clear');
       if (spotVotes && lh) spotVotes.innerHTML = `<span class="rating-text">${getVotes('befehl', lh.id, lh.votes)} × „Hat mir geholfen“</span>`;
-    });
-
-    // Lernen-Karte + Hero-Zähler (E5): data/ressourcen.js lädt per defer — deshalb
-    // ebenfalls DOMContentLoaded. Nur real Gezähltes aus RESSOURCEN.
-    document.addEventListener('DOMContentLoaded', () => {
-      if (typeof RESSOURCEN === 'undefined') return;
-      const lernenCount = document.getElementById('area-lernen-count');
-      if (lernenCount) animateCount(lernenCount, RESSOURCEN.length, 1100);
-      const lernenMeta = document.getElementById('area-lernen-meta');
-      if (lernenMeta) lernenMeta.textContent = `davon ${RESSOURCEN.filter(r => r.sprache === 'de').length} auf Deutsch · ${RESSOURCEN.filter(r => r.dauerMin <= 15).length} unter 15 Minuten`;
-      // Leuchtturm: Team-Bewertung der „Start hier“-Ressource ist reiner Seed
-      // (lernen.html hat bewusst keine Sterne-Eingabe) — deshalb direkt anzeigen.
-      const spotRating = document.getElementById('area-lernen-spot-rating');
-      const lr = RESSOURCEN.find(r => r.id === (typeof RESSOURCE_START !== 'undefined' ? RESSOURCE_START : 'code-grundkurs-keil'));
-      if (spotRating && lr && lr.rating) spotRating.innerHTML = renderStars(lr.rating.average) + ` <span class="rating-text">${lr.rating.average.toFixed(1)} · ${lr.rating.count} Stimmen</span>`;
     });
 
     // Asset-Bibliothek-Karte + Hero-Zähler (E6): data/assets.js lädt per defer —
@@ -732,7 +694,7 @@
       // bibliothek.html gepflegt) — hier direkt aus dem Seed angezeigt.
       const spotRating = document.getElementById('area-bibliothek-spot-rating');
       const lh = ASSETS.find(a => a.id === 'inter');
-      if (spotRating && lh && lh.rating) spotRating.innerHTML = renderStars(lh.rating.average) + ` <span class="rating-text">${lh.rating.average.toFixed(1)} · ${lh.rating.count} Stimmen</span>`;
+      if (spotRating && lh && lh.rating) spotRating.innerHTML = renderStars(lh.rating.average) + ` <span class="rating-text">${lh.rating.average.toFixed(1)} · ${lh.rating.count} Bewertungen</span>`;
     });
 
     // Baukasten-Karte + Zähler (E7): data/bausteine.js lädt per defer — deshalb
@@ -747,7 +709,7 @@
       // auf baukasten.html gepflegt) — hier direkt aus dem Seed angezeigt.
       const spotRating = document.getElementById('area-baukasten-spot-rating');
       const lh = BAUSTEINE.find(b => b.id === 'header-hero');
-      if (spotRating && lh && lh.rating) spotRating.innerHTML = renderStars(lh.rating.average) + ` <span class="rating-text">${lh.rating.average.toFixed(1)} · ${lh.rating.count} Stimmen</span>`;
+      if (spotRating && lh && lh.rating) spotRating.innerHTML = renderStars(lh.rating.average) + ` <span class="rating-text">${lh.rating.average.toFixed(1)} · ${lh.rating.count} Bewertungen</span>`;
     });
 
     // Showroom-Karte + Zähler (E8): data/cases.js lädt per defer — deshalb

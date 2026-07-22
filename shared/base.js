@@ -88,13 +88,12 @@ function lsKeysWithPrefix(prefix) {
 
 /* ===== NAV & FOOTER (renderNav) =====
    Header + Footer werden per JS injiziert — eine Quelle für alle Seiten.
-   Die Nav führt nur zu Fertigem: Katalog, Prompts, Hilfe, Lernen. Kommende
+   Die Nav führt nur zu Fertigem: Katalog, Prompts, Lernen & Hilfe. Kommende
    Sektionen (Baukasten, Showroom, Mehr) erscheinen hier erst, wenn sie
    live sind. Das Logo verlinkt auf die Startseite.
    opts (alle optional):
      sharedOnclick: { katalog: "showView('catalog')" }  — Seite ersetzt den
                     Link durch einen Button (z.B. View-Wechsel statt Reload)
-     extraItems:    [{ id, label, onclick }] — seitenlokale Nav-Punkte
      search:        { id, label, placeholder } — Suchfeld im Header
      footerExtra:   [{ label, onclick }] — seitenlokale Footer-Buttons
      footerClaim:   eigener Claim-Satz im Footer */
@@ -116,19 +115,20 @@ function renderNav(activePage, opts) {
 
   // E6-Umbau (Plan §2.4): Mit der 5. Sektion (bibliothek.html) wird die Leiste
   // umgebaut. Primäre Direkt-Links bleiben Katalog/Prompts/Hilfe; die sekundären
-  // Sektionen (Lernen, Asset-Bibliothek) wandern in ein „Mehr ▾“-Dropdown
+  // Sektionen (Asset-Bibliothek u.a.) wandern in ein „Mehr ▾“-Dropdown
   // (Desktop: Klick öffnet, Esc/Außenklick schließt, aria-expanded). Mobil
   // (≤1023px) lösen die CSS-Regeln das Dropdown flach in die scrollende Leiste
-  // auf. HARTE REGRESSIONS-GARANTIE: nav-catalog/nav-prompts/nav-hilfe/nav-lernen
-  // (+ neu nav-bibliothek) stehen IMMER im DOM (auch im geschlossenen Dropdown),
-  // das aktive Item trägt class="active" + aria-current="page" + exakten Labeltext.
+  // auf. HARTE REGRESSIONS-GARANTIE: nav-catalog/nav-prompts/nav-hilfe
+  // (+ nav-bibliothek/nav-baukasten/nav-showroom im „Mehr“-Dropdown) stehen IMMER
+  // im DOM, das aktive Item trägt class="active" + aria-current="page" + exakten
+  // Labeltext. E10-Merge: „Lernen & Hilfe“ trägt weiter die ID nav-hilfe (führt
+  // jetzt auf lernen-hilfe.html); der frühere nav-lernen-Eintrag ist entfallen.
   const sharedItems = [
     { id: 'nav-catalog', page: 'katalog', label: 'Katalog', href: 'skills.html' },
     { id: 'nav-prompts', page: 'prompts', label: 'Prompts', href: 'prompts.html' },
-    { id: 'nav-hilfe', page: 'hilfe', label: 'Hilfe', href: 'hilfe.html' }
+    { id: 'nav-hilfe', page: 'hilfe', label: 'Lernen & Hilfe', href: 'lernen-hilfe.html' }
   ];
   const sharedMoreItems = [
-    { id: 'nav-lernen', page: 'lernen', label: 'Lernen', href: 'lernen.html' },
     { id: 'nav-bibliothek', page: 'bibliothek', label: 'Asset-Bibliothek', href: 'bibliothek.html' },
     { id: 'nav-baukasten', page: 'baukasten', label: 'Baukasten', href: 'baukasten.html' },
     { id: 'nav-showroom', page: 'showroom', label: 'Showroom', href: 'showroom.html' }   // E8 (additiv, 4. Mehr-Eintrag)
@@ -145,9 +145,6 @@ function renderNav(activePage, opts) {
     return `<a class="${cls}" id="${it.id}" href="${it.href}"${roleAttr}${active ? ' aria-current="page"' : ''}>${it.label}</a>`;
   }
   const linkHtml = sharedItems.map(it => itemToHtml(it, false));
-  (opts.extraItems || []).forEach(it => {
-    linkHtml.push(`<button type="button" class="nav-link" id="${it.id}" onclick="${it.onclick}">${it.label}</button>`);
-  });
   // „Mehr ▾“-Dropdown mit den sekundären Sektionen. Der Button bekommt aktiven
   // Look, wenn die aktive Seite in den moreItems liegt (lernen/bibliothek).
   const moreActive = sharedMoreItems.some(it => it.page === activePage);
@@ -193,7 +190,7 @@ function renderNav(activePage, opts) {
         <nav class="footer-nav" aria-label="Footer">
           ${footerExtra}
           <button type="button" id="footer-about" onclick="openAboutModal()">Über diese Seite</button>
-          <a href="hilfe.html" id="footer-hilfe"><svg class="brand-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24"/><path d="m14.83 9.17 4.24-4.24"/><path d="m14.83 14.83 4.24 4.24"/><path d="m9.17 14.83-4.24 4.24"/><circle cx="12" cy="12" r="4"/></svg>Du hängst fest? Zum Hilfe-Center</a>
+          <a href="lernen-hilfe.html" id="footer-hilfe"><svg class="brand-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24"/><path d="m14.83 9.17 4.24-4.24"/><path d="m14.83 14.83 4.24 4.24"/><path d="m9.17 14.83-4.24 4.24"/><circle cx="12" cy="12" r="4"/></svg>Du hängst fest? Zu Lernen &amp; Hilfe</a>
           <a href="https://github.com/CeeKay1901/pilot-skillmarkt" target="_blank" rel="noopener"><svg class="brand-ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>Repo auf GitHub</a>
           <a href="https://code.claude.com/docs" target="_blank" rel="noopener"><svg class="brand-ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21 10.5h3v3h-3v3h-1.5v3H18v-3h-1.5v3H15v-3H9v3H7.5v-3H6v3H4.5v-3H3v-3H0v-3h3v-6h18Zm-15 0h1.5v-3H6Zm10.5 0H18v-3h-1.5z"/></svg>Claude-Code-Doku</a>
         </nav>
@@ -1308,15 +1305,15 @@ const GSEARCH_GROUPS = [
     title: it => it.name, sub: it => it.tagline,
     fields: it => [[it.name || '', 5], [(it.tags || []).join(' '), 3], [it.tagline || '', 2], [it.promptText || '', 1]] },
   { key: 'befehl', label: 'Befehle', glob: 'BEFEHLE',
-    href: it => 'hilfe.html?befehl=' + encodeURIComponent(it.id),
+    href: it => 'lernen-hilfe.html?befehl=' + encodeURIComponent(it.id),
     title: it => it.cmd, sub: it => it.nutzen,
     fields: it => [[it.cmd || '', 5], [it.nutzen || '', 3], [it.beispiel || '', 1], [it.tipp || '', 1]] },
   { key: 'begriff', label: 'Begriffe', glob: 'GLOSSAR',
-    href: it => 'hilfe.html?begriff=' + encodeURIComponent(it.id),
+    href: it => 'lernen-hilfe.html?begriff=' + encodeURIComponent(it.id),
     title: it => it.wort, sub: it => it.satz,
     fields: it => [[it.wort || '', 5], [it.satz || '', 2], [it.beispiel || '', 1], [it.tiefe || '', 1]] },
   { key: 'ressource', label: 'Ressourcen', glob: 'RESSOURCEN',
-    href: it => 'lernen.html?r=' + encodeURIComponent(it.id),
+    href: it => 'lernen-hilfe.html?r=' + encodeURIComponent(it.id),
     title: it => it.titel, sub: it => it.fuerDich || it.beschreibung,
     fields: it => [[it.titel || '', 5], [(it.tags || []).join(' '), 3], [it.beschreibung || '', 1], [it.fuerDich || '', 1]] },
   { key: 'asset', label: 'Assets', glob: 'ASSETS',

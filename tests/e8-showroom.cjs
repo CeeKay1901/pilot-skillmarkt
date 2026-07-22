@@ -395,7 +395,7 @@ async function runViewport(browser, vp) {
       hasCatalog: !!document.getElementById('nav-catalog'),
       hasPrompts: !!document.getElementById('nav-prompts'),
       hasHilfe: !!document.getElementById('nav-hilfe'),
-      hasLernen: !!document.getElementById('nav-lernen'),
+      // E10-Merge: nav-lernen ist entfallen (Lernen ging in „Lernen & Hilfe"/nav-hilfe auf).
       hasBibliothek: !!document.getElementById('nav-bibliothek'),
       hasBaukasten: !!document.getElementById('nav-baukasten'),
       hasMoreBtn: !!document.getElementById('nav-more-btn'),
@@ -407,7 +407,7 @@ async function runViewport(browser, vp) {
   });
   check('10_nav_showroom_active',
     navInfo.exists && navInfo.label === 'Showroom' && navInfo.active && navInfo.ariaCurrent === 'page'
-      && navInfo.hasCatalog && navInfo.hasPrompts && navInfo.hasHilfe && navInfo.hasLernen
+      && navInfo.hasCatalog && navInfo.hasPrompts && navInfo.hasHilfe
       && navInfo.hasBibliothek && navInfo.hasBaukasten
       && navInfo.hasMoreBtn && navInfo.moreHasShowroom && navInfo.moreHasBaukasten
       && navInfo.moreBtnActive && navInfo.footer,
@@ -496,7 +496,7 @@ async function runIndexChecks(browser) {
     navShowroom: !!document.getElementById('nav-showroom'),
     newsHasShowroom: [...document.querySelectorAll('.news-item .news-text a')].some(a => a.getAttribute('href') === 'showroom.html'),
     newsHasPrompts: [...document.querySelectorAll('.news-item .news-text a')].some(a => a.getAttribute('href') === 'prompts.html'),
-    newsHasLernen: [...document.querySelectorAll('.news-item .news-text a')].some(a => a.getAttribute('href') === 'lernen.html'),
+    newsHasLernen: [...document.querySelectorAll('.news-item .news-text a')].some(a => (a.getAttribute('href') || '').indexOf('lernen-hilfe.html') === 0),
     newsHasBibliothek: [...document.querySelectorAll('.news-item .news-text a')].some(a => a.getAttribute('href') === 'bibliothek.html'),
     newsHasBaukasten: [...document.querySelectorAll('.news-item .news-text a')].some(a => a.getAttribute('href') === 'baukasten.html'),
     newsCount: document.querySelectorAll('.news-item').length,
@@ -518,7 +518,7 @@ async function runIndexChecks(browser) {
   check('i4_area_card_clickable',
     indexInfo.areaCta && indexInfo.areaSpotHref === 'showroom.html?case=' + LEUCHTTURM
       && indexInfo.areaSpotReact.trim().length > 0 && indexInfo.navShowroom
-      && indexInfo.livePills === 7 && indexInfo.soonPills === 0,
+      && indexInfo.livePills === 6 && indexInfo.soonPills === 0,
     { areaCta: indexInfo.areaCta, areaSpotHref: indexInfo.areaSpotHref,
       areaSpotReact: indexInfo.areaSpotReact, navShowroom: indexInfo.navShowroom,
       livePills: indexInfo.livePills, soonPills: indexInfo.soonPills });
@@ -538,7 +538,7 @@ async function runIndexChecks(browser) {
 
   // Nav-Regression: nav-showroom auf allen Bestandsseiten vorhanden, nicht aktiv
   const navPages = {};
-  for (const p of ['skills.html', 'prompts.html', 'hilfe.html', 'lernen.html', 'bibliothek.html', 'baukasten.html']) {
+  for (const p of ['skills.html', 'prompts.html', 'lernen-hilfe.html', 'bibliothek.html', 'baukasten.html']) {
     await page.goto(INDEX_TARGET.replace(/index\.html.*$/, p), { waitUntil: 'load' });
     await page.waitForSelector('#nav-showroom', { timeout: 10000 }).catch(() => {});
     navPages[p] = await page.evaluate(() => {

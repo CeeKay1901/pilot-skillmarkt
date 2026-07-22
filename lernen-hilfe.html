@@ -1,0 +1,1743 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>pilot AI Marketplace — Lernen &amp; Hilfe</title>
+  <meta name="description" content="Ein Bereich für alles, was dich weiterbringt: geprüfte Lern-Ressourcen, das Befehle-Ranking für Claude Code und Langdock, ein Glossar, das jeden Begriff in einem Satz erklärt, und Schritt-für-Schritt-Antworten auf die häufigsten Blocker.">
+  <meta name="theme-color" content="#262626">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="pilot AI Marketplace">
+  <meta property="og:title" content="pilot AI Marketplace — Lernen &amp; Hilfe">
+  <meta property="og:description" content="Ressourcen, Befehle, Glossar und FAQ auf einer Seite. Wenn du festhängst, fehlt dir kein Talent — nur ein Handgriff. Hier findest du ihn.">
+  <meta property="og:url" content="https://ceekay1901.github.io/pilot-skillmarkt/lernen-hilfe.html">
+  <meta property="og:image" content="https://ceekay1901.github.io/pilot-skillmarkt/og-image.png">
+  <link rel="preload" href="assets/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="shared/base.css">
+  <style>
+    /* ============================================================
+       lernen-hilfe.html — Lernen & Hilfe (seitenspezifisch, E10-Merge
+       von lernen.html + hilfe.html). Gemeinsames Design-System liegt in
+       shared/base.css.
+
+       Vier Bereiche unter einer Sticky-Sub-Nav, in dieser Reihenfolge:
+         1) RESSOURCEN — editoriales Link-Regal (aus lernen.html):
+            2-spaltige Link-Karten, Filter Typ/Niveau/Dauer/Sprache +
+            Suche, bayesScore-Sortierung, Zeit-Schnellauswahl im Hero.
+         2) BEFEHLE & KNIFFE — dunkles, terminal-nahes Upvote-Ranking.
+         3) GLOSSAR — helles Nachschlagewerk mit Suche + A-Z-Sprungleiste.
+         4) FAQ — ruhiges Akkordeon.
+
+       Vote-Typen leben typisiert nebeneinander (vote:ressource / :befehl
+       / :begriff über die typ-expliziten Helfer aus base.js) — daher
+       BEWUSST OHNE seitenweites window.RatingConfig (würde alle drei in
+       einen Namespace zwingen). Details am Kopf des Seiten-Scripts.
+       ============================================================ */
+
+    /* ===== STICKY SUB-NAV (vier Ziele: Ressourcen · Befehle · Glossar · FAQ) ===== */
+    .pillar-nav {
+      position: sticky; top: var(--header-h); z-index: 60;
+      background: var(--paper);
+      box-shadow: 0 1px 0 var(--line), 0 6px 20px -14px rgba(38,38,38,.25);
+    }
+    .pillar-inner {
+      max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-d);
+      display: flex; gap: .4rem; overflow-x: auto; scrollbar-width: none;
+    }
+    .pillar-inner::-webkit-scrollbar { display: none; }
+    .pillar-link {
+      display: inline-flex; align-items: center; gap: .8rem;
+      padding: 1.3rem 1.6rem; font-size: 1.5rem; font-weight: 600;
+      color: var(--c-black); text-decoration: none; white-space: nowrap;
+      border-bottom: 3px solid transparent; transition: var(--trans);
+    }
+    .pillar-link:hover { border-bottom-color: var(--c-yellow); }
+    /* Scroll-Spy: der Bereich, in dem du dich befindest, ist markiert. */
+    .pillar-link.active { border-bottom-color: var(--c-yellow); color: var(--c-black); }
+    .pillar-link.active .pillar-count { background: var(--c-black); color: var(--c-yellow); }
+    .pillar-count {
+      display: inline-flex; align-items: center; justify-content: center;
+      background: var(--c-yellow); color: var(--c-black);
+      border-radius: var(--r-xl); padding: .1rem .8rem;
+      font-family: var(--font-mono); font-size: 1.15rem; font-weight: 700; min-width: 2.2rem;
+    }
+    @media (max-width: 1023px) { .pillar-inner { padding: 0 var(--pad-m); } }
+
+    /* Anker landen unter Header + Sub-Nav, nicht dahinter */
+    #ressourcen, #befehle, #glossar, #faq { scroll-margin-top: calc(var(--header-h) + 5.4rem); }
+    .cmd-card, .faq-card, .res-card { scroll-margin-top: calc(var(--header-h) + 6.6rem); }
+    /* Glossar-Ziele brauchen mehr Luft: dort klebt zusätzlich die Such-/A-Z-Leiste. */
+    .g-gruppe, .g-card { scroll-margin-top: calc(var(--header-h) + 15rem); }
+
+    /* ===== BEREICH 1: RESSOURCEN — Zeit-Schnellauswahl im Hero (Signature) ===== */
+    .zeit-quick { position: relative; z-index: 1; margin: 0; }
+    .zeit-quick-label {
+      font-size: 1.4rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .14em; color: rgba(252,252,252,.5); margin: 0 0 1.4rem;
+    }
+    .zeit-tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1.2rem; max-width: 78rem; }
+    .zeit-tile {
+      display: flex; flex-direction: column; align-items: flex-start; gap: .2rem;
+      background: rgba(252,252,252,.05); border: 1px solid rgba(252,252,252,.18);
+      border-radius: var(--r-md); padding: 1.6rem 1.8rem 1.4rem;
+      font-family: inherit; color: var(--c-white); cursor: pointer;
+      text-align: left; transition: var(--trans);
+    }
+    .zeit-tile:hover { border-color: var(--c-yellow); transform: translateY(-2px); }
+    .zeit-tile.active { background: var(--c-yellow); border-color: var(--c-yellow); color: var(--c-black); }
+    .zt-num {
+      font-family: var(--font-mono); font-variant-numeric: tabular-nums;
+      font-size: 2.4rem; font-weight: 700; color: var(--c-yellow); line-height: 1.1;
+    }
+    .zeit-tile.active .zt-num { color: var(--c-black); }
+    .zt-unit { font-size: 1.3rem; font-weight: 600; letter-spacing: .04em; }
+    .zt-name { font-size: 1.4rem; font-weight: 600; margin-top: .5rem; }
+    .zt-count { font-family: var(--font-mono); font-size: 1.1rem; color: rgba(252,252,252,.5); }
+    .zeit-tile.active .zt-count { color: rgba(38,38,38,.6); }
+
+    /* Ressourcen-Bereich: Intro-Kopf + Filterleiste + Regal */
+    .res-intro { background: var(--c-bg); padding: 5.2rem 0 2.4rem; }
+    .res-intro-inner { max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-d); }
+    .res-section-h2 { font-size: var(--fs-h2); font-weight: var(--fw-semi); letter-spacing: -.02em; margin: .6rem 0 1.2rem; }
+    .res-lead { font-size: 1.6rem; line-height: 1.6; color: var(--c-ink-body); max-width: 74ch; margin: 0; }
+
+    /* Chip-Zeile horizontal (Muster lernen.html): base.css stellt .role-chips für
+       den Katalog auf column — hier tragen 3 Gruppen (Niveau/Dauer/Sprache) sonst
+       viele Zeilen Höhe. Seitenlokal. */
+    #filter-chips { flex-direction: row; flex-wrap: wrap; align-items: center; }
+    .chip-lbl {
+      font-family: var(--font-mono); font-size: 1.1rem; font-weight: 600;
+      letter-spacing: .08em; text-transform: uppercase; color: var(--c-gray-m);
+      margin-right: .2rem; white-space: nowrap;
+    }
+    .chip-gap { width: 1.2rem; flex-shrink: 0; }
+
+    /* ===== RESSOURCEN-REGAL: 2-spaltige editoriale Liste aus Link-Karten ===== */
+    .res-section { padding: 2.4rem 0 8rem; background: var(--c-bg); }
+    .res-inner { max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-d); }
+    .res-note {
+      font-family: var(--font-mono); font-size: 1.15rem; line-height: 1.6;
+      color: var(--c-gray-m); margin: 0 0 2.4rem; max-width: 88ch;
+    }
+    .res-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.8rem; align-items: start; }
+    .res-card {
+      position: relative;
+      display: grid; grid-template-columns: 6.2rem 1fr;
+      background: var(--c-white); border: 1px solid var(--line); border-radius: var(--r-md);
+      transition: border-color .25s ease, box-shadow .25s ease;
+    }
+    .res-card:hover { border-color: var(--line-strong); }
+    .res-card.-highlight { border-color: var(--c-yellow); box-shadow: 0 0 0 3px rgba(255,224,94,.45); }
+    .res-card.start-here { border-color: var(--c-black); box-shadow: var(--shadow-md); }
+    .start-here-ribbon {
+      position: absolute; top: 0; right: 2rem; transform: translateY(-50%);
+      background: var(--c-black); color: var(--c-yellow);
+      font-family: var(--font-mono); font-size: 1.05rem; font-weight: 600;
+      letter-spacing: .08em; text-transform: uppercase;
+      padding: .35rem 1rem; border-radius: var(--radius-pill); z-index: 2;
+    }
+    .res-ico {
+      display: flex; align-items: flex-start; justify-content: center;
+      padding: 2.2rem 0 0; background: var(--paper-warm);
+      border-radius: var(--r-md) 0 0 var(--r-md);
+      border-right: 1px solid var(--line);
+    }
+    .res-card.-intern .res-ico { background: rgba(255,224,94,.25); }
+    .res-ico .lu { width: 2.2rem; height: 2.2rem; color: var(--c-gray-d); }
+    .res-main { padding: 1.8rem 2rem 1.6rem; min-width: 0; }
+    .res-kopf { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; margin-bottom: .8rem; }
+    .res-typ {
+      font-family: var(--font-mono); font-size: 1.05rem; font-weight: 600;
+      letter-spacing: .1em; text-transform: uppercase; color: var(--c-gray-m);
+    }
+    .res-quelle { font-size: 1.25rem; color: var(--c-gray-m); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .intern-tag {
+      font-family: var(--font-mono); font-size: 1.05rem; letter-spacing: .06em;
+      background: var(--c-yellow); color: var(--c-black);
+      border-radius: var(--radius-pill); padding: .25rem .9rem; white-space: nowrap;
+    }
+    .res-title {
+      display: inline; font-size: 1.8rem; font-weight: 700; letter-spacing: -.01em;
+      line-height: 1.35; color: var(--c-black); margin: 0;
+    }
+    a.res-title { text-decoration: none; }
+    a.res-title:hover { text-decoration: underline; text-decoration-color: var(--c-yellow); text-decoration-thickness: 2px; text-underline-offset: 3px; }
+    a.res-title .lu { width: 1.4rem; height: 1.4rem; vertical-align: baseline; margin-left: .5rem; color: var(--c-gray-m); }
+    a.res-title:hover .lu { color: var(--c-black); }
+    .res-fuerdich {
+      font-size: 1.45rem; line-height: 1.6; color: var(--c-ink-body);
+      border-left: 3px solid var(--c-yellow); padding: .2rem 0 .2rem 1.2rem;
+      margin: 1.2rem 0 1.4rem;
+    }
+    .res-fuerdich strong { font-weight: 700; }
+    .res-meta {
+      display: flex; align-items: center; gap: .6rem 1rem; flex-wrap: wrap;
+      font-size: 1.3rem; color: var(--c-gray-d); margin-bottom: 1.4rem;
+    }
+    .res-dauer { display: inline-flex; align-items: center; gap: .5rem; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .res-dauer .lu { width: 1.4rem; height: 1.4rem; color: var(--c-gray-m); }
+    .lang-pill {
+      font-family: var(--font-mono); font-size: 1.05rem; font-weight: 700; letter-spacing: .08em;
+      border: 1px solid var(--line-strong); border-radius: var(--radius-pill);
+      padding: .15rem .8rem; color: var(--c-gray-d);
+    }
+    .res-pf {
+      font-family: var(--font-mono); font-size: 1.05rem; letter-spacing: .06em;
+      background: rgba(38,38,38,.06); border-radius: var(--radius-pill);
+      padding: .25rem .9rem; white-space: nowrap; color: var(--c-gray-d);
+    }
+    .res-meta .meta-dot { color: var(--c-gray-l); }
+    .res-foot { display: flex; align-items: center; gap: 1rem 1.4rem; flex-wrap: wrap; }
+    /* UX5-Fix (WCAG AA): informative Rating-Zahl war --c-ink-faded (3.0–3.3:1 < AA).
+       --c-gray-m (#66655d) = 5.71:1 auf --c-white (.res-card) — ≥4.5:1. */
+    .res-rating { display: flex; align-items: center; gap: .6rem; font-size: 1.25rem; color: var(--c-gray-m); }
+    .res-rating .stars-display { font-size: 1.3rem; }
+    .res-intern-hint { font-size: 1.25rem; color: var(--c-gray-m); font-style: italic; }
+
+    /* Ressourcen-Vote-Button: helle Variante. Die Basis-.vote-btn/.vote-count
+       weiter unten sind für die DUNKLE Befehle-Säule gebaut — hier auf .res-card
+       gescoped überschreiben (höhere Spezifität), damit beide Kontexte auf einer
+       Seite koexistieren, ohne die HTML-Klassen zu ändern. */
+    .res-card .vote-btn {
+      border: 1px solid var(--line-strong); background: transparent;
+      color: var(--c-black); padding: .55rem 1.3rem; font-size: 1.25rem;
+    }
+    .res-card .vote-btn .lu { width: 1.4rem; height: 1.4rem; }
+    .res-card .vote-btn:hover { border-color: var(--c-black); color: var(--c-black); }
+    .res-card .vote-btn.voted { background: var(--c-yellow); border-color: var(--c-yellow); color: var(--c-black); }
+    .res-card .vote-count { background: rgba(38,38,38,.08); color: var(--c-black); }
+    .res-card .vote-btn.voted .vote-count { background: rgba(38,38,38,.15); }
+    .res-toggle {
+      background: none; border: none; color: var(--c-gray-d);
+      font-family: inherit; font-size: 1.3rem; font-weight: 600;
+      cursor: pointer; display: inline-flex; align-items: center; gap: .6rem;
+      padding: .55rem .4rem; transition: var(--trans); margin-left: auto;
+    }
+    .res-toggle:hover { color: var(--c-black); }
+    .res-toggle .ct-arrow { transition: transform .2s; font-size: 1.6rem; line-height: 1; }
+    .res-toggle[aria-expanded="true"] .ct-arrow { transform: rotate(90deg); }
+
+    .res-body { grid-column: 1 / -1; border-top: 1px dashed var(--line-strong); padding: 1.8rem 2rem 2rem; }
+    .res-body[hidden] { display: none; }
+    .res-body > div + div { margin-top: 1.8rem; }
+    .res-body-label {
+      display: block; font-family: var(--font-mono); font-size: 1.05rem; font-weight: 600;
+      letter-spacing: .1em; text-transform: uppercase; color: var(--c-gray-m); margin: 0 0 .6rem;
+    }
+    .res-body p { font-size: 1.4rem; line-height: 1.65; color: var(--c-ink-body); margin: 0; max-width: 78ch; }
+    .res-gelernt { margin: 0; padding-left: 2rem; display: flex; flex-direction: column; gap: .5rem; }
+    .res-gelernt li { font-size: 1.4rem; line-height: 1.55; color: var(--c-ink-body); }
+    .res-voice { border-left: 2px solid rgba(255,224,94,.7); padding: .2rem 0 .2rem 1.2rem; margin: 0 0 1.2rem; }
+    .res-voice:last-child { margin-bottom: 0; }
+    .res-voice blockquote { font-size: 1.35rem; line-height: 1.6; color: var(--c-ink-body); font-style: italic; margin: 0 0 .4rem; }
+    .res-voice figcaption { font-family: var(--font-mono); font-size: 1.1rem; color: var(--c-gray-m); }
+    .res-geprueft { font-family: var(--font-mono); font-size: 1.1rem; color: var(--c-gray-m); }
+
+    /* ===== BEREICH 2: BEFEHLE & KNIFFE (dunkel, terminal-nah) ===== */
+    .bef-section {
+      background: var(--c-black); color: var(--c-white);
+      padding: 6.4rem 0 8rem; position: relative; overflow: hidden;
+    }
+    .bef-section::before {
+      content: ''; position: absolute; inset: 0; pointer-events: none;
+      background: radial-gradient(52rem 30rem at 88% 0%, rgba(255,224,94,.09), transparent 60%);
+    }
+    .bef-inner { max-width: 108rem; margin: 0 auto; padding: 0 var(--pad-d); position: relative; z-index: 1; }
+    .bef-h2 {
+      font-size: var(--fs-h2); font-weight: var(--fw-semi);
+      letter-spacing: -.02em; color: var(--c-white); margin: 1rem 0 1.2rem;
+    }
+    .bef-sub { font-size: 1.6rem; line-height: 1.6; color: rgba(252,252,252,.7); max-width: 72ch; margin: 0; }
+    .bef-note {
+      font-family: var(--font-mono); font-size: 1.15rem; line-height: 1.6;
+      color: rgba(252,252,252,.42); margin: 1.4rem 0 0; max-width: 88ch;
+    }
+
+    /* Kategorie-Filter (dunkle Chips) */
+    .bef-chips { display: flex; gap: .8rem; flex-wrap: wrap; margin: 3rem 0 2.4rem; }
+    .bef-chip {
+      border: 1px solid rgba(252,252,252,.25); background: transparent;
+      color: rgba(252,252,252,.75); border-radius: var(--radius-pill);
+      padding: .6rem 1.4rem; font-family: inherit; font-size: 1.4rem;
+      cursor: pointer; transition: var(--trans);
+    }
+    .bef-chip:hover { border-color: var(--c-white); color: var(--c-white); }
+    .bef-chip.active { background: var(--c-yellow); border-color: var(--c-yellow); color: var(--c-black); font-weight: 600; }
+    .bef-chip-count { opacity: .6; font-family: var(--font-mono); font-size: 1.2rem; margin-left: .3rem; font-variant-numeric: tabular-nums; }
+    .bef-chip.active .bef-chip-count { opacity: .75; }
+
+    /* ===== RANKING-LISTE (Signature: Upvote sortiert live) ===== */
+    .rank-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 1rem; }
+    .cmd-card {
+      background: rgba(252,252,252,.045);
+      border: 1px solid rgba(252,252,252,.12);
+      border-radius: var(--r-md);
+      transition: border-color .25s ease, background .25s ease;
+    }
+    .cmd-card:hover { border-color: rgba(252,252,252,.28); }
+    .cmd-card.-moved, .cmd-card.-highlight {
+      border-color: var(--c-yellow);
+      background: rgba(255,224,94,.08);
+    }
+    .cmd-row {
+      display: grid; grid-template-columns: 6rem 1fr;
+      gap: 0 1.4rem; align-items: start;
+      padding: 1.8rem 2rem 1.6rem 0;
+    }
+    .rank-num {
+      font-family: var(--font-mono); font-variant-numeric: tabular-nums;
+      font-size: 1.8rem; font-weight: 700; color: rgba(252,252,252,.35);
+      text-align: right; padding-top: .3rem;
+    }
+    .rank-num.-top { color: var(--c-yellow); }
+    .cmd-line { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+    .cmd-code {
+      font-family: var(--font-mono); font-size: 1.7rem; font-weight: 700;
+      color: var(--c-yellow); letter-spacing: .01em; overflow-wrap: anywhere;
+    }
+    .cmd-copy {
+      display: inline-flex; align-items: center; gap: .5rem;
+      border: 1px solid rgba(252,252,252,.3); background: transparent;
+      color: rgba(252,252,252,.8); border-radius: var(--radius-pill);
+      font-family: inherit; font-size: 1.2rem; font-weight: 600;
+      padding: .35rem 1.1rem; cursor: pointer; transition: var(--trans);
+    }
+    .cmd-copy .lu { width: 1.3rem; height: 1.3rem; }
+    .cmd-copy:hover { background: var(--c-yellow); border-color: var(--c-yellow); color: var(--c-black); }
+    .pf-tag {
+      font-family: var(--font-mono); font-size: 1.05rem; letter-spacing: .06em;
+      padding: .25rem .9rem; border-radius: var(--radius-pill);
+      border: 1px solid rgba(252,252,252,.2); color: rgba(252,252,252,.55);
+      white-space: nowrap;
+    }
+    .lh-tag {
+      font-family: var(--font-mono); font-size: 1.05rem; letter-spacing: .06em;
+      background: rgba(255,224,94,.15); color: var(--c-yellow);
+      border-radius: var(--radius-pill); padding: .25rem .9rem; white-space: nowrap;
+    }
+    .cmd-nutzen { font-size: 1.5rem; line-height: 1.6; color: rgba(252,252,252,.82); margin: .8rem 0 1.2rem; max-width: 78ch; }
+    .cmd-nutzen code, .cmd-body code {
+      font-family: var(--font-mono); font-size: .92em;
+      background: rgba(252,252,252,.08); border-radius: .4rem;
+      padding: .05em .4em; color: var(--c-yellow);
+    }
+    .cmd-actions { display: flex; align-items: center; gap: 1.4rem; flex-wrap: wrap; }
+    .vote-btn {
+      display: inline-flex; align-items: center; gap: .7rem;
+      border: 1px solid rgba(252,252,252,.3); background: transparent;
+      color: var(--c-white); border-radius: var(--radius-pill);
+      padding: .7rem 1.5rem; font-family: inherit; font-size: 1.35rem; font-weight: 600;
+      cursor: pointer; transition: var(--trans);
+    }
+    .vote-btn .lu { width: 1.5rem; height: 1.5rem; }
+    .vote-btn:hover { border-color: var(--c-yellow); color: var(--c-yellow); }
+    .vote-btn.voted { background: var(--c-yellow); border-color: var(--c-yellow); color: var(--c-black); }
+    .vote-count {
+      font-family: var(--font-mono); font-variant-numeric: tabular-nums;
+      font-size: 1.25rem; font-weight: 700;
+      background: rgba(252,252,252,.12); border-radius: var(--r-xl);
+      padding: .1rem .8rem; min-width: 2.6rem; text-align: center;
+    }
+    .vote-btn.voted .vote-count { background: rgba(38,38,38,.15); }
+    .cmd-toggle {
+      background: none; border: none; color: rgba(252,252,252,.65);
+      font-family: inherit; font-size: 1.35rem; font-weight: 600;
+      cursor: pointer; display: inline-flex; align-items: center; gap: .6rem;
+      padding: .7rem .4rem; transition: var(--trans);
+    }
+    .cmd-toggle:hover { color: var(--c-white); }
+    .cmd-toggle .ct-arrow { transition: transform .2s; font-size: 1.6rem; line-height: 1; }
+    .cmd-toggle[aria-expanded="true"] .ct-arrow { transform: rotate(90deg); }
+
+    /* Aufgeklappter Kartenkörper */
+    .cmd-body { border-top: 1px solid rgba(252,252,252,.1); padding: 2rem 2rem 2.2rem 7.4rem; }
+    .cmd-body[hidden] { display: none; }
+    .cmd-body > div + div { margin-top: 2rem; }
+    .cmd-body-label {
+      display: block; font-family: var(--font-mono); font-size: 1.1rem; font-weight: 600;
+      letter-spacing: .1em; text-transform: uppercase;
+      color: rgba(252,252,252,.45); margin: 0 0 .6rem;
+    }
+    .cmd-body p { font-size: 1.45rem; line-height: 1.65; color: rgba(252,252,252,.78); margin: 0; max-width: 78ch; }
+    .cmd-voice { border-left: 2px solid rgba(255,224,94,.5); padding: .2rem 0 .2rem 1.4rem; margin: 0 0 1.4rem; }
+    .cmd-voice:last-child { margin-bottom: 0; }
+    .cmd-voice blockquote { font-size: 1.4rem; line-height: 1.6; color: rgba(252,252,252,.75); font-style: italic; margin: 0 0 .5rem; }
+    .cmd-voice figcaption { font-family: var(--font-mono); font-size: 1.15rem; color: rgba(252,252,252,.45); }
+
+    /* Kompaktes Inline-Terminal (Leuchtturm-Demos) */
+    .cmd-term { margin: 1rem 0 0; max-width: none; box-shadow: none; border-color: rgba(252,252,252,.15); }
+    .cmd-term .ex-terminal-body { min-height: 15rem; max-height: 30rem; overflow-y: auto; font-size: 1.35rem; padding: 1.8rem 2rem; }
+    .ex-terminal-bar { position: relative; }
+    .demo-replay {
+      position: absolute; right: 1.4rem; top: 50%; transform: translateY(-50%);
+      background: rgba(255,255,255,.1); border: none; color: rgba(252,252,252,.8);
+      width: 2.8rem; height: 2.8rem; border-radius: 50%; cursor: pointer;
+      font-size: 1.5rem; transition: var(--trans);
+    }
+    .demo-replay:hover { background: var(--c-yellow); color: var(--c-black); }
+    .term-play {
+      font-family: var(--font-mono); font-size: 1.3rem; font-weight: 600;
+      background: transparent; border: 1px solid rgba(255,224,94,.6);
+      color: var(--c-yellow); border-radius: var(--radius-pill);
+      padding: .8rem 1.8rem; cursor: pointer; transition: var(--trans);
+    }
+    .term-play:hover { background: var(--c-yellow); color: var(--c-black); }
+
+    /* Leerlauf, falls ein Filter nichts trifft (defensiv) */
+    .bef-empty { font-size: 1.5rem; color: rgba(252,252,252,.6); padding: 3rem 0; }
+
+    /* ===== BEREICH 3: GLOSSAR (hell, Nachschlagewerk auf Papier) ===== */
+    .glossar-section { background: var(--paper-warm); border-top: 1px solid var(--line); padding: 6.4rem 0 8rem; }
+    .glo-inner { max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-d); }
+    .glo-h2 { font-size: var(--fs-h2); font-weight: var(--fw-semi); letter-spacing: -.02em; margin: .6rem 0 1.2rem; }
+    .glo-sub { font-size: 1.6rem; line-height: 1.6; color: var(--c-ink-body); max-width: 72ch; margin: 0; }
+    .glo-note { font-family: var(--font-mono); font-size: 1.15rem; line-height: 1.6; color: var(--c-gray-m); margin: 1.4rem 0 0; max-width: 88ch; }
+
+    /* Werkzeugleiste: Suche + A-Z — klebt beim Blättern unter der Sub-Nav */
+    .glo-tools {
+      position: sticky; top: calc(var(--header-h) + 4.6rem); z-index: 40;
+      background: var(--paper-warm); margin: 3rem 0 0; padding: 1.2rem 0 1.4rem;
+      display: flex; align-items: center; gap: 2rem; flex-wrap: wrap;
+      border-bottom: 1px solid var(--line);
+    }
+    .glo-search {
+      display: flex; align-items: center; gap: 1rem; flex: 0 1 40rem; min-width: 24rem;
+      background: var(--c-white); border: 1px solid var(--line-strong);
+      border-radius: var(--radius-pill); padding: .8rem 1.8rem; transition: var(--trans);
+    }
+    .glo-search:focus-within { border-color: var(--c-black); }
+    .glo-search input {
+      border: none; background: transparent; font-family: inherit; font-size: 1.5rem;
+      color: var(--c-black); flex: 1; min-width: 0; outline: none;
+    }
+    .az-rail { display: flex; gap: .2rem; overflow-x: auto; scrollbar-width: none; font-family: var(--font-mono); flex: 1 1 auto; }
+    .az-rail::-webkit-scrollbar { display: none; }
+    .az-btn {
+      min-width: 3rem; height: 3.2rem; border: none; background: transparent;
+      border-radius: .6rem; font-family: inherit; font-size: 1.3rem; font-weight: 700;
+      color: var(--c-black); cursor: pointer; transition: var(--trans); flex-shrink: 0;
+    }
+    .az-btn:hover:not(:disabled) { background: var(--c-yellow); }
+    .az-btn:disabled { opacity: .25; cursor: default; }
+
+    .glo-hits { font-family: var(--font-mono); font-size: 1.25rem; color: var(--c-gray-d); margin: 1.6rem 0 0; }
+    .g-gruppe { margin-top: 3.2rem; }
+    .g-letter {
+      font-family: var(--font-mono); font-size: 1.5rem; font-weight: 700;
+      letter-spacing: .12em; color: var(--c-gray-m);
+      border-bottom: 1px solid var(--line-strong); padding-bottom: .6rem; margin: 0 0 1.6rem;
+    }
+    .g-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.6rem; align-items: start; }
+    .g-card {
+      background: var(--c-white); border: 1px solid var(--line); border-radius: var(--r-md);
+      padding: 2rem 2.2rem; transition: border-color .25s ease, box-shadow .25s ease;
+    }
+    .g-card:hover { border-color: var(--line-strong); }
+    .g-card.-highlight { border-color: var(--c-yellow); box-shadow: 0 0 0 3px rgba(255,224,94,.45); }
+    .g-wort { font-size: 1.7rem; font-weight: 700; letter-spacing: -.01em; margin: 0; }
+    .g-satz { font-size: 1.45rem; line-height: 1.6; color: var(--c-ink-body); margin: .8rem 0 1.4rem; }
+    .g-satz code, .g-body code, .faq-body code {
+      font-family: var(--font-mono); font-size: .92em;
+      background: rgba(38,38,38,.07); border-radius: .4rem; padding: .05em .4em;
+    }
+    .g-actions { display: flex; align-items: center; gap: 1.2rem; flex-wrap: wrap; }
+    /* helle Variante des Vote-Buttons (Basis .vote-btn ist für die dunkle Säule gebaut) */
+    .g-vote { border-color: var(--line-strong); color: var(--c-black); font-size: 1.25rem; padding: .55rem 1.3rem; }
+    .g-vote:hover { border-color: var(--c-black); color: var(--c-black); }
+    .g-vote .vote-count { background: rgba(38,38,38,.08); }
+    .g-vote.voted { background: var(--c-yellow); border-color: var(--c-yellow); }
+    .g-toggle {
+      background: none; border: none; color: var(--c-gray-d);
+      font-family: inherit; font-size: 1.3rem; font-weight: 600;
+      cursor: pointer; display: inline-flex; align-items: center; gap: .6rem;
+      padding: .55rem .4rem; transition: var(--trans);
+    }
+    .g-toggle:hover { color: var(--c-black); }
+    .g-toggle .ct-arrow { transition: transform .2s; font-size: 1.6rem; line-height: 1; }
+    .g-toggle[aria-expanded="true"] .ct-arrow { transform: rotate(90deg); }
+    .g-body { border-top: 1px dashed var(--line-strong); margin-top: 1.6rem; padding-top: 1.6rem; }
+    .g-body[hidden] { display: none; }
+    .g-body > div + div { margin-top: 1.6rem; }
+    .g-body-label {
+      display: block; font-family: var(--font-mono); font-size: 1.05rem; font-weight: 600;
+      letter-spacing: .1em; text-transform: uppercase; color: var(--c-gray-m); margin: 0 0 .5rem;
+    }
+    .g-body p { font-size: 1.4rem; line-height: 1.65; color: var(--c-ink-body); margin: 0; }
+    .glo-empty { text-align: center; padding: 6rem 2rem; }
+    .glo-empty p { font-size: 2rem; color: var(--c-gray-m); margin: 0 0 2rem; }
+
+    /* Querverweis-Chips (Glossar + FAQ) */
+    .xref-row { display: flex; flex-wrap: wrap; gap: .8rem; margin-top: 1.6rem; }
+    .xref {
+      display: inline-flex; align-items: center; gap: .7rem;
+      font-size: 1.25rem; font-weight: 600; text-decoration: none; color: var(--c-black);
+      border: 1px solid var(--line-strong); border-radius: var(--radius-pill);
+      padding: .45rem 1.2rem; transition: var(--trans); background: var(--c-white);
+    }
+    .xref:hover { background: var(--c-yellow); border-color: var(--c-yellow); }
+    .xref-kind {
+      font-family: var(--font-mono); font-size: .95rem; letter-spacing: .06em;
+      text-transform: uppercase; color: var(--c-gray-m);
+    }
+
+    /* ===== BEREICH 4: FAQ (ruhiges Akkordeon) ===== */
+    .faq-section { background: var(--c-bg); border-top: 1px solid var(--line); padding: 6.4rem 0 8rem; }
+    .faq-inner { max-width: 86rem; margin: 0 auto; padding: 0 var(--pad-d); }
+    .faq-h2 { font-size: var(--fs-h2); font-weight: var(--fw-semi); letter-spacing: -.02em; margin: .6rem 0 1.2rem; }
+    .faq-sub { font-size: 1.6rem; line-height: 1.6; color: var(--c-ink-body); max-width: 62ch; margin: 0; }
+    .faq-list { display: flex; flex-direction: column; gap: 1.2rem; margin-top: 3.2rem; }
+    .faq-card {
+      background: var(--c-white); border: 1px solid var(--line); border-radius: var(--r-md);
+      transition: border-color .25s ease, box-shadow .25s ease;
+    }
+    .faq-card:hover { border-color: var(--line-strong); }
+    .faq-card.-highlight { border-color: var(--c-yellow); box-shadow: 0 0 0 3px rgba(255,224,94,.45); }
+    .faq-q {
+      display: flex; width: 100%; align-items: center; gap: 1.4rem; text-align: left;
+      background: none; border: none; cursor: pointer; font-family: inherit;
+      font-size: 1.6rem; font-weight: 600; color: var(--c-black); line-height: 1.4;
+      padding: 1.8rem 2.2rem;
+    }
+    .faq-q:hover { color: var(--c-gray-d); }
+    .faq-q .ct-arrow { margin-left: auto; transition: transform .2s; font-size: 1.8rem; line-height: 1; color: var(--c-gray-m); }
+    .faq-q[aria-expanded="true"] .ct-arrow { transform: rotate(90deg); }
+    .faq-body { padding: 0 2.2rem 2.4rem; }
+    .faq-body[hidden] { display: none; }
+    .faq-intro { font-size: 1.5rem; line-height: 1.6; color: var(--c-ink-body); margin: 0 0 1.6rem; }
+    .faq-steps { margin: 0; padding-left: 2.2rem; display: flex; flex-direction: column; gap: 1rem; }
+    .faq-steps li { font-size: 1.45rem; line-height: 1.65; color: var(--c-ink-body); padding-left: .4rem; }
+    .faq-steps li::marker { font-family: var(--font-mono); font-weight: 700; color: var(--c-gray-m); }
+    .faq-voice { border-left: 3px solid var(--c-yellow); padding: .2rem 0 .2rem 1.4rem; margin: 1.8rem 0 0; }
+    .faq-voice blockquote { font-size: 1.4rem; line-height: 1.6; color: var(--c-ink-body); font-style: italic; margin: 0 0 .5rem; }
+    .faq-voice figcaption { font-family: var(--font-mono); font-size: 1.15rem; color: var(--c-gray-m); }
+
+    /* ===== MITMACHEN-BÄNDER (Ressource vorschlagen / Kniff einreichen — Demo-Flow) ===== */
+    .submit-band { background: var(--paper-warm); border-top: 1px solid var(--line); padding: 6.4rem 0 6.8rem; }
+    .submit-band-inner { max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-d); }
+    .submit-band h2 { font-size: var(--fs-h2); font-weight: var(--fw-semi); letter-spacing: -.02em; margin: .6rem 0 1rem; }
+    .submit-band-text { font-size: 1.6rem; line-height: 1.6; color: var(--c-ink-body); max-width: 62ch; margin: 0 0 2.4rem; }
+    .submit-band-note { font-family: var(--font-mono); font-size: 1.15rem; color: var(--c-gray-m); margin: 1.4rem 0 0; }
+
+    /* ===== RESPONSIVE & TOUCH ===== */
+    @media (max-width: 1023px) {
+      .res-intro-inner, .res-inner, .glo-inner, .faq-inner, .submit-band-inner { padding: 0 var(--pad-m); }
+      .res-list { grid-template-columns: 1fr; }
+      .zeit-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .g-grid { grid-template-columns: 1fr; }
+      .submit-band { padding: 4.4rem 0 4.8rem; }
+    }
+    @media (max-width: 767px) {
+      .cmd-row { grid-template-columns: 3.6rem 1fr; padding: 1.6rem 1.4rem 1.4rem 0; gap: 0 1rem; }
+      .rank-num { font-size: 1.4rem; padding-top: .5rem; }
+      .cmd-code { font-size: 1.5rem; }
+      .cmd-body { padding: 1.8rem 1.4rem 2rem; }
+      .bef-section { padding: 4.4rem 0 5.6rem; }
+      .glossar-section, .faq-section { padding: 4.4rem 0 5.6rem; }
+      .res-intro { padding: 4rem 0 2rem; }
+      .glo-tools { gap: 1.2rem; }
+      .glo-search { flex: 1 1 100%; }
+      /* A-Z-Leiste: mobil ist der Scrollbalken versteckt — eine Fade-Kante am
+         rechten Rand signalisiert, dass die Leiste bis Z weitergeht. */
+      .az-rail::after {
+        content: ''; flex: 0 0 3.2rem;
+        position: sticky; right: 0;
+        background: linear-gradient(to right, rgba(244,241,234,0), var(--paper-warm) 75%);
+        pointer-events: none;
+      }
+      .g-card { padding: 1.6rem 1.6rem; }
+      .faq-q { font-size: 1.5rem; padding: 1.6rem 1.6rem; }
+      .faq-body { padding: 0 1.6rem 2rem; }
+    }
+    @media (max-width: 640px) {
+      .res-card { grid-template-columns: 4.6rem 1fr; }
+      .res-main { padding: 1.6rem 1.4rem 1.4rem; }
+      .res-body { padding: 1.6rem 1.4rem 1.8rem; }
+      .res-ico { padding-top: 1.8rem; }
+      .res-ico .lu { width: 1.8rem; height: 1.8rem; }
+      .zeit-tile { padding: 1.2rem 1.4rem 1.1rem; }
+      .zt-num { font-size: 2rem; }
+    }
+    @media (hover: none) and (pointer: coarse) {
+      .vote-btn, .cmd-toggle, .cmd-copy, .bef-chip, .term-play { min-height: 4.4rem; }
+      .pillar-link, .g-toggle, .az-btn, .xref, .res-toggle, .zeit-tile { min-height: 4.4rem; }
+      .az-btn { min-width: 4rem; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .cmd-card, .g-card, .faq-card, .res-card, .zeit-tile { transition: none; }
+      .zeit-tile:hover { transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Zum Hauptinhalt springen</a>
+
+  <!-- HEADER & FOOTER: werden von shared/base.js injiziert (renderNav, siehe Seiten-Script unten) -->
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-glow" aria-hidden="true"></div>
+    <div class="hero-inner hero-top">
+      <p class="overline" style="color:#ffe05e">pilot · Lernen &amp; Hilfe</p>
+      <h1 class="hero-h1">Wenn du weiterkommen willst —<br><span style="color:var(--c-yellow)">hier findest du den Handgriff.</span></h1>
+      <p class="subline">Ein Bereich für alles, was dich voranbringt: geprüfte Lern-Ressourcen als Kompass, das Befehle-Ranking für den Alltag, ein Glossar, das jeden Begriff in einem Satz erklärt — und Schritt-für-Schritt-Antworten auf die häufigsten Blocker.</p>
+      <div class="hero-stats" id="hero-stats">
+        <div class="hero-stat-box"><span class="hero-stat-num" id="stat-ressourcen">0</span><span class="hero-stat-label">Lern-Ressourcen</span></div>
+        <div class="hero-stat-box"><span class="hero-stat-num" id="stat-befehle">0</span><span class="hero-stat-label">Befehle &amp; Kniffe</span></div>
+        <div class="hero-stat-box"><span class="hero-stat-num" id="stat-glossar">0</span><span class="hero-stat-label">Glossar-Begriffe</span></div>
+        <div class="hero-stat-box"><span class="hero-stat-num" id="stat-faq">0</span><span class="hero-stat-label">FAQ-Lösungen</span></div>
+      </div>
+      <!-- SIGNATURE: Zeit-Schnellauswahl — Klick setzt den Dauer-Filter und springt ins Regal -->
+      <div class="zeit-quick">
+        <p class="zeit-quick-label" id="zeit-quick-label">Wie viel Zeit hast du gerade?</p>
+        <div class="zeit-tiles" id="zeit-tiles" role="group" aria-labelledby="zeit-quick-label"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ORIENTIERUNG: kompaktes Erklär-Modul (E10 — Was ist das? / Wofür? / So fange ich an) -->
+  <section class="area-intro" aria-label="Kurz erklärt">
+    <div class="area-intro-inner">
+      <div class="area-intro-grid">
+        <div class="area-intro-part">
+          <p class="area-intro-label">Was ist das?</p>
+          <p class="area-intro-text">Ein Bereich zum Lernen und zum Nachschlagen: redaktionell geprüfte Lern-Ressourcen, ein Ranking der nützlichsten Befehle und Kniffe, ein Glossar mit je einem Satz pro Begriff und eine FAQ gegen die häufigsten Blocker.</p>
+        </div>
+        <div class="area-intro-part">
+          <p class="area-intro-label">Wofür nutze ich es?</p>
+          <p class="area-intro-text">Wenn du dich einarbeiten willst, findest du hier geprüfte Links mit ehrlicher Dauer und Niveau; wenn du mitten in einer Aufgabe festhängst, schlägst du einen Befehl, einen Begriff oder eine Lösung in Sekunden nach. Gedacht für den Weg vom Langdock-Chat hin zum eigenständigen Bauen — <a class="area-intro-link" href="skills.html?view=explainer">Code oder Langdock?</a></p>
+        </div>
+        <div class="area-intro-part">
+          <p class="area-intro-label">So fange ich an.</p>
+          <p class="area-intro-text">Nutz die Sub-Navigation oben, um zwischen Ressourcen, Befehlen, Glossar und FAQ zu springen — für den Einstieg wähl im <a class="area-intro-link" href="#ressourcen">Lern-Regal</a>, wie viel Zeit du gerade hast.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STICKY SUB-NAV: VIER BEREICHE -->
+  <nav class="pillar-nav" aria-label="Bereiche von Lernen &amp; Hilfe" id="pillar-nav">
+    <div class="pillar-inner">
+      <a class="pillar-link" href="#ressourcen">Ressourcen <span class="pillar-count" id="pn-ressourcen">0</span></a>
+      <a class="pillar-link" href="#befehle">Befehle &amp; Kniffe <span class="pillar-count" id="pn-befehle">0</span></a>
+      <a class="pillar-link" href="#glossar">Glossar <span class="pillar-count" id="pn-glossar">0</span></a>
+      <a class="pillar-link" href="#faq">FAQ <span class="pillar-count" id="pn-faq">0</span></a>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main id="main-content">
+
+    <!-- BEREICH 1: RESSOURCEN (Lern-Regal — kompletter Lernen-Inhalt) -->
+    <section id="ressourcen" aria-labelledby="ressourcen-h">
+      <div class="res-intro">
+        <div class="res-intro-inner">
+          <p class="section-label">Bereich · Lern-Ressourcen</p>
+          <h2 class="res-section-h2" id="ressourcen-h">Kein eigener Kurs — ein Kompass.</h2>
+          <p class="res-lead">Das Netz ist voll mit KI-Tutorials — vieles ist Hype, manches veraltet. Hier steht nur, was die Redaktion geprüft hat: mit ehrlicher Dauer, Niveau, Sprache und einem Satz, für wen sich jeder Link wirklich lohnt.</p>
+        </div>
+      </div>
+
+      <!-- FILTER BAR -->
+      <div class="filter-bar" id="filter-bar">
+        <div class="filter-inner">
+          <div class="search-wrap-m">
+            <input type="search" id="search-m" aria-label="Nur diese Seite: Ressourcen filtern" placeholder="Nur Ressourcen filtern …" autocomplete="off">
+          </div>
+          <div class="cat-tabs" id="cat-tabs" role="group" aria-label="Nach Typ filtern"></div>
+          <button class="filter-toggle-btn" id="filter-toggle-btn" onclick="toggleMobileFilter()" aria-expanded="true">
+            <span>Filter &amp; Sortierung <span class="ftb-count" id="ftb-count" hidden></span></span>
+            <span class="filter-toggle-arrow">▾</span>
+          </button>
+          <div class="filter-collapsible" id="filter-collapsible">
+            <div class="filter-toolbar">
+              <div class="role-chips" id="filter-chips"></div>
+              <div class="filter-controls">
+                <span class="results-count-lg" id="results-count"></span>
+                <select id="sort-select" aria-label="Ressourcen sortieren">
+                  <option value="bewertung">Team-Bewertung</option>
+                  <option value="dauer">Kürzeste zuerst</option>
+                  <option value="alpha">Titel A–Z</option>
+                </select>
+              </div>
+            </div>
+            <div class="active-filters" id="active-filters" hidden></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RESSOURCEN-REGAL -->
+      <div class="res-section" aria-label="Lern-Ressourcen">
+        <div class="res-inner">
+          <p class="res-note">Jeder externe Link wurde am 17. Juli 2026 redaktionell geprüft (erreichbar + hält, was die Beschreibung verspricht). Die Startwerte von Bewertung und „Das hat mir geholfen“ sind redaktionelle Demo-Werte — deine Stimme kommt lokal in deinem Browser dazu. Interne pilot-Einträge sind klar gekennzeichnet und noch ohne Link.</p>
+          <div class="res-list" id="res-list"></div>
+        </div>
+      </div>
+
+      <!-- MITMACHEN: Ressource vorschlagen (Demo-Flow aus shared/base.js) -->
+      <section class="submit-band" aria-labelledby="submit-res-h">
+        <div class="submit-band-inner">
+          <p class="section-label">Mitmachen</p>
+          <h2 id="submit-res-h">Dir hat etwas weitergeholfen, das hier fehlt?</h2>
+          <p class="submit-band-text">Dieses Regal lebt von Empfehlungen aus dem Team — nicht von Vollständigkeit. Schlag den Link vor, der dir wirklich etwas beigebracht hat: die Redaktion prüft ihn und stellt ihn dazu.</p>
+          <button type="button" class="c-cta -black-bg" id="submit-res-cta" onclick="openRessourceSubmit()">Ressource vorschlagen</button>
+          <p class="submit-band-note">Demo-Flow: deine Eingabe bleibt lokal in deinem Browser.</p>
+        </div>
+      </section>
+    </section>
+
+    <!-- BEREICH 2: BEFEHLE & KNIFFE -->
+    <section class="bef-section" id="befehle" aria-labelledby="befehle-h">
+      <div class="bef-inner">
+        <p class="overline" style="color:var(--c-yellow)">Bereich · Befehle &amp; Kniffe</p>
+        <h2 class="bef-h2" id="befehle-h">Die Handgriffe, die dich wieder flottmachen.</h2>
+        <p class="bef-sub"><span id="bef-count">0</span> Befehle, Flags und Tastentricks für Claude Code und Langdock — als Rangliste. Klick <strong>„Hat mir geholfen“</strong>, wenn dich ein Eintrag weitergebracht hat: deine Stimme sortiert die Liste live neu.</p>
+        <p class="bef-note">Alle Einträge sind gegen die aktuelle Claude-Code- bzw. Langdock-Doku geprüft (Stand Juli 2026). Die Startwerte der Stimmen sind redaktionelle Demo-Werte — deine Stimme kommt lokal in deinem Browser dazu.</p>
+
+        <div class="bef-chips" role="group" aria-label="Nach Kategorie filtern" id="bef-chips"></div>
+
+        <ol class="rank-list" id="rank-list"></ol>
+      </div>
+    </section>
+
+    <!-- BEREICH 3: GLOSSAR (hell — Nachschlagewerk mit Suche und A-Z-Sprungleiste) -->
+    <section class="glossar-section" id="glossar" aria-labelledby="glossar-h">
+      <div class="glo-inner">
+        <p class="section-label">Bereich · Glossar</p>
+        <h2 class="glo-h2" id="glossar-h">Was heißt eigentlich „Token“?</h2>
+        <p class="glo-sub"><span id="glo-count">0</span> Begriffe aus der KI-Welt — jeder in einem einfachen Satz erklärt, mit einem pilot-Beispiel dazu. Wer tiefer will, klappt auf; Querverweise führen zu passenden Skills, Prompts und Befehlen.</p>
+        <p class="glo-note">Die Startwerte von „Hat mir geholfen“ sind redaktionelle Demo-Werte — deine Stimme kommt lokal in deinem Browser dazu.</p>
+
+        <div class="glo-tools">
+          <div class="glo-search">
+            <input type="search" id="glo-search" placeholder="Begriff suchen — z. B. Token" aria-label="Im Glossar suchen" autocomplete="off" oninput="onGlossarSearch(this.value)">
+          </div>
+          <nav class="az-rail" id="az-rail" aria-label="Alphabetische Sprungleiste"></nav>
+        </div>
+
+        <p class="glo-hits" id="glo-hits" role="status" aria-live="polite" hidden></p>
+        <div id="glossar-liste"></div>
+      </div>
+    </section>
+
+    <!-- BEREICH 4: FAQ & TROUBLESHOOTING (ruhiges Akkordeon, nur eine Karte offen) -->
+    <section class="faq-section" id="faq" aria-labelledby="faq-h">
+      <div class="faq-inner">
+        <p class="section-label">Bereich · FAQ &amp; Troubleshooting</p>
+        <h2 class="faq-h2" id="faq-h">„Kontext voll“ — was jetzt?</h2>
+        <p class="faq-sub">Die <span id="faq-count">0</span> häufigsten Blocker aus dem Agentur-Alltag — jede Karte mit einer Schritt-für-Schritt-Lösung. Aufklappen, abarbeiten, weiterarbeiten.</p>
+        <div class="faq-list" id="faq-liste"></div>
+      </div>
+    </section>
+
+    <!-- MITMACHEN: Kniff einreichen (Demo-Flow aus shared/base.js) -->
+    <section class="submit-band" aria-labelledby="submit-kniff-h">
+      <div class="submit-band-inner">
+        <p class="section-label">Mitmachen</p>
+        <h2 id="submit-kniff-h">Du kennst einen Kniff, der hier fehlt?</h2>
+        <p class="submit-band-text">Das Befehle-Ranking lebt von den Handgriffen, die sich im Alltag bewährt haben. Reich deinen Kniff ein — so finden die Nächsten den kürzesten Weg.</p>
+        <button type="button" class="c-cta -black-bg" id="submit-kniff-cta" onclick="openKniffSubmit()">Kniff einreichen</button>
+        <p class="submit-band-note">Demo-Flow: deine Eingabe bleibt lokal in deinem Browser.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER: injiziert von shared/base.js (renderNav) -->
+
+  <!-- TOAST -->
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="data/befehle.js"></script>
+  <script src="data/glossar.js"></script>
+  <script src="data/ressourcen.js"></script>
+  <script src="shared/base.js"></script>
+  <script>
+    // ===== DATA =====
+    //   data/befehle.js:   BEFEHLE, BEFEHL_LEUCHTTUERME, BEFEHL_KOMMENTARE
+    //   data/glossar.js:   GLOSSAR, FAQ
+    //   data/ressourcen.js: RESSOURCEN, RESSOURCE_START, RESSOURCE_TYPEN
+    // ===== ENGINE ===== (Nav, Vote-Helfer, bayesScore, searchScore, renderStars,
+    //   playScript, openSubmitFlow, Utils: shared/base.js)
+    //
+    // BEWUSST OHNE window.RatingConfig und window.ModalConfig: diese Seite nutzt
+    // keine Sterne-EINGABE und kein Modal — alles klappt inline auf. Auf einer
+    // Seite leben DREI Vote-Typen nebeneinander (vote:ressource, vote:befehl,
+    // vote:begriff). Die Vote-Helfer hasVoted/getVotes/toggleVote nehmen den Typ
+    // IMMER explizit (pro Aufruf typisiert) — ein seitenweiter RatingConfig-Default
+    // würde alle drei fälschlich in EINEN Namespace zwingen, deshalb bleibt er weg.
+    // (bayesScore für die Ressourcen liest nur den Seed — es gibt keine Sterne-
+    // Eingabe, ein Upvote verändert die Sterne NIE.)
+
+    // ===== STATE ===== (Minimal-Global, wird von base.js defensiv gelesen)
+    const state = {
+      pendingRating: {},
+      activeSkill: null,
+      activeTab: 'overview',
+      activeFile: 0,
+      // Befehle
+      kategorie: null,   // slash | cli | taste | langdock | null
+      // Ressourcen
+      typ: null,         // video | doku | artikel | kurs | podcast | intern | null
+      niveau: null,      // einsteiger | fortgeschritten | null
+      dauer: null,       // '5' | '15' | '30' | 'ueber30' | null
+      sprache: null,     // 'de' | 'en' | null
+      sort: 'bewertung',
+      search: ''
+    };
+    const _expanded = new Set();     // aufgeklappte Befehl-IDs (überlebt Re-Sort)
+    let _playingDemo = null;         // ID der gerade tippenden Leuchtturm-Demo
+    const _gExpanded = new Set();    // aufgeklappte Glossar-Begriffe (überlebt Such-Re-Render)
+    let _gQuery = '';                // aktive Glossar-Suche
+    let _faqOpen = null;             // offene FAQ-Karte (Akkordeon: höchstens eine)
+    const _resExpanded = new Set();  // aufgeklappte Ressourcen-IDs (überlebt Re-Render)
+
+    function prefersReduce() {
+      return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    }
+    // 'auto' würde wegen html{scroll-behavior:smooth} (base.css) trotzdem gleiten —
+    // bei reduzierter Bewegung muss der Sprung wirklich sofort sein, daher 'instant'.
+    function scrollBehavior() { return prefersReduce() ? 'instant' : 'smooth'; }
+
+    // ===== NAV & FOOTER (shared/base.js) =====
+    // Aktive Seite: 'hilfe' — die id nav-hilfe wird beim späteren Nav-Merge
+    // (base.js, Verdrahtungs-Welle) zum gemergten Eintrag „Lernen & Hilfe“ →
+    // lernen-hilfe.html umgewidmet; bis dahin ist der aktive Zustand provisorisch.
+    // Header-Suche filtert das Ressourcen-Regal (Muster lernen.html).
+    renderNav('hilfe', {
+      search: { id: 'search', label: 'Nur diese Seite: Ressourcen filtern', placeholder: 'Nur Ressourcen filtern …' },
+      footerClaim: 'Von Piloten gebaut, von Piloten empfohlen. Wenn du weiterkommen willst, fehlt dir kein Talent — nur ein Handgriff. Hier findest du ihn.'
+    });
+
+    /* ============================================================
+       BEREICH 1: RESSOURCEN (aus lernen.html)
+       ============================================================ */
+    const TYP_CARD_LABEL = { video: 'Video', doku: 'Doku', artikel: 'Artikel', kurs: 'Kurs', podcast: 'Podcast', intern: 'pilot-intern' };
+    const NIVEAU_LABEL = { einsteiger: 'Einsteiger', fortgeschritten: 'Fortgeschritten' };
+    // gemeinsames Plattform-Label für Befehle UND Ressourcen (Superset)
+    const PF_LABEL = { code: 'Claude Code', langdock: 'Langdock', allgemein: 'Allgemein' };
+    const SPRACHE_LABEL = { de: 'Deutsch', en: 'Englisch' };
+    // Kumulative Dauer-Buckets — identisch mit den Zeit-Kacheln im Hero.
+    const DAUER_BUCKETS = [
+      { id: '5',       label: 'bis 5 Min',   zahl: '≤ 5',  name: 'Espresso',    test: r => r.dauerMin <= 5 },
+      { id: '15',      label: 'bis 15 Min',  zahl: '≤ 15', name: 'Kaffeepause', test: r => r.dauerMin <= 15 },
+      { id: '30',      label: 'bis 30 Min',  zahl: '≤ 30', name: 'Fokus-Block', test: r => r.dauerMin <= 30 },
+      { id: 'ueber30', label: 'über 30 Min', zahl: '> 30', name: 'Deep Dive',   test: r => r.dauerMin > 30 }
+    ];
+    function bucketById(id) { return DAUER_BUCKETS.find(b => b.id === id); }
+
+    function resById(id) { return RESSOURCEN.find(r => r.id === id); }
+    function typIcon(t) { return t === 'kurs' ? LU.einstieg : (LU[t] || LU.fallback); }
+    function dauerText(r) {
+      return (r.dauerCa ? '~' : '') + r.dauerMin + ' Min' + (r.dauerProFolge ? ' pro Folge' : '');
+    }
+
+    // ===== FILTER & SORT =====
+    function matchesChips(r) {
+      if (state.niveau && r.niveau !== state.niveau) return false;
+      if (state.dauer) { const b = bucketById(state.dauer); if (b && !b.test(r)) return false; }
+      if (state.sprache && r.sprache !== state.sprache) return false;
+      return true;
+    }
+    function filterRessourcen() {
+      let result = RESSOURCEN.filter(matchesChips);
+      if (state.typ) result = result.filter(r => r.typ === state.typ);
+      if (state.search) {
+        const terms = state.search.toLowerCase().split(/\s+/).filter(t => t.length > 1);
+        state._searchScore = {};
+        if (terms.length) {
+          result = result.filter(r => {
+            const sc = searchScore(r, terms, [
+              [r.titel, 5], [r.fuerDich, 3], [(r.tags || []).join(' '), 3],
+              [r.quelle, 2], [r.beschreibung || '', 1]
+            ]);
+            if (sc > 0) state._searchScore[r.id] = sc;
+            return sc > 0;
+          });
+        }
+      }
+      result.sort((a, b) => {
+        if (state.search && state._searchScore) {
+          const d = (state._searchScore[b.id] || 0) - (state._searchScore[a.id] || 0);
+          if (d) return d;
+        }
+        if (state.sort === 'bewertung') {
+          // Interne Platzhalter haben ehrlich KEIN Rating — sie sortieren ans Ende
+          // statt den Bayes-Prior (4.2) geschenkt zu bekommen.
+          const av = a.rating ? bayesScore(a) : 0, bv = b.rating ? bayesScore(b) : 0;
+          if (bv !== av) return bv - av;
+          return (b.votes || 0) - (a.votes || 0) || a.titel.localeCompare(b.titel, 'de');
+        }
+        if (state.sort === 'dauer') return a.dauerMin - b.dauerMin || a.titel.localeCompare(b.titel, 'de');
+        if (state.sort === 'alpha') return a.titel.localeCompare(b.titel, 'de');
+        return 0;
+      });
+      return result;
+    }
+
+    // ===== TYP-TABS =====
+    function typCount(t) { return RESSOURCEN.filter(r => r.typ === t && matchesChips(r)).length; }
+    function renderCatTabs() {
+      const subs = [{ id: 'all', label: 'Alle' }].concat(RESSOURCE_TYPEN);
+      const total = RESSOURCEN.filter(matchesChips).length;
+      document.getElementById('cat-tabs').innerHTML = subs.map(s => {
+        const count = s.id === 'all' ? total : typCount(s.id);
+        const isActive = state.typ === (s.id === 'all' ? null : s.id);
+        if (!count && s.id !== 'all' && !isActive) return '';
+        return `<button class="cat-tab${isActive ? ' active' : ''}" aria-pressed="${isActive}" onclick="setTyp('${s.id}')">${escHtml(s.label)} <span class="tab-count">${count}</span></button>`;
+      }).join('');
+    }
+    function setTyp(t) {
+      state.typ = t === 'all' ? null : t;
+      renderCatTabs();
+      render();
+    }
+
+    // ===== NIVEAU-/DAUER-/SPRACHE-CHIPS =====
+    function renderFilterChips() {
+      const host = document.getElementById('filter-chips');
+      if (!host) return;
+      const nivChips = ['einsteiger', 'fortgeschritten'].map(n => {
+        const active = state.niveau === n;
+        return `<button class="role-chip${active ? ' active' : ''}" aria-pressed="${active}" onclick="setNiveau('${n}')">${NIVEAU_LABEL[n]}</button>`;
+      }).join('');
+      const dauerChips = DAUER_BUCKETS.map(b => {
+        const active = state.dauer === b.id;
+        return `<button class="role-chip${active ? ' active' : ''}" aria-pressed="${active}" onclick="setDauer('${b.id}')">${b.label}</button>`;
+      }).join('');
+      const langChips = ['de', 'en'].map(s => {
+        const active = state.sprache === s;
+        return `<button class="role-chip${active ? ' active' : ''}" aria-pressed="${active}" onclick="setSprache('${s}')">${SPRACHE_LABEL[s]}</button>`;
+      }).join('');
+      host.innerHTML = `<span class="chip-lbl">Niveau</span>${nivChips}`
+        + `<span class="chip-gap" aria-hidden="true"></span><span class="chip-lbl">Dauer</span>${dauerChips}`
+        + `<span class="chip-gap" aria-hidden="true"></span><span class="chip-lbl">Sprache</span>${langChips}`;
+    }
+    function setNiveau(n) {
+      state.niveau = state.niveau === n ? null : n;
+      renderFilterChips(); renderCatTabs(); render();
+    }
+    function setDauer(id) {
+      state.dauer = state.dauer === id ? null : id;
+      renderFilterChips(); renderCatTabs(); updateZeitTiles(); render();
+    }
+    function setSprache(s) {
+      state.sprache = state.sprache === s ? null : s;
+      renderFilterChips(); renderCatTabs(); render();
+    }
+
+    // ===== SIGNATURE: ZEIT-KACHELN (Hero) =====
+    function renderZeitTiles() {
+      const host = document.getElementById('zeit-tiles');
+      if (!host) return;
+      host.innerHTML = DAUER_BUCKETS.map(b => {
+        const n = RESSOURCEN.filter(b.test).length; // echte Zählung aus dauerMin
+        const active = state.dauer === b.id;
+        return `<button type="button" class="zeit-tile${active ? ' active' : ''}" data-dauer="${b.id}" aria-pressed="${active}" onclick="quickZeit('${b.id}')">
+          <span class="zt-num">${b.zahl} <span class="zt-unit">Min</span></span>
+          <span class="zt-name">${b.name}</span>
+          <span class="zt-count">${n} ${n === 1 ? 'Ressource' : 'Ressourcen'}</span>
+        </button>`;
+      }).join('');
+    }
+    // Kein innerHTML-Tausch beim Klick (Fokus bleibt auf der Kachel) — nur Klassen.
+    function updateZeitTiles() {
+      document.querySelectorAll('#zeit-tiles .zeit-tile').forEach(el => {
+        const active = state.dauer === el.dataset.dauer;
+        el.classList.toggle('active', active);
+        el.setAttribute('aria-pressed', active ? 'true' : 'false');
+      });
+    }
+    function scrollToRessourcen() {
+      const el = document.getElementById('ressourcen');
+      if (el) el.scrollIntoView({ behavior: scrollBehavior(), block: 'start' });
+    }
+    function quickZeit(id) {
+      const wasActive = state.dauer === id;
+      setDauer(id); // togglet
+      if (!wasActive) scrollToRessourcen();
+    }
+
+    // ===== AKTIVE FILTER-ZUSAMMENFASSUNG =====
+    function renderActiveFilters() {
+      const bar = document.getElementById('active-filters');
+      if (!bar) return;
+      const pills = [];
+      if (state.typ) pills.push({ label: 'Typ: ' + (TYP_CARD_LABEL[state.typ] || state.typ), clear: `setTyp('all')` });
+      if (state.niveau) pills.push({ label: 'Niveau: ' + NIVEAU_LABEL[state.niveau], clear: `setNiveau('${state.niveau}')` });
+      if (state.dauer) pills.push({ label: 'Dauer: ' + bucketById(state.dauer).label, clear: `setDauer('${state.dauer}')` });
+      if (state.sprache) pills.push({ label: 'Sprache: ' + SPRACHE_LABEL[state.sprache], clear: `setSprache('${state.sprache}')` });
+      if (state.search) pills.push({ label: `Suche: "${escHtml(state.search)}"`, clear: `clearSearch()` });
+
+      const ftb = document.getElementById('ftb-count');
+      if (ftb) { ftb.hidden = pills.length === 0; ftb.textContent = pills.length; }
+      if (pills.length === 0) { bar.hidden = true; bar.innerHTML = ''; return; }
+      bar.hidden = false;
+      bar.innerHTML = `<span class="active-filters-label">Aktive Filter:</span>` +
+        pills.map(p => `<button class="active-pill" onclick="${p.clear}">${p.label} <span class="ap-x">✕</span></button>`).join('') +
+        `<button class="active-clear" onclick="resetFilters()">Alle zurücksetzen</button>`;
+    }
+    function clearSearch() {
+      state.search = '';
+      ['search', 'search-m'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+      render();
+    }
+    function resetFilters() {
+      state.typ = null; state.niveau = null; state.dauer = null; state.sprache = null; state.search = '';
+      ['search', 'search-m'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+      renderCatTabs(); renderFilterChips(); updateZeitTiles();
+      render();
+    }
+
+    // ===== KARTE (LINK-Karte: Klick-Ziel ist der externe Link, Details klappen auf) =====
+    function resBodyHtml(r) {
+      let h = `
+        <div><span class="res-body-label">Was drin ist</span><p>${escHtml(r.beschreibung)}</p></div>`;
+      if (r.gelernt && r.gelernt.length) h += `
+        <div><span class="res-body-label">Das nimmst du mit</span>
+          <ul class="res-gelernt">${r.gelernt.map(g => `<li>${escHtml(g)}</li>`).join('')}</ul>
+        </div>`;
+      if (r.stimmen && r.stimmen.length) h += `
+        <div><span class="res-body-label">Stimmen aus dem Team</span>
+          ${r.stimmen.map(v => `
+          <figure class="res-voice">
+            <blockquote>${escHtml(v.text)}</blockquote>
+            <figcaption>${escHtml(v.autor)} · ${escHtml(v.rolle)}</figcaption>
+          </figure>`).join('')}
+        </div>`;
+      h += r.intern
+        ? `<div><span class="res-geprueft">pilot-interner Eintrag — Link folgt, bis dahin: frag das KI-Enablement-Team.</span></div>`
+        : `<div><span class="res-geprueft">Link geprüft am ${formatDate(r.geprueft)}.</span></div>`;
+      return h;
+    }
+
+    function resCardHtml(r, idx, isStart) {
+      const open = _resExpanded.has(r.id);
+      const voted = hasVoted('ressource', r.id);
+      const delay = Math.min(idx, 11) * 35;
+      const titleHtml = r.url
+        ? `<a class="res-title" href="${escHtml(r.url)}" target="_blank" rel="noopener">${escHtml(r.titel)}${LU.extern}</a>`
+        : `<span class="res-title">${escHtml(r.titel)}</span>`;
+      const footHtml = r.intern
+        ? `<span class="res-intern-hint">Noch nicht bewertbar — der Link folgt.</span>`
+        : `<span class="res-rating">${renderStars(r.rating.average)}<span>${r.rating.average.toFixed(1)} · ${r.rating.count} ${r.rating.count === 1 ? 'Bewertung' : 'Bewertungen'}</span></span>
+           <button type="button" class="vote-btn${voted ? ' voted' : ''}" aria-pressed="${voted}" onclick="voteRessource('${r.id}')">
+             ${LU.vote}<span>Hat mir geholfen</span><span class="vote-count">${getVotes('ressource', r.id, r.votes)}</span>
+           </button>`;
+      return `
+        <article class="res-card${r.intern ? ' -intern' : ''}${isStart ? ' start-here' : ''}${state._noCardAnim ? '' : ' card-in'}" style="animation-delay:${state._noCardAnim ? 0 : delay}ms" id="res-${r.id}" data-id="${r.id}">
+          ${isStart ? '<span class="start-here-ribbon">Start hier</span>' : ''}
+          <div class="res-ico" aria-hidden="true">${typIcon(r.typ)}</div>
+          <div class="res-main">
+            <div class="res-kopf">
+              <span class="res-typ">${TYP_CARD_LABEL[r.typ] || r.typ}</span>
+              <span class="res-quelle">${escHtml(r.quelle)}</span>
+              ${r.intern ? '<span class="intern-tag">Link folgt</span>' : ''}
+            </div>
+            ${titleHtml}
+            <p class="res-fuerdich"><strong>Für dich, wenn</strong> ${escHtml(r.fuerDich)}</p>
+            <div class="res-meta">
+              <span class="res-dauer">${LU.uhr}${dauerText(r)}</span>
+              <span class="meta-dot">·</span>
+              <span class="lang-pill">${r.sprache.toUpperCase()}</span>
+              <span class="meta-dot">·</span>
+              <span class="diff-badge ${r.niveau === 'einsteiger' ? 'easy' : 'advanced'}">${NIVEAU_LABEL[r.niveau]}</span>
+              <span class="meta-dot">·</span>
+              <span class="res-pf">${PF_LABEL[r.plattform] || r.plattform}</span>
+            </div>
+            <div class="res-foot">
+              ${footHtml}
+              <button type="button" class="res-toggle" aria-expanded="${open}" aria-controls="res-body-${r.id}" onclick="toggleRessource('${r.id}')">
+                <span>Mehr dazu</span><span class="ct-arrow" aria-hidden="true">›</span>
+              </button>
+            </div>
+          </div>
+          <div class="res-body" id="res-body-${r.id}"${open ? '' : ' hidden'}>${resBodyHtml(r)}</div>
+        </article>`;
+    }
+
+    // ===== RENDER (Ressourcen) =====
+    function resultNoun(n) { return n === 1 ? 'Ressource' : 'Ressourcen'; }
+
+    function render() {
+      const filtered = filterRessourcen();
+      const host = document.getElementById('res-list');
+      if (!host) return;
+      const count = document.getElementById('results-count');
+      if (count) count.innerHTML = `<strong>${filtered.length}</strong> ${resultNoun(filtered.length)}`;
+
+      renderActiveFilters();
+
+      if (filtered.length === 0) {
+        host.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m13.5 8.5-5 5"/><path d="m8.5 8.5 5 5"/><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></div>
+            <h3 class="empty-title">Keine Ressource gefunden</h3>
+            <p class="empty-text">Nichts passt zu deinen aktuellen Filtern. Setze Filter zurück oder probiere einen anderen Suchbegriff.</p>
+            <button class="c-cta -black-bg" onclick="resetFilters()" style="margin-top:2rem">Alle Filter zurücksetzen</button>
+          </div>`;
+        return;
+      }
+      // Ohne aktive Filter/Suche und nur bei Standard-Sortierung: Redaktions-Kandidat
+      // als „Start hier“ anpinnen — eine explizite Sortierung (Dauer, A–Z) bleibt
+      // ehrlich und wird nicht vom Pin durchbrochen.
+      const noFilter = !state.search && !state.typ && !state.niveau && !state.dauer && !state.sprache
+        && state.sort === 'bewertung';
+      const start = noFilter ? filtered.find(r => r.id === RESSOURCE_START) : null;
+      const rest = start ? filtered.filter(r => r.id !== start.id) : filtered;
+      let html = start ? resCardHtml(start, 0, true) : '';
+      let idx = start ? 1 : 0;
+      html += rest.map(r => resCardHtml(r, idx++, false)).join('');
+      host.innerHTML = html;
+    }
+
+    function voteRessource(id) {
+      const r = resById(id);
+      if (!r || r.intern) return;
+      const now = toggleVote('ressource', id);
+      const btn = document.querySelector(`#res-${id} .vote-btn`);
+      if (btn) {
+        btn.classList.toggle('voted', now);
+        btn.setAttribute('aria-pressed', now ? 'true' : 'false');
+        const count = btn.querySelector('.vote-count');
+        if (count) count.textContent = getVotes('ressource', id, r.votes);
+      }
+      showToast(now ? 'Danke — deine Stimme zählt (gespeichert in deinem Browser)' : 'Stimme zurückgenommen');
+    }
+
+    function toggleRessource(id) {
+      const body = document.getElementById('res-body-' + id);
+      const btn = document.querySelector(`#res-${id} .res-toggle`);
+      if (!body) return;
+      const nowOpen = body.hidden;
+      if (nowOpen) { _resExpanded.add(id); body.hidden = false; }
+      else { _resExpanded.delete(id); body.hidden = true; }
+      if (btn) btn.setAttribute('aria-expanded', nowOpen ? 'true' : 'false');
+    }
+
+    // ===== „RESSOURCE VORSCHLAGEN“ — Demo-Flow-Baustein aus shared/base.js =====
+    function openRessourceSubmit() {
+      openSubmitFlow({
+        type: 'ressource',
+        title: 'Ressource vorschlagen',
+        intro: 'Der Link, der dir wirklich etwas beigebracht hat — Video, Artikel, Doku, Kurs oder Podcast.',
+        fields: [
+          { key: 'titel', label: 'Titel', required: true, placeholder: 'z. B. „Large Language Models explained briefly“' },
+          { key: 'link', label: 'Link', required: true, placeholder: 'https://…' },
+          { key: 'warum', label: 'Warum hilfreich?', type: 'textarea', required: true, placeholder: 'Was hast du daraus gelernt — und für wen lohnt es sich?' }
+        ],
+        submitLabel: 'Ressource vorschlagen (Demo)'
+      });
+    }
+
+    // ===== MOBILE FILTER TOGGLE =====
+    function toggleMobileFilter() {
+      const btn = document.getElementById('filter-toggle-btn');
+      const panel = document.getElementById('filter-collapsible');
+      if (!btn || !panel) return;
+      const isExpanded = btn.getAttribute('aria-expanded') === 'true';
+      btn.setAttribute('aria-expanded', isExpanded ? 'false' : 'true');
+      panel.hidden = isExpanded;
+    }
+
+    /* ============================================================
+       BEREICH 2: BEFEHLE & KNIFFE (aus hilfe.html)
+       ============================================================ */
+    const KAT = [
+      { id: 'all',      label: 'Alle' },
+      { id: 'slash',    label: 'Slash-Befehle' },
+      { id: 'taste',    label: 'Tastentricks' },
+      { id: 'cli',      label: 'Terminal-Flags' },
+      { id: 'langdock', label: 'Langdock' }
+    ];
+
+    function befehlById(id) { return BEFEHLE.find(b => b.id === id); }
+    function votesOf(b) { return getVotes('befehl', b.id, b.votes); }
+
+    // Sortierung des Rankings: Stimmen (Seed + eigene) absteigend. Bei Gleichstand
+    // gewinnt der Eintrag mit DEINER Stimme (der Klick soll sichtbar bewegen),
+    // danach stabil nach Seed und Wortlaut, damit die Liste beim Toggle nicht springt.
+    function sortedBefehle() {
+      return BEFEHLE.slice().sort((a, b) =>
+        votesOf(b) - votesOf(a)
+        || (hasVoted('befehl', b.id) ? 1 : 0) - (hasVoted('befehl', a.id) ? 1 : 0)
+        || b.votes - a.votes
+        || a.cmd.localeCompare(b.cmd, 'de'));
+    }
+
+    // ===== KATEGORIE-FILTER =====
+    function setKategorie(k) {
+      state.kategorie = (k === 'all' || state.kategorie === k) ? null : k;
+      renderChips();
+      const host = document.getElementById('bef-chips');
+      if (host) {
+        const idx = KAT.findIndex(kat => kat.id === k);
+        const target = (idx >= 0 && host.children[idx]) || host.querySelector('.bef-chip.active');
+        if (target) target.focus({ preventScroll: true });
+      }
+      renderRanking();
+    }
+    function renderChips() {
+      const host = document.getElementById('bef-chips');
+      if (!host) return;
+      host.innerHTML = KAT.map(k => {
+        const count = k.id === 'all' ? BEFEHLE.length : BEFEHLE.filter(b => b.kategorie === k.id).length;
+        const active = k.id === 'all' ? state.kategorie === null : state.kategorie === k.id;
+        return `<button type="button" class="bef-chip${active ? ' active' : ''}" aria-pressed="${active}" onclick="setKategorie('${k.id}')">${escHtml(k.label)} <span class="bef-chip-count">${count}</span></button>`;
+      }).join('');
+    }
+
+    // ===== RANKING RENDERN (mit FLIP-Bewegung beim Re-Sort) =====
+    function cardBodyHtml(b) {
+      let h = `
+        <div class="cmd-example"><span class="cmd-body-label">Mini-Beispiel</span><p>${mdInline(b.beispiel)}</p></div>`;
+      if (b.tipp) h += `
+        <div class="cmd-tipp"><span class="cmd-body-label">Gut zu wissen</span><p>${mdInline(b.tipp)}</p></div>`;
+      if (BEFEHL_LEUCHTTUERME.has(b.id) && b.demo) h += `
+        <div class="cmd-demo">
+          <span class="cmd-body-label">So sieht’s aus — nachgestellter Ablauf</span>
+          <div class="ex-terminal cmd-term">
+            <div class="ex-terminal-bar">
+              <span class="ex-dot"></span><span class="ex-dot"></span><span class="ex-dot"></span>
+              <span class="ex-terminal-title">claude code — ${escHtml(b.cmd)} in Aktion</span>
+              <button type="button" class="demo-replay" onclick="playBefehlDemo('${b.id}')" title="Demo abspielen" aria-label="Demo abspielen">↻</button>
+            </div>
+            <div class="ex-terminal-body" id="term-${b.id}">
+              <button type="button" class="term-play" onclick="playBefehlDemo('${b.id}')">▸ Demo abspielen</button>
+            </div>
+          </div>
+        </div>`;
+      const voices = BEFEHL_KOMMENTARE.filter(k => k.befehlId === b.id);
+      if (voices.length) h += `
+        <div class="cmd-voices">
+          <span class="cmd-body-label">Stimmen aus dem Team</span>
+          ${voices.map(v => `
+          <figure class="cmd-voice">
+            <blockquote>${escHtml(v.text)}</blockquote>
+            <figcaption>${escHtml(v.autor)} · ${escHtml(v.rolle)}</figcaption>
+          </figure>`).join('')}
+        </div>`;
+      return h;
+    }
+
+    function cardHtml(b, rank) {
+      const open = _expanded.has(b.id);
+      const voted = hasVoted('befehl', b.id);
+      const isLh = BEFEHL_LEUCHTTUERME.has(b.id);
+      // Kopier-Chip nur, wo Kopieren Sinn ergibt (Slash-Befehle & Terminal-Flags
+      // tippt man ein — Tasten drückt man, Langdock-Wege klickt man).
+      const copyable = b.kategorie === 'slash' || b.kategorie === 'cli';
+      return `
+        <li class="cmd-card" id="befehl-${b.id}" data-id="${b.id}">
+          <div class="cmd-row">
+            <span class="rank-num${rank <= 3 ? ' -top' : ''}" aria-label="Rang ${rank}">${rank}</span>
+            <div class="cmd-main">
+              <div class="cmd-line">
+                <code class="cmd-code">${escHtml(b.cmd)}</code>
+                ${copyable ? `<button type="button" class="cmd-copy" onclick="copyBefehl(event,'${b.id}')" title="Befehl kopieren" aria-label="Befehl ${escHtml(b.cmd)} kopieren">${LU.copy} Kopieren</button>` : ''}
+                <span class="pf-tag">${PF_LABEL[b.plattform] || b.plattform}</span>
+                ${isLh ? '<span class="lh-tag">Mini-Demo</span>' : ''}
+              </div>
+              <p class="cmd-nutzen">${mdInline(b.nutzen)}</p>
+              <div class="cmd-actions">
+                <button type="button" class="vote-btn${voted ? ' voted' : ''}" aria-pressed="${voted}" onclick="voteBefehl('${b.id}')">
+                  ${LU.vote}<span>Hat mir geholfen</span><span class="vote-count">${votesOf(b)}</span>
+                </button>
+                <button type="button" class="cmd-toggle" aria-expanded="${open}" aria-controls="cmd-body-${b.id}" onclick="toggleBefehl('${b.id}')">
+                  <span>${isLh ? 'Beispiel & Demo' : 'Mini-Beispiel'}</span><span class="ct-arrow" aria-hidden="true">›</span>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="cmd-body" id="cmd-body-${b.id}"${open ? '' : ' hidden'}>${cardBodyHtml(b)}</div>
+        </li>`;
+    }
+
+    function renderRanking(movedId, skipFlip) {
+      // Eine evtl. laufende Demo würde sonst in weggeworfene DOM-Knoten tippen
+      stopTermScript();
+      _playingDemo = null;
+      const list = document.getElementById('rank-list');
+      if (!list) return;
+      // FLIP Schritt 1: alte Positionen merken
+      const prevTop = {};
+      list.querySelectorAll('.cmd-card').forEach(el => { prevTop[el.dataset.id] = el.getBoundingClientRect().top; });
+      const all = sortedBefehle();
+      const rank = {}; all.forEach((b, i) => { rank[b.id] = i + 1; });   // globaler Rang, auch unter Filter
+      const shown = state.kategorie ? all.filter(b => b.kategorie === state.kategorie) : all;
+      list.innerHTML = shown.length
+        ? shown.map(b => cardHtml(b, rank[b.id])).join('')
+        : '<li class="bef-empty">Kein Eintrag in dieser Kategorie.</li>';
+      // FLIP Schritt 2: bewegte Karten gleiten sichtbar an ihren neuen Platz.
+      const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!reduce && !skipFlip) {
+        list.querySelectorAll('.cmd-card').forEach(el => {
+          const was = prevTop[el.dataset.id];
+          if (was === undefined) return;
+          const dy = was - el.getBoundingClientRect().top;
+          if (Math.abs(dy) < 2) return;
+          el.style.transform = `translateY(${dy}px)`;
+          el.style.transition = 'transform 0s';
+          requestAnimationFrame(() => {
+            el.style.transition = 'transform .5s var(--ae)';
+            el.style.transform = '';
+          });
+        });
+      }
+      if (movedId) {
+        const el = document.getElementById('befehl-' + movedId);
+        if (el) { el.classList.add('-moved'); setTimeout(() => el.classList.remove('-moved'), 1400); }
+        const vb = document.querySelector('#befehl-' + movedId + ' .vote-btn');
+        if (vb) vb.focus({ preventScroll: true });
+      }
+    }
+
+    // ===== INTERAKTIONEN (Befehle) =====
+    function voteBefehl(id) {
+      const now = toggleVote('befehl', id);
+      showToast(now ? 'Danke — deine Stimme zählt (gespeichert in deinem Browser)' : 'Stimme zurückgenommen');
+      renderRanking(id);
+    }
+
+    function copyBefehl(evt, id) {
+      const b = befehlById(id);
+      if (!b) return;
+      quickCopy(evt, b.cmd);
+    }
+
+    function toggleBefehl(id) {
+      const body = document.getElementById('cmd-body-' + id);
+      const card = document.getElementById('befehl-' + id);
+      const btn = card ? card.querySelector('.cmd-toggle') : null;
+      if (!body) return;
+      const nowOpen = body.hidden;
+      if (nowOpen) { _expanded.add(id); body.hidden = false; }
+      else {
+        _expanded.delete(id); body.hidden = true;
+        if (_playingDemo === id) { stopTermScript(); _playingDemo = null; }
+      }
+      if (btn) btn.setAttribute('aria-expanded', nowOpen ? 'true' : 'false');
+    }
+
+    // Leuchtturm-Demo abspielen (kein Autoplay — Demo startet nur auf Klick)
+    function playBefehlDemo(id) {
+      const b = befehlById(id);
+      const body = document.getElementById('term-' + id);
+      if (!b || !b.demo || !body) return;
+      _playingDemo = id;
+      playScript(b.demo.script, { artifacts: [] }, { body, actions: null });
+    }
+
+    // ===== „KNIFF EINREICHEN“ — Demo-Flow-Baustein aus shared/base.js =====
+    function openKniffSubmit() {
+      openSubmitFlow({
+        type: 'kniff',
+        title: 'Kniff einreichen',
+        intro: 'Dein Handgriff fürs Ranking — der Befehl, Trick oder Ablauf, der dir im Alltag wirklich hilft.',
+        fields: [
+          { key: 'titel', label: 'Titel', required: true, placeholder: 'z. B. „Screenshot direkt einfügen“' },
+          { key: 'trick', label: 'Befehl oder Trick', required: true, placeholder: 'z. B. Ctrl+V — oder der Ablauf in einem Satz' },
+          { key: 'wofuer', label: 'Wofür ist er gut?', type: 'textarea', required: true, placeholder: 'Wann hilft dir dieser Kniff — und was spart er dir?' }
+        ],
+        submitLabel: 'Kniff einreichen (Demo)'
+      });
+    }
+
+    /* ============================================================
+       QUERVERWEISE (Glossar + FAQ) — aus hilfe.html
+       ============================================================ */
+    // skill/prompt verlassen die Seite (Deep-Links der Nachbarseiten),
+    // befehl/begriff bleiben hier und laufen über den Hash-Router unten.
+    function xrefInfo(v) {
+      if (v.t === 'skill') return { href: 'skills.html?skill=' + encodeURIComponent(v.id), label: v.name || v.id, kind: 'Skill' };
+      if (v.t === 'prompt') return { href: 'prompts.html?p=' + encodeURIComponent(v.id), label: v.name || v.id, kind: 'Prompt' };
+      if (v.t === 'befehl') { const b = befehlById(v.id); return b ? { href: '#befehl/' + encodeURIComponent(v.id), label: b.cmd, kind: 'Befehl' } : null; }
+      if (v.t === 'begriff') { const g = begriffById(v.id); return g ? { href: '#begriff/' + encodeURIComponent(v.id), label: g.wort, kind: 'Glossar' } : null; }
+      return null;
+    }
+    function xrefsHtml(verweise) {
+      const items = (verweise || []).map(xrefInfo).filter(Boolean);
+      if (!items.length) return '';
+      return `<div class="xref-row">${items.map(x =>
+        `<a class="xref" href="${x.href}"><span class="xref-kind">${x.kind}</span>${escHtml(x.label)}</a>`).join('')}</div>`;
+    }
+
+    /* ============================================================
+       BEREICH 3: GLOSSAR (aus hilfe.html)
+       ============================================================ */
+    function begriffById(id) { return GLOSSAR.find(g => g.id === id); }
+
+    function glossarMatches() {
+      const q = _gQuery.trim().toLowerCase();
+      if (!q) return GLOSSAR;
+      const terms = q.split(/\s+/).filter(Boolean);
+      return GLOSSAR.filter(g => searchScore(g, terms,
+        [[g.wort, 5], [g.satz, 3], [g.beispiel, 2], [g.tiefe || '', 1]]) > 0);
+    }
+
+    function gCardHtml(g) {
+      const open = _gExpanded.has(g.id);
+      const voted = hasVoted('begriff', g.id);
+      return `
+        <article class="g-card" id="begriff-${g.id}">
+          <h4 class="g-wort">${escHtml(g.wort)}</h4>
+          <p class="g-satz">${mdInline(g.satz)}</p>
+          <div class="g-actions">
+            <button type="button" class="vote-btn g-vote${voted ? ' voted' : ''}" aria-pressed="${voted}" onclick="voteBegriff('${g.id}')">
+              ${LU.vote}<span>Hat mir geholfen</span><span class="vote-count">${getVotes('begriff', g.id, g.votes)}</span>
+            </button>
+            <button type="button" class="g-toggle" aria-expanded="${open}" aria-controls="g-body-${g.id}" onclick="toggleBegriff('${g.id}')">
+              <span>${g.tiefe ? 'Beispiel &amp; Vertiefung' : 'pilot-Beispiel'}</span><span class="ct-arrow" aria-hidden="true">›</span>
+            </button>
+          </div>
+          <div class="g-body" id="g-body-${g.id}"${open ? '' : ' hidden'}>
+            <div><span class="g-body-label">pilot-Beispiel</span><p>${mdInline(g.beispiel)}</p></div>
+            ${g.tiefe ? `<div><span class="g-body-label">Wenn du tiefer willst</span><p>${mdInline(g.tiefe)}</p></div>` : ''}
+            ${xrefsHtml(g.verweise)}
+          </div>
+        </article>`;
+    }
+
+    function renderGlossar() {
+      const host = document.getElementById('glossar-liste');
+      if (!host) return;
+      const shown = glossarMatches();
+      const hits = document.getElementById('glo-hits');
+      if (hits) {
+        if (_gQuery.trim()) {
+          hits.hidden = false;
+          hits.textContent = `${shown.length} Treffer für „${_gQuery.trim()}“`;
+        } else { hits.hidden = true; hits.textContent = ''; }
+      }
+      if (!shown.length) {
+        host.innerHTML = `
+          <div class="glo-empty">
+            <p>Kein Begriff gefunden — vielleicht unter anderem Namen?</p>
+            <button type="button" class="c-cta -black-border" onclick="clearGlossarSearch()">Suche zurücksetzen</button>
+          </div>`;
+        renderAzRail(shown);
+        return;
+      }
+      const groups = new Map();
+      shown.forEach(g => {
+        if (!groups.has(g.buchstabe)) groups.set(g.buchstabe, []);
+        groups.get(g.buchstabe).push(g);
+      });
+      const letters = [...groups.keys()].sort();
+      host.innerHTML = letters.map(L => `
+        <section class="g-gruppe" id="g-gruppe-${L}" aria-label="Begriffe mit ${L}">
+          <h3 class="g-letter">${L}</h3>
+          <div class="g-grid">${groups.get(L)
+            .slice().sort((a, b) => a.wort.localeCompare(b.wort, 'de'))
+            .map(gCardHtml).join('')}</div>
+        </section>`).join('');
+      renderAzRail(shown);
+    }
+
+    // A-Z-Sprungleiste: nur Buchstaben mit (sichtbaren) Einträgen sind aktiv
+    function renderAzRail(shown) {
+      const host = document.getElementById('az-rail');
+      if (!host) return;
+      const avail = new Set((shown || GLOSSAR).map(g => g.buchstabe));
+      host.innerHTML = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(L => avail.has(L)
+        ? `<button type="button" class="az-btn" onclick="jumpToLetter('${L}')" aria-label="Zu Begriffen mit ${L} springen">${L}</button>`
+        : `<button type="button" class="az-btn" disabled aria-hidden="true">${L}</button>`).join('');
+    }
+    function jumpToLetter(L) {
+      const el = document.getElementById('g-gruppe-' + L);
+      if (el) el.scrollIntoView({ behavior: scrollBehavior(), block: 'start' });
+    }
+
+    const onGlossarSearch = debounce(v => { _gQuery = v || ''; renderGlossar(); }, 120);
+    function clearGlossarSearch() {
+      _gQuery = '';
+      const inp = document.getElementById('glo-search');
+      if (inp) { inp.value = ''; inp.focus(); }
+      renderGlossar();
+    }
+
+    function voteBegriff(id) {
+      const g = begriffById(id);
+      if (!g) return;
+      const now = toggleVote('begriff', id);
+      const btn = document.querySelector(`#begriff-${id} .g-vote`);
+      if (btn) {
+        btn.classList.toggle('voted', now);
+        btn.setAttribute('aria-pressed', now ? 'true' : 'false');
+        const count = btn.querySelector('.vote-count');
+        if (count) count.textContent = getVotes('begriff', id, g.votes);
+      }
+      showToast(now ? 'Danke — deine Stimme zählt (gespeichert in deinem Browser)' : 'Stimme zurückgenommen');
+    }
+
+    function toggleBegriff(id) {
+      const body = document.getElementById('g-body-' + id);
+      const btn = document.querySelector(`#begriff-${id} .g-toggle`);
+      if (!body) return;
+      const nowOpen = body.hidden;
+      if (nowOpen) { _gExpanded.add(id); body.hidden = false; }
+      else { _gExpanded.delete(id); body.hidden = true; }
+      if (btn) btn.setAttribute('aria-expanded', nowOpen ? 'true' : 'false');
+    }
+
+    /* ============================================================
+       BEREICH 4: FAQ (Akkordeon — höchstens eine Karte offen) — aus hilfe.html
+       ============================================================ */
+    function faqById(id) { return FAQ.find(f => f.id === id); }
+
+    function faqCardHtml(f) {
+      const open = _faqOpen === f.id;
+      return `
+        <article class="faq-card" id="faqcard-${f.id}">
+          <button type="button" class="faq-q" aria-expanded="${open}" aria-controls="faq-body-${f.id}" onclick="toggleFaq('${f.id}')">
+            <span>${escHtml(f.frage)}</span><span class="ct-arrow" aria-hidden="true">›</span>
+          </button>
+          <div class="faq-body" id="faq-body-${f.id}"${open ? '' : ' hidden'}>
+            <p class="faq-intro">${mdInline(f.intro)}</p>
+            <ol class="faq-steps">${f.schritte.map(s => `<li>${mdInline(s)}</li>`).join('')}</ol>
+            ${f.stimme ? `
+            <figure class="faq-voice">
+              <blockquote>${escHtml(f.stimme.text)}</blockquote>
+              <figcaption>${escHtml(f.stimme.autor)} · ${escHtml(f.stimme.rolle)}</figcaption>
+            </figure>` : ''}
+            ${xrefsHtml(f.verweise)}
+          </div>
+        </article>`;
+    }
+
+    function renderFaq() {
+      const host = document.getElementById('faq-liste');
+      if (host) host.innerHTML = FAQ.map(faqCardHtml).join('');
+    }
+
+    function toggleFaq(id) {
+      const prev = _faqOpen;
+      _faqOpen = (prev === id) ? null : id;
+      [prev, id].forEach(x => {
+        if (!x) return;
+        const body = document.getElementById('faq-body-' + x);
+        const btn = document.querySelector(`#faqcard-${x} .faq-q`);
+        if (body) body.hidden = (_faqOpen !== x);
+        if (btn) btn.setAttribute('aria-expanded', _faqOpen === x ? 'true' : 'false');
+      });
+    }
+
+    /* ============================================================
+       DEEP-LINKS (gemergt): ?r= (Ressource) / ?befehl= / ?begriff= / ?faq=
+       bzw. #r/ #befehl/ #begriff/ #faq/ — jeweils in den richtigen Bereich
+       aufscrollen + Ziel hervorheben/öffnen. Nur replaceState (teilbare URL
+       ohne History-Müll). document.fonts.ready-Re-Anker gegen den Font-Reflow.
+       ============================================================ */
+    function scrollHighlight(elId) {
+      const scrollToEl = () => {
+        const t = document.getElementById(elId);
+        if (t) t.scrollIntoView({ behavior: scrollBehavior(), block: 'start' });
+      };
+      scrollToEl();
+      // Der Webfont lädt asynchron und verschiebt danach das Layout — einmal
+      // nachjustieren, sobald die Schriften stehen (sonst landet der Anker daneben).
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(() => setTimeout(scrollToEl, 60)).catch(() => {});
+      }
+      const el = document.getElementById(elId);
+      if (el) {
+        el.classList.add('-highlight');
+        setTimeout(() => el.classList.remove('-highlight'), 2400);
+      }
+    }
+
+    function applyDeepLink(fromLoad) {
+      if (fromLoad) {
+        try {
+          const qs = new URLSearchParams(location.search);
+          if (!location.hash) {
+            // Priorität in Bereichs-Reihenfolge: r, dann befehl/begriff/faq
+            for (const key of ['r', 'befehl', 'begriff', 'faq']) {
+              const v = qs.get(key);
+              if (v) {
+                history.replaceState(null, '', location.pathname + location.search + '#' + key + '/' + encodeURIComponent(v));
+                break;
+              }
+            }
+          }
+        } catch (e) {}
+      }
+      const m = (location.hash || '').match(/^#(r|befehl|begriff|faq)\/(.+)$/);
+      if (!m) return;
+      let id;
+      try { id = decodeURIComponent(m[2]); } catch (e) { return; }
+
+      if (m[1] === 'r') {
+        const r = resById(id);
+        if (!r) return;
+        // Eintrag muss sichtbar sein: sperrende Filter/Suche werden gelöst
+        if (!filterRessourcen().some(x => x.id === id)) {
+          state.typ = null; state.niveau = null; state.dauer = null; state.sprache = null; state.search = '';
+          ['search', 'search-m'].forEach(sid => { const el = document.getElementById(sid); if (el) el.value = ''; });
+          renderCatTabs(); renderFilterChips(); updateZeitTiles();
+        }
+        _resExpanded.add(id);
+        state._noCardAnim = true; render(); state._noCardAnim = false;
+        scrollHighlight('res-' + id);
+      } else if (m[1] === 'befehl') {
+        const b = befehlById(id);
+        if (!b) return;
+        // Eintrag muss sichtbar sein: sperrender Kategorie-Filter wird gelöst
+        if (state.kategorie && state.kategorie !== b.kategorie) {
+          state.kategorie = null;
+          renderChips();
+        }
+        _expanded.add(id);
+        renderRanking(null, true);
+        scrollHighlight('befehl-' + id);
+      } else if (m[1] === 'begriff') {
+        const g = begriffById(id);
+        if (!g) return;
+        // Eintrag muss sichtbar sein: aktive Suche wird gelöst
+        if (_gQuery.trim()) {
+          _gQuery = '';
+          const inp = document.getElementById('glo-search');
+          if (inp) inp.value = '';
+        }
+        _gExpanded.add(id);
+        renderGlossar();
+        scrollHighlight('begriff-' + id);
+      } else {
+        const f = faqById(id);
+        if (!f) return;
+        if (_faqOpen !== id) toggleFaq(id);
+        scrollHighlight('faqcard-' + id);
+      }
+    }
+
+    // ===== ORIENTIERUNGS-ZEILE — Hero-Button springt zur statischen Zeile =====
+    function openGS() {
+      const el = document.getElementById('getting-started');
+      if (el) el.scrollIntoView({ behavior: scrollBehavior(), block: 'start' });
+    }
+
+    /* ============================================================
+       SCROLL-SPY der Sticky-Sub-Nav: markiert den Bereich, in dem du dich
+       befindest (A11y: aria-current + sichtbarer aktiver Zustand).
+       ============================================================ */
+    function initPillarSpy() {
+      const links = [...document.querySelectorAll('.pillar-link')];
+      if (!links.length) return;
+      const setActive = (id) => {
+        links.forEach(a => {
+          const on = a.getAttribute('href') === '#' + id;
+          a.classList.toggle('active', on);
+          if (on) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current');
+        });
+      };
+      setActive('ressourcen'); // Startzustand
+      const sections = links
+        .map(a => document.getElementById(a.getAttribute('href').slice(1)))
+        .filter(Boolean);
+      if (!('IntersectionObserver' in window) || !sections.length) return;
+      const header = document.querySelector('.site-header');
+      const pillar = document.getElementById('pillar-nav');
+      // Trigger-Linie etwas UNTER der Sub-Nav (nav-Unterkante + Lesekomfort-Band),
+      // damit ein Bereich aktiv wird, sobald seine Überschrift unter der Leiste
+      // auftaucht — nicht erst, wenn seine Oberkante exakt die Nav-Kante berührt.
+      const triggerLine = () =>
+        (header ? header.offsetHeight : 85) + (pillar ? pillar.offsetHeight : 54) + 80;
+      const updateSpy = () => {
+        // Der unterste Bereich, dessen Oberkante bereits über der Trigger-Linie liegt.
+        const line = triggerLine();
+        let current = sections[0];
+        sections.forEach(s => {
+          if (s.getBoundingClientRect().top <= line) current = s;
+        });
+        if (current) setActive(current.id);
+      };
+      const obs = new IntersectionObserver(updateSpy, { rootMargin: `0px 0px -60% 0px`, threshold: [0, 1] });
+      sections.forEach(s => obs.observe(s));
+      // Zusätzlich beim Scrollen aktualisieren (robuster als reine IO-Callbacks
+      // bei langsamem Scrollen zwischen zwei Sektionsgrenzen).
+      let ticking = false;
+      window.addEventListener('scroll', () => {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(() => { updateSpy(); ticking = false; });
+      }, { passive: true });
+    }
+
+    // ===== INIT =====
+    document.addEventListener('DOMContentLoaded', () => {
+      // Hero-Zähler: nur real Gezähltes aus den vier Bereichs-Datensätzen
+      [
+        ['stat-ressourcen', RESSOURCEN.length],
+        ['stat-befehle', BEFEHLE.length],
+        ['stat-glossar', GLOSSAR.length],
+        ['stat-faq', FAQ.length]
+      ].forEach(([id, n]) => {
+        const el = document.getElementById(id);
+        if (el) animateCount(el, n, 900);
+      });
+      // Sub-Nav- und Inline-Zähler (real gezählt, nie hardcoden)
+      [
+        ['pn-ressourcen', RESSOURCEN.length], ['pn-befehle', BEFEHLE.length],
+        ['pn-glossar', GLOSSAR.length], ['pn-faq', FAQ.length],
+        ['bef-count', BEFEHLE.length], ['glo-count', GLOSSAR.length], ['faq-count', FAQ.length]
+      ].forEach(([id, n]) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = n;
+      });
+
+      // Bereich 1: Ressourcen
+      renderZeitTiles();
+      renderCatTabs();
+      renderFilterChips();
+      render();
+
+      // Bereich 2: Befehle
+      renderChips();
+      renderRanking();
+
+      // Bereich 3: Glossar
+      renderGlossar();
+
+      // Bereich 4: FAQ
+      renderFaq();
+
+      // Sub-Nav Scroll-Spy
+      initPillarSpy();
+
+      // Deep-Links: ?r= / ?befehl= / ?begriff= / ?faq= → kanonische Hash-Form
+      applyDeepLink(true);
+      window.addEventListener('hashchange', () => applyDeepLink(false));
+
+      // Header-Suche (Desktop) und Filterleisten-Suche (Mobil) halten sich gegenseitig aktuell
+      [['search', 'search-m'], ['search-m', 'search']].forEach(([own, other]) => {
+        document.getElementById(own)?.addEventListener('input', debounce(e => {
+          state.search = e.target.value.toLowerCase().trim();
+          const o = document.getElementById(other);
+          if (o && o.value !== e.target.value) o.value = e.target.value;
+          state._noCardAnim = true; render(); state._noCardAnim = false;
+        }, 150));
+      });
+
+      document.getElementById('sort-select').addEventListener('change', e => {
+        state.sort = e.target.value;
+        render();
+      });
+
+      // Seitenlokal: „/“ fokussiert die Ressourcen-Suche
+      document.addEventListener('keydown', e => {
+        if (e.key === '/' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+          e.preventDefault();
+          const search = document.getElementById('search');
+          if (search) { search.focus(); search.select(); }
+        }
+      });
+
+      // Mobil: Filterpanel startet eingeklappt — der Platz gehört dem Regal
+      if (window.matchMedia && window.matchMedia('(max-width: 1023px)').matches) {
+        const ftb = document.getElementById('filter-toggle-btn');
+        const fc = document.getElementById('filter-collapsible');
+        if (ftb && fc) { ftb.setAttribute('aria-expanded', 'false'); fc.hidden = true; }
+      }
+    });
+  </script>
+</body>
+</html>

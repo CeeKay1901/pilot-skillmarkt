@@ -1,7 +1,7 @@
 // pilot AI Marketplace — Hilfe-Center, Säulen 2+3: GLOSSAR & FAQ (ausgelagerte Daten, Etappe E4).
 // Klassisches Script, definiert globale Konstanten:
 //   GLOSSAR — 44 Begriffe. Je Eintrag:
-//     id         URL-tauglich, eindeutig (Deep-Link hilfe.html?begriff=<id>)
+//     id         URL-tauglich, eindeutig (Deep-Link lernen-hilfe.html?begriff=<id>)
 //     wort       Anzeigename; buchstabe = A-Z-Sprungleiste (explizit, nicht abgeleitet)
 //     satz       genau EIN einfacher Erklärsatz (immer sichtbar)
 //     beispiel   EIN konkretes pilot-/Marketplace-Beispiel (aufklappbar)

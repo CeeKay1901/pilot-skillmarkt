@@ -42,9 +42,6 @@
     .am-comment { border-top: 1px solid var(--line); padding: 1.2rem 0; }
     .am-comment-head { font-size: 1.3rem; color: var(--c-gray-m); margin-bottom: .4rem; }
     .am-comment-text { font-size: 1.4rem; line-height: 1.55; color: var(--c-ink-body); }
-    /* Ein-Satz-Orientierung (ersetzt den früheren aufklappbaren „drei Handgriffe“-Block) */
-    .gs-oneline { font-size: 1.5rem; line-height: 1.55; color: var(--c-gray-m); padding: 1.8rem 0; margin: 0; }
-    .gs-oneline strong { color: var(--c-black); font-weight: 700; }
   </style>
 </head>
 <body>
@@ -74,12 +71,25 @@
     </div>
   </section>
 
-  <!-- SEITEN-ORIENTIERUNG: knappe, kontextuelle Ein-Satz-Einordnung (statt generischem Erklär-Block) -->
-  <div class="getting-started" id="getting-started">
-    <div class="gs-inner">
-      <p class="gs-oneline"><strong>Startpunkte statt leerer Seite.</strong> Sieh dir jeden Baustein live an, kopier den Code oder den „Sag Claude einfach …“-Prompt — und lass Claude ihn für dich anpassen.</p>
+  <!-- KURZ ERKLÄRT: kompaktes Erklär-Modul (E10, .area-intro aus shared/base.css) -->
+  <section class="area-intro" aria-label="Kurz erklärt">
+    <div class="area-intro-inner">
+      <div class="area-intro-grid">
+        <div class="area-intro-part">
+          <p class="area-intro-label">Was ist das?</p>
+          <p class="area-intro-text">Fertige Oberflächen-Bausteine als Startpunkte — Header, Preistabellen, Kontaktformulare und mehr — jeder mit Live-Vorschau, kopierbarem Code und einem „Sag Claude einfach …“-Prompt. Alles selbst geschrieben und frei nutzbar.</p>
+        </div>
+        <div class="area-intro-part">
+          <p class="area-intro-label">Wofür nutze ich es?</p>
+          <p class="area-intro-text">Wenn du nicht vor einer leeren Seite starten willst: Du kopierst einen passenden Baustein und lässt ihn von Claude auf deinen Fall anpassen — andere Farben, deine Texte, deine Struktur. So wird aus einem Beispiel schnell dein Kampagnen-Tool oder deine kleine Team-Seite.</p>
+        </div>
+        <div class="area-intro-part">
+          <p class="area-intro-label">So fange ich an.</p>
+          <p class="area-intro-text">Sieh dir die <a class="area-intro-link" href="#main-content">Bausteine</a> live an, öffne die Details eines Bausteins und kopier entweder den Code oder den mitgelieferten „Sag Claude einfach …“-Prompt. <a class="area-intro-link" href="skills.html?view=explainer">Was ist Claude Code?</a></p>
+        </div>
+      </div>
     </div>
-  </div>
+  </section>
 
   <main>
     <!-- (a) BAUSTEINE -->
@@ -401,9 +411,9 @@
             <div class="am-comment-head">${escHtml(c.author)}${c.role ? ' · ' + escHtml(c.role) : ''}${c.rating ? ' · ' + renderStars(c.rating) : ''} · ${formatDate(c.date)}</div>
             <div class="am-comment-text">${escHtml(c.text)}</div>
           </div>`).join('')
-        : '<p class="am-hint">Noch keine Kommentare — sei die erste Stimme.</p>';
+        : '<p class="am-hint">Noch keine Kommentare — schreib den ersten!</p>';
       return `
-        <p class="am-source">${renderStars(e.average)} <strong>${e.average.toFixed(1)}</strong> · ${e.count} ${e.count === 1 ? 'Stimme' : 'Stimmen'}${item.rating ? '' : ' (noch ohne Seed — deine Bewertung startet die Zählung)'}</p>
+        <p class="am-source">${renderStars(e.average)} <strong>${e.average.toFixed(1)}</strong> · ${e.count} ${e.count === 1 ? 'Bewertung' : 'Bewertungen'}${item.rating ? '' : ' (noch ohne Seed — deine Bewertung startet die Zählung)'}</p>
         <span class="am-label">Deine Bewertung</span>
         ${renderInteractiveStars(item.id)}
         <p class="am-hint" id="rating-hint-${item.id}"></p>
@@ -469,7 +479,21 @@
         } catch (e) {}
       }
       if (_hashLock) return;
-      const m = (location.hash || '').match(/^#b\/(.+)$/);
+      const hash = location.hash || '';
+      // Showroom-Querverweis auf eine Beispieldatei: baukasten.html#bk-data-<id>
+      const md = hash.match(/^#bk-data-(.+)$/);
+      if (md) {
+        let did;
+        try { did = decodeURIComponent(md[1]); } catch (e) { return; }
+        const el = document.getElementById('bk-data-' + did);   // renderBeispieldaten() lief bereits beim Init
+        if (el) {
+          el.scrollIntoView({ behavior: scrollBehavior(), block: 'center' });
+          el.classList.add('-highlight');
+          setTimeout(() => el.classList.remove('-highlight'), 2400);
+        }
+        return;
+      }
+      const m = hash.match(/^#b\/(.+)$/);
       if (!m) {
         const ov = document.getElementById('modal-overlay');
         if (ov && ov.classList.contains('open')) closeModal();
