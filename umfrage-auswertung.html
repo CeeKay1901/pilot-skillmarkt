@@ -53,7 +53,8 @@
       <button class="btn-s" onclick="loadSample()">Beispieldaten laden</button>
       <button class="btn-s" onclick="document.getElementById('csv').value='';run()">Leeren</button>
     </div>
-    <p class="foot">Format je Zeile: <b>Frage;Antwort</b> — eine Zeile pro abgegebener Antwort. Trennzeichen <b>;</b> oder <b>,</b>.</p>
+    <p class="foot">Format je Zeile: <b>Frage;Antwort</b> — eine Zeile pro abgegebener Antwort. Trennzeichen <b>;</b> oder <b>,</b> (pro Datei einheitlich). Kommas in Antworten in <b>"Anführungszeichen"</b> setzen. Eine Kopfzeile wird automatisch erkannt.</p>
+    <p class="foot">Deine Daten bleiben lokal in deinem Browser — die Auswertung rechnet direkt hier, es wird nichts hochgeladen oder gesendet.</p>
   </div>
 
   <div class="panel" id="result"><p class="empty">Noch keine Daten. Lade Beispieldaten oder füge eigene ein.</p></div>
@@ -75,15 +76,57 @@ Welchen Kanal nutzt du am meisten?;TikTok
 Welchen Kanal nutzt du am meisten?;LinkedIn
 Welchen Kanal nutzt du am meisten?;Instagram`;
 
+  // Erkennt das Trennzeichen eindeutig pro Datei: ';' wenn vorhanden, sonst ','
+  function detectDelim(line){
+    let inQ=false, semi=0, comma=0;
+    for(const ch of line){
+      if(ch==='"') inQ=!inQ;
+      else if(!inQ && ch===';') semi++;
+      else if(!inQ && ch===',') comma++;
+    }
+    return semi>0 ? ';' : (comma>0 ? ',' : ';');
+  }
+  // Splittet eine Zeile am Trennzeichen, respektiert dabei "quotierte" Felder
+  function splitCSV(line, delim){
+    const out=[]; let cur='', inQ=false;
+    for(let i=0;i<line.length;i++){
+      const ch=line[i];
+      if(inQ){
+        if(ch==='"'){
+          if(line[i+1]==='"'){cur+='"';i++;} // verdoppeltes "" = literales "
+          else inQ=false;
+        } else cur+=ch;
+      } else {
+        if(ch==='"') inQ=true;
+        else if(ch===delim){out.push(cur);cur='';}
+        else cur+=ch;
+      }
+    }
+    out.push(cur);
+    return out.map(s=>s.trim());
+  }
+  // Heuristik: sieht die erste Zeile wie eine Spaltenüberschrift aus?
+  function looksLikeHeader(cells){
+    const h0=(cells[0]||'').toLowerCase();
+    const h1=(cells[1]||'').toLowerCase();
+    const kw0=/^(frage|fragen|kategorie|category|question|item|thema|feld)$/;
+    const kw1=/^(antwort|antworten|answer|wert|value|response|ergebnis|auswahl)$/;
+    return kw0.test(h0) || kw1.test(h1);
+  }
   function parse(text){
     const map={};
-    text.trim().split(/\r?\n/).forEach(line=>{
-      if(!line.trim())return;
-      const parts=line.split(/[;,]/).map(s=>s.trim());
-      const q=parts[0], a=parts.slice(1).join(', ')||'(leer)';
-      if(!q)return;
+    const lines=text.trim().split(/\r?\n/).filter(l=>l.trim());
+    if(!lines.length) return map;
+    const delim=detectDelim(lines[0]);
+    let start=0;
+    if(looksLikeHeader(splitCSV(lines[0],delim))) start=1;
+    for(let i=start;i<lines.length;i++){
+      const parts=splitCSV(lines[i],delim);
+      const q=parts[0];
+      if(!q)continue;
+      const a=parts.slice(1).filter(x=>x!=='').join(', ')||'(leer)';
       (map[q]=map[q]||{})[a]=(map[q][a]||0)+1;
-    });
+    }
     return map;
   }
   function esc(s){return s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}

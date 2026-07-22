@@ -278,9 +278,25 @@ async function runViewport(browser, vp) {
     { rateInfo, rateReload });
 
   // ---------- (12) Deep-Link ?a=<id>: kanonischer Hash, Modal offen, Karte hervorgehoben ----------
+  // Das Karten-Highlight ist BEWUSST transient: bibliothek.html setzt .-highlight und entfernt es
+  // nach 2400 ms wieder. Auf der schweren Seite (lazy Vorschau-iframes) liegt zwischen DOMContent-
+  // Loaded (da läuft applyDeepLink und setzt .-highlight) und dem 'load'-Event oft > 2400 ms — ein
+  // einmaliges Lesen nach waitUntil:'load' verpasst das Fenster (Timing-Race, kein Produktfehler).
+  // Wir warten daher nur bis 'domcontentloaded' und pollen das Highlight zeitnah, bevor der
+  // 2400-ms-Timer greift. Absicht unverändert: kanonischer Hash + richtiges Modal offen + Karte hervorgehoben.
   await page.goto('about:blank');
-  await page.goto(TARGET + '?a=' + DEEPLINK_ID, { waitUntil: 'load' });
-  await page.waitForTimeout(1100); // applyDeepLink + fonts.ready-Reanchor
+  await page.goto(TARGET + '?a=' + DEEPLINK_ID, { waitUntil: 'domcontentloaded' });
+  let everHi = false;
+  const deepT0 = Date.now();
+  while (Date.now() - deepT0 < 2800) {
+    const hi = await page.evaluate((id) => {
+      const c = document.getElementById('asset-' + id);
+      return !!c && c.classList.contains('-highlight');
+    }, DEEPLINK_ID).catch(() => false);
+    if (hi) { everHi = true; break; }
+    await page.waitForTimeout(30);
+  }
+  await page.waitForTimeout(200); // Modal-/Hash-Zustand ausrollen lassen
   const deepInfo = await page.evaluate((id) => {
     const card = document.getElementById('asset-' + id);
     return {
@@ -288,9 +304,10 @@ async function runViewport(browser, vp) {
       canonical: location.hash === '#a/' + id,
       modalOpen: document.getElementById('modal-overlay').classList.contains('open'),
       modalName: (document.getElementById('modal-name') || {}).textContent || '',
-      highlighted: !!card && card.classList.contains('-highlight'),
+      highlightedNow: !!card && card.classList.contains('-highlight'),
     };
   }, DEEPLINK_ID);
+  deepInfo.highlighted = everHi || deepInfo.highlightedNow; // im Poll-Fenster gesehen ODER noch aktiv
   check('12_deeplink_opens_asset',
     deepInfo.canonical && deepInfo.modalOpen && deepInfo.modalName === 'Fraunces' && deepInfo.highlighted,
     deepInfo);

@@ -23,32 +23,12 @@
        und A-Z-Sprungleiste, (3) FAQ als ruhiges Akkordeon.
        ============================================================ */
 
-    /* ===== ERKLÄR-BLOCK „SO HILFT DIR DIESE SEITE“ (Getting-Started-Muster) ===== */
+    /* ===== ORIENTIERUNGS-ZEILE (statisch — ersetzt das frühere Getting-Started-Akkordeon) ===== */
     .getting-started { background: var(--c-white); border-bottom: 1px solid var(--line); }
-    .gs-inner { max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-d); }
-    .gs-toggle {
-      display: flex; align-items: center; gap: 1.2rem; width: 100%;
-      background: none; border: none; cursor: pointer; font-family: inherit;
-      font-size: 1.6rem; font-weight: 700; color: var(--c-black);
-      padding: 1.8rem 0; text-align: left;
-    }
-    .gs-toggle:hover { color: var(--c-gray-m); }
-    .gs-arrow { margin-left: auto; font-size: 1.8rem; transition: transform .2s; }
-    .gs-toggle[aria-expanded="true"] .gs-arrow { transform: rotate(90deg); }
-    .gs-content { padding-bottom: 2.4rem; }
-    .gs-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.4rem; }
-    .gs-step { display: flex; gap: 1.6rem; align-items: flex-start; }
-    .gs-num {
-      width: 3.2rem; height: 3.2rem; flex-shrink: 0; background: var(--c-yellow);
-      color: var(--c-black); border-radius: 50%; display: flex; align-items: center;
-      justify-content: center; font-size: 1.5rem; font-weight: 700; font-family: var(--font-mono);
-    }
-    .gs-step strong { font-size: 1.5rem; display: block; margin-bottom: .4rem; }
-    .gs-step p { font-size: 1.4rem; color: var(--c-gray-m); line-height: 1.5; }
-    @media (max-width: 1023px) {
-      .gs-inner { padding: 0 var(--pad-m); }
-      .gs-steps { grid-template-columns: 1fr; gap: 1.6rem; }
-    }
+    .gs-inner { max-width: var(--max-w); margin: 0 auto; padding: 1.8rem var(--pad-d); }
+    .gs-line { font-size: 1.5rem; line-height: 1.6; color: var(--c-ink-body); margin: 0; max-width: 92ch; }
+    .gs-line strong { color: var(--c-black); font-weight: 700; }
+    @media (max-width: 1023px) { .gs-inner { padding: 1.8rem var(--pad-m); } }
 
     /* ===== SPRUNGNAVIGATION (drei Säulen) ===== */
     .pillar-nav {
@@ -433,29 +413,10 @@
     </div>
   </section>
 
-  <!-- ERKLÄR-BLOCK: SO HILFT DIR DIESE SEITE -->
+  <!-- ORIENTIERUNG: was diese Seite dir gibt (eine statische Zeile) -->
   <div class="getting-started" id="getting-started">
     <div class="gs-inner">
-      <button class="gs-toggle" onclick="toggleGS()" aria-expanded="false" id="gs-toggle-btn">
-        <span>So hilft dir diese Seite — in drei Handgriffen</span>
-        <span class="gs-arrow">›</span>
-      </button>
-      <div class="gs-content" id="gs-content" hidden>
-        <div class="gs-steps">
-          <div class="gs-step">
-            <span class="gs-num">1</span>
-            <div><strong>Finden</strong><p>Drei Säulen, ein Weg: Das Befehle-Ranking zeigt oben, was Kolleg:innen am meisten geholfen hat, das Glossar erklärt jeden Begriff in einem Satz, die FAQ lösen die häufigsten Blocker Schritt für Schritt.</p></div>
-          </div>
-          <div class="gs-step">
-            <span class="gs-num">2</span>
-            <div><strong>Ausprobieren</strong><p>Befehl kopieren oder Taste drücken, Mini-Beispiel aufklappen — die fünf wichtigsten Einträge spielen dir den Ablauf in einer kleinen Terminal-Demo vor.</p></div>
-          </div>
-          <div class="gs-step">
-            <span class="gs-num">3</span>
-            <div><strong>Zurückgeben</strong><p>Hat dich ein Eintrag weitergebracht? Klick „Hat mir geholfen“ — oder reich deinen eigenen Kniff ein. So finden die Nächsten den kürzesten Weg.</p></div>
-          </div>
-        </div>
-      </div>
+      <p class="gs-line">Drei Nachschlagewerke auf einer Seite: das <strong>Befehle-Ranking</strong>, ein <strong>Glossar</strong>, das jeden Begriff in einem Satz erklärt, und die <strong>FAQ</strong> gegen die häufigsten Blocker — was dich weiterbringt, votest du hoch, damit es für die Nächsten nach oben rückt.</p>
     </div>
   </div>
 
@@ -1030,21 +991,10 @@
       }
     }
 
-    // ===== ERKLÄR-BLOCK =====
-    function toggleGS() {
-      const content = document.getElementById('gs-content');
-      const btn = document.getElementById('gs-toggle-btn');
-      const isHidden = content.hidden;
-      content.hidden = !isHidden;
-      btn.setAttribute('aria-expanded', isHidden ? 'true' : 'false');
-      try { localStorage.setItem('hilfe-gs-seen', '1'); } catch (e) {}
-    }
+    // ===== ORIENTIERUNGS-ZEILE — Hero-Button springt zur statischen Zeile =====
     function openGS() {
-      const content = document.getElementById('gs-content');
-      const btn = document.getElementById('gs-toggle-btn');
-      if (content.hidden) toggleGS();
-      document.getElementById('getting-started').scrollIntoView({ behavior: 'smooth', block: 'start' });
-      if (btn) btn.focus({ preventScroll: true });
+      const el = document.getElementById('getting-started');
+      if (el) el.scrollIntoView({ behavior: scrollBehavior(), block: 'start' });
     }
 
     // ===== INIT =====
@@ -1070,15 +1020,6 @@
       renderRanking();
       renderGlossar();
       renderFaq();
-
-      // Erklär-Block beim allerersten Besuch offen zeigen (danach gemerkt)
-      try {
-        if (!localStorage.getItem('hilfe-gs-seen')) {
-          const gsc = document.getElementById('gs-content');
-          const gsb = document.getElementById('gs-toggle-btn');
-          if (gsc && gsb) { gsc.hidden = false; gsb.setAttribute('aria-expanded', 'true'); }
-        }
-      } catch (e) {}
 
       // Deep-Links: ?befehl= / ?begriff= / ?faq= werden auf die kanonische Hash-Form umgeschrieben
       applyDeepLink(true);

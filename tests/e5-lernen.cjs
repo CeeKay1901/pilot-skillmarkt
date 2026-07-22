@@ -445,7 +445,6 @@ async function runIndexChecks(browser) {
     routerTileDest: (document.querySelector('.rt-grid a.rt-card[href="lernen.html"] .rt-dest') || {}).textContent || '',
     noLernenTeaser: !document.querySelector('.rt-card[data-teaser="lernen"]')
       && (typeof TEASER === 'undefined' || !('lernen' in TEASER)),
-    statLernen: parseInt((document.getElementById('stat-lernen') || {}).textContent || '-1', 10),
     areaLernenCount: parseInt((document.getElementById('area-lernen-count') || {}).textContent || '-1', 10),
     areaLernenMeta: (document.getElementById('area-lernen-meta') || {}).textContent || '',
     areaCta: !!document.querySelector('.area-card a.c-cta[href="lernen.html"]'),
@@ -463,11 +462,11 @@ async function runIndexChecks(browser) {
     indexInfo.routerTile && indexInfo.noLernenTeaser && /Ressourcen/.test(indexInfo.routerTileDest),
     { routerTile: indexInfo.routerTile, dest: indexInfo.routerTileDest, noLernenTeaser: indexInfo.noLernenTeaser });
   check('i3_counts_match_data',
-    indexInfo.statLernen === EXPECTED_TOTAL && indexInfo.areaLernenCount === EXPECTED_TOTAL
+    indexInfo.areaLernenCount === EXPECTED_TOTAL
       && indexInfo.dataRessourcen === EXPECTED_TOTAL
       && indexInfo.areaLernenMeta.includes(String(EXPECTED_DE))
       && indexInfo.areaLernenMeta.includes(String(EXPECTED_LE15)),
-    { statLernen: indexInfo.statLernen, areaLernenCount: indexInfo.areaLernenCount,
+    { areaLernenCount: indexInfo.areaLernenCount,
       meta: indexInfo.areaLernenMeta, dataRessourcen: indexInfo.dataRessourcen });
   check('i4_area_card_clickable',
     indexInfo.areaCta && indexInfo.areaSpotHref === 'lernen.html?r=' + EXPECTED_START

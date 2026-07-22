@@ -474,7 +474,6 @@ async function runIndexChecks(browser) {
     noHilfeTeaser: !document.querySelector('.rt-card[data-teaser="hilfe"]'),
     areaHilfeCount: parseInt((document.getElementById('area-hilfe-count') || {}).textContent || '-1', 10),
     areaHilfeMeta: (document.getElementById('area-hilfe-meta') || {}).textContent || '',
-    statHilfe: parseInt((document.getElementById('stat-hilfe') || {}).textContent || '-1', 10),
     areaCta: !!document.querySelector('.area-card a.c-cta[href="hilfe.html"]'),
     areaSpotHref: (document.querySelector('a.area-spot[href^="hilfe.html?befehl="]') || { getAttribute: () => '' }).getAttribute('href') || '',
     areaSpotVotes: (document.getElementById('area-hilfe-spot-votes') || {}).textContent || '',
@@ -492,11 +491,10 @@ async function runIndexChecks(browser) {
     { routerTile: indexInfo.routerTile, dest: indexInfo.routerTileDest, noHilfeTeaser: indexInfo.noHilfeTeaser });
   check('i3_counts_match_data',
     indexInfo.areaHilfeCount === EXPECTED_BEFEHLE && indexInfo.dataBefehle === EXPECTED_BEFEHLE
-      && indexInfo.statHilfe === EXPECTED_BEFEHLE + EXPECTED_GLOSSAR + EXPECTED_FAQ
       && indexInfo.areaHilfeMeta.includes(String(EXPECTED_GLOSSAR))
       && indexInfo.areaHilfeMeta.includes(String(EXPECTED_FAQ))
       && indexInfo.dataGlossar === EXPECTED_GLOSSAR && indexInfo.dataFaq === EXPECTED_FAQ,
-    { areaHilfeCount: indexInfo.areaHilfeCount, statHilfe: indexInfo.statHilfe,
+    { areaHilfeCount: indexInfo.areaHilfeCount,
       meta: indexInfo.areaHilfeMeta, dataBefehle: indexInfo.dataBefehle });
   check('i4_area_card_clickable',
     indexInfo.areaCta && /^hilfe\.html\?befehl=/.test(indexInfo.areaSpotHref)

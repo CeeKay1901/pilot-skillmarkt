@@ -32,6 +32,25 @@
     .sr-lead .lu { width: 1.6rem; height: 1.6rem; color: var(--c-yellow); flex-shrink: 0; }
     .sr-desc { display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
     .modal-body .sr-desc { display: block; overflow: visible; }
+
+    /* Kontext-Orientierung: eine ruhige Zeile im weißen Erklär-Band (ersetzt den Toggle) */
+    .sr-orient {
+      max-width: var(--max-w); margin: 0 auto; padding: 1.6rem var(--pad-d);
+      font-size: 1.45rem; line-height: 1.6; color: var(--c-gray-m);
+    }
+    @media (max-width: 767px) { .sr-orient { padding: 1.4rem var(--pad-m); } }
+
+    /* Feedback-Geste an das kanonische Vote-Muster angeglichen (LU.vote + Zähl-Chip),
+       damit die „Will ich auch"-Reaktion aussieht wie die Zustimmungs-Votes in
+       hilfe/lernen. Speicherung (vote:reaktion:<id>) und Logik bleiben unverändert. */
+    .sr-react { gap: .7rem; padding: .7rem 1.5rem; font-size: 1.35rem; }
+    .sr-react .lu { width: 1.4rem; height: 1.4rem; }
+    .sr-react-count {
+      font-variant-numeric: tabular-nums; font-size: 1.25rem;
+      background: rgba(38,38,38,.08); border-radius: var(--r-xl);
+      padding: .1rem .8rem; min-width: 2.6rem; text-align: center;
+    }
+    .sr-react.-on .sr-react-count { background: rgba(38,38,38,.15); }
   </style>
 </head>
 <body>
@@ -62,31 +81,9 @@
     </div>
   </section>
 
-  <!-- ERKLÄR-BLOCK (E9-Angleichung an lernen/hilfe): So funktioniert diese Seite in drei Handgriffen -->
-  <div class="getting-started" id="getting-started">
-    <div class="gs-inner">
-      <button class="gs-toggle" onclick="toggleGS()" aria-expanded="false" id="gs-toggle-btn">
-        <span>So funktioniert diese Seite — in drei Handgriffen</span>
-        <span class="gs-arrow">›</span>
-      </button>
-      <div class="gs-content" id="gs-content" hidden>
-        <div class="gs-steps">
-          <div class="gs-step">
-            <span class="gs-num">1</span>
-            <div><strong>Klick dich durch die Projekte</strong><p>Echte Team-Tools und illustrative Beispiel-Projekte, sichtbar durch einen Marker getrennt. Öffne eines, das nach deinem Alltag klingt — „bringt mir das was?“ beantwortet es selbst.</p></div>
-          </div>
-          <div class="gs-step">
-            <span class="gs-num">2</span>
-            <div><strong>Lies die ehrliche Geschichte</strong><p>Jedes Projekt zeigt Ausgangsproblem, ersten Prompt, Stolperstein und Ergebnis — nicht nur das Hochglanz-Resultat. So siehst du, wie der Weg wirklich lief.</p></div>
-          </div>
-          <div class="gs-step">
-            <span class="gs-num">3</span>
-            <div><strong>Bau es nach</strong><p>Zu jedem Projekt gehören die Querverweise zum Nachbauen — Prompts, Bausteine, Skills. Ein Klick bringt dich zum passenden Werkzeug, statt bei null zu starten.</p></div>
-          </div>
-        </div>
-        <button type="button" class="gs-start-pin" onclick="document.getElementById('main-content').scrollIntoView({behavior:'smooth',block:'start'})">Fang hier an</button>
-      </div>
-    </div>
+  <!-- KONTEXT-ORIENTIERUNG: eine knappe Zeile, was die Seite ist (statt aufklappbarem Erklär-Block) -->
+  <div class="getting-started">
+    <p class="sr-orient">Showroom heißt: echte Team-Tools und Beispiel-Projekte ansehen, die ehrliche Geschichte dahinter lesen und mit den verlinkten Bausteinen selbst nachbauen.</p>
   </div>
 
   <!-- PROJEKT DES MONATS (Spotlight) -->
@@ -236,8 +233,8 @@
       const voted = hasVoted('reaktion', c.id);
       return `<button type="button" class="sr-react${voted ? ' -on' : ''}" aria-pressed="${voted}"
         data-react="${c.id}" onclick="toggleReaction(event,'${c.id}')">
-        ${LU.heart}<span class="sr-react-count" data-react-count="${c.id}">${reactVotes(c)}</span>
-        <span class="sr-react-label">Will ich auch</span></button>`;
+        ${LU.vote}<span class="sr-react-label">Will ich auch</span>
+        <span class="sr-react-count" data-react-count="${c.id}">${reactVotes(c)}</span></button>`;
     }
     function toggleReaction(evt, id) {
       if (evt) evt.stopPropagation();
@@ -334,7 +331,7 @@
         <button type="button" class="sr-rank-item" onclick="openModal('${c.id}')">
           <span class="sr-rank-pos">${i + 1}</span>
           <span class="sr-rank-name">${escHtml(c.titel)}</span>
-          <span class="sr-rank-count" data-react-count="${c.id}">${LU.heart}${reactVotes(c)}</span>
+          <span class="sr-rank-count" data-react-count="${c.id}">${LU.vote}${reactVotes(c)}</span>
         </button>`).join('');
     }
 

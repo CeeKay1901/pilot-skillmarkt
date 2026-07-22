@@ -111,43 +111,12 @@
       letter-spacing: .1em; text-transform: uppercase;
     }
     .rt-dest { color: var(--c-yellow); }
-    .rt-tag {
-      display: inline-flex; align-items: center; gap: .6rem;
-      border: 1px solid rgba(252,252,252,.24); border-radius: var(--r-pill);
-      padding: .25rem 1rem; color: rgba(252,252,252,.62);
-    }
-    .rt-tag::before { content: ''; width: .5rem; height: .5rem; border-radius: 50%; background: var(--c-yellow); opacity: .7; }
     /* Guide-Kachel: der eine gelbe Anker der Bühne */
     .rt-card.is-guide { background: var(--c-yellow); border-color: var(--c-yellow); }
     .rt-card.is-guide:hover, .rt-card.is-guide:focus-visible { background: #f3d454; border-color: #f3d454; }
     .rt-card.is-guide .rt-ic, .rt-card.is-guide .rt-label { color: var(--c-black); }
     .rt-card.is-guide .rt-hint { color: rgba(38,38,38,.72); }
     .rt-card.is-guide .rt-dest { color: var(--c-black); }
-    .rt-card[aria-expanded="true"] { background: rgba(252,252,252,.1); border-color: var(--c-yellow); }
-    /* „In Arbeit“-Panel: Ausblick erscheint an Ort und Stelle, kein toter Link */
-    .rt-panel {
-      margin-top: 1.2rem;
-      border: 1px dashed rgba(252,252,252,.28); border-radius: var(--r-md);
-      background: rgba(252,252,252,.04);
-      padding: 1.8rem 2rem;
-      display: flex; gap: 1.6rem; align-items: flex-start;
-    }
-    .rt-panel[hidden] { display: none; }
-    .rt-panel-body { flex: 1; }
-    .rt-panel-head {
-      display: flex; align-items: center; gap: 1.2rem; flex-wrap: wrap; margin-bottom: .6rem;
-    }
-    .rt-panel-name { color: var(--c-white); font-size: 1.6rem; font-weight: var(--fw-semi); }
-    .rt-panel-text { color: rgba(252,252,252,.78); font-size: 1.45rem; line-height: 1.55; max-width: 78ch; }
-    .rt-panel-more { color: rgba(252,252,252,.5); font-size: 1.3rem; margin-top: .8rem; }
-    .rt-panel-more a { color: var(--c-yellow); text-decoration: none; border-bottom: 1px solid rgba(255,224,94,.4); }
-    .rt-panel-more a:hover { border-bottom-color: var(--c-yellow); }
-    .rt-panel-close {
-      background: none; border: none; cursor: pointer; color: rgba(252,252,252,.55);
-      font-size: 2rem; line-height: 1; padding: .6rem; margin: -.6rem -.6rem 0 0; flex-shrink: 0;
-      transition: var(--trans);
-    }
-    .rt-panel-close:hover { color: var(--c-white); }
     .router .hero-stats { margin: 4.4rem 0 0; }
     @media (max-width: 1023px) {
       .router { padding: 3.6rem 0 4.4rem; }
@@ -379,31 +348,15 @@
           <a class="rt-card is-guide" href="skills.html">
             <span class="rt-ic"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z"/></svg></span>
             <span class="rt-label">Deinen ersten Skill finden</span>
-            <span class="rt-hint"><span data-live="skills-total">39</span> Skills — sortiert nach Aufgabe, nicht nach Abteilung.</span>
+            <span class="rt-hint"><span data-live="skills-total">37</span> Skills — sortiert nach Aufgabe, nicht nach Abteilung.</span>
             <span class="rt-foot"><span class="rt-dest">Zum Katalog</span></span>
           </a>
-        </div>
-
-        <div class="rt-panel" id="rt-panel" hidden role="region" aria-live="polite" aria-label="Ausblick auf den gewählten Bereich">
-          <div class="rt-panel-body">
-            <div class="rt-panel-head">
-              <span class="rt-panel-name" id="rt-panel-name"></span>
-              <span class="rt-tag">In Arbeit</span>
-            </div>
-            <p class="rt-panel-text" id="rt-panel-text"></p>
-            <p class="rt-panel-more">Dieser Bereich entsteht gerade — bis dahin bringt dich der <a href="skills.html">Katalog</a> ans Ziel.</p>
-          </div>
-          <button type="button" class="rt-panel-close" onclick="closeTeaser()" aria-label="Ausblick schließen">×</button>
         </div>
 
         <!-- Schlanke Stats-Zeile: ausschließlich real Gezähltes aus den data/-Dateien -->
         <div class="hero-stats" aria-label="Zahlen aus dem Marketplace, live gezählt">
           <div class="hero-stat-box"><span class="hero-stat-num" id="stat-skills">0</span><span class="hero-stat-label">Skills im Katalog</span></div>
           <div class="hero-stat-box"><span class="hero-stat-num" id="stat-prompts">0</span><span class="hero-stat-label">Prompts in der Sammlung</span></div>
-          <div class="hero-stat-box"><span class="hero-stat-num" id="stat-hilfe">0</span><span class="hero-stat-label">Einträge im Hilfe-Center</span></div>
-          <div class="hero-stat-box"><span class="hero-stat-num" id="stat-lernen">0</span><span class="hero-stat-label">Lern-Ressourcen</span></div>
-          <div class="hero-stat-box"><span class="hero-stat-num" id="stat-demos">0</span><span class="hero-stat-label">Live-Demos</span></div>
-          <div class="hero-stat-box"><span class="hero-stat-num" id="stat-bundles">0</span><span class="hero-stat-label">Showroom-Projekte</span></div>
         </div>
       </div>
     </section>
@@ -698,10 +651,9 @@
 
     document.querySelectorAll('[data-live="skills-total"]').forEach(el => { el.textContent = COUNTS.skills; });
 
-    // stat-bundles läuft nicht hier, sondern im Showroom-DOMContentLoaded-Block:
-    // die Box zeigt jetzt „Showroom-Projekte" (CASES.length), und CASES lädt per defer.
-    [['stat-skills', COUNTS.skills], ['stat-prompts', COUNTS.promptItems],
-     ['stat-demos', COUNTS.demos]].forEach(([id, n]) => {
+    // Hero-Stats-Zeile: nur noch die zwei sprechenden Boxen (Skills + Prompts),
+    // beide real gezählt aus data/*.js. animateCount zählt von 0 hoch.
+    [['stat-skills', COUNTS.skills], ['stat-prompts', COUNTS.promptItems]].forEach(([id, n]) => {
       const el = document.getElementById(id);
       if (el) animateCount(el, n, 1100);
     });
@@ -747,8 +699,6 @@
       if (hilfeCount) animateCount(hilfeCount, BEFEHLE.length, 1100);
       const hilfeMeta = document.getElementById('area-hilfe-meta');
       if (hilfeMeta) hilfeMeta.textContent = `dazu ${GLOSSAR.length} Glossar-Begriffe · ${FAQ.length} Schritt-für-Schritt-Lösungen`;
-      const statHilfe = document.getElementById('stat-hilfe');
-      if (statHilfe) animateCount(statHilfe, BEFEHLE.length + GLOSSAR.length + FAQ.length, 1100);
       // Leuchtturm-Hinweis: Stimmen wie auf hilfe.html gezählt (Seed + eigene, vote:befehl:*)
       const spotVotes = document.getElementById('area-hilfe-spot-votes');
       const lh = BEFEHLE.find(b => b.id === 'clear');
@@ -761,8 +711,6 @@
       if (typeof RESSOURCEN === 'undefined') return;
       const lernenCount = document.getElementById('area-lernen-count');
       if (lernenCount) animateCount(lernenCount, RESSOURCEN.length, 1100);
-      const statLernen = document.getElementById('stat-lernen');
-      if (statLernen) animateCount(statLernen, RESSOURCEN.length, 1100);
       const lernenMeta = document.getElementById('area-lernen-meta');
       if (lernenMeta) lernenMeta.textContent = `davon ${RESSOURCEN.filter(r => r.sprache === 'de').length} auf Deutsch · ${RESSOURCEN.filter(r => r.dauerMin <= 15).length} unter 15 Minuten`;
       // Leuchtturm: Team-Bewertung der „Start hier“-Ressource ist reiner Seed
@@ -808,9 +756,6 @@
       if (typeof CASES === 'undefined') return;
       const srCount = document.getElementById('area-showroom-count');
       if (srCount) animateCount(srCount, CASES.length, 1100);
-      // Hero-Box „Showroom-Projekte" (id historisch stat-bundles) — real aus CASES.
-      const statBundles = document.getElementById('stat-bundles');
-      if (statBundles) animateCount(statBundles, CASES.length, 1100);
       const srMeta = document.getElementById('area-showroom-meta');
       if (srMeta) srMeta.textContent = `davon ${CASE_STATS.echt} echte Team-Tools · ${CASE_STATS.beispiel} Beispiel-Projekte · ${CASE_STATS.saeulen} Säulen`;
       // Leuchtturm: „Will ich auch"-Reaktionen des echten Umfrage-Auswerters (Seed +
@@ -818,40 +763,6 @@
       const react = document.getElementById('area-showroom-spot-react');
       const lhCase = CASES.find(c => c.id === 'umfrage-auswerter');
       if (react && lhCase) react.innerHTML = `<span class="rating-text">${getVotes('reaktion', lhCase.id, lhCase.reaktionSeed)} × „Will ich auch"</span>`;
-    });
-
-    // ===== ROUTER: „In Arbeit“-Ausblicke (kein toter Link) =====
-    // E8: Mit dem Live-Gang des Showrooms ist die letzte Teaser-Kachel ein echter
-    // Link geworden — es gibt keinen „In Arbeit"-Ausblick mehr. Das TEASER-Objekt
-    // bleibt leer, showTeaser/closeTeaser laufen ins Leere (harmloser Rest-Code).
-    const TEASER = {};
-    let _teaserOpen = null;
-
-    function closeTeaser() {
-      const panel = document.getElementById('rt-panel');
-      panel.hidden = true;
-      document.querySelectorAll('.rt-card[data-teaser]').forEach(b => b.setAttribute('aria-expanded', 'false'));
-      _teaserOpen = null;
-    }
-
-    function showTeaser(key) {
-      if (_teaserOpen === key) { closeTeaser(); return; }
-      const t = TEASER[key];
-      if (!t) return;
-      document.getElementById('rt-panel-name').textContent = t.name;
-      document.getElementById('rt-panel-text').textContent = t.text;
-      const panel = document.getElementById('rt-panel');
-      panel.hidden = false;
-      // Panel liegt sonst unterhalb des Viewports (v.a. mobil) — der Tap wirkt wie folgenlos
-      panel.scrollIntoView({ block: 'nearest', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
-      document.querySelectorAll('.rt-card[data-teaser]').forEach(b => {
-        b.setAttribute('aria-expanded', b.dataset.teaser === key ? 'true' : 'false');
-      });
-      _teaserOpen = key;
-    }
-
-    document.querySelectorAll('.rt-card[data-teaser]').forEach(btn => {
-      btn.addEventListener('click', () => showTeaser(btn.dataset.teaser));
     });
 
     // ===== MEINE REISE (sektionsübergreifend aus localStorage, via base.js) =====
@@ -910,7 +821,7 @@
       if (favItems.length + triedCount + bewertungen + reaktionen === 0) {
         body.innerHTML = `
           <div class="jr-empty">
-            <p>Hier wächst dein Fortschritt mit: Favoriten, ausprobierte Skills, deine Bewertungen und Reaktionen — über alle Bereiche hinweg. Noch ist die Seite leer, aber der erste Schritt dauert keine zehn Minuten.</p>
+            <p>Hier entsteht deine Reise — mach den ersten Schritt. Favoriten, ausprobierte Skills, Bewertungen und Reaktionen sammeln sich ab dann an dieser Stelle, über alle Bereiche hinweg.</p>
             <a class="c-cta -black-border" href="skills.html?skill=erste-schritte">Starte mit „Erste Schritte“</a>
           </div>`;
         return;

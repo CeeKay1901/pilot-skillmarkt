@@ -107,6 +107,9 @@
     .am-comment { border-top: 1px solid var(--line); padding: 1.2rem 0; }
     .am-comment-head { font-size: 1.3rem; color: var(--c-gray-m); margin-bottom: .4rem; }
     .am-comment-text { font-size: 1.4rem; line-height: 1.55; color: var(--c-ink-body); }
+    /* Ein-Satz-Orientierung (ersetzt den früheren aufklappbaren „drei Handgriffe“-Block) */
+    .gs-oneline { font-size: 1.5rem; line-height: 1.55; color: var(--c-gray-m); padding: 1.8rem 0; margin: 0; }
+    .gs-oneline strong { color: var(--c-black); font-weight: 700; }
   </style>
 </head>
 <body>
@@ -137,30 +140,10 @@
     </div>
   </section>
 
-  <!-- ERKLÄR-BLOCK (E9-Angleichung an lernen/hilfe): So funktioniert diese Seite in drei Handgriffen -->
+  <!-- SEITEN-ORIENTIERUNG: knappe, kontextuelle Ein-Satz-Einordnung (statt generischem Erklär-Block) -->
   <div class="getting-started" id="getting-started">
     <div class="gs-inner">
-      <button class="gs-toggle" onclick="toggleGS()" aria-expanded="false" id="gs-toggle-btn">
-        <span>So funktioniert diese Seite — in drei Handgriffen</span>
-        <span class="gs-arrow">›</span>
-      </button>
-      <div class="gs-content" id="gs-content" hidden>
-        <div class="gs-steps">
-          <div class="gs-step">
-            <span class="gs-num">1</span>
-            <div><strong>Stöber nach Material-Typ</strong><p>Schriften, Icons, Farbpaletten und Muster liegen in eigenen Blöcken. Jede Font hat eine Live-Vorschau, jedes Icon ein Kopier-Feld — such dir aus, was zu deinem Projekt passt.</p></div>
-          </div>
-          <div class="gs-step">
-            <span class="gs-num">2</span>
-            <div><strong>Prüf die Lizenz am Asset</strong><p>An jedem Eintrag steht sichtbar die Lizenz (OFL, MIT, ISC oder CC0) samt Quelle. Hier liegt nur frei nutzbares Material — du musst nicht selbst recherchieren, ob du es einsetzen darfst.</p></div>
-          </div>
-          <div class="gs-step">
-            <span class="gs-num">3</span>
-            <div><strong>Kopieren &amp; einsetzen</strong><p>Ein Klick kopiert den Font-Namen, den Icon-Code oder den Farbwert. Ab damit in dein Projekt — oder gib es Claude weiter: „Nimm diese Schrift und diese Palette.“</p></div>
-          </div>
-        </div>
-        <button type="button" class="gs-start-pin" onclick="document.getElementById('main-content').scrollIntoView({behavior:'smooth',block:'start'})">Fang hier an</button>
-      </div>
+      <p class="gs-oneline"><strong>Material zum Nachschlagen.</strong> Stöber durch Schriften, Icons, Farben und Muster — jedes mit sichtbarer Lizenz, per Klick kopiert oder direkt an Claude weitergereicht.</p>
     </div>
   </div>
 

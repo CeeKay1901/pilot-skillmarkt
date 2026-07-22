@@ -325,9 +325,27 @@ async function runViewport(browser, vp) {
     { count: ansehen.count, allBlankNoopener: ansehen.allBlankNoopener, allMatchData: ansehen.allMatchData, filesExist });
 
   // ---------- (8) Deep-Link ?case=<id>: kanonischer Hash, Modal offen, Karte hervorgehoben ----------
+  // Das Karten-Highlight ist BEWUSST transient: showroom.html setzt .-highlight und entfernt es
+  // nach 2400 ms wieder. Auf der schweren Showroom-Seite (lazy Live-iframes) liegt zwischen
+  // DOMContentLoaded (da läuft applyDeepLink und setzt .-highlight) und dem 'load'-Event (alle
+  // iframes) oft > 2400 ms — ein einmaliges Lesen nach waitUntil:'load' verpasst das Fenster
+  // reproduzierbar (Timing-Race, kein Produktfehler — das Highlight funktioniert real). Wir warten
+  // daher nur bis 'domcontentloaded' (Skripte definiert, applyDeepLink läuft an) und pollen das
+  // Highlight zeitnah, bevor der 2400-ms-Timer greift. Absicht unverändert: kanonischer Hash +
+  // richtiges Modal offen + Zielkarte hervorgehoben.
   await page.goto('about:blank');
-  await page.goto(TARGET + '?case=' + DEEPLINK_ID, { waitUntil: 'load' });
-  await page.waitForTimeout(1100); // applyDeepLink + fonts.ready-Reanchor
+  await page.goto(TARGET + '?case=' + DEEPLINK_ID, { waitUntil: 'domcontentloaded' });
+  let everHi = false;
+  const deepT0 = Date.now();
+  while (Date.now() - deepT0 < 2800) {
+    const hi = await page.evaluate((id) => {
+      const c = document.getElementById('case-' + id);
+      return !!c && c.classList.contains('-highlight');
+    }, DEEPLINK_ID).catch(() => false);
+    if (hi) { everHi = true; break; }
+    await page.waitForTimeout(30);
+  }
+  await page.waitForTimeout(200); // Modal-/Hash-Zustand ausrollen lassen
   const deepInfo = await page.evaluate((id) => {
     const card = document.getElementById('case-' + id);
     return {
@@ -335,9 +353,10 @@ async function runViewport(browser, vp) {
       canonical: location.hash === '#case/' + id,
       modalOpen: document.getElementById('modal-overlay').classList.contains('open'),
       modalName: (document.getElementById('modal-name') || {}).textContent || '',
-      highlighted: !!card && card.classList.contains('-highlight'),
+      highlightedNow: !!card && card.classList.contains('-highlight'),
     };
   }, DEEPLINK_ID);
+  deepInfo.highlighted = everHi || deepInfo.highlightedNow; // im Poll-Fenster gesehen ODER noch aktiv
   check('08_deeplink_opens_case',
     deepInfo.canonical && deepInfo.modalOpen && deepInfo.modalName === DEEPLINK_NAME && deepInfo.highlighted,
     deepInfo);

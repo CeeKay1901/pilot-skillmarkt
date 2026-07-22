@@ -51,32 +51,12 @@
     .zt-count { font-family: var(--font-mono); font-size: 1.1rem; color: rgba(252,252,252,.5); }
     .zeit-tile.active .zt-count { color: rgba(38,38,38,.6); }
 
-    /* ===== ERKLÄR-BLOCK „WIE LERNST DU MIT DIESEM KATALOG?“ (Getting-Started-Muster) ===== */
+    /* ===== ORIENTIERUNGS-ZEILE (statisch — ersetzt das frühere Getting-Started-Akkordeon) ===== */
     .getting-started { background: var(--c-white); border-bottom: 1px solid var(--line); }
-    .gs-inner { max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-d); }
-    .gs-toggle {
-      display: flex; align-items: center; gap: 1.2rem; width: 100%;
-      background: none; border: none; cursor: pointer; font-family: inherit;
-      font-size: 1.6rem; font-weight: 700; color: var(--c-black);
-      padding: 1.8rem 0; text-align: left;
-    }
-    .gs-toggle:hover { color: var(--c-gray-m); }
-    .gs-arrow { margin-left: auto; font-size: 1.8rem; transition: transform .2s; }
-    .gs-toggle[aria-expanded="true"] .gs-arrow { transform: rotate(90deg); }
-    .gs-content { padding-bottom: 2.4rem; }
-    .gs-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.4rem; }
-    .gs-step { display: flex; gap: 1.6rem; align-items: flex-start; }
-    .gs-num {
-      width: 3.2rem; height: 3.2rem; flex-shrink: 0; background: var(--c-yellow);
-      color: var(--c-black); border-radius: 50%; display: flex; align-items: center;
-      justify-content: center; font-size: 1.5rem; font-weight: 700; font-family: var(--font-mono);
-    }
-    .gs-step strong { font-size: 1.5rem; display: block; margin-bottom: .4rem; }
-    .gs-step p { font-size: 1.4rem; color: var(--c-gray-m); line-height: 1.5; }
-    @media (max-width: 1023px) {
-      .gs-inner { padding: 0 var(--pad-m); }
-      .gs-steps { grid-template-columns: 1fr; gap: 1.6rem; }
-    }
+    .gs-inner { max-width: var(--max-w); margin: 0 auto; padding: 1.8rem var(--pad-d); }
+    .gs-line { font-size: 1.5rem; line-height: 1.6; color: var(--c-ink-body); margin: 0; max-width: 92ch; }
+    .gs-line strong { color: var(--c-black); font-weight: 700; }
+    @media (max-width: 1023px) { .gs-inner { padding: 1.8rem var(--pad-m); } }
 
     /* Chip-Zeile horizontal: base.css stellt .role-chips für den Katalog auf
        column — hier tragen 3 Gruppen (Niveau/Dauer/Sprache) mit 8 Chips sonst
@@ -277,29 +257,10 @@
     </div>
   </section>
 
-  <!-- ERKLÄR-BLOCK: WIE LERNST DU MIT DIESEM KATALOG? -->
+  <!-- ORIENTIERUNG: was dieser Katalog dir gibt (eine statische Zeile) -->
   <div class="getting-started" id="getting-started">
     <div class="gs-inner">
-      <button class="gs-toggle" onclick="toggleGS()" aria-expanded="false" id="gs-toggle-btn">
-        <span>Wie lerne ich mit diesem Katalog? Drei Handgriffe</span>
-        <span class="gs-arrow">›</span>
-      </button>
-      <div class="gs-content" id="gs-content" hidden>
-        <div class="gs-steps">
-          <div class="gs-step">
-            <span class="gs-num">1</span>
-            <div><strong>Fang beim Pin an</strong><p>Die Karte mit dem <strong>„Start hier“</strong>-Band ist der geprüfte erste Schritt: ein deutsches Einsteiger-Video ohne Entwickler-Jargon. Danach führt die Kette weiter — Terminal-Anleitung zum Installieren, Schnellstart für die ersten Aufgaben.</p></div>
-          </div>
-          <div class="gs-step">
-            <span class="gs-num">2</span>
-            <div><strong>Filtere nach deiner Zeit</strong><p>Die Zeit-Kacheln oben setzen den Dauer-Filter: vom 5-Minuten-Espresso bis zum Deep Dive. Jede Karte sagt dir dazu in einem Satz — <strong>„Für dich, wenn …“</strong> — ob sie sich für dich lohnt.</p></div>
-          </div>
-          <div class="gs-step">
-            <span class="gs-num">3</span>
-            <div><strong>Gib zurück</strong><p>Hat dich eine Ressource weitergebracht? Klick <strong>„Das hat mir geholfen“</strong> direkt auf der Karte. Und wenn dir hier ein Link fehlt, der dir wirklich etwas beigebracht hat: schlag ihn unten vor.</p></div>
-          </div>
-        </div>
-      </div>
+      <p class="gs-line">Kuratierte, redaktionell geprüfte Lern-Links — filtere sie mit den Zeit-Kacheln und Chips nach <strong>Zeit, Niveau und Sprache</strong>, und jede Karte sagt dir in einem Satz, für wen sie sich lohnt.</p>
     </div>
   </div>
 
@@ -766,21 +727,10 @@
       scrollHighlight('res-' + id);
     }
 
-    // ===== ERKLÄR-BLOCK =====
-    function toggleGS() {
-      const content = document.getElementById('gs-content');
-      const btn = document.getElementById('gs-toggle-btn');
-      const isHidden = content.hidden;
-      content.hidden = !isHidden;
-      btn.setAttribute('aria-expanded', isHidden ? 'true' : 'false');
-      try { localStorage.setItem('lernen-gs-seen', '1'); } catch (e) {}
-    }
+    // ===== ORIENTIERUNGS-ZEILE — Hero-Button springt zur statischen Zeile =====
     function openGS() {
-      const content = document.getElementById('gs-content');
-      const btn = document.getElementById('gs-toggle-btn');
-      if (content.hidden) toggleGS();
-      document.getElementById('getting-started').scrollIntoView({ behavior: 'smooth', block: 'start' });
-      if (btn) btn.focus({ preventScroll: true });
+      const el = document.getElementById('getting-started');
+      if (el) el.scrollIntoView({ behavior: scrollBehavior(), block: 'start' });
     }
 
     // ===== MOBILE FILTER TOGGLE =====
@@ -813,15 +763,6 @@
       renderCatTabs();
       renderFilterChips();
       render();
-
-      // Erklär-Block beim allerersten Besuch offen zeigen (danach gemerkt)
-      try {
-        if (!localStorage.getItem('lernen-gs-seen')) {
-          const gsc = document.getElementById('gs-content');
-          const gsb = document.getElementById('gs-toggle-btn');
-          if (gsc && gsb) { gsc.hidden = false; gsb.setAttribute('aria-expanded', 'true'); }
-        }
-      } catch (e) {}
 
       // Deep-Link: ?r=<id> wird auf die kanonische Hash-Form (#r/<id>) umgeschrieben
       applyDeepLink(true);
