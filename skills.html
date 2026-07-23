@@ -37,7 +37,7 @@
     .type-badge {
       font-family: var(--font-mono); font-size: 1.05rem; font-weight: 600;
       letter-spacing: .06em; text-transform: uppercase;
-      padding: .25rem .9rem; border-radius: var(--radius-pill);
+      padding: .25rem .9rem; border-radius: var(--r-pill);
       border: 1px solid var(--c-black); color: var(--c-black); background: transparent;
       white-space: nowrap; flex-shrink: 0;
     }
@@ -47,7 +47,7 @@
     .type-tabs { display: flex; gap: .6rem; flex-wrap: wrap; }
     .type-tab {
       font-family: var(--font-mono); font-size: 1.3rem; padding: .55rem 1.5rem;
-      border-radius: var(--radius-pill); border: 1px solid var(--c-gray-l);
+      border-radius: var(--r-pill); border: 1px solid var(--c-gray-l);
       background: transparent; color: var(--c-gray-d); cursor: pointer; transition: var(--trans);
       white-space: nowrap;
     }
@@ -109,7 +109,7 @@
     .skills-subtab:hover { color: var(--c-black); }
     .skills-subtab.active, .skills-subtab[aria-selected="true"] { color: var(--c-black); border-bottom-color: var(--c-yellow); }
     /* Anthropic-Skills: eingebaut vs. nachinstallieren */
-    .install-badge { font-family: var(--font-mono); font-size: 1.15rem; font-weight: 600; padding: .3rem 1rem; border-radius: var(--radius-pill); white-space: nowrap; }
+    .install-badge { font-family: var(--font-mono); font-size: 1.15rem; font-weight: 600; padding: .3rem 1rem; border-radius: var(--r-pill); white-space: nowrap; }
     .install-badge.builtin { background: rgba(45,138,78,.1); color: #1e6b3a; border: 1px solid rgba(45,138,78,.35); }
     .install-badge.plugin { background: transparent; color: var(--c-black); border: 1px solid var(--c-gray-l); }
     /* E2: Plugin-Installation & Framework-Ablauf im Modal */
@@ -128,22 +128,6 @@
     .wf-example { margin-top: 2.4rem; background: var(--c-bg); border: 1px solid var(--c-gray-l); border-radius: var(--r-md); padding: 2rem; }
     .wf-example-steps { margin: 0; padding-left: 1.8em; display: flex; flex-direction: column; gap: .9rem; font-size: 1.45rem; line-height: 1.65; color: var(--c-ink-body); }
     .wf-pitfalls { margin: 0; padding-left: 1.6em; display: flex; flex-direction: column; gap: .7rem; font-size: 1.45rem; line-height: 1.6; color: var(--c-ink-body); }
-    /* Plattform-Chips auf der Karte: wo lässt sich der Skill einsetzen? */
-    .card-platforms { display: inline-flex; gap: .5rem; flex-wrap: wrap; vertical-align: middle; }
-    .pf-chip { font-family: var(--font-mono); font-size: 1.05rem; font-weight: 600; letter-spacing: .04em; padding: .25rem .9rem; border-radius: var(--radius-pill); border: 1px solid var(--c-gray-l); color: var(--c-gray-d); background: transparent; }
-    .pf-chip.pf-code { background: var(--c-black); color: var(--c-yellow); border-color: var(--c-black); }
-
-    /* Modal: „Wo du diesen Skill einsetzen kannst“ */
-    .pf-list { display: flex; flex-direction: column; gap: .8rem; }
-    .pf-item { display: grid; grid-template-columns: 13rem 1fr; gap: 1.2rem; align-items: baseline; padding: 1.1rem 1.4rem; border: 1px solid var(--c-gray-l); border-radius: .9rem; background: var(--c-white); }
-    .pf-item.ok { border-left: .4rem solid var(--c-yellow); }
-    .pf-item.na { opacity: .62; }
-    .pf-item-name { font-weight: 700; font-size: 1.45rem; white-space: nowrap; }
-    .pf-item.ok .pf-item-name::before { content: '✓ '; color: #2d8a4e; }
-    .pf-item.na .pf-item-name::before { content: '— '; color: var(--c-gray-m); }
-    .pf-item-how { font-size: 1.45rem; line-height: 1.55; color: var(--c-gray-d); }
-    .pf-item-how code { font-family: var(--font-mono); font-size: 1.25rem; background: var(--c-bg); border: 1px solid var(--c-gray-l); border-radius: var(--r-xs); padding: .05rem .5rem; color: var(--c-black); }
-    @media (max-width: 640px) { .pf-item { grid-template-columns: 1fr; gap: .3rem; } }
     /* Explainer: Bausteine-Panel (Skill · Plugin · Framework) */
     .expf-panel { background: var(--paper, #fbfbf7); border: 1px solid var(--c-gray-l); border-radius: 1.4rem; padding: 3rem 3.2rem; }
     .expf-cell code { font-family: var(--font-mono); font-size: .88em; background: var(--c-bg); border: 1px solid var(--c-gray-l); border-radius: var(--r-xs); padding: .05rem .5rem; }
@@ -214,7 +198,7 @@
     .trigger-badge {
       font-size: 1.4rem; font-weight: 600; padding: .6rem 1.4rem;
       background: var(--c-bg); border: 1px solid var(--c-gray-l);
-      border-radius: var(--radius-pill); cursor: pointer;
+      border-radius: var(--r-pill); cursor: pointer;
       font-family: var(--font-mono); transition: var(--trans);
       margin-bottom: 1.6rem;
     }
@@ -336,7 +320,7 @@
     .tc-btn {
       flex-shrink: 0; margin-left: auto; padding: .7rem 1.6rem;
       background: var(--c-black); color: var(--c-yellow); border: none;
-      border-radius: var(--radius-pill); font-family: inherit; font-size: 1.35rem; font-weight: 600;
+      border-radius: var(--r-pill); font-family: inherit; font-size: 1.35rem; font-weight: 600;
       cursor: pointer; transition: var(--trans); white-space: nowrap;
     }
     .tc-btn:hover { background: var(--c-black-soft); }
@@ -353,7 +337,7 @@
     .more-tags-btn {
       padding: .6rem 1.4rem; font-size: 1.4rem; font-family: inherit;
       background: transparent; border: 1px dashed var(--c-gray-l);
-      border-radius: var(--radius-pill); color: var(--c-gray-m);
+      border-radius: var(--r-pill); color: var(--c-gray-m);
       cursor: pointer; transition: var(--trans);
     }
     .more-tags-btn:hover { border-color: var(--c-black); color: var(--c-black); }
@@ -371,22 +355,13 @@
       .pilots-grid { grid-template-columns: repeat(2, 1fr); }
     }
 
-    /* Sub-Icon */
-    .sub-icon { font-size: 2rem; line-height: 1; }
-
     /* Card Trigger Chip */
     .card-trigger-chip {
       font-size: 1.2rem; padding: .3rem .8rem;
       background: var(--c-bg); border: 1px solid var(--c-gray-l);
-      border-radius: var(--radius-pill); color: var(--c-gray-m);
+      border-radius: var(--r-pill); color: var(--c-gray-m);
       font-family: var(--font-mono); white-space: nowrap;
     }
-    .card-trigger-chip.no-trigger { font-family: inherit; font-style: italic; }
-    .card-footer-right { display: flex; align-items: center; gap: .8rem; }
-
-    .install-guide summary::-webkit-details-marker { display: none; }
-    .install-guide[open] summary span:last-child { transform: rotate(180deg); display: inline-block; }
-
     /* ===== FEATURE 2: SIMILAR SKILLS ===== */
     .similar-grid { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: .8rem; }
     .similar-card { display: flex; flex-direction: column; gap: .4rem; padding: 1.2rem 1.6rem; background: var(--c-bg); border: 1px solid var(--c-gray-l); border-radius: 1rem; cursor: pointer; text-align: left; transition: var(--trans); min-width: 14rem; flex: 1; }
@@ -522,7 +497,7 @@
     .demo-skill-name { font-size: 1.6rem; font-weight: 700; color: var(--c-white); }
     .demo-skill-trig { font-family: var(--font-mono); font-size: 1.25rem; color: var(--c-yellow); }
     .demo-cases { display: flex; flex-wrap: wrap; gap: .6rem; }
-    .demo-case { background: transparent; border: 1px solid rgba(255,255,255,.2); color: rgba(252,252,252,.8); font-family: inherit; font-size: 1.35rem; padding: .6rem 1.2rem; border-radius: var(--radius-pill); cursor: pointer; transition: var(--trans); }
+    .demo-case { background: transparent; border: 1px solid rgba(255,255,255,.2); color: rgba(252,252,252,.8); font-family: inherit; font-size: 1.35rem; padding: .6rem 1.2rem; border-radius: var(--r-pill); cursor: pointer; transition: var(--trans); }
     .demo-case:hover { border-color: var(--c-yellow); color: var(--c-white); }
     .demo-case.active { background: var(--c-yellow); border-color: var(--c-yellow); color: var(--c-black); font-weight: 600; }
     .demo-stage { position: sticky; top: calc(var(--header-h) + 2rem); }
@@ -550,7 +525,7 @@
     .ex-starter-step { font-size: 1.2rem; font-weight: 700; color: var(--c-gray-m); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 1rem; }
     .ex-starter-name { font-size: 2rem; font-weight: 700; margin-bottom: .6rem; }
     .ex-starter-desc { font-size: 1.5rem; color: var(--c-gray-m); line-height: 1.5; margin-bottom: 1.6rem; }
-    .ex-starter-cmd { font-family: var(--font-mono); font-size: 1.4rem; color: var(--c-black); background: var(--c-bg); border: 1px solid var(--c-gray-l); border-radius: var(--radius-pill); padding: .4rem 1.2rem; display: inline-block; }
+    .ex-starter-cmd { font-family: var(--font-mono); font-size: 1.4rem; color: var(--c-black); background: var(--c-bg); border: 1px solid var(--c-gray-l); border-radius: var(--r-pill); padding: .4rem 1.2rem; display: inline-block; }
 
     /* Anatomie eines Skills */
     .ex-anatomy { display: grid; grid-template-columns: 26rem 1fr; gap: 2rem; margin-top: 4rem; align-items: start; }
@@ -620,7 +595,7 @@
     .skill-dl-hint code { font-family: var(--font-mono); background: var(--c-bg); border: 1px solid var(--c-gray-l); border-radius: var(--r-xs); padding: 0 .5rem; font-size: 1.2rem; color: var(--c-black); }
     .files-real-badge { color: #2d8a4e; font-family: var(--font-mono); font-weight: 700; letter-spacing: 0; text-transform: none; font-size: 1.3rem; }
     .files-warn-badge { color: #a5601a; font-family: var(--font-mono); font-weight: 700; letter-spacing: 0; text-transform: none; font-size: 1.3rem; }
-    .files-retry { background: var(--c-black); color: var(--c-white); border: none; border-radius: var(--radius-pill); font-family: inherit; font-size: 1.3rem; padding: .5rem 1.4rem; cursor: pointer; margin-left: .6rem; }
+    .files-retry { background: var(--c-black); color: var(--c-white); border: none; border-radius: var(--r-pill); font-family: inherit; font-size: 1.3rem; padding: .5rem 1.4rem; cursor: pointer; margin-left: .6rem; }
     .files-retry:hover { background: var(--c-yellow); color: var(--c-black); }
     .files-copy { background: rgba(255,255,255,.1); border: none; color: rgba(252,252,252,.8); font-family: inherit; font-size: 1.2rem; padding: .4rem 1rem; border-radius: .5rem; cursor: pointer; transition: var(--trans); }
     .files-copy:hover { background: var(--c-yellow); color: var(--c-black); }
@@ -631,7 +606,7 @@
     .files-code .tk-b { color: var(--c-yellow); }
     .files-code .tk-code { color: var(--term-ok); }
     /* Umschalter Code ↔ formatierte Ansicht */
-    .view-seg { display: inline-flex; border: 1px solid rgba(255,255,255,.25); border-radius: var(--radius-pill); overflow: hidden; flex-shrink: 0; }
+    .view-seg { display: inline-flex; border: 1px solid rgba(255,255,255,.25); border-radius: var(--r-pill); overflow: hidden; flex-shrink: 0; }
     .view-seg button { background: transparent; border: none; color: rgba(252,252,252,.75); font-family: inherit; font-size: 1.2rem; padding: .4rem 1.2rem; cursor: pointer; transition: var(--trans); }
     .view-seg button.active { background: var(--c-yellow); color: var(--c-black); font-weight: 600; }
     /* Formatierte Ansicht (Markdown/CSV): helle Lesefläche, Blöcke sind kommentierbar */
@@ -686,7 +661,7 @@
     .ln-code { white-space: pre; flex: 1; padding-right: 1.4rem; }
     .files-code.wrap .ln-code { white-space: pre-wrap; overflow-wrap: anywhere; }
     /* Schwebende "Kommentieren"-Pille an der Textauswahl */
-    .sel-pill { position: fixed; z-index: 400; background: var(--c-black); color: var(--c-white); border: 2px solid var(--c-yellow); border-radius: var(--radius-pill); font-family: inherit; font-size: 1.4rem; font-weight: 600; padding: .8rem 1.6rem; cursor: pointer; box-shadow: 0 10px 26px -8px rgba(0,0,0,.5); display: flex; align-items: center; gap: .7rem; }
+    .sel-pill { position: fixed; z-index: 400; background: var(--c-black); color: var(--c-white); border: 2px solid var(--c-yellow); border-radius: var(--r-pill); font-family: inherit; font-size: 1.4rem; font-weight: 600; padding: .8rem 1.6rem; cursor: pointer; box-shadow: 0 10px 26px -8px rgba(0,0,0,.5); display: flex; align-items: center; gap: .7rem; }
     .sel-pill:hover { background: var(--c-yellow); color: var(--c-black); }
     .sel-pill .sp-lines { font-family: var(--font-mono); font-size: 1.15rem; opacity: .75; font-weight: 400; }
     /* Inline-Composer & Inline-Kommentare direkt an der Zeile */
@@ -711,7 +686,7 @@
     .ann-panel { margin-top: 2rem; border-top: 1px solid var(--c-gray-l); padding-top: 1.6rem; }
     .ann-panel-head { display: flex; align-items: center; gap: 1rem; font-size: 1.5rem; font-weight: 700; margin-bottom: 1.2rem; flex-wrap: wrap; }
     .ann-head-actions { margin-left: auto; display: inline-flex; gap: .6rem; flex-wrap: wrap; }
-    .ann-export { background: var(--c-black); color: var(--c-white); border: none; border-radius: var(--radius-pill); font-family: var(--font-mono); font-size: 1.2rem; font-weight: 500; padding: .6rem 1.4rem; cursor: pointer; transition: var(--trans); }
+    .ann-export { background: var(--c-black); color: var(--c-white); border: none; border-radius: var(--r-pill); font-family: var(--font-mono); font-size: 1.2rem; font-weight: 500; padding: .6rem 1.4rem; cursor: pointer; transition: var(--trans); }
     .ann-export:hover { background: var(--c-yellow); color: var(--c-black); }
     .ann-import { background: transparent; color: var(--c-black); border: 1px solid var(--c-gray-l); }
     .ann-count { background: var(--c-black); color: var(--c-white); border-radius: var(--r-xl); font-size: 1.2rem; padding: .1rem .9rem; font-family: var(--font-mono); }
@@ -722,8 +697,6 @@
     .ann-range { display: flex; align-items: center; gap: .8rem; flex-wrap: wrap; margin-bottom: 1rem; font-size: 1.35rem; color: var(--c-gray-m); }
     .ann-range[hidden] { display: none; }
     .ann-range input { width: 7rem; font-family: var(--font-mono); font-size: 1.4rem; border: 1px solid var(--c-gray-l); border-radius: .6rem; padding: .6rem .8rem; background: var(--c-white); }
-    .ann-range-apply { background: var(--c-black); color: var(--c-white); border: none; border-radius: var(--radius-pill); font-family: inherit; font-size: 1.3rem; padding: .6rem 1.4rem; cursor: pointer; }
-    .ann-range-apply:hover { background: var(--c-yellow); color: var(--c-black); }
     .ann-range-hint { font-size: 1.2rem; color: var(--c-gray-d); }
     .ann-range-hint kbd { font-family: var(--font-mono); background: var(--c-bg); border: 1px solid var(--c-gray-l); border-radius: .3rem; padding: 0 .4rem; }
     .ann-text-input, .ann-author-input { width: 100%; font-family: inherit; font-size: 1.5rem; border: 1px solid var(--c-gray-l); border-radius: var(--r-sm); padding: 1rem 1.2rem; background: var(--c-white); }
@@ -736,7 +709,7 @@
     .ann-empty { font-size: 1.45rem; color: var(--c-gray-m); font-style: italic; }
     .ann-item { display: flex; gap: 1.2rem; align-items: flex-start; background: var(--c-bg); border: 1px solid var(--c-gray-l); border-radius: 1rem; padding: 1.4rem 1.6rem; }
     .ann-actions { display: flex; flex-direction: column; gap: .5rem; flex-shrink: 0; }
-    .ann-jump, .ann-link { background: var(--c-black); color: var(--c-white); border: none; border-radius: var(--radius-pill); font-family: var(--font-mono); font-size: 1.2rem; padding: .5rem 1.1rem; cursor: pointer; transition: var(--trans); white-space: nowrap; }
+    .ann-jump, .ann-link { background: var(--c-black); color: var(--c-white); border: none; border-radius: var(--r-pill); font-family: var(--font-mono); font-size: 1.2rem; padding: .5rem 1.1rem; cursor: pointer; transition: var(--trans); white-space: nowrap; }
     .ann-link { background: transparent; color: var(--c-gray-m); border: 1px solid var(--c-gray-l); }
     .ann-jump:hover, .ann-link:hover { background: var(--c-yellow); color: var(--c-black); border-color: var(--c-yellow); }
     .ann-body { flex: 1; min-width: 0; }
@@ -825,13 +798,6 @@
     .bld-actions-hint code { font-family: var(--font-mono); background: var(--c-bg); border: 1px solid var(--c-gray-l); border-radius: var(--r-xs); padding: 0 .5rem; color: var(--c-black); }
     @media (max-width: 1023px) { .bld-preview { position: static; } }
 
-    /* Auslöser-Anzeige im Skill-Modal */
-    .trigger-ways { display: flex; flex-direction: column; gap: 1rem; margin-top: .8rem; }
-    .tway { display: flex; gap: 1.2rem; align-items: flex-start; background: var(--c-bg); border: 1px solid var(--line); border-radius: 1rem; padding: 1.4rem 1.6rem; font-size: 1.5rem; line-height: 1.5; color: #55534b; }
-    .tway strong { color: var(--c-black); }
-    .tway code { font-family: var(--font-mono); font-size: 1.35rem; background: var(--c-black); color: var(--c-yellow); padding: .2rem .7rem; border-radius: var(--r-xs); }
-    .tway-ic { flex-shrink: 0; width: 2.8rem; height: 2.8rem; border-radius: var(--r-sm); background: var(--c-black); color: var(--c-yellow); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
-
     /* ===== GRUPPENKARTE (Office / Media-QA) ===== */
     .skill-card.group-card { border-style: dashed; border-color: var(--c-gray-l); }
     .skill-card.group-card:hover { border-color: var(--c-black); border-style: solid; }
@@ -864,7 +830,7 @@
       display: inline-flex; align-items: center; gap: 1rem;
       font-family: inherit; font-size: 1.4rem; font-weight: 600; cursor: pointer;
       background: transparent; color: var(--c-black);
-      border: 1px solid var(--c-black); border-radius: var(--radius-pill);
+      border: 1px solid var(--c-black); border-radius: var(--r-pill);
       padding: .8rem 1.6rem; transition: var(--trans);
     }
     .runway-action:hover { background: var(--c-black); color: var(--c-white, #fcfcfc); }
@@ -904,7 +870,7 @@
     .run-in { display: flex; gap: .8rem; flex-wrap: wrap; margin-bottom: .8rem; }
     .run-chip {
       font-family: var(--font-mono); font-size: 1.25rem; font-weight: 600;
-      padding: .35rem 1.1rem; border-radius: var(--radius-pill);
+      padding: .35rem 1.1rem; border-radius: var(--r-pill);
       border: 1px solid var(--line); background: transparent;
       display: inline-flex; align-items: center; gap: .5rem;
     }

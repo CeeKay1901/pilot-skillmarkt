@@ -185,14 +185,10 @@
     .jr-num { font-size: 3.2rem; font-weight: 700; line-height: 1; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
     .jr-label { font-family: var(--font-mono); font-size: 1.15rem; letter-spacing: .12em; text-transform: uppercase; color: var(--c-gray-m); }
     .jr-favs { display: flex; gap: .8rem; flex-wrap: wrap; }
-    .jr-chip {
-      display: inline-flex; align-items: center; gap: .7rem;
-      background: var(--paper); border: 1px solid var(--line-strong);
-      border-radius: var(--r-pill); padding: .6rem 1.4rem;
-      font-size: 1.35rem; font-weight: 500; color: var(--c-black);
-      text-decoration: none; transition: var(--trans);
-    }
-    .jr-chip:hover, .jr-chip:focus-visible { border-color: var(--c-black); background: var(--c-white); }
+    /* Basis (Layout/Radius/Border/Transition) liefert das .chip-Primitive;
+       hier nur die gefüllte Papierfläche + schwarze Schrift + etwas Innenabstand. */
+    .jr-chip { gap: .7rem; padding: .6rem 1.4rem; background: var(--paper); color: var(--c-black); }
+    .jr-chip:hover, .jr-chip:focus-visible { background: var(--c-white); }
     .jr-chip .jr-star { color: var(--c-yellow); }
     .jr-chip-type { font-family: var(--font-mono); font-size: 1rem; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--c-gray-m); }
     .jr-more { font-size: 1.3rem; color: var(--c-gray-m); align-self: center; }
@@ -369,29 +365,6 @@
 
           <article class="area-card area-live-sm anim-reveal">
             <div class="area-head">
-              <span class="area-ic"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/></svg></span>
-              <h3>Lernen &amp; Hilfe</h3>
-              <span class="area-pill -live">Live</span>
-            </div>
-            <div class="area-count">
-              <span class="area-count-num" id="area-lernenhilfe-count">0</span>
-              <span class="area-count-label">Ressourcen &amp; Hilfe-Einträge</span>
-            </div>
-            <p class="area-meta" id="area-lernenhilfe-meta"></p>
-            <p class="area-text">Geprüfte Lern-Ressourcen, Befehle im Team-Ranking, Glossar und Schritt-für-Schritt-Lösungen für typische Blocker.</p>
-            <a class="area-spot" href="lernen-hilfe.html?befehl=clear">
-              <span class="area-spot-label">Highlight</span>
-              <span class="area-spot-name">/clear</span>
-              <p class="area-spot-tag">Der wichtigste Handgriff, wenn Claude „komisch wird“ — mit Mini-Terminal-Demo</p>
-              <span id="area-lernenhilfe-spot-votes"></span>
-            </a>
-            <div class="area-cta-row">
-              <a class="c-cta -yellow-bg" href="lernen-hilfe.html">Lernen &amp; Hilfe öffnen</a>
-            </div>
-          </article>
-
-          <article class="area-card area-live-sm anim-reveal">
-            <div class="area-head">
               <span class="area-ic"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 6 4 14"/><path d="M12 6v14"/><path d="M8 8v12"/><path d="M4 4v16"/></svg></span>
               <h3>Asset-Bibliothek</h3>
               <span class="area-pill -live">Live</span>
@@ -456,6 +429,29 @@
             </a>
             <div class="area-cta-row">
               <a class="c-cta -yellow-bg" href="showroom.html">Showroom öffnen</a>
+            </div>
+          </article>
+
+          <article class="area-card area-live-sm anim-reveal">
+            <div class="area-head">
+              <span class="area-ic"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/></svg></span>
+              <h3>Lernen &amp; Hilfe</h3>
+              <span class="area-pill -live">Live</span>
+            </div>
+            <div class="area-count">
+              <span class="area-count-num" id="area-lernenhilfe-count">0</span>
+              <span class="area-count-label">Ressourcen &amp; Hilfe-Einträge</span>
+            </div>
+            <p class="area-meta" id="area-lernenhilfe-meta"></p>
+            <p class="area-text">Geprüfte Lern-Ressourcen, Befehle im Team-Ranking, Glossar und Schritt-für-Schritt-Lösungen für typische Blocker.</p>
+            <a class="area-spot" href="lernen-hilfe.html?befehl=clear">
+              <span class="area-spot-label">Highlight</span>
+              <span class="area-spot-name">/clear</span>
+              <p class="area-spot-tag">Der wichtigste Handgriff, wenn Claude „komisch wird“ — mit Mini-Terminal-Demo</p>
+              <span id="area-lernenhilfe-spot-votes"></span>
+            </a>
+            <div class="area-cta-row">
+              <a class="c-cta -yellow-bg" href="lernen-hilfe.html">Lernen &amp; Hilfe öffnen</a>
             </div>
           </article>
         </div>
@@ -676,7 +672,7 @@
       }
 
       const favChips = favItems.slice(0, 6).map(({ id, type }) =>
-        `<a class="jr-chip" href="${linkFor[type](id)}"><span class="jr-star" aria-hidden="true">★</span>${escHtml(nameFor(type, id))}<span class="jr-chip-type" aria-hidden="true">${TYPE_LABEL[type]}</span></a>`
+        `<a class="chip jr-chip" href="${linkFor[type](id)}"><span class="jr-star" aria-hidden="true">★</span>${escHtml(nameFor(type, id))}<span class="jr-chip-type" aria-hidden="true">${TYPE_LABEL[type]}</span></a>`
       ).join('');
       const more = favItems.length > 6 ? `<span class="jr-more">+${favItems.length - 6} weitere</span>` : '';
 

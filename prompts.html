@@ -21,7 +21,7 @@
        ============================================================ */
 
     /* Plattform-Chips (Muster aus skills.html — seitenlokal, bis eine dritte Seite sie braucht) */
-    .pf-chip { font-family: var(--font-mono); font-size: 1.05rem; font-weight: 600; letter-spacing: .04em; padding: .25rem .9rem; border-radius: var(--radius-pill); border: 1px solid var(--c-gray-l); color: var(--c-gray-d); background: transparent; white-space: nowrap; }
+    .pf-chip { font-family: var(--font-mono); font-size: 1.05rem; font-weight: 600; letter-spacing: .04em; padding: .25rem .9rem; border-radius: var(--r-pill); border: 1px solid var(--c-gray-l); color: var(--c-gray-d); background: transparent; white-space: nowrap; }
     .pf-chip.pf-code { background: var(--c-black); color: var(--c-yellow); border-color: var(--c-black); }
     .card-platforms { display: inline-flex; gap: .5rem; align-items: center; }
 
@@ -49,7 +49,7 @@
     mark.ph.-filled { background: rgba(255,224,94,.38); font-weight: 600; }
 
     /* ===== VARIANTEN-UMSCHALTER (Standard · Kurz · Ausführlich) ===== */
-    .variant-seg { display: inline-flex; border: 1px solid var(--c-gray-l); border-radius: var(--radius-pill); overflow: hidden; margin: 0 0 1.2rem; }
+    .variant-seg { display: inline-flex; border: 1px solid var(--c-gray-l); border-radius: var(--r-pill); overflow: hidden; margin: 0 0 1.2rem; }
     .variant-seg button {
       font-family: inherit; font-size: 1.3rem; font-weight: 600; cursor: pointer;
       padding: .7rem 1.6rem; background: transparent; border: none;
@@ -133,14 +133,10 @@
 
     /* ===== KARTE: Kopier-Aktion + Meistkopiert (Zähler lebt im Modal) ===== */
     .copy-count { font-size: 1.2rem; color: var(--c-gray-m); white-space: nowrap; font-variant-numeric: tabular-nums; }
-    .prompt-copy-chip {
-      font-family: inherit; font-size: 1.3rem; font-weight: 600; cursor: pointer;
-      background: transparent; color: var(--c-black);
-      border: 1px solid var(--c-black); border-radius: var(--radius-pill);
-      padding: .55rem 1.4rem; transition: var(--trans);
-      display: inline-flex; align-items: center; gap: .6rem;
-    }
-    .prompt-copy-chip:hover { background: var(--c-yellow); border-color: var(--c-yellow); }
+    /* Basis-Layout/Radius/Transition liefert das .chip-Primitive (base.css).
+       Hier nur die schwarze Umrandung + fettere Schrift + gelber Hover. */
+    .prompt-copy-chip { color: var(--c-black); border-color: var(--c-black); font-weight: 600; }
+    .prompt-copy-chip:hover { background: var(--c-yellow); border-color: var(--c-yellow); color: var(--c-black); }
     .prompt-copy-chip .lu { width: 1.4rem; height: 1.4rem; }
 
     /* Filtergruppen-Beschriftung in der Chip-Zeile */
@@ -162,16 +158,7 @@
       font-size: 1.4rem; color: var(--c-gray-d);
     }
 
-    /* Mitmachen-Band am Seitenende */
-    .submit-band { background: var(--paper-warm); border-top: 1px solid var(--line); padding: 6.4rem 0 6.8rem; }
-    .submit-band-inner { max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-d); }
-    .submit-band h2 { font-size: var(--fs-h2); font-weight: var(--fw-semi); letter-spacing: -.02em; margin: .6rem 0 1rem; }
-    .submit-band-text { font-size: 1.6rem; line-height: 1.6; color: var(--c-ink-body, var(--c-gray-d)); max-width: 62ch; margin: 0 0 2.4rem; }
-    .submit-band-note { font-family: var(--font-mono); font-size: 1.15rem; color: var(--c-gray-m); margin: 1.4rem 0 0; }
-    @media (max-width: 1023px) {
-      .submit-band { padding: 4.4rem 0 4.8rem; }
-      .submit-band-inner { padding: 0 var(--pad-m); }
-    }
+    /* Mitmachen-Band am Seitenende: .submit-band-Primitive aus base.css */
   </style>
 </head>
 <body>
@@ -228,7 +215,7 @@
         <p class="section-label">Mitmachen</p>
         <h2 id="submit-band-h">Dein Prompt funktioniert besser?</h2>
         <p class="submit-band-text">Die Sammlung lebt von den Formulierungen, die sich im Alltag bewährt haben. Reich deine Variante ein — sie erscheint mit deinem Namen im Katalog.</p>
-        <button type="button" class="c-cta -black-bg" id="submit-band-cta" onclick="openPromptSubmit()">Variante einreichen</button>
+        <button type="button" class="c-cta -yellow-bg" id="submit-band-cta" onclick="openPromptSubmit()">Variante einreichen</button>
         <p class="submit-band-note">Demo-Flow: deine Eingabe bleibt lokal in deinem Browser.</p>
       </div>
     </section>
@@ -572,7 +559,7 @@
               ${renderStars(eff.average)}
               <span class="rating-text">${eff.average.toFixed(1)} (${eff.count})</span>
             </div>
-            <button class="prompt-copy-chip" onclick="copyPrompt(event,'${p.id}')" title="Prompt-Text kopieren">${LU.copy} Kopieren</button>
+            <button class="chip prompt-copy-chip" onclick="copyPrompt(event,'${p.id}')" title="Prompt-Text kopieren">${LU.copy} Kopieren</button>
           </div>
         </article>
       `;

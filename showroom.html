@@ -31,11 +31,6 @@
     .sr-spot-frame-wrap { border-color: var(--line); background: repeating-conic-gradient(#e8e8e2 0% 25%, #f4f1ea 0% 50%) 50% / 1.6rem 1.6rem; }
     .sr-spotlight .c-cta.-yellow-border { border-color: var(--c-black); color: var(--c-black); }
     .sr-spotlight .c-cta.-yellow-border:hover { background: var(--c-black); color: var(--c-white); }
-    .lib-submit { background: var(--paper-warm); color: var(--c-black); border-top: 1px solid var(--line); }
-    .lib-submit h2 { color: var(--c-black); }
-    .lib-submit p { color: var(--c-gray-m); }
-    .lib-submit .section-label { color: var(--c-gray-m); }
-    .lib-submit-note { color: var(--c-gray-m); }
     .sr-desc { display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
     .modal-body .sr-desc { display: block; overflow: visible; }
 
@@ -134,13 +129,13 @@
     </section>
 
     <!-- MITMACHEN — prominentester Einreichen-Flow der Seite -->
-    <section class="lib-submit" aria-labelledby="sr-submit-h">
-      <div class="lib-submit-inner">
+    <section class="submit-band" aria-labelledby="sr-submit-h">
+      <div class="submit-band-inner">
         <p class="section-label">Mitmachen</p>
         <h2 id="sr-submit-h">Zeig, was du gebaut hast</h2>
-        <p>Der Showroom lebt von den Projekten des Teams. Egal ob Feierabend-Tool oder halber-Tag-Dashboard — wenn du etwas gebaut hast, das anderen zeigt, was möglich ist, reich es hier ein. Am liebsten mit der ehrlichen Geschichte dahinter: Was war das Problem, was ging schief, was kam am Ende raus.</p>
+        <p class="submit-band-text">Der Showroom lebt von den Projekten des Teams. Egal ob Feierabend-Tool oder halber-Tag-Dashboard — wenn du etwas gebaut hast, das anderen zeigt, was möglich ist, reich es hier ein. Am liebsten mit der ehrlichen Geschichte dahinter: Was war das Problem, was ging schief, was kam am Ende raus.</p>
         <button type="button" class="c-cta -yellow-bg" id="sr-submit-cta" onclick="openCaseSubmit()">Projekt einreichen</button>
-        <p class="lib-submit-note">Demo-Flow: deine Eingabe bleibt lokal in deinem Browser, es wird nichts gesendet.</p>
+        <p class="submit-band-note">Demo-Flow: deine Eingabe bleibt lokal in deinem Browser, es wird nichts gesendet.</p>
       </div>
     </section>
   </main>

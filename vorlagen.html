@@ -38,13 +38,7 @@
        Basis, relative Font-Pfade lösen dort nicht auf). Hier nur ein
        paar seitenlokale Feinheiten + die Kommentar-Form-Klassen.
        ============================================================ */
-    /* Etappe 1 (helle Shell): Mitmachen-Band von dunkler Deko-Fläche auf
-       helle Fläche umgestellt — nur Farben, keine Inhaltslogik. */
-    .lib-submit { background: var(--paper-warm); color: var(--c-black); border-top: 1px solid var(--line); }
-    .lib-submit h2 { color: var(--c-black); }
-    .lib-submit p { color: var(--c-gray-m); }
-    .lib-submit .section-label { color: var(--c-gray-m); }
-    .lib-submit-note { color: var(--c-gray-m); }
+    /* Mitmachen-Bänder: .submit-band-Primitive aus base.css */
     .bk-rank-wrap { max-width: 56rem; }
     .am-comment-form { display: flex; flex-direction: column; gap: .8rem; margin: 1rem 0 1.6rem; }
     .am-comment-form input, .am-comment-form textarea {
@@ -140,23 +134,8 @@
     }
     .lib-note code { font-family: var(--font-mono); font-size: .92em; }
     .brand-hinweis { font-family: var(--font-sans); font-size: 1.4rem; line-height: 1.6; }
-    .lib-submit-note { font-family: var(--font-sans); font-size: 1.3rem; }
-    /* Etappe 1 (helle Shell): Mitmachen-Band von dunkler Deko-Fläche auf
-       helle Fläche umgestellt — nur Farben, keine Inhaltslogik. */
-    .lib-submit { background: var(--paper-warm); color: var(--c-black); border-top: 1px solid var(--line); }
-    .lib-submit h2 { color: var(--c-black); }
-    .lib-submit p { color: var(--c-gray-m); }
-    .lib-submit .section-label { color: var(--c-gray-m); }
-    .lib-submit-note { color: var(--c-gray-m); }
-    .am-comment-form { display: flex; flex-direction: column; gap: .8rem; margin: 1rem 0 1.6rem; }
-    .am-comment-form input, .am-comment-form textarea {
-      font-family: inherit; font-size: 1.4rem; padding: .9rem 1.1rem;
-      border: 1px solid var(--line-strong); border-radius: var(--r-sm); background: var(--c-white); color: var(--c-black);
-    }
-    .am-hint { font-size: 1.3rem; color: var(--c-gray-m); margin: .4rem 0; }
-    .am-comment { border-top: 1px solid var(--line); padding: 1.2rem 0; }
-    .am-comment-head { font-size: 1.3rem; color: var(--c-gray-m); margin-bottom: .4rem; }
-    .am-comment-text { font-size: 1.4rem; line-height: 1.55; color: var(--c-ink-body); }
+    /* .am-comment-*-Formularstyles stehen bereits im Baukasten-Block oben
+       (identisch) — hier nicht erneut duplizieren (E11-Konsolidierung). */
   </style>
 </head>
 <body>
@@ -230,13 +209,13 @@
     </section>
 
     <!-- MITMACHEN -->
-    <section class="lib-submit" aria-labelledby="bk-submit-h">
-      <div class="lib-submit-inner">
+    <section class="submit-band" aria-labelledby="bk-submit-h">
+      <div class="submit-band-inner">
         <p class="section-label">Mitmachen</p>
         <h2 id="bk-submit-h">Du hast einen Baustein gebaut?</h2>
-        <p>Der Baukasten wächst mit dem Team. Wenn du etwas gebaut hast, das anderen Arbeit spart — ein Layout, eine Tabelle, ein Formular — reich es hier ein. Bedingung ist nur: selbst geschrieben und frei nutzbar, keine fremden Snippets mit unklarer Lizenz.</p>
+        <p class="submit-band-text">Der Baukasten wächst mit dem Team. Wenn du etwas gebaut hast, das anderen Arbeit spart — ein Layout, eine Tabelle, ein Formular — reich es hier ein. Bedingung ist nur: selbst geschrieben und frei nutzbar, keine fremden Snippets mit unklarer Lizenz.</p>
         <button type="button" class="c-cta -yellow-bg" id="bk-submit-cta" onclick="openBausteinSubmit()">Baustein einreichen</button>
-        <p class="lib-submit-note">Demo-Flow: deine Eingabe bleibt lokal in deinem Browser, es wird nichts gesendet.</p>
+        <p class="submit-band-note">Demo-Flow: deine Eingabe bleibt lokal in deinem Browser, es wird nichts gesendet.</p>
       </div>
     </section>
   </main>
@@ -317,13 +296,13 @@
     </section>
 
     <!-- MITMACHEN -->
-    <section class="lib-submit" aria-labelledby="lib-submit-h">
-      <div class="lib-submit-inner">
+    <section class="submit-band" aria-labelledby="lib-submit-h">
+      <div class="submit-band-inner">
         <p class="section-label">Mitmachen</p>
         <h2 id="lib-submit-h">Dir fehlt ein freies Asset?</h2>
-        <p>Diese Bibliothek wächst mit dem Team. Schlag eine Schrift, ein Icon-Set, eine Palette oder ein Muster vor — Bedingung ist eine freie Lizenz (OFL, Apache-2.0, MIT, ISC oder CC0). Die Redaktion prüft Quelle und Lizenz und stellt es dazu.</p>
+        <p class="submit-band-text">Diese Bibliothek wächst mit dem Team. Schlag eine Schrift, ein Icon-Set, eine Palette oder ein Muster vor — Bedingung ist eine freie Lizenz (OFL, Apache-2.0, MIT, ISC oder CC0). Die Redaktion prüft Quelle und Lizenz und stellt es dazu.</p>
         <button type="button" class="c-cta -yellow-bg" id="lib-submit-cta" onclick="openAssetSubmit()">Asset vorschlagen</button>
-        <p class="lib-submit-note">Demo-Flow: deine Eingabe bleibt lokal in deinem Browser, es wird nichts gesendet.</p>
+        <p class="submit-band-note">Demo-Flow: deine Eingabe bleibt lokal in deinem Browser, es wird nichts gesendet.</p>
       </div>
     </section>
   </main>

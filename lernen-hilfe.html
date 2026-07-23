@@ -80,20 +80,14 @@
       font-family: var(--font-mono); font-size: 1.1rem; font-weight: 600;
       text-transform: uppercase; letter-spacing: .1em; color: var(--c-gray-m); margin: 0;
     }
+    /* Zeit-Schnellauswahl: base.css-.chip-Primitive (.-yellow.-active); die drei
+       Innen-Spans bleiben seitenlokal (Zahl · Name · Zähler). */
     .zeit-tiles { display: flex; gap: .8rem; flex-wrap: wrap; }
-    .zeit-tile {
-      display: inline-flex; align-items: baseline; gap: .7rem;
-      background: transparent; border: 1px solid var(--line-strong);
-      border-radius: var(--radius-pill); padding: .55rem 1.4rem;
-      font-family: inherit; font-size: 1.35rem; font-weight: 600;
-      color: var(--c-gray-d); cursor: pointer; transition: var(--trans);
-    }
-    .zeit-tile:hover { border-color: var(--c-black); color: var(--c-black); }
-    .zeit-tile.active { background: var(--c-yellow); border-color: var(--c-yellow); color: var(--c-black); }
+    #zeit-tiles .chip { gap: .7rem; }
     .zt-num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-weight: 700; }
     .zt-name { font-size: 1.3rem; }
     .zt-count { font-family: var(--font-mono); font-size: 1.05rem; color: var(--c-gray-m); }
-    .zeit-tile.active .zt-count { color: rgba(38,38,38,.6); }
+    #zeit-tiles .chip.-active .zt-count { color: rgba(38,38,38,.6); }
 
     /* Seiten-Suchfeld im Toolbar-Slot: neutralisiert die (dunkle) #search-Basisregel
        aus base.css — das Feld sitzt hier auf heller Fläche. */
@@ -143,7 +137,7 @@
       background: var(--c-black); color: var(--c-yellow);
       font-family: var(--font-mono); font-size: 1.05rem; font-weight: 600;
       letter-spacing: .08em; text-transform: uppercase;
-      padding: .35rem 1rem; border-radius: var(--radius-pill); z-index: 2;
+      padding: .35rem 1rem; border-radius: var(--r-pill); z-index: 2;
     }
     .res-ico {
       display: flex; align-items: flex-start; justify-content: center;
@@ -163,7 +157,7 @@
     .intern-tag {
       font-family: var(--font-mono); font-size: 1.05rem; letter-spacing: .06em;
       background: var(--c-yellow); color: var(--c-black);
-      border-radius: var(--radius-pill); padding: .25rem .9rem; white-space: nowrap;
+      border-radius: var(--r-pill); padding: .25rem .9rem; white-space: nowrap;
     }
     .res-title {
       display: inline; font-size: 1.8rem; font-weight: 700; letter-spacing: -.01em;
@@ -187,12 +181,12 @@
     .res-dauer .lu { width: 1.4rem; height: 1.4rem; color: var(--c-gray-m); }
     .lang-pill {
       font-family: var(--font-mono); font-size: 1.05rem; font-weight: 700; letter-spacing: .08em;
-      border: 1px solid var(--line-strong); border-radius: var(--radius-pill);
+      border: 1px solid var(--line-strong); border-radius: var(--r-pill);
       padding: .15rem .8rem; color: var(--c-gray-d);
     }
     .res-pf {
       font-family: var(--font-mono); font-size: 1.05rem; letter-spacing: .06em;
-      background: rgba(38,38,38,.06); border-radius: var(--radius-pill);
+      background: rgba(38,38,38,.06); border-radius: var(--r-pill);
       padding: .25rem .9rem; white-space: nowrap; color: var(--c-gray-d);
     }
     .res-meta .meta-dot { color: var(--c-gray-l); }
@@ -255,23 +249,9 @@
       letter-spacing: -.02em; color: var(--c-black); margin: .6rem 0 1.2rem;
     }
     .bef-sub { font-size: 1.6rem; line-height: 1.6; color: var(--c-ink-body); max-width: 72ch; margin: 0; }
-    .bef-note {
-      font-family: var(--font-mono); font-size: 1.15rem; line-height: 1.6;
-      color: var(--c-gray-m); margin: 1.4rem 0 0; max-width: 88ch;
-    }
 
-    /* Kategorie-Filter (helle Chips im hellen Rahmen) */
+    /* Kategorie-Filter: base.css-.chip-Primitive (.-yellow.-active, .chip-count) */
     .bef-chips { display: flex; gap: .8rem; flex-wrap: wrap; margin: 3rem 0 2.4rem; }
-    .bef-chip {
-      border: 1px solid var(--line-strong); background: transparent;
-      color: var(--c-gray-d); border-radius: var(--radius-pill);
-      padding: .6rem 1.4rem; font-family: inherit; font-size: 1.4rem;
-      cursor: pointer; transition: var(--trans);
-    }
-    .bef-chip:hover { border-color: var(--c-black); color: var(--c-black); }
-    .bef-chip.active { background: var(--c-yellow); border-color: var(--c-yellow); color: var(--c-black); font-weight: 600; }
-    .bef-chip-count { opacity: .6; font-family: var(--font-mono); font-size: 1.2rem; margin-left: .3rem; font-variant-numeric: tabular-nums; }
-    .bef-chip.active .bef-chip-count { opacity: .75; }
 
     /* ===== RANKING-LISTE (Signature: Upvote sortiert live) =====
        Terminal-Moment: die Liste sitzt als dunkles Panel im hellen Rahmen.
@@ -312,7 +292,7 @@
     .cmd-copy {
       display: inline-flex; align-items: center; gap: .5rem;
       border: 1px solid rgba(252,252,252,.3); background: transparent;
-      color: rgba(252,252,252,.8); border-radius: var(--radius-pill);
+      color: rgba(252,252,252,.8); border-radius: var(--r-pill);
       font-family: inherit; font-size: 1.2rem; font-weight: 600;
       padding: .35rem 1.1rem; cursor: pointer; transition: var(--trans);
     }
@@ -320,14 +300,14 @@
     .cmd-copy:hover { background: var(--c-yellow); border-color: var(--c-yellow); color: var(--c-black); }
     .pf-tag {
       font-family: var(--font-mono); font-size: 1.05rem; letter-spacing: .06em;
-      padding: .25rem .9rem; border-radius: var(--radius-pill);
+      padding: .25rem .9rem; border-radius: var(--r-pill);
       border: 1px solid rgba(252,252,252,.2); color: rgba(252,252,252,.55);
       white-space: nowrap;
     }
     .lh-tag {
       font-family: var(--font-mono); font-size: 1.05rem; letter-spacing: .06em;
       background: rgba(255,224,94,.15); color: var(--c-yellow);
-      border-radius: var(--radius-pill); padding: .25rem .9rem; white-space: nowrap;
+      border-radius: var(--r-pill); padding: .25rem .9rem; white-space: nowrap;
     }
     /* Nutzen: zugeklappt EINE Zeile (Dichte), aufgeklappt der volle Satz */
     .cmd-nutzen {
@@ -345,7 +325,7 @@
     .vote-btn {
       display: inline-flex; align-items: center; gap: .7rem;
       border: 1px solid rgba(252,252,252,.3); background: transparent;
-      color: var(--c-white); border-radius: var(--radius-pill);
+      color: var(--c-white); border-radius: var(--r-pill);
       padding: .7rem 1.5rem; font-family: inherit; font-size: 1.35rem; font-weight: 600;
       cursor: pointer; transition: var(--trans);
     }
@@ -401,7 +381,7 @@
     .term-play {
       font-family: var(--font-mono); font-size: 1.3rem; font-weight: 600;
       background: transparent; border: 1px solid rgba(255,224,94,.6);
-      color: var(--c-yellow); border-radius: var(--radius-pill);
+      color: var(--c-yellow); border-radius: var(--r-pill);
       padding: .8rem 1.8rem; cursor: pointer; transition: var(--trans);
     }
     .term-play:hover { background: var(--c-yellow); color: var(--c-black); }
@@ -414,7 +394,6 @@
     .glo-inner { max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-d); }
     .glo-h2 { font-size: var(--fs-h2); font-weight: var(--fw-semi); letter-spacing: -.02em; margin: .6rem 0 1.2rem; }
     .glo-sub { font-size: 1.6rem; line-height: 1.6; color: var(--c-ink-body); max-width: 72ch; margin: 0; }
-    .glo-note { font-family: var(--font-mono); font-size: 1.15rem; line-height: 1.6; color: var(--c-gray-m); margin: 1.4rem 0 0; max-width: 88ch; }
 
     /* Werkzeugleiste: Suche + A-Z — klebt beim Blättern unter der Sub-Nav */
     .glo-tools {
@@ -426,7 +405,7 @@
     .glo-search {
       display: flex; align-items: center; gap: 1rem; flex: 0 1 40rem; min-width: 24rem;
       background: var(--c-white); border: 1px solid var(--line-strong);
-      border-radius: var(--radius-pill); padding: .8rem 1.8rem; transition: var(--trans);
+      border-radius: var(--r-pill); padding: .8rem 1.8rem; transition: var(--trans);
     }
     .glo-search:focus-within { border-color: var(--c-black); }
     .glo-search input {
@@ -496,7 +475,7 @@
     .xref {
       display: inline-flex; align-items: center; gap: .7rem;
       font-size: 1.25rem; font-weight: 600; text-decoration: none; color: var(--c-black);
-      border: 1px solid var(--line-strong); border-radius: var(--radius-pill);
+      border: 1px solid var(--line-strong); border-radius: var(--r-pill);
       padding: .45rem 1.2rem; transition: var(--trans); background: var(--c-white);
     }
     .xref:hover { background: var(--c-yellow); border-color: var(--c-yellow); }
@@ -536,19 +515,13 @@
     .faq-voice blockquote { font-size: 1.4rem; line-height: 1.6; color: var(--c-ink-body); font-style: italic; margin: 0 0 .5rem; }
     .faq-voice figcaption { font-family: var(--font-mono); font-size: 1.15rem; color: var(--c-gray-m); }
 
-    /* ===== MITMACHEN-BÄNDER (Ressource vorschlagen / Kniff einreichen — Demo-Flow) ===== */
-    .submit-band { background: var(--paper-warm); border-top: 1px solid var(--line); padding: 6.4rem 0 6.8rem; }
-    .submit-band-inner { max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-d); }
-    .submit-band h2 { font-size: var(--fs-h2); font-weight: var(--fw-semi); letter-spacing: -.02em; margin: .6rem 0 1rem; }
-    .submit-band-text { font-size: 1.6rem; line-height: 1.6; color: var(--c-ink-body); max-width: 62ch; margin: 0 0 2.4rem; }
-    .submit-band-note { font-family: var(--font-mono); font-size: 1.15rem; color: var(--c-gray-m); margin: 1.4rem 0 0; }
+    /* ===== MITMACHEN-BÄNDER: .submit-band-Primitive aus base.css ===== */
 
     /* ===== RESPONSIVE & TOUCH ===== */
     @media (max-width: 1023px) {
-      .res-intro-inner, .res-inner, .glo-inner, .faq-inner, .submit-band-inner { padding: 0 var(--pad-m); }
+      .res-intro-inner, .res-inner, .glo-inner, .faq-inner { padding: 0 var(--pad-m); }
       .res-list { grid-template-columns: 1fr; }
       .g-grid { grid-template-columns: 1fr; }
-      .submit-band { padding: 4.4rem 0 4.8rem; }
     }
     @media (max-width: 767px) {
       .cmd-row { grid-template-columns: 3.6rem 1fr; padding: 1.6rem 1.4rem 1.4rem 0; gap: 0 1rem; }
@@ -580,12 +553,12 @@
       .res-ico .lu { width: 1.8rem; height: 1.8rem; }
     }
     @media (hover: none) and (pointer: coarse) {
-      .vote-btn, .cmd-toggle, .cmd-copy, .bef-chip, .term-play { min-height: 4.4rem; }
-      .pillar-link, .g-head, .az-btn, .xref, .res-toggle, .zeit-tile { min-height: 4.4rem; }
+      .vote-btn, .cmd-toggle, .cmd-copy, .chip, .term-play { min-height: 4.4rem; }
+      .pillar-link, .g-head, .az-btn, .xref, .res-toggle { min-height: 4.4rem; }
       .az-btn { min-width: 4rem; }
     }
     @media (prefers-reduced-motion: reduce) {
-      .cmd-card, .g-card, .faq-card, .res-card, .zeit-tile { transition: none; }
+      .cmd-card, .g-card, .faq-card, .res-card, .chip { transition: none; }
     }
     /* E11-Tabs: hidden-Panels dürfen von keiner display-Regel überstimmt werden */
     main > section[hidden] { display: none !important; }
@@ -676,7 +649,7 @@
           <p class="section-label">Mitmachen</p>
           <h2 id="submit-res-h">Dir hat etwas weitergeholfen, das hier fehlt?</h2>
           <p class="submit-band-text">Schlag den Link vor, der dir wirklich etwas beigebracht hat — die Redaktion prüft ihn und stellt ihn dazu.</p>
-          <button type="button" class="c-cta -black-bg" id="submit-res-cta" onclick="openRessourceSubmit()">Ressource vorschlagen</button>
+          <button type="button" class="c-cta -yellow-bg" id="submit-res-cta" onclick="openRessourceSubmit()">Ressource vorschlagen</button>
           <p class="submit-band-note">Demo-Flow: deine Eingabe bleibt lokal in deinem Browser.</p>
         </div>
       </section>
@@ -699,7 +672,7 @@
           <p class="section-label">Mitmachen</p>
           <h2 id="submit-kniff-h">Du kennst einen Kniff, der hier fehlt?</h2>
           <p class="submit-band-text">Reich den Handgriff ein, der sich bei dir im Alltag bewährt hat.</p>
-          <button type="button" class="c-cta -black-bg" id="submit-kniff-cta" onclick="openKniffSubmit()">Kniff einreichen</button>
+          <button type="button" class="c-cta -yellow-bg" id="submit-kniff-cta" onclick="openKniffSubmit()">Kniff einreichen</button>
           <p class="submit-band-note">Demo-Flow: deine Eingabe bleibt lokal in deinem Browser.</p>
         </div>
       </section>
@@ -926,16 +899,16 @@
       host.innerHTML = DAUER_BUCKETS.map(b => {
         const n = RESSOURCEN.filter(b.test).length; // echte Zählung aus dauerMin
         const active = state.dauer === b.id;
-        return `<button type="button" class="zeit-tile${active ? ' active' : ''}" data-dauer="${b.id}" aria-pressed="${active}" onclick="quickZeit('${b.id}')">
+        return `<button type="button" class="chip -yellow${active ? ' -active' : ''}" data-dauer="${b.id}" aria-pressed="${active}" onclick="quickZeit('${b.id}')">
           <span class="zt-num">${b.zahl} Min</span><span class="zt-name">${b.name}</span><span class="zt-count">${n}</span>
         </button>`;
       }).join('');
     }
     // Kein innerHTML-Tausch beim Klick (Fokus bleibt auf der Kachel) — nur Klassen.
     function updateZeitTiles() {
-      document.querySelectorAll('#zeit-tiles .zeit-tile').forEach(el => {
+      document.querySelectorAll('#zeit-tiles .chip').forEach(el => {
         const active = state.dauer === el.dataset.dauer;
-        el.classList.toggle('active', active);
+        el.classList.toggle('-active', active);
         el.setAttribute('aria-pressed', active ? 'true' : 'false');
       });
     }
@@ -1163,7 +1136,7 @@
       const host = document.getElementById('bef-chips');
       if (host) {
         const idx = KAT.findIndex(kat => kat.id === k);
-        const target = (idx >= 0 && host.children[idx]) || host.querySelector('.bef-chip.active');
+        const target = (idx >= 0 && host.children[idx]) || host.querySelector('.chip.-active');
         if (target) target.focus({ preventScroll: true });
       }
       renderRanking();
@@ -1174,7 +1147,7 @@
       host.innerHTML = KAT.map(k => {
         const count = k.id === 'all' ? BEFEHLE.length : BEFEHLE.filter(b => b.kategorie === k.id).length;
         const active = k.id === 'all' ? state.kategorie === null : state.kategorie === k.id;
-        return `<button type="button" class="bef-chip${active ? ' active' : ''}" aria-pressed="${active}" onclick="setKategorie('${k.id}')">${escHtml(k.label)} <span class="bef-chip-count">${count}</span></button>`;
+        return `<button type="button" class="chip -yellow${active ? ' -active' : ''}" aria-pressed="${active}" onclick="setKategorie('${k.id}')">${escHtml(k.label)} <span class="chip-count">${count}</span></button>`;
       }).join('');
     }
 

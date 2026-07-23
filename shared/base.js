@@ -192,7 +192,6 @@ function renderNav(activePage, opts) {
     if (searchSlot) searchSlot.innerHTML = searchHtml;
   }
 
-  initNavMore();
   initGlobalSearch();
   _dsUpdateCount();   /* E11: Zähl-Badge „Deine Sachen“ */
 
@@ -242,61 +241,8 @@ window.copyText = function (text) {
   return Promise.resolve(fallback());
 };
 
-/* „Mehr ▾“-Dropdown der Hauptnav (E6): Klick togglet, Esc schließt (Fokus zurück
-   auf den Button), Außenklick schließt, Pfeil-runter/-hoch bewegt in den Menü-
-   punkten. Auf Mobile (≤1023px) ist der Button per CSS ausgeblendet und die
-   Menüpunkte liegen flach in der Leiste — die Handler laufen dann ins Leere.
-   Idempotent: die document-Listener werden nur einmal pro Seite gebunden. */
-function initNavMore() {
-  const btn = document.getElementById('nav-more-btn');
-  const menu = document.getElementById('nav-more-menu');
-  if (!btn || !menu) return;
-  const isDesktop = () => !(window.matchMedia && window.matchMedia('(max-width: 1023px)').matches);
-  const open = () => {
-    if (!isDesktop()) return;
-    menu.hidden = false;
-    btn.setAttribute('aria-expanded', 'true');
-  };
-  const close = (focusBtn) => {
-    menu.hidden = true;
-    btn.setAttribute('aria-expanded', 'false');
-    if (focusBtn) btn.focus();
-  };
-  btn.addEventListener('click', e => {
-    e.stopPropagation();
-    (btn.getAttribute('aria-expanded') === 'true') ? close(false) : open();
-  });
-  btn.addEventListener('keydown', e => {
-    if (e.key === 'ArrowDown') {
-      e.preventDefault(); open();
-      const first = menu.querySelector('.nav-more-item');
-      if (first) first.focus();
-    }
-  });
-  menu.addEventListener('keydown', e => {
-    if (e.key === 'Escape') { close(true); return; }
-    const items = [...menu.querySelectorAll('.nav-more-item')];
-    const i = items.indexOf(document.activeElement);
-    if (e.key === 'ArrowDown') { e.preventDefault(); (items[i + 1] || items[0]).focus(); }
-    else if (e.key === 'ArrowUp') { e.preventDefault(); (items[i - 1] || btn).focus(); }
-  });
-  if (!document._navMoreBound) {
-    document._navMoreBound = true;
-    document.addEventListener('click', e => {
-      const wrap = document.querySelector('[data-nav-more]');
-      const m = document.getElementById('nav-more-menu');
-      const b = document.getElementById('nav-more-btn');
-      if (!wrap || !m || m.hidden) return;
-      if (!wrap.contains(e.target)) { m.hidden = true; if (b) b.setAttribute('aria-expanded', 'false'); }
-    });
-    document.addEventListener('keydown', e => {
-      if (e.key !== 'Escape') return;
-      const m = document.getElementById('nav-more-menu');
-      const b = document.getElementById('nav-more-btn');
-      if (m && !m.hidden) { m.hidden = true; if (b) { b.setAttribute('aria-expanded', 'false'); b.focus(); } }
-    });
-  }
-}
+/* Das „Mehr ▾"-Nav-Dropdown (initNavMore) wurde im E11-CSS-Abriss entfernt —
+   die Nav-Leiste zeigt alle Sektionen flach, ein Dropdown existiert nicht mehr. */
 
 /* ===== LUCIDE-ICON-MAP (inline SVGs — statt Emojis, editorialer Look) ===== */
 const LU = {
