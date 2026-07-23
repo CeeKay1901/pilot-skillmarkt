@@ -55,6 +55,11 @@
     @media (hover: none) and (pointer: coarse) {
       .sr-react { min-height: 4.4rem; padding-top: .9rem; padding-bottom: .9rem; }
     }
+
+    /* E12: Seiten-Suchfeld belegt in der Filter-Toolbar eine eigene Zeile
+       (flex-basis 100 %), die Pills/Selects fließen darunter wie gehabt — kein
+       neues horizontales Gedränge. Optik/Feldstil kommen aus [data-page-search]. */
+    .sr-search { flex-basis: 100%; }
   </style>
 </head>
 <body>
@@ -88,6 +93,9 @@
         </div>
         <p class="lib-note">Jede Karte zeigt ein skaliertes, nicht interaktives Vorschaubild der echten Demo. „Ansehen“ öffnet die echte, klickbare Datei in einem neuen Tab; „Details“ öffnet die ganze Geschichte samt Nachbau-Anleitung. Filter nach Säule, Art und Aufwand, sortier nach „Meistgewollt“ — die Reaktions-Zähler zählen lokal in deinem Browser.</p>
         <div class="sr-toolbar">
+          <!-- E12: Seiten-Suchfeld (renderNav-Slot, ID #search) — filtert die Case-Karten
+               zusätzlich zu den Filter-Pills (Kombination = UND). -->
+          <div class="sr-search" data-page-search></div>
           <div class="sr-cats" id="sr-cats" role="group" aria-label="Projekte nach Säule filtern"></div>
           <div class="sr-selects">
             <div class="sr-select">
@@ -175,7 +183,8 @@
       saeule: null,          // null = alle Säulen | 'insights' | 'media' | …
       art: 'all',            // 'all' | 'tool' | 'dashboard' | …
       aufwand: 'all',        // 'all' | 'mini' | 'halber-tag'
-      sort: 'recommended'
+      sort: 'recommended',
+      search: ''             // E12: Freitext-Suche (Titel/Beschreibung/Persona/Säule/Art)
     };
     // KEIN window.RatingConfig — Cases nutzen keine Sterne, nur Reaktionen (vote:reaktion:<id>).
 
@@ -184,6 +193,9 @@
 
     // ===== NAV & FOOTER =====
     renderNav('showroom', {
+      // E12: Seiten-Suchfeld in den Filter-Toolbar-Slot [data-page-search] rendern
+      // (Feld-ID bleibt #search — global Strg-K bleibt davon unberührt).
+      search: { id: 'search', label: 'Nur diese Seite: Projekte filtern', placeholder: 'Nur Projekte filtern …' },
       footerClaim: 'Von Piloten gebaut, von Piloten empfohlen. Echte Projekte aus dem Team — mit der Geschichte dahinter. Stimmen & Beispiele sind redaktionelle Demo-Daten.'
     });
 
@@ -255,11 +267,22 @@
     }
     function setSaeule(k) { state.saeule = k === 'all' ? null : k; renderCats(); renderCases(); }
 
+    // E12: Freitext-Suche über Titel, Kurzbeschreibung, Persona, Säule und Art.
+    // Mehrere Begriffe = UND; kombiniert sich mit den Filter-Pills ebenfalls per UND.
+    function caseMatchesSearch(c) {
+      const q = (state.search || '').trim();
+      if (!q) return true;
+      const terms = q.split(/\s+/).filter(Boolean);
+      const hay = (c.titel + ' ' + (c.kurz || '') + ' ' + (c.persona || '') + ' '
+        + (SAEULE_LABEL[c.saeule] || c.saeule) + ' ' + (ART_LABEL[c.art] || c.art)).toLowerCase();
+      return terms.every(t => hay.includes(t));
+    }
     function filteredCases() {
       return CASES.filter(c =>
         (!state.saeule || c.saeule === state.saeule) &&
         (state.art === 'all' || c.art === state.art) &&
-        (state.aufwand === 'all' || c.aufwandStufe === state.aufwand));
+        (state.aufwand === 'all' || c.aufwandStufe === state.aufwand) &&
+        caseMatchesSearch(c));
     }
     function sortedCases(list) {
       const arr = list.slice();
@@ -301,10 +324,36 @@
     function renderCases() {
       const host = document.getElementById('sr-grid');
       if (!host) return;
-      host.innerHTML = sortedCases(filteredCases()).map(caseCardHtml).join('');
+      const list = sortedCases(filteredCases());
+      if (!list.length) {
+        // E12: Empty-State im bestehenden .empty-state-Muster (wie prompts.html)
+        host.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">${LU.search}</div>
+            <h3 class="empty-title">Kein Projekt gefunden</h3>
+            <p class="empty-text">Keine Projekte passen zu deinen Filtern. Setz die Filter zurück oder probier einen anderen Suchbegriff.</p>
+            <button class="c-cta -black-bg" onclick="resetShowroomFilters()" style="margin-top:2rem">Alle Filter zurücksetzen</button>
+          </div>`;
+      } else {
+        host.innerHTML = list.map(caseCardHtml).join('');
+      }
       const c = document.getElementById('cases-count');
-      if (c) c.textContent = `${CASE_STATS.total} Projekte · ${CASE_STATS.echt} echte Team-Tools · ${CASE_STATS.beispiel} Beispiel-Projekte`;
+      if (c) {
+        const q = (state.search || '').trim();
+        c.textContent = q
+          ? `${list.length} von ${CASE_STATS.total} Projekten passen zu „${q}“`
+          : `${CASE_STATS.total} Projekte · ${CASE_STATS.echt} echte Team-Tools · ${CASE_STATS.beispiel} Beispiel-Projekte`;
+      }
     }
+    // E12: setzt Suche UND alle Pills/Selects zurück (Empty-State-Button).
+    function resetShowroomFilters() {
+      state.saeule = null; state.art = 'all'; state.aufwand = 'all'; state.search = '';
+      const sf = document.getElementById('search'); if (sf) sf.value = '';
+      const artSel = document.getElementById('sr-art'); if (artSel) artSel.value = 'all';
+      const aufSel = document.getElementById('sr-aufwand'); if (aufSel) aufSel.value = 'all';
+      renderCats(); renderCases();
+    }
+    window.resetShowroomFilters = resetShowroomFilters;
 
     // ===== (b) MEISTGEWOLLT-RANKING (nach Reaktionen) =====
     function renderRanking() {
@@ -518,6 +567,22 @@
       if (aufSel) aufSel.addEventListener('change', e => { state.aufwand = e.target.value; renderCases(); });
       const sortSel = document.getElementById('sr-sort');
       if (sortSel) sortSel.addEventListener('change', e => { state.sort = e.target.value; renderCases(); });
+
+      // E12: Seiten-Suche (Feld #search kommt aus dem renderNav-Slot). Live-Filter
+      // per Debounce; Esc leert das Feld. Kein Eingriff in die globale Strg-K-Suche
+      // (die hat ein eigenes Overlay-Input, dieser Handler hängt nur am Feld selbst).
+      const searchField = document.getElementById('search');
+      if (searchField) {
+        searchField.addEventListener('input', debounce(e => {
+          state.search = e.target.value.toLowerCase().trim();
+          renderCases();
+        }, 150));
+        searchField.addEventListener('keydown', e => {
+          if (e.key === 'Escape' && searchField.value) {
+            searchField.value = ''; state.search = ''; renderCases();
+          }
+        });
+      }
 
       initModalEngine();
       initModalSwipe();

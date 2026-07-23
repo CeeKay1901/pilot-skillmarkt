@@ -48,6 +48,22 @@
   .vl-tab.active .vl-count { background: var(--c-black); color: var(--c-yellow); }
   @media (max-width: 1023px) { .vl-tabs { padding: 0 var(--pad-m); } }
 
+  /* E12: EIN Seiten-Suchfeld für BEIDE Tabs. Es lebt in einer eigenen, immer
+     sichtbaren Leiste UNTER der Tab-Leiste (nicht in einem der Panels — die sind
+     wechselweise hidden). So filtert dasselbe Feld stets den gerade aktiven Tab.
+     Feldstil kommt aus [data-page-search] in shared/base.css. */
+  .vl-searchbar { background: var(--paper); border-bottom: 1px solid var(--line); }
+  .vl-searchbar-inner {
+    max-width: var(--max-w); margin: 0 auto; padding: 1.2rem var(--pad-d);
+    display: flex; align-items: center;
+  }
+  .vl-searchbar [data-page-search] { max-width: 48rem; }
+  @media (max-width: 1023px) { .vl-searchbar-inner { padding: 1rem var(--pad-m); } }
+
+  /* E12: kompakter Empty-Hinweis pro Asset-Sektion, wenn die Suche dort 0 Treffer
+     hat (spannt die ganze Grid-Breite, wie .icon-empty aber grid-tauglich). */
+  .vl-grid-empty { grid-column: 1 / -1; font-size: 1.4rem; color: var(--c-gray-m); padding: 2rem 0; }
+
   /* ===== Baukasten-Styles (aus baukasten.html) ===== */
     /* ============================================================
        baukasten.html — seitenspezifisch (E7). Das Design-System und
@@ -179,6 +195,14 @@
       <button type="button" id="vltab-assets" class="vl-tab" role="tab" aria-selected="false" aria-controls="panel-assets" onclick="vlShowTab('assets', true)">Design-Assets <span class="vl-count" id="vl-count-assets" hidden></span></button>
     </div>
   </nav>
+
+  <!-- E12: EIN Suchfeld für beide Tabs — renderNav rendert das Feld (ID #search)
+       in den Slot [data-page-search]. Immer sichtbar, filtert den aktiven Tab. -->
+  <div class="vl-searchbar">
+    <div class="vl-searchbar-inner">
+      <div data-page-search></div>
+    </div>
+  </div>
 
   <!-- TAB: BAUSTEINE (Body aus baukasten.html, IDs unverändert) -->
   <div id="panel-bausteine" role="tabpanel" aria-labelledby="vltab-bausteine">
@@ -355,6 +379,10 @@
   <script src="shared/base.js"></script>
   <script>
     renderNav('vorlagen', {
+      // E12: EIN Seiten-Suchfeld (Slot [data-page-search], ID #search) für beide
+      // Tabs. Der Platzhalter bleibt neutral („Vorlagen"), weil dasselbe Feld je
+      // nach aktivem Tab Bausteine ODER Design-Assets filtert.
+      search: { id: 'search', label: 'Nur diese Seite: Vorlagen filtern', placeholder: 'Nur Vorlagen filtern …' },
       footerClaim: 'Von Piloten gebaut, von Piloten empfohlen. Bausteine und freies Material — startklar fürs nächste Projekt.'
     });
 
@@ -365,8 +393,40 @@
     /* base.js-Kontrakt: EIN globales state-Objekt (Modal-/Rating-Engine schreibt
        activeSkill/activeTab/activeFile/pendingRating). Beide Module ergänzen
        ihre eigenen Filter-Felder per Object.assign. */
-    const state = { pendingRating: {}, activeSkill: null, activeTab: 'overview', activeFile: 0 };
+    // E12: state.search ist zwischen beiden Modulen geteilt (EIN Suchfeld). Jedes
+    // Modul liest es in seinen Render-Funktionen; die Module registrieren ihre
+    // aktive-Tab-Renderfunktion unter window._vlSearch[tab].
+    const state = { pendingRating: {}, activeSkill: null, activeTab: 'overview', activeFile: 0, search: '' };
+    window._vlSearch = {};   // { bausteine: fn, assets: fn } — von den Modulen befüllt
+    function vlActiveTab() {
+      const pa = document.getElementById('panel-assets');
+      return (pa && !pa.hidden) ? 'assets' : 'bausteine';
+    }
+    function vlRerenderActive() {
+      const fn = window._vlSearch[vlActiveTab()];
+      if (typeof fn === 'function') fn();
+    }
+    // Empty-State-Button + gemeinsames Leeren des Feldes.
+    function vlClearSearch() {
+      const sf = document.getElementById('search');
+      if (sf) sf.value = '';
+      state.search = '';
+      vlRerenderActive();
+    }
+    window.vlClearSearch = vlClearSearch;
+
     function vlShowTab(which, fromClick) {
+      /* E12 — Tab-Wechsel-Verhalten: das Suchfeld gehört zu KEINEM Panel, darum
+         wird es beim Wechsel GELEERT (einfachstes, konsistentes Verhalten — kein
+         verstecktes Filter-Gedächtnis pro Modul). Nur wenn tatsächlich ein Begriff
+         drinsteht, wird der eben noch aktive (gleich versteckte) Tab einmal sauber
+         nachgerendert, damit er beim Zurückwechseln unfiltered dasteht. */
+      const sf = document.getElementById('search');
+      if (sf && sf.value) {
+        sf.value = '';
+        state.search = '';
+        vlRerenderActive();   // läuft noch auf dem AKTUELL sichtbaren Tab
+      }
       const tabs = { bausteine: 'panel-bausteine', assets: 'panel-assets' };
       Object.keys(tabs).forEach(k => {
         const panel = document.getElementById(tabs[k]);
@@ -497,13 +557,40 @@
           </div>
         </article>`;
     }
+    // E12: Freitext-Suche über Titel, Beschreibung, Einsatz, Tags und Kategorie.
+    // Mehrere Begriffe = UND; kombiniert mit dem Kategorie-Filter ebenfalls per UND.
+    function bausteinMatchesSearch(b) {
+      const q = (state.search || '').trim();
+      if (!q) return true;
+      const terms = q.split(/\s+/).filter(Boolean);
+      const hay = (b.name + ' ' + (b.beschreibung || '') + ' ' + (b.einsatz || '') + ' '
+        + (Array.isArray(b.tags) ? b.tags.join(' ') : '') + ' ' + kategorieLabel(b)).toLowerCase();
+      return terms.every(t => hay.includes(t));
+    }
     function renderBausteine() {
       const host = document.getElementById('bk-grid');
       if (!host) return;
-      const list = state.kat ? BAUSTEINE.filter(b => b.kategorie === state.kat) : BAUSTEINE;
-      host.innerHTML = sortedBausteine(list).map(bausteinCardHtml).join('');
+      let list = state.kat ? BAUSTEINE.filter(b => b.kategorie === state.kat) : BAUSTEINE;
+      list = list.filter(bausteinMatchesSearch);
+      if (!list.length) {
+        // E12: Empty-State im bestehenden .empty-state-Muster (wie prompts.html)
+        host.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">${LU.search}</div>
+            <h3 class="empty-title">Kein Baustein gefunden</h3>
+            <p class="empty-text">Keine Bausteine passen zu deiner Suche oder dem Kategorie-Filter. Probier einen anderen Begriff oder setz zurück.</p>
+            <button class="c-cta -black-bg" onclick="vlClearSearch()" style="margin-top:2rem">Suche leeren</button>
+          </div>`;
+      } else {
+        host.innerHTML = sortedBausteine(list).map(bausteinCardHtml).join('');
+      }
       const c = document.getElementById('bausteine-count');
-      if (c) c.textContent = `${BAUSTEINE.length} Bausteine · ${BAUKASTEN_STATS.leuchttuerme} Highlights`;
+      if (c) {
+        const q = (state.search || '').trim();
+        c.textContent = q
+          ? `${list.length} von ${BAUSTEINE.length} Bausteinen passen zu „${q}“`
+          : `${BAUSTEINE.length} Bausteine · ${BAUKASTEN_STATS.leuchttuerme} Highlights`;
+      }
     }
 
     // ===== (b) MEISTKOPIERT-RANKING =====
@@ -765,6 +852,8 @@
     window.copyBausteinPrompt = copyBausteinPrompt;
     window.setKat = setKat;
     window._vlCfg.bausteine = window.ModalConfig;
+    // E12: Renderer des aktiven Tabs für das gemeinsame Suchfeld registrieren.
+    window._vlSearch.bausteine = renderBausteine;
     })();
 
     /* ===== MODUL: DESIGN-ASSETS (aus bibliothek.html) ===== */
@@ -845,6 +934,20 @@
       copyToClipboard(css, 'CSS-Variablen kopiert: ' + p.name);
     }
 
+    // ===== E12: SEITEN-SUCHE (aktiver Tab = Assets) =====
+    // Das eine Seiten-Suchfeld filtert hier Schriften, Paletten und Muster/Verläufe
+    // (die drei Karten-Grids mit Name + Stimmung). Der Icon-Browser behält bewusst
+    // seine EIGENE Suche (#icon-search) — zwei konkurrierende Suchen auf demselben
+    // Icon-Grid wären verwirrend. Mehrere Begriffe = UND; kombiniert mit dem
+    // Schrift-Kategorie-Filter ebenfalls per UND.
+    function _vlSearchTerms() {
+      const q = (state.search || '').trim().toLowerCase();
+      return q ? q.split(/\s+/).filter(Boolean) : [];
+    }
+    function _vlHay(hay, terms) { const h = hay.toLowerCase(); return terms.every(t => h.includes(t)); }
+    // Alle such-abhängigen Asset-Grids neu rendern (vom gemeinsamen Suchfeld aufgerufen).
+    function applyAssetSearch() { renderFonts(); renderPalettes(); renderPatterns(); }
+
     // ===== (a) FONTS =====
     function renderFontCats() {
       const host = document.getElementById('font-cats');
@@ -888,10 +991,14 @@
     function renderFonts() {
       const host = document.getElementById('font-grid');
       if (!host) return;
-      const list = state.fontKat ? FONTS.filter(f => f.kategorie === state.fontKat) : FONTS;
-      host.innerHTML = list.map(fontCardHtml).join('');
+      const terms = _vlSearchTerms();
+      let list = state.fontKat ? FONTS.filter(f => f.kategorie === state.fontKat) : FONTS;
+      if (terms.length) list = list.filter(f => _vlHay(f.name + ' ' + (f.stimmung || '') + ' ' + (KAT_LABEL[f.kategorie] || f.kategorie), terms));
+      host.innerHTML = list.length
+        ? list.map(fontCardHtml).join('')
+        : `<p class="vl-grid-empty">Keine Schrift passt zu „${escHtml(state.search.trim())}“.</p>`;
       const c = document.getElementById('fonts-count');
-      if (c) c.textContent = `${FONTS.length} Schriften · alle OFL`;
+      if (c) c.textContent = terms.length ? `${list.length} von ${FONTS.length} Schriften` : `${FONTS.length} Schriften · alle OFL`;
     }
 
     // ===== (b) ICONS =====
@@ -965,9 +1072,14 @@
     function renderPalettes() {
       const host = document.getElementById('pal-grid');
       if (!host) return;
-      host.innerHTML = PALETTES.map(palCardHtml).join('');
+      const terms = _vlSearchTerms();
+      let list = PALETTES;
+      if (terms.length) list = list.filter(p => _vlHay(p.name + ' ' + (p.stimmung || '') + ' ' + p.farben.map(c => c.name).join(' '), terms));
+      host.innerHTML = list.length
+        ? list.map(palCardHtml).join('')
+        : `<p class="vl-grid-empty">Keine Palette passt zu „${escHtml(state.search.trim())}“.</p>`;
       const c = document.getElementById('pal-count');
-      if (c) c.textContent = `${PALETTES.length} Paletten · Kontrast WCAG-geprüft`;
+      if (c) c.textContent = terms.length ? `${list.length} von ${PALETTES.length} Paletten` : `${PALETTES.length} Paletten · Kontrast WCAG-geprüft`;
     }
 
     // ===== (d) MUSTER & VERLÄUFE =====
@@ -988,9 +1100,14 @@
     function renderPatterns() {
       const host = document.getElementById('pat-grid');
       if (!host) return;
-      host.innerHTML = PATTERNS.map(patCardHtml).join('');
+      const terms = _vlSearchTerms();
+      let list = PATTERNS;
+      if (terms.length) list = list.filter(p => _vlHay(p.name + ' ' + (p.stimmung || '') + ' ' + (p.typ === 'gradient' ? 'Verlauf' : 'Muster'), terms));
+      host.innerHTML = list.length
+        ? list.map(patCardHtml).join('')
+        : `<p class="vl-grid-empty">Kein Hintergrund passt zu „${escHtml(state.search.trim())}“.</p>`;
       const c = document.getElementById('pat-count');
-      if (c) c.textContent = `${PATTERNS.length} Hintergründe · ${ASSET_STATS.patternsSvg} Muster + ${ASSET_STATS.gradients} Verläufe`;
+      if (c) c.textContent = terms.length ? `${list.length} von ${PATTERNS.length} Hintergründen` : `${PATTERNS.length} Hintergründe · ${ASSET_STATS.patternsSvg} Muster + ${ASSET_STATS.gradients} Verläufe`;
     }
 
     // ===== (e) pilot-BRAND =====
@@ -1273,6 +1390,8 @@
     window.copyPatternCss = copyPatternCss;
     window.setFontKat = setFontKat;
     window._vlCfg.assets = window.ModalConfig;
+    // E12: Renderer des aktiven Tabs für das gemeinsame Suchfeld registrieren.
+    window._vlSearch.assets = applyAssetSearch;
     })();
 
     /* Aktiven Tab initial mit der richtigen Modal-Config versorgen */
@@ -1281,6 +1400,24 @@
       const wantsAssets = qs.get('tab') === 'assets' || qs.has('a') || qs.has('f') || /^#a\//.test(location.hash || '');
       window.ModalConfig = window._vlCfg[wantsAssets ? 'assets' : 'bausteine'];
       window.RatingConfig = { type: wantsAssets ? 'asset' : 'baustein' };
+    })();
+
+    /* ===== E12: EIN Suchfeld für den aktiven Tab verdrahten =====
+       Das Feld #search kommt aus dem renderNav-Slot [data-page-search]. Live-Filter
+       per Debounce, Esc leert. Kein Eingriff in die globale Strg-K-Suche (die hat
+       ein eigenes Overlay-Input; dieser Handler hängt nur am Seitenfeld selbst). */
+    (function () {
+      const sf = document.getElementById('search');
+      if (!sf) return;
+      sf.addEventListener('input', debounce(e => {
+        state.search = e.target.value.toLowerCase().trim();
+        vlRerenderActive();
+      }, 150));
+      sf.addEventListener('keydown', e => {
+        if (e.key === 'Escape' && sf.value) {
+          sf.value = ''; state.search = ''; vlRerenderActive();
+        }
+      });
     })();
   </script>
 </body>
