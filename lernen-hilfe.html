@@ -587,6 +587,8 @@
     @media (prefers-reduced-motion: reduce) {
       .cmd-card, .g-card, .faq-card, .res-card, .zeit-tile { transition: none; }
     }
+    /* E11-Tabs: hidden-Panels dürfen von keiner display-Regel überstimmt werden */
+    main > section[hidden] { display: none !important; }
   </style>
 </head>
 <body>
@@ -602,41 +604,15 @@
     </div>
   </header>
 
-  <!-- ZEIT-SCHNELLAUSWAHL: kompakte Chip-Zeile — Klick setzt den Dauer-Filter und springt ins Regal -->
-  <div class="zeit-quick">
-    <div class="zeit-quick-inner">
-      <p class="zeit-quick-label" id="zeit-quick-label">Wie viel Zeit hast du gerade?</p>
-      <div class="zeit-tiles" id="zeit-tiles" role="group" aria-labelledby="zeit-quick-label"></div>
-    </div>
-  </div>
-
-  <!-- ORIENTIERUNG: kompaktes Erklär-Modul (E10 — Was ist das? / Wofür? / So fange ich an) -->
-  <section class="area-intro" aria-label="Kurz erklärt">
-    <div class="area-intro-inner">
-      <div class="area-intro-grid">
-        <div class="area-intro-part">
-          <p class="area-intro-label">Was ist das?</p>
-          <p class="area-intro-text">Geprüfte Lern-Ressourcen, ein Befehle-Ranking, ein Glossar und eine FAQ — alles an einem Ort.</p>
-        </div>
-        <div class="area-intro-part">
-          <p class="area-intro-label">Wofür nutze ich es?</p>
-          <p class="area-intro-text">Zum Einarbeiten mit geprüften Links — und zum schnellen Nachschlagen, wenn du festhängst (<a class="area-intro-link" href="skills.html?view=explainer">Code oder Langdock?</a>).</p>
-        </div>
-        <div class="area-intro-part">
-          <p class="area-intro-label">So fange ich an.</p>
-          <p class="area-intro-text">Spring über die Sub-Navigation in den passenden Bereich — für den Einstieg wähl oben, wie viel Zeit du gerade hast.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- STICKY SUB-NAV: VIER BEREICHE -->
+  <!-- SUB-NAV = TAB-LEISTE (E11: vier Bereiche als Tabs statt 14.000px-Scroll).
+       Bewusst <a href="#…">: alte Anker-Bookmarks (#glossar …) aktivieren jetzt
+       den Tab; die Item-Deep-Links (#befehl/<id> …) wählen Tab + Eintrag. -->
   <nav class="pillar-nav" aria-label="Bereiche von Lernen &amp; Hilfe" id="pillar-nav">
-    <div class="pillar-inner">
-      <a class="pillar-link" href="#ressourcen">Ressourcen <span class="pillar-count" id="pn-ressourcen">0</span></a>
-      <a class="pillar-link" href="#befehle">Befehle &amp; Kniffe <span class="pillar-count" id="pn-befehle">0</span></a>
-      <a class="pillar-link" href="#glossar">Glossar <span class="pillar-count" id="pn-glossar">0</span></a>
-      <a class="pillar-link" href="#faq">FAQ <span class="pillar-count" id="pn-faq">0</span></a>
+    <div class="pillar-inner" role="tablist" aria-label="Bereiche">
+      <a class="pillar-link" href="#ressourcen" role="tab" aria-controls="ressourcen">Ressourcen <span class="pillar-count" id="pn-ressourcen">0</span></a>
+      <a class="pillar-link" href="#befehle" role="tab" aria-controls="befehle">Befehle &amp; Kniffe <span class="pillar-count" id="pn-befehle">0</span></a>
+      <a class="pillar-link" href="#glossar" role="tab" aria-controls="glossar">Glossar <span class="pillar-count" id="pn-glossar">0</span></a>
+      <a class="pillar-link" href="#faq" role="tab" aria-controls="faq">FAQ <span class="pillar-count" id="pn-faq">0</span></a>
     </div>
   </nav>
 
@@ -644,12 +620,19 @@
   <main id="main-content">
 
     <!-- BEREICH 1: RESSOURCEN (Lern-Regal — kompletter Lernen-Inhalt) -->
-    <section id="ressourcen" aria-labelledby="ressourcen-h">
+    <section id="ressourcen" aria-labelledby="ressourcen-h" role="tabpanel">
       <div class="res-intro">
         <div class="res-intro-inner">
-          <p class="section-label">Bereich · Lern-Ressourcen</p>
-          <h2 class="res-section-h2" id="ressourcen-h">Kein eigener Kurs — ein Kompass.</h2>
-          <p class="res-lead">Hier steht nur, was die Redaktion geprüft hat — mit ehrlicher Dauer, Niveau, Sprache und einem Satz, für wen sich jeder Link lohnt.</p>
+          <h2 class="res-section-h2" id="ressourcen-h">Ressourcen</h2>
+          <p class="res-lead">Redaktionell geprüfte Links — mit ehrlicher Dauer, Niveau und Sprache.</p>
+        </div>
+      </div>
+
+      <!-- ZEIT-SCHNELLAUSWAHL: Klick setzt den Dauer-Filter im Regal -->
+      <div class="zeit-quick">
+        <div class="zeit-quick-inner">
+          <p class="zeit-quick-label" id="zeit-quick-label">Wie viel Zeit hast du gerade?</p>
+          <div class="zeit-tiles" id="zeit-tiles" role="group" aria-labelledby="zeit-quick-label"></div>
         </div>
       </div>
 
@@ -700,26 +683,33 @@
     </section>
 
     <!-- BEREICH 2: BEFEHLE & KNIFFE -->
-    <section class="bef-section" id="befehle" aria-labelledby="befehle-h">
+    <section class="bef-section" id="befehle" aria-labelledby="befehle-h" role="tabpanel" hidden>
       <div class="bef-inner">
-        <p class="section-label">Bereich · Befehle &amp; Kniffe</p>
-        <h2 class="bef-h2" id="befehle-h">Die Handgriffe, die dich wieder flottmachen.</h2>
-        <p class="bef-sub"><span id="bef-count">0</span> Befehle, Flags und Tastentricks für Claude Code und Langdock — klick <strong>„Hat mir geholfen“</strong> und deine Stimme sortiert die Rangliste live neu.</p>
-        <p class="bef-note">Gegen die aktuelle Claude-Code- bzw. Langdock-Doku geprüft (Stand Juli 2026); die Stimmen-Startwerte sind Demo-Werte, deine Stimme kommt lokal dazu.</p>
+        <h2 class="bef-h2" id="befehle-h">Befehle &amp; Kniffe</h2>
+        <p class="bef-sub"><span id="bef-count">0</span> Befehle, Flags und Tastentricks für Claude Code und Langdock — „Hat mir geholfen“ sortiert die Rangliste live neu.</p>
 
         <div class="bef-chips" role="group" aria-label="Nach Kategorie filtern" id="bef-chips"></div>
 
         <ol class="rank-list" id="rank-list"></ol>
       </div>
+
+      <!-- MITMACHEN: Kniff einreichen (Demo-Flow aus shared/base.js) -->
+      <section class="submit-band" aria-labelledby="submit-kniff-h">
+        <div class="submit-band-inner">
+          <p class="section-label">Mitmachen</p>
+          <h2 id="submit-kniff-h">Du kennst einen Kniff, der hier fehlt?</h2>
+          <p class="submit-band-text">Reich den Handgriff ein, der sich bei dir im Alltag bewährt hat.</p>
+          <button type="button" class="c-cta -black-bg" id="submit-kniff-cta" onclick="openKniffSubmit()">Kniff einreichen</button>
+          <p class="submit-band-note">Demo-Flow: deine Eingabe bleibt lokal in deinem Browser.</p>
+        </div>
+      </section>
     </section>
 
-    <!-- BEREICH 3: GLOSSAR (hell — Nachschlagewerk mit Suche und A-Z-Sprungleiste) -->
-    <section class="glossar-section" id="glossar" aria-labelledby="glossar-h">
+    <!-- BEREICH 3: GLOSSAR (Nachschlagewerk mit Suche und A-Z-Sprungleiste) -->
+    <section class="glossar-section" id="glossar" aria-labelledby="glossar-h" role="tabpanel" hidden>
       <div class="glo-inner">
-        <p class="section-label">Bereich · Glossar</p>
-        <h2 class="glo-h2" id="glossar-h">Was heißt eigentlich „Token“?</h2>
-        <p class="glo-sub"><span id="glo-count">0</span> Begriffe aus der KI-Welt — jeder in einem einfachen Satz erklärt, mit pilot-Beispiel, Vertiefung und Querverweisen.</p>
-        <p class="glo-note">Die Stimmen-Startwerte sind Demo-Werte — deine Stimme kommt lokal in deinem Browser dazu.</p>
+        <h2 class="glo-h2" id="glossar-h">Glossar</h2>
+        <p class="glo-sub"><span id="glo-count">0</span> Begriffe aus der KI-Welt — jeder in einem einfachen Satz erklärt, mit pilot-Beispiel und Querverweisen.</p>
 
         <div class="glo-tools">
           <div class="glo-search">
@@ -734,23 +724,11 @@
     </section>
 
     <!-- BEREICH 4: FAQ & TROUBLESHOOTING (ruhiges Akkordeon, nur eine Karte offen) -->
-    <section class="faq-section" id="faq" aria-labelledby="faq-h">
+    <section class="faq-section" id="faq" aria-labelledby="faq-h" role="tabpanel" hidden>
       <div class="faq-inner">
-        <p class="section-label">Bereich · FAQ &amp; Troubleshooting</p>
-        <h2 class="faq-h2" id="faq-h">„Kontext voll“ — was jetzt?</h2>
+        <h2 class="faq-h2" id="faq-h">FAQ &amp; Troubleshooting</h2>
         <p class="faq-sub">Die <span id="faq-count">0</span> häufigsten Blocker aus dem Agentur-Alltag — jede Karte mit einer Schritt-für-Schritt-Lösung.</p>
         <div class="faq-list" id="faq-liste"></div>
-      </div>
-    </section>
-
-    <!-- MITMACHEN: Kniff einreichen (Demo-Flow aus shared/base.js) -->
-    <section class="submit-band" aria-labelledby="submit-kniff-h">
-      <div class="submit-band-inner">
-        <p class="section-label">Mitmachen</p>
-        <h2 id="submit-kniff-h">Du kennst einen Kniff, der hier fehlt?</h2>
-        <p class="submit-band-text">Reich den Handgriff ein, der sich bei dir im Alltag bewährt hat — so finden die Nächsten den kürzesten Weg.</p>
-        <button type="button" class="c-cta -black-bg" id="submit-kniff-cta" onclick="openKniffSubmit()">Kniff einreichen</button>
-        <p class="submit-band-note">Demo-Flow: deine Eingabe bleibt lokal in deinem Browser.</p>
       </div>
     </section>
 
@@ -1595,6 +1573,7 @@
       }
       const m = (location.hash || '').match(/^#(r|befehl|begriff|faq)\/(.+)$/);
       if (!m) return;
+      lhShowTab(LH_KEY_TO_TAB[m[1]]);   /* E11: Item-Deep-Link → zuerst den Tab sichtbar machen */
       let id;
       try { id = decodeURIComponent(m[2]); } catch (e) { return deepLinkMiss(m[1]); }
       // Slash-Toleranz auch für direkte #befehl/-Hashes
@@ -1657,48 +1636,42 @@
        SCROLL-SPY der Sticky-Sub-Nav: markiert den Bereich, in dem du dich
        befindest (A11y: aria-current + sichtbarer aktiver Zustand).
        ============================================================ */
-    function initPillarSpy() {
-      const links = [...document.querySelectorAll('.pillar-link')];
-      if (!links.length) return;
-      const setActive = (id) => {
-        links.forEach(a => {
-          const on = a.getAttribute('href') === '#' + id;
-          a.classList.toggle('active', on);
-          if (on) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current');
-        });
-      };
-      setActive('ressourcen'); // Startzustand
-      const sections = links
-        .map(a => document.getElementById(a.getAttribute('href').slice(1)))
-        .filter(Boolean);
-      if (!('IntersectionObserver' in window) || !sections.length) return;
-      const header = document.querySelector('.site-header');
-      const pillar = document.getElementById('pillar-nav');
-      // Trigger-Linie etwas UNTER der Sub-Nav (nav-Unterkante + Lesekomfort-Band),
-      // damit ein Bereich aktiv wird, sobald seine Überschrift unter der Leiste
-      // auftaucht — nicht erst, wenn seine Oberkante exakt die Nav-Kante berührt.
-      const triggerLine = () =>
-        (header ? header.offsetHeight : 85) + (pillar ? pillar.offsetHeight : 54) + 80;
-      const updateSpy = () => {
-        // Der unterste Bereich, dessen Oberkante bereits über der Trigger-Linie liegt.
-        const line = triggerLine();
-        let current = sections[0];
-        sections.forEach(s => {
-          if (s.getBoundingClientRect().top <= line) current = s;
-        });
-        if (current) setActive(current.id);
-      };
-      const obs = new IntersectionObserver(updateSpy, { rootMargin: `0px 0px -60% 0px`, threshold: [0, 1] });
-      sections.forEach(s => obs.observe(s));
-      // Zusätzlich beim Scrollen aktualisieren (robuster als reine IO-Callbacks
-      // bei langsamem Scrollen zwischen zwei Sektionsgrenzen).
-      let ticking = false;
-      window.addEventListener('scroll', () => {
-        if (ticking) return;
-        ticking = true;
-        requestAnimationFrame(() => { updateSpy(); ticking = false; });
-      }, { passive: true });
+    /* ============================================================
+       TABS (E11): Die vier Bereiche sind Panels, die Sub-Nav ist die
+       Tab-Leiste. Hash-Router: #befehle (Bereichs-Anker, auch alte
+       Bookmarks) und #befehl/<id> (Item-Deep-Link) wählen beide den
+       richtigen Tab; die Item-Öffnung macht weiter applyDeepLink().
+       ============================================================ */
+    const LH_TABS = ['ressourcen', 'befehle', 'glossar', 'faq'];
+    const LH_KEY_TO_TAB = { r: 'ressourcen', befehl: 'befehle', begriff: 'glossar', faq: 'faq' };
+
+    function lhShowTab(which) {
+      if (!LH_TABS.includes(which)) which = 'ressourcen';
+      LH_TABS.forEach(id => {
+        const panel = document.getElementById(id);
+        if (panel) panel.hidden = (id !== which);
+      });
+      document.querySelectorAll('.pillar-link').forEach(a => {
+        const on = a.getAttribute('href') === '#' + which;
+        a.classList.toggle('active', on);
+        a.setAttribute('aria-selected', on ? 'true' : 'false');
+        if (on) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current');
+      });
+      return which;
     }
+
+    /* Tab aus dem aktuellen Hash ableiten: '' → ressourcen, '#glossar' → glossar,
+       '#begriff/<id>' → glossar usw. */
+    function lhTabFromHash() {
+      const h = location.hash || '';
+      const plain = h.slice(1);
+      if (LH_TABS.includes(plain)) return plain;
+      const m = h.match(/^#(r|befehl|begriff|faq)\//);
+      if (m) return LH_KEY_TO_TAB[m[1]];
+      return 'ressourcen';
+    }
+
+    function lhRoute() { lhShowTab(lhTabFromHash()); }
 
     // ===== INIT =====
     document.addEventListener('DOMContentLoaded', () => {
@@ -1728,12 +1701,12 @@
       // Bereich 4: FAQ
       renderFaq();
 
-      // Sub-Nav Scroll-Spy
-      initPillarSpy();
-
-      // Deep-Links: ?r= / ?befehl= / ?begriff= / ?faq= → kanonische Hash-Form
+      // Tabs + Deep-Links: lhRoute wählt den Tab aus dem Hash; applyDeepLink
+      // aktiviert bei Item-Links (#befehl/<id> …) zusätzlich selbst den Tab,
+      // BEVOR es den Eintrag öffnet (scrollHighlight braucht sichtbares Panel).
+      lhRoute();
       applyDeepLink(true);
-      window.addEventListener('hashchange', () => applyDeepLink(false));
+      window.addEventListener('hashchange', () => { lhRoute(); applyDeepLink(false); });
 
       // Suche im Filterleisten-Slot (Feld kommt aus renderNav, ID bleibt #search)
       document.getElementById('search')?.addEventListener('input', debounce(e => {
