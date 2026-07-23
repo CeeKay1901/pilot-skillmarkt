@@ -53,7 +53,7 @@
       <button class="btn-s" onclick="loadSample()">Beispieldaten laden</button>
       <button class="btn-s" onclick="document.getElementById('csv').value='';run()">Leeren</button>
     </div>
-    <p class="foot">Format je Zeile: <b>Frage;Antwort</b> — eine Zeile pro abgegebener Antwort. Trennzeichen <b>;</b> oder <b>,</b> (pro Datei einheitlich). Kommas in Antworten in <b>"Anführungszeichen"</b> setzen. Eine Kopfzeile wird automatisch erkannt.</p>
+    <p class="foot">Format je Zeile: <b>Frage;Antwort</b> — eine Zeile pro abgegebener Antwort. Trennzeichen <b>;</b> oder <b>,</b> (pro Datei einheitlich). Kommas in Antworten in <b>„Anführungszeichen"</b> setzen. Eine Kopfzeile wird automatisch erkannt.</p>
     <p class="foot">Deine Daten bleiben lokal in deinem Browser — die Auswertung rechnet direkt hier, es wird nichts hochgeladen oder gesendet.</p>
   </div>
 
@@ -134,7 +134,10 @@ Welchen Kanal nutzt du am meisten?;Instagram`;
     const map=parse(document.getElementById('csv').value);
     const el=document.getElementById('result');
     const qs=Object.keys(map);
-    if(!qs.length){el.innerHTML='<p class="empty">Keine gültigen Zeilen erkannt. Format: Frage;Antwort</p>';return;}
+    if(!qs.length){el.innerHTML='<p class="empty">Noch keine Daten. Lade Beispieldaten oder füge eigene ein.</p>';return;}
+    // Ohne Trennzeichen entsteht nur „Frage → (leer)": das ist keine auswertbare Tabelle.
+    const hasAnswers=qs.some(q=>Object.keys(map[q]).some(a=>a!=='(leer)'));
+    if(!hasAnswers){el.innerHTML='<p class="empty">Kein Trennzeichen gefunden — die Daten sehen nicht wie eine Tabelle aus. Jede Zeile braucht das Muster <b>Frage;Antwort</b> (mit <b>;</b> oder <b>,</b>). Tipp: „Beispieldaten laden", um das Format zu sehen.</p>';return;}
     el.innerHTML=qs.map(q=>{
       const ans=map[q], total=Object.values(ans).reduce((a,b)=>a+b,0);
       const rows=Object.entries(ans).sort((a,b)=>b[1]-a[1]).map(([a,n])=>{

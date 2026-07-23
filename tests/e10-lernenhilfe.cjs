@@ -1,16 +1,16 @@
 #!/usr/bin/env node
 /**
- * E10-Messlatte — „Lernen & Hilfe" (gemergter Bereich lernen-hilfe.html) + Verdrahtung.
+ * E10-Messlatte — „Lernen & Hilfe“ (gemergter Bereich lernen-hilfe.html) + Verdrahtung.
  *
  * Prüft die Welle-B-Verdrahtung (base.js Nav-Merge, index-Merge-Karte, Redirect-Stubs,
  * Deep-Links, Vote-Typen) sowie die Grundfunktion der gemergten Seite:
- *   01 · Nav zeigt „Lernen & Hilfe" (id nav-hilfe → lernen-hilfe.html), nav-lernen weg (index/skills/prompts).
+ *   01 · Nav zeigt „Lernen & Hilfe“ (id nav-hilfe → lernen-hilfe.html), nav-lernen weg (index/skills/prompts).
  *   02 · Footer-Link footer-hilfe → lernen-hilfe.html.
  *   03 · Sticky-Sub-Nav (pillar-nav) mit 4 Ankern Ressourcen/Befehle/Glossar/FAQ + reale Zähler.
  *   04 · Deep-Links ?befehl / ?begriff / ?faq / ?r → kanonische Hash-Form.
  *   05 · Redirect-Stubs hilfe.html?befehl=… / lernen.html?r=… erhalten die Query-Parameter.
  *   06 · Drei Vote-Typen koexistieren typisiert (vote:ressource / :befehl / :begriff).
- *   07 · index-Merge-Karte: EINE „Lernen & Hilfe"-Karte, reale Summe, keine alten IDs, „sechs Bereiche".
+ *   07 · index-Merge-Karte: EINE „Lernen & Hilfe“-Karte, reale Summe, keine alten IDs, „sechs Bereiche“.
  *   08 · Globale Suche liefert Befehl-/Ressource-Treffer mit href lernen-hilfe.html?…
  *   09 · 0 JS-Fehler über den Flow.
  *

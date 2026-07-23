@@ -92,6 +92,25 @@ async function runViewport(browser, vp) {
     blockedResourceErrors: blockedResourceErrors.length,
   });
 
+  // ---------- (1b) Karten-Anriss: Clamp schneidet keine dritte Zeile an ----------
+  // Der Zwei-Zeilen-Clamp liegt auf dem padding-freien Inner-Element .cp-clamp.
+  // Sichtbare Höhe muss ein ganzes Vielfaches der Zeilenhöhe sein (max. 2 Zeilen) —
+  // ein Rest bedeutet: eine Zeile ist horizontal angeschnitten (alter E3-Bug).
+  const clampInfo = await page.evaluate(() => {
+    const els = [...document.querySelectorAll('#prompts-grid .card-prompt .cp-clamp')];
+    let bad = 0, clamped = 0;
+    els.forEach(el => {
+      const lh = parseFloat(getComputedStyle(el).lineHeight);
+      const lines = el.clientHeight / lh;
+      if (Math.abs(lines - Math.round(lines)) > 0.05 || Math.round(lines) > 2) bad++;
+      if (el.scrollHeight > el.clientHeight + 1) clamped++; // Clamp greift wirklich
+    });
+    return { count: els.length, bad, clamped };
+  });
+  check('01b_card_prompt_clamp_clean',
+    clampInfo.count === EXPECTED_TOTAL && clampInfo.bad === 0 && clampInfo.clamped > 0,
+    clampInfo);
+
   // ---------- (2) Aufgaben-Tabs: Karten-Anzahl pro Tab ----------
   const tabLabels = await page.evaluate(() =>
     [...document.querySelectorAll('#cat-tabs .cat-tab')].map(b => b.textContent.trim())

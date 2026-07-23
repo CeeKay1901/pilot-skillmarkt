@@ -224,20 +224,34 @@ function renderNav(activePage, opts) {
   }
 }
 
-/* Shared Getting-Started-Toggle (E9-Angleichung). Bestandsseiten (lernen/skills/
-   hilfe/prompts) definieren toggleGS seitenlokal — deren Inline-Script lädt nach
-   base.js und überschreibt diese generische Variante. bibliothek/baukasten/showroom
-   nutzen genau diese: klappt #gs-content auf/zu und pflegt aria-expanded. */
-if (typeof window.toggleGS === 'undefined') {
-  window.toggleGS = function () {
-    var content = document.getElementById('gs-content');
-    var btn = document.getElementById('gs-toggle-btn');
-    if (!content) return;
-    var isHidden = content.hidden;
-    content.hidden = !isHidden;
-    if (btn) btn.setAttribute('aria-expanded', isHidden ? 'true' : 'false');
+/* ===== SHARED HELPER (Kontrakt — von allen Seiten nutzbar) =====
+   window.prefersReduce()  → boolean (prefers-reduced-motion: reduce)
+   window.scrollBehavior() → 'auto' | 'smooth' (Reduce-sensibel)
+   window.copyText(str)    → Promise<boolean> (Clipboard-API + execCommand-Fallback,
+                             ohne Toast — die UI-Reaktion gehört dem Aufrufer) */
+window.prefersReduce = function () {
+  try { return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches); }
+  catch (e) { return false; }
+};
+window.scrollBehavior = function () { return window.prefersReduce() ? 'auto' : 'smooth'; };
+window.copyText = function (text) {
+  const fallback = () => {
+    try {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.cssText = 'position:fixed;opacity:0;top:-100px';
+      document.body.appendChild(ta);
+      ta.select();
+      const ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      return !!ok;
+    } catch (e) { return false; }
   };
-}
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    return navigator.clipboard.writeText(String(text)).then(() => true).catch(() => fallback());
+  }
+  return Promise.resolve(fallback());
+};
 
 /* „Mehr ▾“-Dropdown der Hauptnav (E6): Klick togglet, Esc schließt (Fokus zurück
    auf den Button), Außenklick schließt, Pfeil-runter/-hoch bewegt in den Menü-
@@ -347,7 +361,7 @@ const LU = {
   "copy-check": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 15 2 2 4-4"/><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>',
   "file-text": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>',
   /* E8 (Showroom) — additive Icons: Hero/Marke, Ansehen/Vorschau, Reaktion,
-     Story „So entstanden", Nachbauen-Brücke, Meistgewollt-Ranking. Bestehende
+     Story „So entstanden“, Nachbauen-Brücke, Meistgewollt-Ranking. Bestehende
      Keys unangetastet; 'heart' ist zwingend neu für den Reaktions-Button. */
   "rocket": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg>',
   "eye": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg>',
@@ -448,25 +462,14 @@ function showToast(msg) {
   toastTimer = setTimeout(() => el.classList.remove('show'), 2500);
 }
 
-/* ===== CLIPBOARD ===== */
+/* ===== CLIPBOARD (konsolidiert auf window.copyText, Kontrakt oben) ===== */
+/* Alt-API (Bestandsaufrufe, z. B. skills.html): kopiert MIT Toast. */
 function fallbackCopy(text, toastMsg) {
-  const ta = document.createElement('textarea');
-  ta.value = text;
-  ta.style.cssText = 'position:fixed;opacity:0;top:-100px';
-  document.body.appendChild(ta);
-  ta.select();
-  try { document.execCommand('copy'); showToast(toastMsg || ('Befehl kopiert: ' + text)); }
-  catch(e) { showToast('Kopieren fehlgeschlagen'); }
-  document.body.removeChild(ta);
+  window.copyText(text).then(ok => showToast(ok ? (toastMsg || ('Befehl kopiert: ' + text)) : 'Kopieren fehlgeschlagen'));
 }
 
 function copyToClipboard(text, toastMsg) {
-  const done = () => showToast(toastMsg || ('Kopiert: ' + text));
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, toastMsg));
-  } else {
-    fallbackCopy(text, toastMsg);
-  }
+  window.copyText(text).then(ok => showToast(ok ? (toastMsg || ('Kopiert: ' + text)) : 'Kopieren fehlgeschlagen'));
 }
 
 /* Kopieren direkt von einer Karte (stoppt den Karten-Klick) */
@@ -485,10 +488,10 @@ function copyTrigger() {
 /* Befehl aus der Runway kopieren + als „ausprobiert“ zählen */
 function copyTriggerRunway(evt, trigger, id) {
   if (evt) evt.stopPropagation();
-  const done = () => { showToast('Kopiert: ' + trigger); markTried(id); };
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(trigger).then(done).catch(() => { fallbackCopy(trigger); done(); });
-  } else { fallbackCopy(trigger); done(); }
+  window.copyText(trigger).then(ok => {
+    showToast(ok ? 'Kopiert: ' + trigger : 'Kopieren fehlgeschlagen');
+    if (ok) markTried(id);
+  });
 }
 
 /* ===== RATING-ENGINE (Sterne + Kommentare, typ-namespaced) ===== */
@@ -679,7 +682,12 @@ function toggleFavorite(evt, id, type) {
   if (evt) evt.stopPropagation();
   const wasFav = isFavorite(id, type);
   if (wasFav) { lsRemove(`fav:${type}:${id}`); showToast('Aus Favoriten entfernt'); }
-  else { lsSet(`fav:${type}:${id}`, '1'); showToast('Zu Favoriten hinzugefügt ★'); }
+  else {
+    // Ehrlich bleiben: schlägt das Speichern fehl (privater Modus/Speicher voll),
+    // gibt es KEINEN Erfolgs-Toast, sondern einen dezenten Hinweis.
+    if (!lsSet(`fav:${type}:${id}`, '1')) { showToast('Konnte nicht speichern — privater Modus oder Speicher voll.'); return; }
+    showToast('Zu Favoriten hinzugefügt ★');
+  }
   if (type === 'skill') { // Alt-Key synchron halten
     try {
       let favs = JSON.parse(lsGet('skill-favorites') || '[]');
@@ -719,7 +727,11 @@ function hasVoted(type, id) { return lsGet(`vote:${type}:${id}`) === '1'; }
 function getVotes(type, id, seed) { return (seed || 0) + (hasVoted(type, id) ? 1 : 0); }
 function toggleVote(type, id) {
   const now = !hasVoted(type, id);
-  if (now) lsSet(`vote:${type}:${id}`, '1'); else lsRemove(`vote:${type}:${id}`);
+  if (now) {
+    // Speichern fehlgeschlagen → Stimme zählt nicht; Aufrufer bekommt false und
+    // zeigt keinen „gestimmt“-Zustand an (kein falsches Erfolgs-Feedback).
+    if (!lsSet(`vote:${type}:${id}`, '1')) { showToast('Konnte nicht speichern — privater Modus oder Speicher voll.'); return false; }
+  } else lsRemove(`vote:${type}:${id}`);
   return now;
 }
 
@@ -826,7 +838,7 @@ function switchTab(tab) {
   // neuer Tab startet oben, nicht auf der alten Scroll-Position
   document.getElementById('modal')?.scrollTo({ top: 0 });
   // auf Mobile: aktiven Tab in die wischbare Leiste holen
-  document.querySelector('.modal-tabs .tab-btn.active')?.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
+  document.querySelector('.modal-tabs .tab-btn.active')?.scrollIntoView({ block: 'nearest', inline: 'center', behavior: window.scrollBehavior() });
   if (conf.updateURL) conf.updateURL();
 }
 
@@ -1042,8 +1054,7 @@ function playScript(script, artifact, targets) {
     const note = artifact.note ? `<span class="demo-artifact-note">${escHtml(artifact.note)}</span>` : '';
     actions.innerHTML = btns + note;
   };
-  const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (reduce) { script.forEach(l => appendTermLine(body, l, l.text)); showArtifact(); return; }
+  if (window.prefersReduce()) { script.forEach(l => appendTermLine(body, l, l.text)); showArtifact(); return; }
   let i = 0;
   (function next() {
     if (i >= script.length) { _termTimer = setTimeout(showArtifact, 250); return; }
@@ -1148,15 +1159,31 @@ function _ensureSubmitOverlay() {
   return ov;
 }
 
-const _SF_DEFAULT_STEPS = [
-  { label: 'Entwurf ins Formular', text: 'Du beschreibst deinen Beitrag direkt hier — kein Ticket, kein Umweg.' },
-  { label: 'Kurz-Check durchs Team', text: 'Die Redaktion liest gegen: Funktioniert es? Ist es verständlich? Fehlt was?' },
-  { label: 'Erscheint im Katalog', text: 'Dein Beitrag geht live — mit deinem Namen dran.' }
-];
+/* Ziel-Bereich je Beitragstyp — „Erscheint im Katalog“ wäre für Prompts, Assets & Co.
+   gelogen. wo = Dativ („erscheint …“), wohin = Akkusativ („den Weg … finden“). */
+const _SF_BEREICH = {
+  skill:     { wo: 'im Katalog',              wohin: 'in den Katalog' },
+  prompt:    { wo: 'in der Prompt-Sammlung',  wohin: 'in die Prompt-Sammlung' },
+  ressource: { wo: 'unter Lernen & Hilfe',    wohin: 'zu Lernen & Hilfe' },
+  kniff:     { wo: 'unter Lernen & Hilfe',    wohin: 'zu Lernen & Hilfe' },
+  asset:     { wo: 'in der Asset-Bibliothek', wohin: 'in die Asset-Bibliothek' },
+  baustein:  { wo: 'im Baukasten',            wohin: 'in den Baukasten' },
+  case:      { wo: 'im Showroom',             wohin: 'in den Showroom' }
+};
+function _sfBereich(type) { return _SF_BEREICH[type] || { wo: 'im Marketplace', wohin: 'in den Marketplace' }; }
 
-function _sfStepsHtml(steps, doneFirst) {
+function _sfDefaultSteps(type) {
+  const b = _sfBereich(type);
+  return [
+    { label: 'Entwurf ins Formular', text: 'Du beschreibst deinen Beitrag direkt hier — kein Ticket, kein Umweg.' },
+    { label: 'Kurz-Check durchs Team', text: 'Die Redaktion liest gegen: Funktioniert es? Ist es verständlich? Fehlt was?' },
+    { label: 'Erscheint ' + b.wo, text: 'Dein Beitrag geht live — mit deinem Namen dran.' }
+  ];
+}
+
+function _sfStepsHtml(steps, doneFirst, type) {
   return `
-    <p class="sf-steps-label">So würde dein Beitrag den Weg in den Katalog finden</p>
+    <p class="sf-steps-label">So würde dein Beitrag den Weg ${escHtml(_sfBereich(type).wohin)} finden</p>
     <ol class="sf-steps">
       ${steps.map((s, i) => `
         <li class="sf-step${doneFirst && i === 0 ? ' -done' : ''}">
@@ -1197,10 +1224,10 @@ function openSubmitFlow(config) {
   _submitFlowOpener = document.activeElement;
   const ov = _ensureSubmitOverlay();
   document.getElementById('sf-title').textContent = config.title || 'Beitrag einreichen';
-  const steps = config.steps || _SF_DEFAULT_STEPS;
+  const steps = config.steps || _sfDefaultSteps(config.type);
   document.getElementById('sf-body').innerHTML = `
     <p class="sf-demo-note">${LU.check} Demo — deine Eingabe bleibt lokal in deinem Browser, es wird nichts gesendet.</p>
-    ${_sfStepsHtml(steps, false)}
+    ${_sfStepsHtml(steps, false, config.type)}
     ${config.intro ? `<p class="sf-intro">${escHtml(config.intro)}</p>` : ''}
     <form class="sf-form" onsubmit="event.preventDefault(); submitFlowSend();">
       ${config.fields.map(f => _sfFieldHtml(config, f)).join('')}
@@ -1243,7 +1270,7 @@ function submitFlowSend() {
   vals._submittedAt = new Date().toISOString().slice(0, 10);
   _saveSubmitDraft(conf.type, vals);
 
-  const steps = conf.steps || _SF_DEFAULT_STEPS;
+  const steps = conf.steps || _sfDefaultSteps(conf.type);
   document.getElementById('sf-body').innerHTML = `
     <div class="sf-thanks" id="sf-thanks">
       <span class="sf-thanks-ic">${LU.check}</span>
@@ -1251,7 +1278,7 @@ function submitFlowSend() {
       <p>${escHtml(conf.thanksText || 'In der echten Version ginge dein Beitrag jetzt an das Team — Schritt 2 und 3 würden von hier aus weiterlaufen.')}</p>
       <p class="sf-thanks-note">Demo: dein Entwurf ist nur lokal in deinem Browser gespeichert, gesendet wurde nichts.</p>
     </div>
-    ${_sfStepsHtml(steps, true)}
+    ${_sfStepsHtml(steps, true, conf.type)}
     <div class="sf-actions">
       <button type="button" class="c-cta -black-bg" onclick="closeSubmitFlow()">Schließen</button>
     </div>`;
@@ -1282,6 +1309,8 @@ const GSEARCH_SOURCES = [
   { glob: 'SKILLS',     src: 'data/skills.js'     },
   { glob: 'PROMPTS',    src: 'data/prompts.js'    },
   { glob: 'BEFEHLE',    src: 'data/befehle.js'    },
+  // GLOSSAR und FAQ leben BEIDE in data/glossar.js — bewusst nur EIN Source-Eintrag,
+  // sonst würde dieselbe Datei doppelt angefragt (Race im Script-Dedupe).
   { glob: 'GLOSSAR',    src: 'data/glossar.js'    },
   { glob: 'RESSOURCEN', src: 'data/ressourcen.js' },
   { glob: 'ASSETS',     src: 'data/assets.js'     },
@@ -1289,15 +1318,35 @@ const GSEARCH_SOURCES = [
   { glob: 'CASES',      src: 'data/cases.js'      },
 ];
 
+/* HIDDEN-Skills (aus der Katalog-Fläche genommen) tauchen auch in der globalen
+   Suche nicht auf — Konsistenz mit skills.html. Quelle ist das HIDDEN-Set aus
+   data/skills.js; der lokale Fallback deckt den Fall ab, dass sich der Export ändert. */
+const _GS_HIDDEN_FALLBACK = new Set(['pitch-deck', 'theme-factory', 'web-artifacts-builder']);
+function _gsHiddenSkillIds() {
+  try { if (typeof HIDDEN !== 'undefined' && HIDDEN && typeof HIDDEN.has === 'function') return HIDDEN; } catch (e) {}
+  return _GS_HIDDEN_FALLBACK;
+}
+
+/* Sprechende Fundort-Labels für die Trefferliste — statt roher Dateinamen. */
+const GS_AREA_LABELS = {
+  'skills.html':       'Katalog',
+  'prompts.html':      'Prompt-Sammlung',
+  'lernen-hilfe.html': 'Lernen & Hilfe',
+  'bibliothek.html':   'Asset-Bibliothek',
+  'baukasten.html':    'Baukasten',
+  'showroom.html':     'Showroom',
+  'index.html':        'Startseite'
+};
+
 // Feste Reihenfolge der Trefferschubladen. Jede Gruppe kennt ihr Global, ihren
 // Deep-Link, Titel/Kurzinfo-Felder und die searchScore-Felder (aus dem Vertrag).
 const GSEARCH_GROUPS = [
   { key: 'skill', label: 'Skills', glob: 'SKILLS',
-    filter: it => !it.itemType || it.itemType === 'skill',
+    filter: it => (!it.itemType || it.itemType === 'skill') && !_gsHiddenSkillIds().has(it.id),
     href: it => 'skills.html?skill=' + encodeURIComponent(it.id),
     title: it => it.name, sub: it => it.tagline, fields: null },
   { key: 'plugin', label: 'Plugins & Frameworks', glob: 'SKILLS',
-    filter: it => it.itemType === 'plugin' || it.itemType === 'framework',
+    filter: it => (it.itemType === 'plugin' || it.itemType === 'framework') && !_gsHiddenSkillIds().has(it.id),
     href: it => 'skills.html?skill=' + encodeURIComponent(it.id),
     title: it => it.name, sub: it => it.tagline, fields: null },
   { key: 'prompt', label: 'Prompts', glob: 'PROMPTS',
@@ -1312,6 +1361,10 @@ const GSEARCH_GROUPS = [
     href: it => 'lernen-hilfe.html?begriff=' + encodeURIComponent(it.id),
     title: it => it.wort, sub: it => it.satz,
     fields: it => [[it.wort || '', 5], [it.satz || '', 2], [it.beispiel || '', 1], [it.tiefe || '', 1]] },
+  { key: 'faq', label: 'FAQ', glob: 'FAQ',
+    href: it => 'lernen-hilfe.html?faq=' + encodeURIComponent(it.id),
+    title: it => it.frage, sub: it => it.intro,
+    fields: it => [[it.frage || '', 5], [it.intro || '', 2], [(it.schritte || []).join(' '), 1]] },
   { key: 'ressource', label: 'Ressourcen', glob: 'RESSOURCEN',
     href: it => 'lernen-hilfe.html?r=' + encodeURIComponent(it.id),
     title: it => it.titel, sub: it => it.fuerDich || it.beschreibung,
@@ -1342,6 +1395,7 @@ function _gsGlobal(name) {
       case 'PROMPTS':    return (typeof PROMPTS    !== 'undefined') ? PROMPTS    : undefined;
       case 'BEFEHLE':    return (typeof BEFEHLE    !== 'undefined') ? BEFEHLE    : undefined;
       case 'GLOSSAR':    return (typeof GLOSSAR    !== 'undefined') ? GLOSSAR    : undefined;
+      case 'FAQ':        return (typeof FAQ        !== 'undefined') ? FAQ        : undefined;
       case 'RESSOURCEN': return (typeof RESSOURCEN !== 'undefined') ? RESSOURCEN : undefined;
       case 'ASSETS':     return (typeof ASSETS     !== 'undefined') ? ASSETS     : undefined;
       case 'BAUSTEINE':  return (typeof BAUSTEINE  !== 'undefined') ? BAUSTEINE  : undefined;
@@ -1432,12 +1486,14 @@ function _gsRenderResults(q) {
       try { href = g.href(it); } catch (e) { href = '#'; }
       const title = escHtml(String(g.title(it) || it.id));
       const sub = escHtml(String(g.sub(it) || '').slice(0, 120));
+      // Fundort als sprechender Bereichsname („Katalog“) statt rohem Dateinamen.
       const path = String(href).split('?')[0];
+      const area = GS_AREA_LABELS[path] || path;
       const id = 'gsearch-opt-' + n; _gsOpts.push(id);
       html += `<li role="presentation"><a class="gs-opt" role="option" id="${id}" href="${escHtml(href)}" tabindex="-1">`
         + `<span class="gs-opt-title">${title}</span>`
         + (sub ? `<span class="gs-opt-sub">${sub}</span>` : '')
-        + `<span class="gs-opt-path">${escHtml(path)}</span></a></li>`;
+        + `<span class="gs-opt-path">${escHtml(area)}</span></a></li>`;
       n++;
     });
   });

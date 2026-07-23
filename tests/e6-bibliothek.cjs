@@ -29,7 +29,7 @@ const EXPECTED_PALETTES = 7;
 const EXPECTED_PATTERNS = 10;   // 7 SVG-Muster + 3 Gradients
 const EXPECTED_ICONS = 48;      // LUCIDE_ICONS (durchsuchbar)
 const EXPECTED_ICONSETS = 4;
-const LEUCHTTURM = 'inter';
+const HIGHLIGHT_ID = 'inter';
 const DEEPLINK_ID = 'fraunces';
 const ALLOWED_LICENSES = ['OFL', 'Apache-2.0', 'MIT', 'ISC', 'CC0'];
 const FORBIDDEN_FONTS = ['satoshi', 'clash', 'general sans', 'cabinet'];
@@ -238,7 +238,7 @@ async function runViewport(browser, vp) {
   check('09_download_links_exist', allExist, dlInfo);
 
   // ---------- (10) Detail-Modal: Tabs (Vorschau/Einsatz/Bewertungen), switchTab, Esc ----------
-  await page.evaluate((id) => openModal(id), LEUCHTTURM);
+  await page.evaluate((id) => openModal(id), HIGHLIGHT_ID);
   await page.waitForSelector('#modal-overlay.open', { timeout: 5000 });
   const modalInfo = await page.evaluate(() => {
     const tabs = [...document.querySelectorAll('#modal .modal-tabs .tab-btn')].map(b => b.textContent.trim());
@@ -262,17 +262,17 @@ async function runViewport(browser, vp) {
     { modalInfo, einsatzOk, modalClosed });
 
   // ---------- (11) Bewertung: rate:asset:* persistiert + Namespace sauber ----------
-  await page.evaluate((id) => { openModal(id); switchTab('ratings'); }, LEUCHTTURM);
+  await page.evaluate((id) => { openModal(id); switchTab('ratings'); }, HIGHLIGHT_ID);
   await page.waitForTimeout(200);
-  await page.evaluate((id) => { document.querySelector(`#star-input-${id} .star-btn[data-val="4"]`).click(); }, LEUCHTTURM);
+  await page.evaluate((id) => { document.querySelector(`#star-input-${id} .star-btn[data-val="4"]`).click(); }, HIGHLIGHT_ID);
   await page.waitForTimeout(200);
   const rateInfo = await page.evaluate((id) => ({
     lsKey: localStorage.getItem('rate:asset:' + id),
     foreignKeys: Object.keys(localStorage).filter(k => k.startsWith('rate:skill:') || k.startsWith('rate:prompt:') || k.startsWith('vote:')).length,
-  }), LEUCHTTURM);
+  }), HIGHLIGHT_ID);
   await page.goto(TARGET, { waitUntil: 'load' });
   await page.waitForSelector('#font-grid .font-card', { timeout: 10000 });
-  const rateReload = await page.evaluate((id) => localStorage.getItem('rate:asset:' + id), LEUCHTTURM);
+  const rateReload = await page.evaluate((id) => localStorage.getItem('rate:asset:' + id), HIGHLIGHT_ID);
   check('11_rating_persists_namespaced',
     rateInfo.lsKey === '4' && rateInfo.foreignKeys === 0 && rateReload === '4',
     { rateInfo, rateReload });
@@ -452,7 +452,7 @@ async function runIndexChecks(browser) {
       && indexInfo.areaMeta.includes(String(EXPECTED_PATTERNS)),
     { areaCount: indexInfo.areaCount, meta: indexInfo.areaMeta, dataAssets: indexInfo.dataAssets });
   check('i4_area_card_clickable',
-    indexInfo.areaCta && indexInfo.areaSpotHref === 'bibliothek.html?a=' + LEUCHTTURM
+    indexInfo.areaCta && indexInfo.areaSpotHref === 'bibliothek.html?a=' + HIGHLIGHT_ID
       && indexInfo.areaSpotRating.trim().length > 0 && indexInfo.navBibliothek
       && indexInfo.livePills === 6 && indexInfo.soonPills === 0,
     { areaCta: indexInfo.areaCta, areaSpotHref: indexInfo.areaSpotHref,

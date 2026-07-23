@@ -90,9 +90,19 @@
     }
 
     /* --- Seitenlokale Feinheiten --- */
+    /* Lesbarkeit: Fließtext-Absätze in Inter — Mono bleibt Labels, Zählern
+       und Code-Schnipseln vorbehalten (.lib-lic, .am-label, .am-code, …).
+       Überschreibt die Mono-Defaults aus shared/base.css nur für diese Seite. */
+    .lib-note {
+      font-family: var(--font-sans); font-size: 1.45rem; line-height: 1.65;
+      max-width: 78ch;
+    }
+    .lib-note code { font-family: var(--font-mono); font-size: .92em; }
+    .brand-hinweis { font-family: var(--font-sans); font-size: 1.4rem; line-height: 1.6; }
+    .lib-submit-note { font-family: var(--font-sans); font-size: 1.3rem; }
     .lib-lizenz-zusage {
       display: inline-flex; align-items: center; gap: .8rem;
-      font-family: var(--font-mono); font-size: 1.25rem; line-height: 1.6;
+      font-family: var(--font-sans); font-size: 1.35rem; line-height: 1.6;
       color: rgba(252,252,252,.72); background: rgba(252,252,252,.06);
       border: 1px solid rgba(252,252,252,.16); border-radius: var(--r-pill);
       padding: .7rem 1.4rem; margin-top: 2rem;
@@ -132,7 +142,7 @@
         Nur frei nutzbares Material — OFL, MIT, ISC oder CC0. Die Lizenz steht sichtbar an jedem Asset.
       </p>
       <div class="hero-cta">
-        <button class="c-cta -yellow-bg" onclick="document.getElementById('main-content').scrollIntoView({behavior:'smooth',block:'start'})">Zur Bibliothek</button>
+        <button class="c-cta -yellow-bg" onclick="document.getElementById('main-content').scrollIntoView({behavior:window.scrollBehavior(),block:'start'})">Zur Bibliothek</button>
       </div>
     </div>
   </section>
@@ -275,8 +285,7 @@
       iconQuery: ''
     };
 
-    function prefersReduce() { return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches; }
-    function scrollBehavior() { return prefersReduce() ? 'instant' : 'smooth'; }
+    // prefersReduce()/scrollBehavior() kommen als window.-Helper aus shared/base.js
 
     // ===== NAV & FOOTER =====
     renderNav('bibliothek', {
@@ -673,7 +682,7 @@
     function highlightCard(id) {
       const anchor = () => {
         const el = document.getElementById('asset-' + id);
-        if (el) el.scrollIntoView({ behavior: scrollBehavior(), block: 'center' });
+        if (el) el.scrollIntoView({ behavior: window.scrollBehavior(), block: 'center' });
       };
       anchor();
       if (document.fonts && document.fonts.ready) {

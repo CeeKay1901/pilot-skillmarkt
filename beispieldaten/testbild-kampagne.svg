@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img" aria-label="Testbild: Kampagnen-Platzhalter der erfundenen Marke Quellgold">
+  <!-- Übungsmaterial des pilot AI Marketplace. Marke Quellgold ist frei erfunden,
+       kein echtes Kundenmaterial. Flächen in pilot-Farben, keine externen Referenzen. -->
+  <rect width="1600" height="900" fill="#262626"/>
+  <rect x="0" y="0" width="640" height="900" fill="#ffe05e"/>
+
+  <!-- Motiv-Platzhalter: stilisierte Wasserflasche mit Quelle -->
+  <g transform="translate(320,450)">
+    <rect x="-90" y="-210" width="180" height="420" rx="60" fill="#262626"/>
+    <rect x="-38" y="-290" width="76" height="90" rx="20" fill="#262626"/>
+    <rect x="-64" y="-40" width="128" height="150" rx="14" fill="#f1f1ec"/>
+    <path d="M-200 260 Q-100 220 0 260 T200 260" stroke="#f1f1ec" stroke-width="16" fill="none" stroke-linecap="round"/>
+    <path d="M-200 310 Q-100 270 0 310 T200 310" stroke="#f1f1ec" stroke-width="10" fill="none" stroke-linecap="round" opacity=".6"/>
+  </g>
+
+  <!-- Headline-Platzhalter (Balken statt Text — hier kommt später der Claim hin) -->
+  <g fill="#f1f1ec">
+    <rect x="760" y="270" width="560" height="56" rx="10"/>
+    <rect x="760" y="350" width="420" height="56" rx="10"/>
+  </g>
+  <rect x="760" y="450" width="240" height="20" rx="10" fill="#ffe05e"/>
+  <rect x="760" y="520" width="220" height="64" rx="32" fill="#ffe05e"/>
+  <text x="792" y="562" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="700" fill="#262626">Platzhalter-CTA</text>
+
+  <!-- Beschriftung -->
+  <text x="760" y="160" font-family="system-ui, -apple-system, sans-serif" font-size="58" font-weight="700" fill="#f1f1ec">Quellgold</text>
+  <text x="760" y="204" font-family="system-ui, -apple-system, sans-serif" font-size="30" fill="#f1f1ec">Kampagnen-Testbild · Marke frei erfunden</text>
+  <text x="760" y="800" font-family="system-ui, -apple-system, sans-serif" font-size="26" fill="#f1f1ec" opacity=".7">Übungsmaterial — kein echtes Kundenmaterial</text>
+</svg>

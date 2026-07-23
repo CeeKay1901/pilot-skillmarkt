@@ -4,17 +4,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>pilot Skill Marketplace — Citizen Coding mit Claude Code</title>
-  <meta name="description" content="Der interne Skill-Marktplatz der pilot Agenturgruppe: 37 echte Skills für Claude Code &amp; Langdock entdecken, verstehen und selbst nutzen — von Briefings über Mediaplan-Checks bis zum eigenen Tool.">
+  <meta name="description" content="Der interne Skill-Marktplatz der pilot Agenturgruppe: 34 echte Skills für Claude Code &amp; Langdock entdecken, verstehen und selbst nutzen — von Briefings über Mediaplan-Checks bis zum eigenen Tool.">
   <meta name="theme-color" content="#262626">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="pilot Skill Marketplace">
   <meta property="og:title" content="pilot Skill Marketplace — Citizen Coding mit Claude Code">
-  <meta property="og:description" content="37 echte Skills für Claude Code &amp; Langdock entdecken, verstehen und selbst nutzen. Von Piloten gebaut, von Piloten empfohlen.">
-  <meta property="og:url" content="https://ceekay1901.github.io/pilot-skillmarkt/">
+  <meta property="og:description" content="34 echte Skills für Claude Code &amp; Langdock entdecken, verstehen und selbst nutzen. Von Piloten gebaut, von Piloten empfohlen.">
+  <meta property="og:url" content="https://ceekay1901.github.io/pilot-skillmarkt/skills.html">
   <meta property="og:image" content="https://ceekay1901.github.io/pilot-skillmarkt/og-image.png">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="pilot Skill Marketplace">
-  <meta name="twitter:description" content="37 echte Skills für Claude Code &amp; Langdock entdecken, verstehen und selbst nutzen.">
+  <meta name="twitter:description" content="34 echte Skills für Claude Code &amp; Langdock entdecken, verstehen und selbst nutzen.">
   <meta name="twitter:image" content="https://ceekay1901.github.io/pilot-skillmarkt/og-image.png">
   <link rel="preload" href="assets/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="shared/base.css">
@@ -108,7 +108,26 @@
     .type-info strong { color: var(--c-black); }
     .type-info[hidden] { display: none; }
     .type-info-link { background: none; border: none; padding: 0; font: inherit; color: var(--c-black); text-decoration: underline; cursor: pointer; }
-    /* Seiten-lokale Sub-Nav (Tablist über den drei Views) — pilot-CI, editorial */
+    /* Mobil, kondensierte Filterleiste (Etappe A): beim Scrollen bleibt nur EINE Zeile
+       (Suche + „Filter"-Knopf mit Aktiv-Zähler) fixiert — Typ-/Themen-Tabs und das volle
+       Panel erscheinen erst nach Tap auf den Knopf (.m-open). Desktop unverändert. */
+    @media (max-width: 1023px) {
+      .filter-bar.condensed { padding: .8rem 0; }
+      .filter-bar.condensed:not(.m-open) .filter-inner {
+        flex-direction: row; align-items: center; gap: 1rem;
+      }
+      .filter-bar.condensed:not(.m-open) .search-wrap-m { flex: 1 1 10rem; min-width: 0; padding: 0; }
+      .filter-bar.condensed:not(.m-open) .search-wrap-m input { width: 100%; }
+      .filter-bar.condensed:not(.m-open) .filter-toggle-btn {
+        width: auto; flex: 0 0 auto; gap: .6rem; padding: .8rem 0; border-bottom: none;
+        font-size: 1.4rem; white-space: nowrap;
+      }
+      .filter-bar.condensed:not(.m-open) .type-row,
+      .filter-bar.condensed:not(.m-open) .type-info,
+      .filter-bar.condensed:not(.m-open) .cat-tabs { display: none; }
+      /* Aufgeklappt: volle Filter, aber nie höher als der Viewport — Rest scrollt intern */
+      .filter-bar.condensed.m-open { max-height: calc(100dvh - var(--header-h)); overflow-y: auto; }
+    }
     .skills-subnav { border-bottom: 1px solid var(--c-gray-l); background: var(--c-bg); }
     .skills-subnav-inner {
       max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-d);
@@ -161,14 +180,9 @@
     .pf-item-how { font-size: 1.45rem; line-height: 1.55; color: var(--c-gray-d); }
     .pf-item-how code { font-family: var(--font-mono); font-size: 1.25rem; background: var(--c-bg); border: 1px solid var(--c-gray-l); border-radius: var(--r-xs); padding: .05rem .5rem; color: var(--c-black); }
     @media (max-width: 640px) { .pf-item { grid-template-columns: 1fr; gap: .3rem; } }
-    /* Explainer: „Ein Skill, zwei Systeme“ — Plattform-Toggle */
-    .expf-tabs { display: flex; gap: .6rem; flex-wrap: wrap; margin: 2.8rem 0 2rem; }
-    .expf-tab { font-family: var(--font-mono); font-size: 1.4rem; padding: 1rem 2.2rem; border-radius: var(--radius-pill); border: 1px solid var(--c-gray-l); background: transparent; color: var(--c-gray-d); cursor: pointer; transition: var(--trans); }
-    .expf-tab:hover { border-color: var(--c-black); color: var(--c-black); }
-    .expf-tab.active { background: var(--c-black); color: var(--c-yellow); border-color: var(--c-black); font-weight: 600; }
+    /* Explainer: Bausteine-Panel (Skill · Plugin · Framework) */
     .expf-panel { background: var(--paper, #fbfbf7); border: 1px solid var(--c-gray-l); border-radius: 1.4rem; padding: 3rem 3.2rem; }
-    .expf-lead { font-size: 1.75rem; line-height: 1.6; max-width: 82rem; }
-    .expf-lead code, .expf-cell code { font-family: var(--font-mono); font-size: .88em; background: var(--c-bg); border: 1px solid var(--c-gray-l); border-radius: var(--r-xs); padding: .05rem .5rem; }
+    .expf-cell code { font-family: var(--font-mono); font-size: .88em; background: var(--c-bg); border: 1px solid var(--c-gray-l); border-radius: var(--r-xs); padding: .05rem .5rem; }
     .expf-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; margin: 2.4rem 0 2.8rem; }
     .expf-cell h3 { font-size: 1.3rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--c-gray-m); margin-bottom: .8rem; }
     .expf-cell p { font-size: 1.55rem; line-height: 1.6; }
@@ -498,7 +512,7 @@
     #view-explainer { --ex-ease: cubic-bezier(.16,.84,.44,1); }
     .ex-wrap { max-width: 120rem; margin: 0 auto; padding: 0 var(--pad-d); }
     .ex-narrow { max-width: 82rem; }
-    .ex-section { padding: 9rem 0; }
+    .ex-section { padding: 7rem 0; }
     .ex-eyebrow {
       font-size: 1.3rem; font-weight: 500; text-transform: uppercase;
       font-family: var(--font-mono);
@@ -510,7 +524,7 @@
       font-feature-settings: "kern" 1, "liga" 1;
     }
     .ex-h2 {
-      font-size: var(--fs-h2); font-weight: 620; letter-spacing: -.032em; line-height: 1.05;
+      font-size: var(--fs-h2); font-weight: var(--fw-semi); letter-spacing: -.032em; line-height: 1.05;
       color: var(--c-black); margin-bottom: 2rem;
       font-feature-settings: "kern" 1, "liga" 1;
     }
@@ -560,35 +574,8 @@
     .ex-dark { background: var(--c-black); }
     .ex-bg { background: var(--c-bg); }
 
-    /* Langdock vs Claude Code */
-    .ex-compare { display: flex; align-items: stretch; gap: 2rem; margin-top: 4rem; flex-wrap: wrap; }
-    .ex-compare-col {
-      flex: 1; min-width: 28rem; background: rgba(255,255,255,.05);
-      border: 1px solid rgba(255,255,255,.14); border-radius: var(--r-lg); padding: 3rem;
-    }
-    .ex-compare-hero { background: rgba(255,224,94,.08); border-color: rgba(255,224,94,.4); }
-    .ex-compare-vs { display: flex; align-items: center; justify-content: center; color: rgba(252,252,252,.5); font-size: 3rem; font-weight: 300; }
-    .ex-compare-head { display: flex; align-items: center; gap: 1.2rem; margin-bottom: 2rem; flex-wrap: wrap; }
-    .ex-compare-head h3 { font-size: 2.2rem; color: var(--c-white); font-weight: 600; display: flex; align-items: center; gap: 1rem; }
-    .ex-compare-badge { font-size: 1.1rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; padding: .3rem 1rem; border-radius: var(--r-xl); background: rgba(255,255,255,.15); color: rgba(252,252,252,.8); }
-    .ex-compare-badge.-yellow { background: var(--c-yellow); color: var(--c-black); }
-    .ex-compare-tag { font-size: 1.2rem; font-weight: 600; padding: .2rem .9rem; border-radius: var(--r-xl); background: rgba(255,255,255,.12); color: rgba(252,252,252,.7); }
-    .ex-compare-tag.-yellow { background: rgba(255,224,94,.2); color: var(--c-yellow); }
-    .ex-list { list-style: none; padding: 0; margin: 2rem 0 0; display: flex; flex-direction: column; gap: 1rem; }
-    .ex-list li { font-size: 1.55rem; color: rgba(252,252,252,.82); display: flex; gap: 1rem; line-height: 1.4; }
-    .ex-list li span { color: var(--c-yellow); font-weight: 700; flex-shrink: 0; }
-    .ex-list li strong { color: var(--c-white); }
-    .ex-list-muted { opacity: .5; }
-    .ex-list-muted span { color: rgba(252,252,252,.5) !important; }
-    .ex-chat-demo { background: rgba(0,0,0,.25); border-radius: var(--r-md); padding: 2rem; display: flex; flex-direction: column; gap: 1rem; }
-    .ex-chat-bubble { font-size: 1.5rem; padding: 1.2rem 1.6rem; border-radius: var(--r-md); max-width: 90%; line-height: 1.4; }
-    .ex-chat-bubble.ex-user { background: rgba(255,255,255,.12); color: var(--c-white); align-self: flex-end; border-bottom-right-radius: .3rem; }
-    .ex-chat-bubble.ex-ai { background: rgba(255,255,255,.06); color: rgba(252,252,252,.75); align-self: flex-start; border-bottom-left-radius: .3rem; }
-    .ex-chat-note { font-size: 1.3rem; color: rgba(252,252,252,.45); font-style: italic; margin-top: .4rem; }
-    .ex-term-mini { background: var(--term-bg); border: 1px solid rgba(255,224,94,.2); border-radius: var(--r-md); padding: 2rem; font-family: var(--font-mono); font-size: 1.5rem; display: flex; flex-direction: column; gap: .8rem; }
-    .ex-term-line { color: var(--c-white); }
+    /* Terminal-Prompt-Zeichen (in Ohne/Mit-Skill & Auslöser genutzt) */
     .ex-term-prompt { color: var(--c-yellow); font-weight: 700; margin-right: .6rem; }
-    .ex-term-out { color: var(--term-ok); font-size: 1.4rem; }
 
     /* Vergleichsmatrix Langdock & Claude Code */
     .cmp { margin-top: 4rem; border: 1px solid rgba(255,255,255,.12); border-radius: var(--r-lg); overflow: hidden; }
@@ -620,32 +607,6 @@
       .cmp-cell { flex-direction: column; align-items: flex-start; gap: 0; }
     }
 
-    /* Ohne/Mit Skill */
-    .ex-vs { display: flex; gap: 2rem; margin-top: 4rem; flex-wrap: wrap; }
-    .ex-vs-card { flex: 1; min-width: 28rem; border-radius: var(--r-lg); padding: 3rem; display: flex; flex-direction: column; }
-    .ex-vs-bad { background: var(--c-bg); border: 1px solid var(--c-gray-l); }
-    .ex-vs-good { background: var(--c-black); border: 1px solid var(--c-black); }
-    .ex-vs-label { font-size: 1.3rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; margin-bottom: 1.6rem; }
-    .ex-vs-bad .ex-vs-label { color: var(--c-gray-m); }
-    .ex-vs-good .ex-vs-label { color: var(--c-yellow); }
-    .ex-vs-prompt { font-size: 1.6rem; line-height: 1.6; color: #6a6a64; font-style: italic; flex: 1; }
-    .ex-vs-cmd { font-family: var(--font-mono); font-size: 2.8rem; color: var(--c-white); flex: 1; display: flex; align-items: center; }
-    .ex-vs-foot { font-size: 1.45rem; margin-top: 2rem; padding-top: 2rem; border-top: 1px solid; line-height: 1.5; }
-    .ex-vs-bad .ex-vs-foot { border-color: var(--c-gray-l); color: var(--c-gray-m); }
-    .ex-vs-good .ex-vs-foot { border-color: rgba(255,255,255,.15); color: rgba(252,252,252,.7); }
-
-    /* Flow */
-    .ex-flow { display: flex; align-items: stretch; gap: 0; margin-top: 4rem; flex-wrap: wrap; }
-    .ex-flow-step { flex: 1; min-width: 22rem; background: var(--c-white); border: 1px solid var(--c-gray-l); border-radius: var(--r-lg); padding: 3rem 2.4rem; position: relative; }
-    .ex-flow-num { position: absolute; top: -1.6rem; left: 2.4rem; width: 3.2rem; height: 3.2rem; background: var(--c-yellow); color: var(--c-black); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.6rem; }
-    .ex-flow-icon { font-size: 3.2rem; margin: .8rem 0 1.6rem; }
-    .ex-flow-title { font-size: 2rem; font-weight: 700; margin-bottom: .8rem; }
-    .ex-flow-desc { font-size: 1.5rem; color: var(--c-gray-m); line-height: 1.55; }
-    .ex-flow-desc code { background: var(--c-bg); padding: .1rem .5rem; border-radius: var(--r-xs); font-family: var(--font-mono); font-size: 1.3rem; color: var(--c-black); }
-    .ex-flow-conn { flex: 0 0 4rem; display: flex; align-items: center; justify-content: center; color: var(--c-yellow); font-size: 2.4rem; }
-    .ex-flow-conn::before { content: '→'; }
-    @media (max-width: 1023px) { .ex-flow-conn { flex-basis: 100%; height: 3rem; } .ex-flow-conn::before { content: '↓'; } }
-
     /* Demo-Matrix */
     .demo-layout { display: grid; grid-template-columns: 30rem 1fr; gap: 2rem; margin-top: 4rem; align-items: start; }
     @media (max-width: 900px) { .demo-layout { grid-template-columns: 1fr; } }
@@ -669,21 +630,13 @@
     .demo-stage .ex-terminal-body { min-height: 26rem; }
     @media (max-width: 900px) { .demo-stage { position: static; } }
 
-    /* Journey */
-    .ex-journey { margin-top: 4rem; display: flex; flex-direction: column; gap: 0; }
-    .ex-journey-step { position: relative; padding: 0 0 3.6rem 4rem; border-left: 2px solid var(--c-gray-l); }
-    .ex-journey-step:last-child { border-left-color: transparent; padding-bottom: 0; }
-    .ex-journey-dot { position: absolute; left: -1.1rem; top: 0; width: 2rem; height: 2rem; border-radius: 50%; background: var(--c-bg); border: 2px solid var(--c-gray-l); }
-    .ex-journey-step.ex-done .ex-journey-dot { background: var(--c-gray-m); border-color: var(--c-gray-m); }
-    .ex-journey-step.ex-now { border-left-color: var(--c-yellow); }
-    .ex-journey-step.ex-now .ex-journey-dot { background: var(--c-yellow); border-color: var(--c-yellow); box-shadow: 0 0 0 6px rgba(255,224,94,.25); }
-    .ex-journey-label { font-size: 2rem; font-weight: 700; margin-bottom: .6rem; display: flex; align-items: center; gap: 1.2rem; flex-wrap: wrap; }
-    .ex-now-badge { font-size: 1.2rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; background: var(--c-yellow); color: var(--c-black); padding: .3rem 1rem; border-radius: var(--r-xl); }
-    .ex-journey-sub { font-size: 1.6rem; color: var(--c-gray-m); line-height: 1.55; }
-    .ex-journey-step.ex-done .ex-journey-label, .ex-journey-step.ex-done .ex-journey-sub { opacity: .6; }
-
     /* CTA + Starter Cards */
     .ex-cta-section { background: var(--c-bg); }
+    /* Früh-CTA-Band: schlanker Handlungs-Beat direkt nach der ersten Erklärung */
+    .ex-cta-strip { background: var(--c-bg); padding: 3.6rem 0; border-top: 1px solid var(--c-gray-l); border-bottom: 1px solid var(--c-gray-l); }
+    .ex-cta-strip-inner { display: flex; align-items: center; justify-content: space-between; gap: 1.6rem 2.4rem; flex-wrap: wrap; }
+    .ex-cta-strip-text { font-size: 1.9rem; font-weight: var(--fw-semi); color: var(--c-black); max-width: 46rem; }
+    .ex-cta-strip-btns { display: flex; gap: 1.2rem; flex-wrap: wrap; }
     .ex-starter { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.6rem; text-align: left; }
     @media (max-width: 767px) { .ex-starter { grid-template-columns: 1fr; } }
     .ex-starter-card { background: var(--c-white); border: 1px solid var(--c-gray-l); border-radius: 1.4rem; padding: 2.4rem; cursor: pointer; transition: var(--trans); }
@@ -727,33 +680,11 @@
     .trg-mono .ex-term-prompt { color: var(--c-yellow); }
     .trg-mono-nat { color: rgba(252,252,252,.85); font-family: 'Inter', sans-serif; font-style: italic; }
 
-    .trg-match { margin-top: 4rem; background: rgba(0,0,0,.25); border: 1px solid rgba(255,255,255,.1); border-radius: var(--r-lg); padding: 3rem; text-align: center; }
-    .trg-match-req { font-size: 1.9rem; color: var(--c-white); font-style: italic; max-width: 56rem; margin: 0 auto; }
-    .trg-match-label { display: block; font-family: var(--font-mono); font-size: 1.2rem; font-style: normal; text-transform: uppercase; letter-spacing: .1em; color: rgba(252,252,252,.45); margin-bottom: .8rem; }
-    .trg-match-arrow { font-family: var(--font-mono); font-size: 1.35rem; color: rgba(252,252,252,.5); margin: 1.8rem 0; }
-    .trg-menu { display: flex; flex-direction: column; gap: .8rem; max-width: 60rem; margin: 0 auto; text-align: left; }
-    .trg-menu-item { display: flex; align-items: center; gap: 1.4rem; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.1); border-radius: 1rem; padding: 1.4rem 1.8rem; transition: var(--trans); }
-    .trg-menu-item code { font-family: var(--font-mono); font-size: 1.5rem; color: rgba(252,252,252,.85); flex-shrink: 0; min-width: 14rem; }
-    .trg-menu-item span:not(.trg-menu-hit) { font-size: 1.45rem; color: rgba(252,252,252,.6); flex: 1; }
-    .trg-menu-item.is-match { background: rgba(255,224,94,.12); border-color: var(--c-yellow); box-shadow: 0 0 0 3px rgba(255,224,94,.12); animation: trgPulse 2.4s ease-in-out infinite; }
-    .trg-menu-item.is-match code { color: var(--c-yellow); }
-    .trg-menu-item.is-match span:not(.trg-menu-hit) { color: rgba(252,252,252,.85); }
-    .trg-menu-hit { font-family: var(--font-mono); font-size: 1.15rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; background: var(--c-yellow); color: var(--c-black); padding: .3rem .9rem; border-radius: var(--r-xl); flex-shrink: 0; }
-    @media (max-width: 480px) {
-      .trg-menu-item { flex-wrap: wrap; gap: .6rem 1rem; padding: 1.2rem 1.4rem; }
-      .trg-menu-item code { min-width: 0; }
-    }
-    @keyframes trgPulse { 0%,100% { box-shadow: 0 0 0 3px rgba(255,224,94,.1); } 50% { box-shadow: 0 0 0 6px rgba(255,224,94,.22); } }
-    @media (prefers-reduced-motion: reduce) { .trg-menu-item.is-match { animation: none; } }
-    .trg-match-out { font-size: 1.7rem; color: rgba(252,252,252,.9); margin-top: 1.4rem; }
-    .trg-match-out strong { color: var(--c-yellow); }
-    .trg-match-out code, .trg-brain-note code, .trg-brain-body code { font-family: var(--font-mono); font-size: .92em; color: var(--c-yellow); background: rgba(255,224,94,.1); padding: .1rem .5rem; border-radius: var(--r-xs); }
-
     .trg-brain { display: grid; grid-template-columns: 20rem 1fr; gap: 2rem; margin-top: 3rem; align-items: start; }
     @media (max-width: 767px) { .trg-brain { grid-template-columns: 1fr; gap: 1rem; } }
     .trg-brain-k { font-family: var(--font-mono); font-size: 1.3rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--c-yellow); padding-top: .4rem; }
     .trg-brain-body p { font-size: 1.65rem; line-height: 1.6; color: rgba(252,252,252,.8); }
-    .trg-brain-note { margin-top: 1.4rem; font-size: 1.5rem !important; color: rgba(252,252,252,.6) !important; }
+    .trg-brain-body code { font-family: var(--font-mono); font-size: .92em; color: var(--c-yellow); background: rgba(255,224,94,.1); padding: .1rem .5rem; border-radius: var(--r-xs); }
 
     @media (prefers-reduced-motion: reduce) { .ex-arrow-down { animation: none; } }
 
@@ -930,7 +861,6 @@
       .ln-n { background: rgba(255,224,94,.14); color: rgba(255,255,255,.55); min-width: 3rem; padding: .25rem .5rem; }
       .node-annotate { min-width: 4.4rem; min-height: 4.4rem; font-size: 1.8rem; opacity: .7; }
       .sel-pill { padding: 1.1rem 2rem; font-size: 1.5rem; }
-      .expf-tab { min-height: 4.4rem; }
       .demo-replay { position: relative; }
       .demo-replay::after { content: ''; position: absolute; inset: -12px; }
       .card-trigger-chip, .trigger-badge, .demo-case { min-height: 4.4rem; }
@@ -941,7 +871,6 @@
       .ex-lead { font-size: 1.8rem; }
       .ex-body { font-size: 1.7rem; }
       .ex-section { padding: 6rem 0; }
-      .ex-compare-vs { transform: rotate(90deg); padding: 1rem 0; }
       .ex-analogy-arrow { align-self: center; justify-content: center; } /* keine Rotation: gestreckt+rotiert sprengte den Layout-Viewport */
       .ex-terminal-body { font-size: 1.35rem; min-height: 30rem; }
     }
@@ -1142,13 +1071,13 @@
       <h1 class="hero-h1">Skills, die<br><span class="hero-rotator" id="hero-rotator" aria-hidden="true">Tools bauen.</span><span class="sr-only">Arbeit erledigen.</span></h1>
       <p class="subline">Von Piloten gebaut, von Piloten empfohlen. Du beschreibst auf Deutsch, was du brauchst — Claude&nbsp;Code baut es. <strong>Kein Programmier-Vorwissen nötig.</strong></p>
       <div class="hero-stats" id="hero-stats">
-        <div class="hero-stat-box"><span class="hero-stat-num" data-count="37" id="stat-skills">0</span><span class="hero-stat-label">Skills</span></div>
+        <div class="hero-stat-box"><span class="hero-stat-num" data-count="34" id="stat-skills">0</span><span class="hero-stat-label">Skills</span></div>
         <div class="hero-stat-box"><span class="hero-stat-num" data-count="6" id="stat-pilots">0</span><span class="hero-stat-label">Piloten</span></div>
         <div class="hero-stat-box"><span class="hero-stat-num" id="stat-cats" data-count="6">0</span><span class="hero-stat-label">Kategorien</span></div>
-        <div class="hero-stat-box"><span class="hero-stat-num" data-count="49" id="stat-endorsed">0</span><span class="hero-stat-label">Empfehlungen</span></div>
+        <div class="hero-stat-box"><span class="hero-stat-num" data-count="64" id="stat-endorsed">0</span><span class="hero-stat-label">Empfehlungen</span></div>
       </div>
       <div class="hero-cta">
-        <button class="c-cta -yellow-bg" onclick="document.getElementById('outcome-router').scrollIntoView({behavior:'smooth',block:'start'})">Ersten Skill finden</button>
+        <button class="c-cta -yellow-bg" onclick="document.getElementById('outcome-router').scrollIntoView({behavior:window.scrollBehavior?scrollBehavior():'smooth',block:'start'})">Ersten Skill finden</button>
         <button class="c-cta -yellow-border" onclick="showView('explainer')">Was sind Skills?</button>
       </div>
     </div>
@@ -1362,6 +1291,17 @@
       </div>
     </section>
 
+    <!-- Früh-CTA: kompakte Handlungsaufforderung direkt nach der ersten Erklärung -->
+    <section class="ex-cta-strip reveal">
+      <div class="ex-wrap ex-cta-strip-inner">
+        <p class="ex-cta-strip-text">Der Katalog ist eine Kiste fertiger Helfer — stöber einfach los.</p>
+        <div class="ex-cta-strip-btns">
+          <button class="c-cta -black-bg" onclick="showView('catalog')">Zum Skill-Katalog</button>
+          <button class="c-cta -black-border" onclick="exScrollTo('ex-demo')">Live-Demo ansehen</button>
+        </div>
+      </div>
+    </section>
+
     <!-- Langdock & Claude Code -->
     <section class="ex-section ex-dark reveal">
       <div class="ex-wrap">
@@ -1407,90 +1347,6 @@
       </div>
     </section>
 
-    <!-- Ein Skill, zwei Systeme -->
-    <section class="ex-section ex-bg reveal" id="ex-platforms">
-      <div class="ex-wrap">
-        <p class="ex-eyebrow">Ein Skill, zwei Systeme</p>
-        <h2 class="ex-h2">Wo Skills bei uns <span class="ex-hl">laufen</span></h2>
-        <p class="ex-body">Das Schöne: Im Kern ist ein Skill eine Anleitung in einer Textdatei (<code>SKILL.md</code>) — und die versteht inzwischen mehr als ein System. Jeder Skill im Katalog trägt Chips, die zeigen, wo er einsetzbar ist. Hier der Unterschied:</p>
-        <div class="expf-tabs" role="group" aria-label="System wählen">
-          <button class="expf-tab active" aria-pressed="true" data-pf="code" onclick="exPlatform('code')">Claude Code</button>
-          <button class="expf-tab" aria-pressed="false" data-pf="langdock" onclick="exPlatform('langdock')">Langdock</button>
-        </div>
-
-        <div class="expf-panel" data-pf="code">
-          <p class="expf-lead"><strong>Das Zuhause der Skills.</strong> Hier ist ein Skill ein Ordner mit <code>SKILL.md</code> und optionalen Scripts — Claude Code führt ihn aus und arbeitet dabei <em>direkt in deinen Dateien</em>.</p>
-          <div class="expf-grid">
-            <div class="expf-cell"><h3>So kommt er rein</h3><p>ZIP aus dem Katalog laden und nach <code>.claude/skills/</code> entpacken — oder einfach den <code>/befehl</code> tippen.</p></div>
-            <div class="expf-cell"><h3>Das kann er</h3><p>Alles: Dateien lesen &amp; schreiben, Scripts ausführen, Browser steuern, Tools und Webseiten bauen, Automationen.</p></div>
-            <div class="expf-cell"><h3>Grenzen</h3><p>Läuft auf deinem Rechner im Terminal — dafür gibt es den Skill <code>/erste-schritte</code> als Einstieg.</p></div>
-          </div>
-          <button class="c-cta -black-bg" onclick="showCatalogWithPlatform('code')">Alle Skills ansehen</button>
-        </div>
-
-        <div class="expf-panel" data-pf="langdock" hidden>
-          <p class="expf-lead"><strong>Langdock hat ein eigenes Skills-Feature</strong> — gleiches Prinzip, gleiche Datei. Du lädst die <code>SKILL.md</code> hoch, und Langdock aktiviert sie automatisch, sobald deine Nachricht dazu passt. Kein Terminal nötig.</p>
-          <div class="expf-grid">
-            <div class="expf-cell"><h3>So kommt er rein</h3><p>In Langdock: <strong>Skills → Add Skill</strong> → <code>SKILL.md</code> (oder ZIP) hochladen. Teilen mit dem Team geht per Share-Dialog, Admins können Workspace-weit freigeben.</p></div>
-            <div class="expf-cell"><h3>Das kann er</h3><p>Alles Instruktive: Checklisten, Prüf-Regeln, Templates, Schreib-Workflows. Dateien erzeugt Langdock über seine eigenen System-Skills (PDF, Word, Excel, PowerPoint).</p></div>
-            <div class="expf-cell"><h3>Grenzen</h3><p>Skills sind hier reine Anleitung: keine eigenen Scripts, kein Dateisystem, kein Browser. Bau-Skills wie <code>webseite-bauen</code> bleiben deshalb Claude-Code-Sache.</p></div>
-          </div>
-          <button class="c-cta -black-bg" onclick="showCatalogWithPlatform('langdock')">Langdock-taugliche Skills ansehen</button>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- Ohne Skill / Mit Skill -->
-    <section class="ex-section reveal">
-      <div class="ex-wrap">
-        <p class="ex-eyebrow">Warum überhaupt Skills?</p>
-        <h2 class="ex-h2">Einmal festgehalten statt <span class="ex-hl">jedes Mal neu</span></h2>
-        <div class="ex-vs">
-          <div class="ex-vs-card ex-vs-bad">
-            <div class="ex-vs-label">Ohne Skill</div>
-            <div class="ex-vs-prompt">„Prüfe die Seite auf Ladezeit, mobile Ansicht, fehlende Alt-Texte, SEO-Tags, Kontraste, kaputte Links … und mach Screenshots … und sortiere nach Wichtigkeit … und …“</div>
-            <div class="ex-vs-foot">Jedes Mal alles neu erklären. Mal vergisst man was.</div>
-          </div>
-          <div class="ex-vs-card ex-vs-good">
-            <div class="ex-vs-label">Mit Skill</div>
-            <div class="ex-vs-cmd"><span class="ex-term-prompt">›</span> /webaudit</div>
-            <div class="ex-vs-foot">Ein Befehl. Der komplette, erprobte Ablauf läuft — vollständig, jedes Mal gleich.</div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Wie funktioniert ein Skill (Flow) -->
-    <section class="ex-section ex-bg reveal">
-      <div class="ex-wrap">
-        <p class="ex-eyebrow">Unter der Haube</p>
-        <h2 class="ex-h2">So läuft ein Skill ab</h2>
-        <div class="ex-flow">
-          <div class="ex-flow-step">
-            <div class="ex-flow-num">1</div>
-            <div class="ex-flow-icon"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 8h.01"/><path d="M12 12h.01"/><path d="M14 8h.01"/><path d="M16 12h.01"/><path d="M18 8h.01"/><path d="M6 8h.01"/><path d="M7 16h10"/><path d="M8 12h.01"/><rect width="20" height="16" x="2" y="4" rx="2"/></svg></div>
-            <div class="ex-flow-title">Du gibst den Befehl</div>
-            <div class="ex-flow-desc">Ein kurzer <code>/befehl</code> oder ein Satz auf Deutsch — mehr braucht es nicht.</div>
-          </div>
-          <div class="ex-flow-conn"></div>
-          <div class="ex-flow-step">
-            <div class="ex-flow-num">2</div>
-            <div class="ex-flow-icon"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"/><circle cx="12" cy="12" r="3"/></svg></div>
-            <div class="ex-flow-title">Claude arbeitet</div>
-            <div class="ex-flow-desc">Der Skill führt seine erprobten Schritte aus — liest, prüft, baut, schreibt.</div>
-          </div>
-          <div class="ex-flow-conn"></div>
-          <div class="ex-flow-step">
-            <div class="ex-flow-num">3</div>
-            <div class="ex-flow-icon"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></div>
-            <div class="ex-flow-title">Du bekommst das Ergebnis</div>
-            <div class="ex-flow-desc">Fertige Datei, Report oder Tool — du prüfst und gibst frei.</div>
-          </div>
-        </div>
-      </div>
-    </section>
-
     <!-- Anatomie eines Skills -->
     <section class="ex-section reveal">
       <div class="ex-wrap">
@@ -1526,7 +1382,37 @@ Gib einen priorisierten Report aus:
             </div>
           </div>
         </div>
-        <p class="ex-anatomy-cta">In jedem Skill findest du den Tab <strong>„Aufbau &amp; Dateien“</strong> — schau rein.</p>
+        <p class="ex-anatomy-cta">In jedem Skill findest du den Tab <strong>„Dateien &amp; Download“</strong> — schau rein.</p>
+      </div>
+    </section>
+
+    <!-- Auslöser: manuell vs. automatisch -->
+    <section class="ex-section ex-dark reveal" id="ex-trigger">
+      <div class="ex-wrap">
+        <p class="ex-eyebrow" style="color:var(--c-yellow)">Auslöser</p>
+        <h2 class="ex-h2" style="color:var(--c-white)">Zwei Wege, wie ein Skill <span class="ex-hl">startet</span></h2>
+        <p class="ex-body ex-body-light">Du musst den Befehl gar nicht kennen. Ein Skill kann auf zwei Arten anspringen — beides gleichzeitig möglich.</p>
+        <div class="trg-paths">
+          <div class="trg-card">
+            <div class="trg-num">1</div>
+            <div class="trg-tag">Manuell — du rufst ihn</div>
+            <p class="trg-text">Du tippst den Befehl direkt. Klar und bewusst.</p>
+            <div class="trg-mono"><span class="ex-term-prompt">›</span> /webaudit</div>
+          </div>
+          <div class="trg-card trg-card-hl">
+            <div class="trg-num">2</div>
+            <div class="trg-tag -yellow">Automatisch — Claude erkennt ihn</div>
+            <p class="trg-text">Du schreibst ganz normal, was du brauchst. Claude erkennt selbst, welcher Skill passt — und startet ihn ohne Befehl.</p>
+            <div class="trg-mono trg-mono-nat">„Prüf mal, ob mit unserer Landingpage alles stimmt.“</div>
+          </div>
+        </div>
+
+        <div class="trg-brain">
+          <div class="trg-brain-k">So entscheidet Claude</div>
+          <div class="trg-brain-body">
+            <p>Claude kennt von <em>allen</em> Skills nur den Namen und die eine <code>description</code>-Zeile — wie eine Speisekarte. Passt deine Aufgabe dazu, lädt es den kompletten Skill und wendet ihn an. Darum ist die <code>description</code> das Erkennungsmerkmal; für heikle Aktionen lässt sich der Automatik-Start bewusst abschalten.</p>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -1556,59 +1442,6 @@ Gib einen priorisierten Report aus:
       </div>
     </section>
 
-    <!-- Auslöser: manuell vs. automatisch -->
-    <section class="ex-section ex-dark reveal" id="ex-trigger">
-      <div class="ex-wrap">
-        <p class="ex-eyebrow" style="color:var(--c-yellow)">Auslöser</p>
-        <h2 class="ex-h2" style="color:var(--c-white)">Zwei Wege, wie ein Skill <span class="ex-hl">startet</span></h2>
-        <p class="ex-body ex-body-light">Du musst den Befehl gar nicht kennen. Ein Skill kann auf zwei Arten anspringen — beides gleichzeitig möglich.</p>
-        <div class="trg-paths">
-          <div class="trg-card">
-            <div class="trg-num">1</div>
-            <div class="trg-tag">Manuell — du rufst ihn</div>
-            <p class="trg-text">Du tippst den Befehl direkt. Klar und bewusst.</p>
-            <div class="trg-mono"><span class="ex-term-prompt">›</span> /webaudit</div>
-          </div>
-          <div class="trg-card trg-card-hl">
-            <div class="trg-num">2</div>
-            <div class="trg-tag -yellow">Automatisch — Claude erkennt ihn</div>
-            <p class="trg-text">Du schreibst ganz normal, was du brauchst. Claude erkennt selbst, welcher Skill passt — und startet ihn ohne Befehl.</p>
-            <div class="trg-mono trg-mono-nat">„Prüf mal, ob mit unserer Landingpage alles stimmt.“</div>
-          </div>
-        </div>
-
-        <!-- Auto-Match-Visual -->
-        <div class="trg-match">
-          <div class="trg-match-req">
-            <span class="trg-match-label">Deine Anfrage</span>
-            „Prüf mal, ob mit unserer Landingpage alles stimmt.“
-          </div>
-          <div class="trg-match-arrow">Claude vergleicht mit der Skill-Liste ↓</div>
-          <div class="trg-menu">
-            <div class="trg-menu-item is-match">
-              <code>webaudit</code><span>prüft Websites auf UX, Speed, SEO &amp; Barrierefreiheit</span><span class="trg-menu-hit">Match</span>
-            </div>
-            <div class="trg-menu-item">
-              <code>briefing-gen</code><span>erstellt strukturierte Briefings</span>
-            </div>
-            <div class="trg-menu-item">
-              <code>daten-aufbereiten</code><span>bereinigt Excel- &amp; CSV-Dateien</span>
-            </div>
-          </div>
-          <div class="trg-match-arrow">↓</div>
-          <div class="trg-match-out"><strong>webaudit</strong> startet automatisch — ganz ohne <code>/befehl</code>.</div>
-        </div>
-
-        <div class="trg-brain">
-          <div class="trg-brain-k">So entscheidet Claude</div>
-          <div class="trg-brain-body">
-            <p>Claude hat von <em>allen</em> Skills immer nur den Namen und die eine <code>description</code>-Zeile im Kopf — wie eine Speisekarte. Passt deine Aufgabe dazu, lädt Claude den kompletten Skill und wendet ihn an. Das hält alles schnell, auch bei vielen Skills.</p>
-            <p class="trg-brain-note">Darum ist die <code>description</code> in der SKILL.md so wichtig: Sie ist das Erkennungsmerkmal. Für heikle Aktionen (z.&nbsp;B. etwas veröffentlichen) lässt sich der Automatik-Start bewusst abschalten — dann zählt nur der Befehl.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
     <!-- Demo-Matrix -->
     <section class="ex-section ex-dark reveal" id="ex-demo">
       <div class="ex-wrap">
@@ -1627,32 +1460,6 @@ Gib einen priorisierten Report aus:
               <div class="ex-terminal-body" id="ex-terminal-body"></div>
             </div>
             <div class="demo-actions" id="demo-actions"></div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Citizen Coding Journey -->
-    <section class="ex-section reveal">
-      <div class="ex-wrap ex-narrow">
-        <p class="ex-eyebrow">Wo wir stehen</p>
-        <h2 class="ex-h2">Euer Weg ins <span class="ex-hl">Citizen Coding</span></h2>
-        <p class="ex-body">Seit letztem Herbst baut pilot KI-Kompetenz auf. Mit der Q0-Testgruppe geht es jetzt in die nächste Phase: Claude Code — der Moment, in dem aus „KI nutzen“ ein „selbst bauen“ wird.</p>
-        <div class="ex-journey">
-          <div class="ex-journey-step ex-done">
-            <div class="ex-journey-dot"></div>
-            <div class="ex-journey-label">KI-Grundlagen &amp; Langdock</div>
-            <div class="ex-journey-sub">Chatten, schreiben, recherchieren — sicher im Alltag angekommen.</div>
-          </div>
-          <div class="ex-journey-step ex-now">
-            <div class="ex-journey-dot"></div>
-            <div class="ex-journey-label">Jetzt: Claude Code &amp; Skills <span class="ex-now-badge">hier seid ihr</span></div>
-            <div class="ex-journey-sub">Erste eigene Tools, Seiten und Automationen — begleitet in der Testgruppe.</div>
-          </div>
-          <div class="ex-journey-step">
-            <div class="ex-journey-dot"></div>
-            <div class="ex-journey-label">Eigene Projekte im Team</div>
-            <div class="ex-journey-sub">Vom Prototyp zum echten Helfer, den das ganze Team nutzt.</div>
           </div>
         </div>
       </div>
@@ -1810,6 +1617,7 @@ Gib einen priorisierten Report aus:
       role: null,
       platform: null,
       endorsedOnly: false,
+      pilotFilter: null,
       favoritesOnly: false,
       sort: 'recommended',
       search: '',
@@ -1991,6 +1799,10 @@ Gib einen priorisierten Report aus:
       if (state.endorsedOnly) {
         result = result.filter(s => s.endorsedBy && s.endorsedBy.length > 0);
       }
+      if (state.pilotFilter) {
+        // Echter Piloten-Filter: nur Skills, die DIESE Person empfiehlt
+        result = result.filter(s => s.endorsedBy && s.endorsedBy.includes(state.pilotFilter));
+      }
       if (state.favoritesOnly) {
         const favs = getFavorites();
         result = result.filter(s => favs.includes(s.id));
@@ -2159,7 +1971,7 @@ Gib einen priorisierten Report aus:
     // Outcome-Router: Ziel wählen → passenden Skill öffnen
     function pickOutcome(id) {
       if (SKILLS.some(s => s.id === id)) openModal(id);
-      else document.getElementById('catalog-top').scrollIntoView({behavior:'smooth'});
+      else document.getElementById('catalog-top').scrollIntoView({behavior: window.scrollBehavior ? scrollBehavior() : 'smooth'});
     }
     function copyStartPrompt(evt, id) {
       if (evt) evt.stopPropagation();
@@ -2167,7 +1979,9 @@ Gib einen priorisierten Report aus:
       if (!skill) return;
       const text = startPrompt(skill);
       const done = () => { showToast('Startprompt kopiert ✓ — jetzt in Claude Code einfügen'); markTried(id); };
-      if (navigator.clipboard && navigator.clipboard.writeText) {
+      // Shared-Helper (shared/base.js): Clipboard-API + execCommand-Fallback in einem
+      if (window.copyText) { copyText(text).then(done); }
+      else if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(text).then(done).catch(() => { fallbackCopy(text); done(); });
       } else { fallbackCopy(text); done(); }
     }
@@ -2182,15 +1996,21 @@ Gib einen priorisierten Report aus:
     }
 
     // ===== RENDER PILOTS =====
+    // Einzige Quelle der Wahrheit: SKILLS[].endorsedBy (data/skills.js). Die Chips je
+    // Pilot:in werden daraus invertiert — HIDDEN-Skills tauchen nicht auf, sortiert
+    // nach bayesScore (beste Empfehlungen zuerst).
+    function pilotSkills(pilotName) {
+      return SKILLS
+        .filter(s => !HIDDEN.has(s.id) && (s.endorsedBy || []).includes(pilotName))
+        .sort((a, b) => bayesScore(b) - bayesScore(a));
+    }
     function renderPilots() {
       const grid = document.getElementById('pilots-grid');
       if (!grid) return;
       grid.innerHTML = PILOTS.map(pilot => {
-        const chips = pilot.endorsedSkills.slice(0, 5).map(sid => {
-          const skill = SKILLS.find(s => s.id === sid);
-          if (!skill) return '';
-          return `<button type="button" class="pilot-skill-chip" onclick="event.stopPropagation();openModal('${sid}')" title="Skill ansehen">${escHtml(skill.name)}</button>`;
-        }).join('');
+        const chips = pilotSkills(pilot.name).slice(0, 5).map(skill =>
+          `<button type="button" class="pilot-skill-chip" onclick="event.stopPropagation();openModal('${skill.id}')" title="Skill ansehen">${escHtml(skill.name)}</button>`
+        ).join('');
         return `
           <div class="pilot-card" onclick="filterByPilot('${escHtml(pilot.name)}')" role="button" tabindex="0" aria-label="Skills von ${escHtml(pilot.name)} anzeigen" onkeydown="if((event.key==='Enter'||event.key===' ')&&event.target===event.currentTarget){event.preventDefault();filterByPilot('${escHtml(pilot.name)}')}">
             <div class="pilot-avatar-lg">${pilot.initials}</div>
@@ -2208,16 +2028,21 @@ Gib einen priorisierten Report aus:
       const pilot = PILOTS.find(p => p.name === pilotName);
       if (!pilot) return;
       // Scroll zu Skills-Sektion
-      document.querySelector('.skills-section')?.scrollIntoView({behavior:'smooth'});
-      // Endorsed-only Filter aktivieren (zeigt Skills die dieser Pilot endorsed hat)
-      state.endorsedOnly = true;
-      document.getElementById('endorsed-only').checked = true;
+      document.querySelector('.skills-section')?.scrollIntoView({behavior: window.scrollBehavior ? scrollBehavior() : 'smooth'});
+      // Echter Filter auf DIESE Person (statt pauschal „alle empfohlenen"):
+      // filterSkills() zeigt nur noch Skills mit ihr in endorsedBy.
+      state.pilotFilter = pilotName;
       // Subcategory zurücksetzen um alle Skills des Piloten zu zeigen
       state.subcategory = null;
       renderCatTabs();
       renderRoleChips();
       render();
-      showToast(`Skills von ${pilotName.split(' ')[0]} ★`);
+      showToast(`Nur Skills, die ${pilotName.split(' ')[0]} empfiehlt ★`);
+    }
+    function clearPilotFilter() {
+      state.pilotFilter = null;
+      render();
+      updateURL();
     }
 
     // ===== RENDER CAT TABS =====
@@ -2417,7 +2242,7 @@ Gib einen priorisierten Report aus:
         if (empty) empty.style.display = 'none';
         // Ohne aktive Filter/Suche: „erste-schritte" als „Fang hier an" oben anpinnen — ein klarer erster Schritt
         const noFilter = !state.search && state.category === 'all' && !state.subcategory && !state.role
-          && !state.platform && state.tags.length === 0 && !state.endorsedOnly && !state.favoritesOnly;
+          && !state.platform && state.tags.length === 0 && !state.endorsedOnly && !state.pilotFilter && !state.favoritesOnly;
         const start = noFilter ? filtered.find(s => s.id === 'erste-schritte') : null;
         const rest = start ? filtered.filter(s => s.id !== start.id) : filtered;
         let html = start ? renderCard(start, false, 0, true) : '';
@@ -2486,9 +2311,10 @@ Gib einen priorisierten Report aus:
         pills.push({label: 'Einsatz: ' + (p ? p.label : state.platform), clear: `setPlatform('${state.platform}')`});
       }
       if (state.endorsedOnly) pills.push({label: 'Nur empfohlene', clear: `clearEndorsed()`});
+      if (state.pilotFilter) pills.push({label: 'Empfohlen von ' + escHtml(state.pilotFilter), clear: `clearPilotFilter()`});
       if (state.favoritesOnly) pills.push({label: 'Nur Favoriten', clear: `toggleFavoritesOnly()`});
       state.tags.forEach(t => pills.push({label: '#' + t, clear: `toggleTagFilter('${t}')`}));
-      if (state.search) pills.push({label: `Suche: "${escHtml(state.search)}"`, clear: `clearSearch()`});
+      if (state.search) pills.push({label: `Suche: „${escHtml(state.search)}“`, clear: `clearSearch()`});
 
       // Zähler am mobilen Filter-Toggle: aktive Filter bleiben auch eingeklappt sichtbar
       const ftb = document.getElementById('ftb-count');
@@ -3356,7 +3182,7 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
       const lbl = pa.line ? (pa.lineEnd > pa.line ? `Zeile ${pa.line}–${pa.lineEnd}` : `Zeile ${pa.line}`) : 'ganze Datei';
       comp.querySelector('#ann-anchor').innerHTML = `Anmerkung zu <code>${escHtml(short)}</code> · ${lbl}`
         + (pa.snippet ? ` <span class="ann-anchor-snip">${escHtml(pa.snippet.slice(0, 90))}</span>` : '');
-      comp.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      comp.scrollIntoView({ behavior: window.scrollBehavior ? scrollBehavior() : 'smooth', block: 'nearest' });
       if (isNew) comp.querySelector('#ann-text')?.focus();
     }
 
@@ -3419,7 +3245,7 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
       if (idx !== state.activeFile) { state.activeFile = idx; renderFilesInto(skill); }
       requestAnimationFrame(() => {
         const target = a.line ? (document.getElementById('cl-' + a.line) || _pvAnchorFor(a.line)) : document.querySelector('.files-view-bar');
-        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        if (target) target.scrollIntoView({ behavior: window.scrollBehavior ? scrollBehavior() : 'smooth', block: 'center' });
         if (a.line) {
           const end = a.lineEnd || a.line;
           let flashed = false;
@@ -3728,7 +3554,7 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
       `).join('');
 
       return `
-        <p class="files-intro-text" style="margin-bottom:1.6rem">Hinweis: Diese Historie ist aus der Versionsnummer abgeleitet — die echten Änderungen stehen im Repo (Tab „Aufbau &amp; Dateien“ → „Auf GitHub ansehen“).</p><div class="changelog">${entriesHtml}</div>`;
+        <p class="files-intro-text" style="margin-bottom:1.6rem">Hinweis: Diese Historie ist aus der Versionsnummer abgeleitet — die echten Änderungen stehen im Repo (Tab „Dateien &amp; Download“ → „Auf GitHub ansehen“).</p><div class="changelog">${entriesHtml}</div>`;
     }
 
     // ===== PLUGIN: TAB „INSTALLATION“ (E2) =====
@@ -3806,7 +3632,9 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
       const step = item && item.workflow && item.workflow.steps[idx];
       if (!step) return;
       const done = () => { showToast('Kopiert ✓ — in Claude Code einfügen'); markTried(id); };
-      if (navigator.clipboard && navigator.clipboard.writeText) {
+      // Shared-Helper (shared/base.js): Clipboard-API + execCommand-Fallback in einem
+      if (window.copyText) { copyText(step.copy).then(done); }
+      else if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(step.copy).then(done).catch(() => { fallbackCopy(step.copy); done(); });
       } else { fallbackCopy(step.copy); done(); }
     }
@@ -3857,6 +3685,7 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
       state.role = null;
       state.platform = null;
       state.endorsedOnly = false;
+      state.pilotFilter = null;
       state.favoritesOnly = false;
       state.sort = 'recommended';
       state.search = '';
@@ -3949,7 +3778,7 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
         requestAnimationFrame(() => {
           const [a, b] = t.lineRange;
           const first = document.getElementById('cl-' + a) || _pvAnchorFor(a);
-          first?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          first?.scrollIntoView({ behavior: window.scrollBehavior ? scrollBehavior() : 'smooth', block: 'center' });
           let flashed = false;
           for (let L = a; L <= b; L++) {
             const el = document.getElementById('cl-' + L);
@@ -4006,6 +3835,8 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
       const isExpanded = btn.getAttribute('aria-expanded') === 'true';
       btn.setAttribute('aria-expanded', isExpanded ? 'false' : 'true');
       panel.hidden = isExpanded;
+      // Kondensierte Leiste (mobil): .m-open klappt auch Typ-/Themen-Tabs wieder auf
+      document.getElementById('filter-bar')?.classList.toggle('m-open', !isExpanded);
     }
 
     // ===== MOBILE: SWIPE-DOWN AUF DEM MODAL-KOPF SCHLIESST (Standard-Geste) =====
@@ -4020,22 +3851,6 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
       updateURL();
     }
     // Explainer: Plattform-Toggle in „Ein Skill, zwei Systeme“
-    function exPlatform(id) {
-      document.querySelectorAll('.expf-panel').forEach(p => { p.hidden = p.dataset.pf !== id; });
-      document.querySelectorAll('.expf-tab').forEach(b => {
-        b.classList.toggle('active', b.dataset.pf === id);
-        b.setAttribute('aria-pressed', b.dataset.pf === id ? 'true' : 'false');
-      });
-    }
-    // Aus dem Explainer: Katalog mit gesetztem Plattform-Filter öffnen
-    function showCatalogWithPlatform(id) {
-      showView('catalog');
-      state.platform = id;
-      renderRoleChips();
-      render();
-      document.querySelector('.skills-section')?.scrollIntoView({ behavior: 'smooth' });
-    }
-
     // ===== QUELLE- & ROLLEN-FILTER =====
     // Entrümpelt: statt drei fast gleicher Chip-Reihen (Quelle/Rolle/Einsatz) nur EIN sinnvoller Toggle.
     // „Quelle" (Herkunft) ist für Einsteiger:innen irrelevant und lebt als Karten-Badge weiter; „Rolle" doppelte
@@ -4111,14 +3926,16 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
     function initHero() {
       // echte Werte in die Zähler
       const totalEndorsements = SKILLS.reduce((sum, s) => sum + (s.endorsedBy?.length || 0), 0);
-      // Nur echte Skills zählen — Plugins/Frameworks würden das Label „Skills" sonst zur Lüge machen
-      const sk = document.getElementById('stat-skills'); if (sk) sk.dataset.count = SKILLS.filter(s => itemType(s) === 'skill').length;
+      // Nur echte, SICHTBARE Skills zählen (ohne HIDDEN) — Plugins/Frameworks und
+      // ausgeblendete Einträge würden das Label „Skills" sonst zur Lüge machen.
+      // Einzige Quelle: VISIBLE_SKILL_COUNT aus data/skills.js.
+      const sk = document.getElementById('stat-skills'); if (sk) sk.dataset.count = VISIBLE_SKILL_COUNT;
       const pl = document.getElementById('stat-pilots'); if (pl) pl.dataset.count = PILOTS.length;
       const en = document.getElementById('stat-endorsed'); if (en) en.dataset.count = totalEndorsements;
       // Kategorien zählen statt hart kodieren — leere zählen nicht
       const ct = document.getElementById('stat-cats'); if (ct) ct.dataset.count = new Set(SKILLS.map(s => s.subcategory)).size;
 
-      const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const reduce = window.prefersReduce ? prefersReduce() : (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
       document.querySelectorAll('.hero-stat-num').forEach(el => {
         const target = parseInt(el.dataset.count) || 0;
         if (reduce) { el.textContent = target; return; }
@@ -4194,7 +4011,7 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
       let vi = 0;
       const show = () => { stage.innerHTML = voiceHtml(pool[vi]); };
       show();
-      const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const reduce = window.prefersReduce ? prefersReduce() : (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
       if (reduce || pool.length < 2) return;
       let paused = false;
       ['mouseenter', 'focusin'].forEach(ev => section.addEventListener(ev, () => { paused = true; }));
@@ -4251,7 +4068,7 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
 
     function exScrollTo(id) {
       const el = document.getElementById(id);
-      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (el) el.scrollIntoView({ behavior: window.scrollBehavior ? scrollBehavior() : 'smooth', block: 'start' });
     }
 
     // Scroll-Reveal
@@ -4401,7 +4218,7 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
       if (msg) {
         showToast(msg);
         const el = document.getElementById(field);
-        if (el) { el.focus(); el.scrollIntoView({ block: 'center', behavior: 'smooth' }); }
+        if (el) { el.focus(); el.scrollIntoView({ block: 'center', behavior: window.scrollBehavior ? scrollBehavior() : 'smooth' }); }
         return null;
       }
       return d;
@@ -4535,6 +4352,10 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
           if (!fixed) {
             if (bar.getBoundingClientRect().top <= hh) {
               spacer.style.height = bar.offsetHeight + 'px';
+              // m-open mit dem Panel-Zustand synchron halten: war das Filterpanel offen,
+              // bleibt es auch kondensiert sichtbar — sonst startet die 1-Zeilen-Ansicht.
+              const fc = document.getElementById('filter-collapsible');
+              bar.classList.toggle('m-open', !!fc && !fc.hidden);
               bar.classList.add('condensed');
               fixed = true;
             }

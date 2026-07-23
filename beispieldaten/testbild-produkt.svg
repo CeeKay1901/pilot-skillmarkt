@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" role="img" aria-label="Testbild: Produkt-Platzhalter der erfundenen Marke VELOMO">
+  <!-- Übungsmaterial des pilot AI Marketplace. Marke VELOMO ist frei erfunden,
+       kein echtes Kundenmaterial. Flächen in pilot-Farben, keine externen Referenzen. -->
+  <rect width="1200" height="900" fill="#f1f1ec"/>
+  <rect x="0" y="700" width="1200" height="200" fill="#262626"/>
+
+  <!-- Produkt-Platzhalter: stilisiertes E-Bike -->
+  <g stroke="#262626" stroke-width="18" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="380" cy="560" r="130"/>
+    <circle cx="840" cy="560" r="130"/>
+    <path d="M380 560 L520 340 L760 340 L840 560"/>
+    <path d="M380 560 L610 560 L520 340"/>
+    <path d="M610 560 L760 340"/>
+    <path d="M500 300 L560 300"/>
+    <path d="M745 300 L800 340"/>
+  </g>
+  <circle cx="380" cy="560" r="26" fill="#ffe05e" stroke="#262626" stroke-width="10"/>
+  <circle cx="840" cy="560" r="26" fill="#ffe05e" stroke="#262626" stroke-width="10"/>
+  <rect x="560" y="410" width="140" height="44" rx="22" fill="#ffe05e" stroke="#262626" stroke-width="8"/>
+
+  <!-- Beschriftung -->
+  <text x="80" y="140" font-family="system-ui, -apple-system, sans-serif" font-size="72" font-weight="700" fill="#262626">VELOMO</text>
+  <text x="80" y="196" font-family="system-ui, -apple-system, sans-serif" font-size="34" fill="#262626">Produkt-Testbild · Marke frei erfunden</text>
+  <text x="80" y="810" font-family="system-ui, -apple-system, sans-serif" font-size="30" fill="#f1f1ec">Übungsmaterial — kein echtes Kundenmaterial</text>
+  <rect x="80" y="838" width="220" height="12" fill="#ffe05e"/>
+</svg>

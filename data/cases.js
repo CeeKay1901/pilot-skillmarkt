@@ -25,12 +25,12 @@ const CASES = [
     persona: 'Christopher Kipp',
     aufwand: 'Feierabend-Projekt · ~1,5 Std',
     aufwandStufe: 'mini',
-    kurz: 'Ein Single-File-Tool, das rohe Umfrage-Antworten als CSV entgegennimmt und pro Frage eine Antwortverteilung als Balken zeichnet. Erste Spalte ist die Frage, der Rest die Antwort — eine Zeile pro abgegebener Antwort. Kein Excel, keine Pivot-Tabelle, kein Login. Einfügen, auf „Auswerten" klicken, fertig. Bewusst schmal gehalten: es zählt und stapelt, mehr nicht — und genau das reicht für den schnellen Blick nach einem Team-Voting.',
+    kurz: 'Ein Single-File-Tool, das rohe Umfrage-Antworten als CSV entgegennimmt und pro Frage eine Antwortverteilung als Balken zeichnet. Erste Spalte ist die Frage, der Rest die Antwort — eine Zeile pro abgegebener Antwort. Kein Excel, keine Pivot-Tabelle, kein Login. Einfügen, auf „Auswerten“ klicken, fertig. Bewusst schmal gehalten: es zählt und stapelt, mehr nicht — und genau das reicht für den schnellen Blick nach einem Team-Voting.',
     story: {
       ausgangsproblem: 'Nach jeder internen Kurzumfrage landeten die Antworten als CSV-Wust im Postfach. Der Weg über Excel-Pivot war jedes Mal dieselbe Fummelei — für ein Ergebnis, das man in zwei Minuten sehen wollte.',
       ersterPrompt: 'Baue mir eine einzelne HTML-Datei, in die ich Umfrage-Daten als CSV einfüge. Format je Zeile: Frage;Antwort. Das Tool soll pro Frage zählen, wie oft jede Antwort vorkommt, und das als horizontale Balken mit Prozentwerten zeigen. Reines HTML/CSS/JS in einer Datei, keine Bibliothek, kein Netzwerk, funktioniert per Doppelklick.',
-      stolperstein: 'Die erste Version kam mit Antworten durcheinander, die selbst ein Komma enthielten — sie wurden fälschlich als zweite Spalte gelesen. Erst die Regel „erste Spalte = Frage, alles Weitere zusammenfügen" hat das sauber gemacht.',
-      ergebnis: 'Ein 100-Zeilen-Tool mit „Beispieldaten laden"-Knopf. Balken animieren beim Rendern, Prozentwerte sind gerundet, mobil kippt das Raster auf schmalere Spalten. Liegt als echte Datei im Repo-Root.'
+      stolperstein: 'Die erste Version kam mit Antworten durcheinander, die selbst ein Komma enthielten — sie wurden fälschlich als zweite Spalte gelesen. Erst die Regel „erste Spalte = Frage, alles Weitere zusammenfügen“ hat das sauber gemacht.',
+      ergebnis: 'Ein 100-Zeilen-Tool mit „Beispieldaten laden“-Knopf. Balken animieren beim Rendern, Prozentwerte sind gerundet, mobil kippt das Raster auf schmalere Spalten. Liegt als echte Datei im Repo-Root.'
     },
     faktenBox: {
       dauer: '~1,5 Stunden an einem Abend',
@@ -39,7 +39,7 @@ const CASES = [
       bausteine: ['chart-setup', 'tabellen-look']
     },
     zitat: 'Das Tool ist absichtlich dumm — es zählt und stapelt. Aber genau das wollte ich nach dem Voting sehen, nicht eine halbe Stunde Pivot-Arbeit.',
-    nachbauStartprompt: 'Ich habe Umfrage-Ergebnisse als CSV (Frage;Antwort, eine Zeile pro Antwort). Baue mir eine einzelne HTML-Datei ohne externe Bibliothek, die pro Frage die Antwortverteilung als Balkendiagramm mit Prozentwerten zeigt, einen Button „Beispieldaten laden" hat und offline per Doppelklick läuft. pilot-CI: Schwarz #262626, Gelb #ffe05e, Papier #f1f1ec, Schrift system-ui.',
+    nachbauStartprompt: 'Ich habe Umfrage-Ergebnisse als CSV (Frage;Antwort, eine Zeile pro Antwort). Baue mir eine einzelne HTML-Datei ohne externe Bibliothek, die pro Frage die Antwortverteilung als Balkendiagramm mit Prozentwerten zeigt, einen Button „Beispieldaten laden“ hat und offline per Doppelklick läuft. pilot-CI: Schwarz #262626, Gelb #ffe05e, Papier #f1f1ec, Schrift system-ui.',
     querverweise: {
       skills: [
         { id: 'prototyp-bauen', label: 'Prototyp bauen' },
@@ -71,11 +71,11 @@ const CASES = [
     persona: 'Christopher Kipp',
     aufwand: 'Feierabend-Projekt · ~1 Std',
     aufwandStufe: 'mini',
-    kurz: 'Ein kleiner Media-Rechner: Brutto-Reichweite, TKP und Streuverlust rein — Gesamtkosten, Netto-Kontakte in der Zielgruppe und der Netto-Kontaktpreis raus. Alles rechnet live beim Tippen, ohne „Berechnen"-Knopf. Die Formeln stehen offen unter dem Ergebnis, damit niemand einer Blackbox vertrauen muss. Ein Werkzeug für die schnelle Plausibilitätsprüfung im Media-Gespräch, nicht für die finale Kalkulation.',
+    kurz: 'Ein kleiner Media-Rechner: Brutto-Reichweite, TKP und Streuverlust rein — Gesamtkosten, Netto-Kontakte in der Zielgruppe und der Netto-Kontaktpreis raus. Alles rechnet live beim Tippen, ohne „Berechnen“-Knopf. Die Formeln stehen offen unter dem Ergebnis, damit niemand einer Blackbox vertrauen muss. Ein Werkzeug für die schnelle Plausibilitätsprüfung im Media-Gespräch, nicht für die finale Kalkulation.',
     story: {
       ausgangsproblem: 'Im Media-Alltag will man den Netto-Kontaktpreis oft nur überschlagen — und öffnet doch wieder ein Spreadsheet mit denselben drei Formeln. Ein Ein-Zweck-Rechner sollte das ersetzen.',
       ersterPrompt: 'Baue mir eine einzelne HTML-Seite als TKP-Rechner. Eingaben: Brutto-Reichweite, TKP in Euro pro 1000 Kontakte, Streuverlust in Prozent. Ausgaben: Gesamtkosten, Netto-Kontakte in der Zielgruppe, Netto-Kontaktpreis. Live-Berechnung beim Tippen, keine Bibliothek, läuft offline.',
-      stolperstein: 'Der Netto-Kontaktpreis wurde negativ oder unendlich, sobald der Streuverlust 100 Prozent erreichte. Ein Kappen auf 0–100 Prozent und ein Fallback für „keine Netto-Kontakte" haben das entschärft.',
+      stolperstein: 'Der Netto-Kontaktpreis wurde negativ oder unendlich, sobald der Streuverlust 100 Prozent erreichte. Ein Kappen auf 0–100 Prozent und ein Fallback für „keine Netto-Kontakte“ haben das entschärft.',
       ergebnis: 'Ein fokussierter Rechner mit deutscher Zahlenformatierung, tabellarischen Ziffern und offengelegten Formeln in der Fußzeile. Liegt als echte Datei im Repo-Root und rechnet ohne Netzwerk.'
     },
     faktenBox: {
@@ -115,7 +115,7 @@ const CASES = [
     persona: 'pilot-Tool',
     aufwand: 'Skill-Lauf · Minuten',
     aufwandStufe: 'mini',
-    kurz: 'Ein echter Prüfbericht, den der Skill „webaudit" über den TKP-Rechner erzeugt hat. Der Report gibt einen Gesamt-Score von 95 von 100 aus, listet 0 Fehler, 1 Warnung und 13 bestandene Checks — jeder Fund mit Fundstelle. Erzeugt hat ihn kein Mensch, sondern der Audit-Lauf selbst; deshalb ist er neutral als pilot-Tool attribuiert. Zeigt gut, wie aus einem Skill ein teilbares, statisches HTML-Artefakt wird.',
+    kurz: 'Ein echter Prüfbericht, den der Skill „webaudit“ über den TKP-Rechner erzeugt hat. Der Report gibt einen Gesamt-Score von 95 von 100 aus, listet 0 Fehler, 1 Warnung und 13 bestandene Checks — jeder Fund mit Fundstelle. Erzeugt hat ihn kein Mensch, sondern der Audit-Lauf selbst; deshalb ist er neutral als pilot-Tool attribuiert. Zeigt gut, wie aus einem Skill ein teilbares, statisches HTML-Artefakt wird.',
     story: {
       ausgangsproblem: 'Vor dem Teilen eines selbstgebauten Tools will man wissen, ob Grundlagen wie Zugänglichkeit, Meta-Angaben und offensichtliche Fehler stimmen — ohne selbst Prüf-Checklisten abzuarbeiten.',
       ersterPrompt: 'Führe einen webaudit über tkp-rechner.html aus und schreibe das Ergebnis als eigenständigen HTML-Report: Gesamt-Score, Fehler, Warnungen und bestandene Checks, jeder Fund mit konkreter Fundstelle.',
@@ -157,11 +157,11 @@ const CASES = [
     persona: 'pilot-Tool',
     aufwand: 'Skill-Lauf · Minuten',
     aufwandStufe: 'mini',
-    kurz: 'Ein Validierungs-Report für eine Kampagnen-CSV: Der Skill „Campaign Checker" prüft je Anzeige die UTM-Tags, die Landingpage und den Budget-Cap und spricht am Ende eine klare Empfehlung aus — hier: STOPP wegen drei Blockern in zwei von sechs Anzeigen. Jeder Fund nennt Zeile und Grund, dazu drei konkrete Fixes. Kein Dashboard-Zauber, sondern eine nachprüfbare Startklar-Checkliste aus dem tatsächlichen Validator-Lauf.',
+    kurz: 'Ein Validierungs-Report für eine Kampagnen-CSV: Der Skill „Campaign Checker“ prüft je Anzeige die UTM-Tags, die Landingpage und den Budget-Cap und spricht am Ende eine klare Empfehlung aus — hier: STOPP wegen drei Blockern in zwei von sechs Anzeigen. Jeder Fund nennt Zeile und Grund, dazu drei konkrete Fixes. Kein Dashboard-Zauber, sondern eine nachprüfbare Startklar-Checkliste aus dem tatsächlichen Validator-Lauf.',
     story: {
       ausgangsproblem: 'Kurz vor dem Kampagnen-Launch schleichen sich Tracking-Fehler ein: ein fehlendes utm_medium, eine http-Landingpage, ein vergessener Budget-Cap. Solche Blocker fallen oft erst auf, wenn der Traffic schon falsch verbucht ist.',
       ersterPrompt: 'Prüfe meine kampagne.csv mit dem Campaign Checker: Sind alle UTM-Parameter gesetzt und kleingeschrieben, sind die Landingpages sicher und erreichbar, ist überall ein Budget-Cap? Gib mir je Anzeige einen Status und am Ende eine klare Launch-Empfehlung mit konkreten Fixes.',
-      stolperstein: 'Die Grenze zwischen „echtem Blocker" und „nur Optimierung" musste klar sein: fehlendes utm_campaign blockt den Launch, ein groß geschriebenes utm_source ist nur eine Warnung. Ohne diese Trennung wäre jeder Report ein Alarm.',
+      stolperstein: 'Die Grenze zwischen „echtem Blocker“ und „nur Optimierung“ musste klar sein: fehlendes utm_campaign blockt den Launch, ein groß geschriebenes utm_source ist nur eine Warnung. Ohne diese Trennung wäre jeder Report ein Alarm.',
       ergebnis: 'Ein Markdown-Report mit Status-Tabelle je Anzeige, drei Fehlern, drei Warnungen und einer Drei-Punkte-Fixliste — jeder Fund mit Zeilennummer, nachprüfbar in der CSV.'
     },
     faktenBox: {
@@ -251,9 +251,9 @@ const CASES = [
     aufwandStufe: 'halber-tag',
     kurz: 'Ein Beispiel-Projekt, das über die einfache Balken-Auswertung hinausgeht: aus einer Umfrage-CSV baut es ein kleines Dashboard mit Kennzahlen-Kacheln (Anzahl Antworten, Zufriedenheit als Durchschnitt, größter Kanal) plus Verteilungs-Balken je Frage. Ein NPS-artiger Wert wird aus einer 1–5-Skala grob geschätzt und ehrlich als Näherung ausgewiesen. Zeigt, wie aus rohen Antworten in wenigen Stunden ein teilbares Übersichtsbild wird.',
     story: {
-      ausgangsproblem: 'Die reine Balken-Auswertung beantwortet „wie ist die Verteilung", aber nicht „wie steht es insgesamt". Für die Runde am Montag fehlten die drei, vier Kennzahlen ganz oben.',
+      ausgangsproblem: 'Die reine Balken-Auswertung beantwortet „wie ist die Verteilung“, aber nicht „wie steht es insgesamt“. Für die Runde am Montag fehlten die drei, vier Kennzahlen ganz oben.',
       ersterPrompt: 'Erweitere eine Umfrage-Auswertung zu einem kleinen Dashboard. Aus einer CSV (Frage;Antwort) sollen oben Kennzahlen-Kacheln stehen: Gesamtzahl Antworten, Durchschnitts-Zufriedenheit auf einer 1–5-Skala, meistgenannter Kanal. Darunter je Frage die Verteilung als Balken. Alles in einer HTML-Datei, keine Bibliothek.',
-      stolperstein: 'Die Zufriedenheit als Zahl brauchte eine Zuordnung von Textantworten wie „Sehr zufrieden" auf Werte 1–5. Diese Zuordnung musste sichtbar und die abgeleitete Kennzahl klar als Schätzung markiert sein — sonst wirkt eine Näherung wie eine Messung.',
+      stolperstein: 'Die Zufriedenheit als Zahl brauchte eine Zuordnung von Textantworten wie „Sehr zufrieden“ auf Werte 1–5. Diese Zuordnung musste sichtbar und die abgeleitete Kennzahl klar als Schätzung markiert sein — sonst wirkt eine Näherung wie eine Messung.',
       ergebnis: 'Ein Beispiel-Dashboard mit Kennzahlen-Band oben, Verteilungs-Balken darunter und einer offen gelegten Skala-Zuordnung. Der Zufriedenheitswert ist ausdrücklich als Näherung gekennzeichnet.'
     },
     faktenBox: {
@@ -298,10 +298,10 @@ const CASES = [
     aufwandStufe: 'mini',
     kurz: 'Ein Beispiel-Projekt für den frühen Kreativ-Moment: aus ein paar Stichworten und einer Stimmung würfelt das Tool eine harmonische Farbpalette samt Schrift-Paarung und legt sie als Moodboard-Kacheln nebeneinander. Keine Bilder aus dem Netz, alles aus Code — Flächen, Verläufe, Typo-Proben. Zum Weiterreichen ans Design-Team oder als Startpunkt fürs echte Board. Bewusst simpel: es inspiriert, es ersetzt keine Designerin.',
     story: {
-      ausgangsproblem: 'Am Anfang eines Projekts steht oft eine leere Fläche und die Frage „welche Richtung". Ein grober visueller Anstoß — Farbe, Kontrast, Schriftgefühl — hilft mehr als ein weißes Blatt.',
+      ausgangsproblem: 'Am Anfang eines Projekts steht oft eine leere Fläche und die Frage „welche Richtung“. Ein grober visueller Anstoß — Farbe, Kontrast, Schriftgefühl — hilft mehr als ein weißes Blatt.',
       ersterPrompt: 'Baue mir einen Moodboard-Generator als einzelne HTML-Datei. Eingabe: ein paar Stichworte und eine Stimmung (z. B. ruhig, energetisch, edel). Ausgabe: eine harmonische Farbpalette, eine passende Schrift-Paarung und Moodboard-Kacheln, die das als Flächen und Typo-Proben zeigen. Alles aus Code, keine externen Bilder, keine Bibliothek.',
       stolperstein: 'Zufällige Farben sahen schnell schmutzig aus. Erst über einen HSL-Ansatz mit festen Abständen im Farbkreis wurden die Paletten verlässlich harmonisch statt beliebig.',
-      ergebnis: 'Ein Beispiel-Generator mit „Neu würfeln"-Knopf, der aus Stichworten und Stimmung immer wieder ein stimmiges Board erzeugt — Palette, Schriften, Kacheln. Rein aus CSS und JS, offline.'
+      ergebnis: 'Ein Beispiel-Generator mit „Neu würfeln“-Knopf, der aus Stichworten und Stimmung immer wieder ein stimmiges Board erzeugt — Palette, Schriften, Kacheln. Rein aus CSS und JS, offline.'
     },
     faktenBox: {
       dauer: '~3 Stunden (Beispiel-Einordnung)',
@@ -310,7 +310,7 @@ const CASES = [
       bausteine: ['karten-grid', 'header-hero']
     },
     zitat: 'Ich brauche kein fertiges Design vom Tool — ich brauche einen Funken, gegen den ich denken kann.',
-    nachbauStartprompt: 'Baue mir einen Moodboard-Generator als einzelne HTML-Datei. Eingabe: Stichworte und eine Stimmung. Ausgabe: eine harmonische Farbpalette (HSL-basiert, verlässlich stimmig), eine Schrift-Paarung und Moodboard-Kacheln aus reinen CSS-Flächen und Typo-Proben, plus einen „Neu würfeln"-Knopf. Keine externen Bilder, keine Bibliothek, offline per Doppelklick, mobil-tauglich. pilot-CI: Schwarz #262626, Gelb #ffe05e, Papier #f1f1ec.',
+    nachbauStartprompt: 'Baue mir einen Moodboard-Generator als einzelne HTML-Datei. Eingabe: Stichworte und eine Stimmung. Ausgabe: eine harmonische Farbpalette (HSL-basiert, verlässlich stimmig), eine Schrift-Paarung und Moodboard-Kacheln aus reinen CSS-Flächen und Typo-Proben, plus einen „Neu würfeln“-Knopf. Keine externen Bilder, keine Bibliothek, offline per Doppelklick, mobil-tauglich. pilot-CI: Schwarz #262626, Gelb #ffe05e, Papier #f1f1ec.',
     querverweise: {
       skills: [
         { id: 'moodboard', label: 'Moodboard-Generator' },
@@ -346,7 +346,7 @@ const CASES = [
       ausgangsproblem: 'Übergaben vor dem Urlaub entstehen meist auf den letzten Drücker und lesen sich entsprechend: Stichworte, Lücken, kein roter Faden. Die Vertretung sucht dann doch wieder nach.',
       ersterPrompt: 'Baue mir einen Urlaubsübergabe-Helfer als einzelne HTML-Datei. Ein Formular fragt Projekte, jeweils den Status, offene Aufgaben, Ansprechpartner und Notfall-Kontakte ab. Daraus soll live eine gut strukturierte Übergabe-Doku entstehen, die ich mit einem Klick kopieren kann. Keine Bibliothek, kein Speicher, offline lauffähig.',
       stolperstein: 'Der kopierte Text übernahm anfangs leere Felder als hohle Überschriften. Erst das konsequente Weglassen leerer Abschnitte machte die Doku sauber statt löchrig.',
-      ergebnis: 'Ein Beispiel-Helfer mit Formular links, Live-Vorschau rechts und „Übergabe kopieren"-Knopf. Auf dem Handy stapeln sich Formular und Vorschau untereinander.'
+      ergebnis: 'Ein Beispiel-Helfer mit Formular links, Live-Vorschau rechts und „Übergabe kopieren“-Knopf. Auf dem Handy stapeln sich Formular und Vorschau untereinander.'
     },
     faktenBox: {
       dauer: '~2 Stunden (Beispiel-Einordnung)',
@@ -355,7 +355,7 @@ const CASES = [
       bausteine: ['feature-liste', 'footer']
     },
     zitat: 'Eine gute Übergabe ist Fürsorge für die Vertretung — das Tool nimmt mir nur die Formatierung ab, nicht das Mitdenken.',
-    nachbauStartprompt: 'Baue mir einen Urlaubsübergabe-Helfer als einzelne HTML-Datei. Links ein Formular für Projekte, Status, offene Aufgaben, Ansprechpartner und Notfall-Kontakte; rechts eine Live-Vorschau der fertigen Übergabe-Doku und ein „Übergabe kopieren"-Knopf. Leere Felder werden im Ergebnis weggelassen. Keine externe Bibliothek, kein Speicher, offline per Doppelklick, mobil untereinander. pilot-CI: Schwarz #262626, Gelb #ffe05e, Papier #f1f1ec.',
+    nachbauStartprompt: 'Baue mir einen Urlaubsübergabe-Helfer als einzelne HTML-Datei. Links ein Formular für Projekte, Status, offene Aufgaben, Ansprechpartner und Notfall-Kontakte; rechts eine Live-Vorschau der fertigen Übergabe-Doku und ein „Übergabe kopieren“-Knopf. Leere Felder werden im Ergebnis weggelassen. Keine externe Bibliothek, kein Speicher, offline per Doppelklick, mobil untereinander. pilot-CI: Schwarz #262626, Gelb #ffe05e, Papier #f1f1ec.',
     querverweise: {
       skills: [
         { id: 'internal-comms', label: 'internal-comms' },

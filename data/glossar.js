@@ -277,7 +277,7 @@ const GLOSSAR = [
     buchstabe: 'J',
     votes: 11,
     satz: 'JSON ist ein Textformat, in dem Daten sauber strukturiert gespeichert werden — mit geschweiften Klammern, Anführungszeichen und Doppelpunkten.',
-    beispiel: 'Die 44 Skills des Marketplace stecken in einer Datenstruktur im JSON-Stil: pro Skill Name, Beschreibung, Kategorie — für Menschen lesbar, für Programme perfekt verarbeitbar.',
+    beispiel: 'Die Skills des Marketplace stecken in einer Datenstruktur im JSON-Stil: pro Skill Name, Beschreibung, Kategorie — für Menschen lesbar, für Programme perfekt verarbeitbar.',
     tiefe: 'JSON steht für „JavaScript Object Notation“ und ist das Lieblingsformat von APIs und Konfigurationsdateien. Der Aufbau: Schlüssel-Wert-Paare wie `"name": "Campaign Checker"`. Wenn du eine JSON-Datei bekommst und nur Klammern siehst — gib sie Claude und lass sie dir als Tabelle erklären.',
     verweise: [
       { t: 'skill', id: 'daten-aufbereiten', name: 'Daten aufbereiten' },
@@ -377,7 +377,7 @@ const GLOSSAR = [
     buchstabe: 'P',
     votes: 5,
     satz: 'Ein Platzhalter ist eine markierte Lücke in einer Textvorlage, die du vor dem Abschicken mit deinen echten Angaben füllst.',
-    beispiel: 'In der Prompt-Bibliothek stehen Platzhalter in eckigen Klammern wie [KUNDE] oder [ZIELGRUPPE] — beim Kopieren bleiben sie stehen, damit du sie bewusst ersetzt.',
+    beispiel: 'In der Prompt-Sammlung stehen Platzhalter in eckigen Klammern wie [KUNDE] oder [ZIELGRUPPE] — beim Kopieren bleiben sie stehen, damit du sie bewusst ersetzt.',
     tiefe: 'Platzhalter machen Prompts wiederverwendbar: Einmal gut formuliert, hundertmal befüllt. Kontrolliere vor dem Absenden, dass keine eckige Klammer übrig ist — ein vergessener Platzhalter ist die häufigste Ursache für seltsam generische Antworten.',
     verweise: [
       { t: 'prompt', id: 'briefing-zusammenfassung', name: 'Briefing-Zusammenfassung' },
@@ -403,7 +403,7 @@ const GLOSSAR = [
     votes: 38,
     satz: 'Ein Prompt ist die Anweisung, die du der KI gibst — je klarer Aufgabe, Kontext und gewünschtes Ergebnis, desto besser die Antwort.',
     beispiel: 'Statt „Fass das zusammen“ lieber: „Fasse dieses Kunden-Briefing in 5 Stichpunkten für die Kreation zusammen, Ton sachlich, max. 100 Wörter“ — gleicher Aufwand, deutlich besseres Ergebnis.',
-    tiefe: 'Ein guter Prompt beantwortet vier Fragen: Was soll entstehen? Für wen? In welchem Format? Was ist der Kontext? In der Prompt-Bibliothek des Marketplace findest du 23 erprobte Vorlagen mit Platzhaltern — Kopieren ist ausdrücklich erwünscht.',
+    tiefe: 'Ein guter Prompt beantwortet vier Fragen: Was soll entstehen? Für wen? In welchem Format? Was ist der Kontext? In der Prompt-Sammlung des Marketplace findest du 23 erprobte Vorlagen mit Platzhaltern — Kopieren ist ausdrücklich erwünscht.',
     verweise: [
       { t: 'prompt', id: 'vibecoding-kickoff', name: 'Vibecoding-Kickoff' },
       { t: 'prompt', id: 'meeting-todos', name: 'Meeting-Protokoll → To-do-Liste' }
@@ -477,7 +477,7 @@ const GLOSSAR = [
     votes: 36,
     satz: 'Ein Skill ist eine gespeicherte Fähigkeit für Claude — eine Anleitung, die es bei Bedarf lädt, um eine bestimmte Aufgabe besonders gut zu erledigen.',
     beispiel: 'Mit dem pptx-Skill baut Claude Code echte PowerPoint-Dateien nach pilot-Vorlage — das Wissen, wie das geht, steckt im Skill, nicht in deinem Prompt.',
-    tiefe: 'Technisch ist ein Skill ein Ordner mit einer Anleitung im Markdown-Format, die Claude automatisch heranzieht, wenn deine Aufgabe passt — oder die du per /-Befehl direkt aufrufst. Der Unterschied zum Prompt: Ein Prompt schreibst du jedes Mal, ein Skill ist dauerhaft installiert. Im Katalog findest du 44 Stück, und mit skill-creator baust du eigene.',
+    tiefe: 'Technisch ist ein Skill ein Ordner mit einer Anleitung im Markdown-Format, die Claude automatisch heranzieht, wenn deine Aufgabe passt — oder die du per /-Befehl direkt aufrufst. Der Unterschied zum Prompt: Ein Prompt schreibst du jedes Mal, ein Skill ist dauerhaft installiert. Im Katalog des Marketplace findest du die geprüfte Sammlung, und mit skill-creator baust du eigene.',
     verweise: [
       { t: 'skill', id: 'skill-creator', name: 'skill-creator' },
       { t: 'skill', id: 'erste-schritte', name: 'Erste Schritte' }
@@ -577,6 +577,30 @@ const GLOSSAR = [
    plan-modus → shift-tab-modi, esc-esc → esc-unterbrechen; claude-version und init
    ohne passenden Eintrag → entfernt). */
 const FAQ = [
+  // Kundendaten-FAQ bewusst an Position 1 (User-Entscheidung): die PII-Frage
+  // ist die wichtigste Antwort der Liste und soll niemandem entgehen.
+  {
+    id: 'faq-kundendaten',
+    frage: 'Darf ich Kundendaten eingeben?',
+    intro: 'Ehrliche Antwort: Das entscheidet nicht diese Seite, sondern die pilot-interne Richtlinie — hier steht nur die sichere Grundhaltung bis zur Klärung.',
+    // Redaktionshinweis (PLAN §1.1 Ehrlichkeit): Schritt 3 verweist bewusst auf
+    // den Kanal statt auf einen Link — es gibt (noch) keinen bestätigten Link zur
+    // internen KI-/Datenschutz-Richtlinie und wir erfinden keinen. Launch-Checkliste:
+    // Sobald die zuständige Stelle den echten Richtlinien-Link bestätigt, hier
+    // ergänzen.
+    schritte: [
+      'Grundregel bis zur Klärung: Keine echten personenbezogenen Daten (Namen, E-Mail-Adressen, Kundenlisten) und keine vertraulichen Kundenunterlagen eingeben.',
+      'Arbeite mit anonymisierten oder erfundenen Beispieldaten — für das Bauen und Testen eines Tools sind „Kunde A, Budget 100.000“ genauso gut wie echte Zahlen.',
+      'Frag beim KI-Enablement-Team nach der aktuellen internen KI-/Datenschutz-Richtlinie — dort bekommst du den verbindlichen Stand für Kundendaten.',
+      'Im konkreten Kundenfall: Hol dir die Freigabe der Unit-Leitung bzw. des Datenschutz-Teams, bevor Kundenmaterial in ein KI-Werkzeug wandert.',
+      'Denk an die Veröffentlichungsseite: Was in ein öffentliches Repo oder auf GitHub Pages geht, steht im Internet — Kundendaten haben dort nie etwas verloren.'
+    ],
+    verweise: [
+      { t: 'begriff', id: 'github-pages' },
+      { t: 'begriff', id: 'repo' },
+      { t: 'begriff', id: 'localstorage' }
+    ]
+  },
   {
     id: 'faq-startet-nicht',
     frage: 'Claude Code startet nicht — das Terminal sagt „command not found“',
@@ -752,28 +776,6 @@ const FAQ = [
       rolle: 'SEO Strategist',
       text: 'Keyword-Fragen kläre ich in Langdock, aber sobald eine CSV im Spiel ist, wechsle ich zu Claude Code — die Datei anfassen kann nur eins von beiden.'
     }
-  },
-  {
-    id: 'faq-kundendaten',
-    frage: 'Darf ich Kundendaten eingeben?',
-    intro: 'Ehrliche Antwort: Das entscheidet nicht diese Seite, sondern die pilot-interne Richtlinie — hier steht nur die sichere Grundhaltung bis zur Klärung.',
-    // Redaktionshinweis (PLAN §1.1 Ehrlichkeit): Schritt 3 verweist bewusst auf
-    // den Kanal statt auf einen Link — es gibt (noch) keinen bestätigten Link zur
-    // internen KI-/Datenschutz-Richtlinie und wir erfinden keinen. Launch-Checkliste:
-    // Sobald die zuständige Stelle den echten Richtlinien-Link bestätigt, hier
-    // ergänzen.
-    schritte: [
-      'Grundregel bis zur Klärung: Keine echten personenbezogenen Daten (Namen, E-Mail-Adressen, Kundenlisten) und keine vertraulichen Kundenunterlagen eingeben.',
-      'Arbeite mit anonymisierten oder erfundenen Beispieldaten — für das Bauen und Testen eines Tools sind „Kunde A, Budget 100.000“ genauso gut wie echte Zahlen.',
-      'Frag beim KI-Enablement-Team nach der aktuellen internen KI-/Datenschutz-Richtlinie — dort bekommst du den verbindlichen Stand für Kundendaten.',
-      'Im konkreten Kundenfall: Hol dir die Freigabe der Unit-Leitung bzw. des Datenschutz-Teams, bevor Kundenmaterial in ein KI-Werkzeug wandert.',
-      'Denk an die Veröffentlichungsseite: Was in ein öffentliches Repo oder auf GitHub Pages geht, steht im Internet — Kundendaten haben dort nie etwas verloren.'
-    ],
-    verweise: [
-      { t: 'begriff', id: 'github-pages' },
-      { t: 'begriff', id: 'repo' },
-      { t: 'begriff', id: 'localstorage' }
-    ]
   },
   {
     id: 'faq-skill-reagiert-nicht',

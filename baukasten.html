@@ -17,7 +17,7 @@
   <style>
     /* ============================================================
        baukasten.html — seitenspezifisch (E7). Das Design-System und
-       alle .bk-*/.baustein-*/.preview-frame-Klassen liegen additiv in
+       alle bk-, baustein- und preview-frame-Klassen liegen additiv in
        shared/base.css. Inter + JetBrains Mono @font-face stehen dort
        ebenfalls schon — hier NICHT duplizieren. Die iframe-Live-
        Vorschau nutzt bewusst system-ui (srcdoc hat about:srcdoc als
@@ -58,7 +58,7 @@
       <p class="subline">Bausteine sind Startpunkte, keine fertigen Seiten. Du kopierst einen — einen Header, eine Preistabelle, ein Kontaktformular — und lässt ihn von Claude für dich anpassen: andere Farben, deine Texte, deine Struktur. Jeder Baustein zeigt dir live, wie er aussieht, und bringt einen kopierfertigen „Sag Claude einfach …“-Prompt mit.</p>
       <div class="hero-stats" id="hero-stats">
         <div class="hero-stat-box"><span class="hero-stat-num" id="bk-stat-bausteine">0</span><span class="hero-stat-label">Bausteine</span></div>
-        <div class="hero-stat-box"><span class="hero-stat-num" id="bk-stat-leuchttuerme">0</span><span class="hero-stat-label">Leuchttürme</span></div>
+        <div class="hero-stat-box"><span class="hero-stat-num" id="bk-stat-leuchttuerme">0</span><span class="hero-stat-label">Highlights</span></div>
         <div class="hero-stat-box"><span class="hero-stat-num" id="bk-stat-dateien">0</span><span class="hero-stat-label">Beispieldateien</span></div>
       </div>
       <p class="bk-lead">
@@ -66,7 +66,7 @@
         Alle Bausteine sind selbst geschriebenes, frei nutzbares pilot-Material — kein CDN, keine fremde Lib.
       </p>
       <div class="hero-cta">
-        <button class="c-cta -yellow-bg" onclick="document.getElementById('main-content').scrollIntoView({behavior:'smooth',block:'start'})">Zu den Bausteinen</button>
+        <button class="c-cta -yellow-bg" onclick="document.getElementById('main-content').scrollIntoView({behavior:window.scrollBehavior(),block:'start'})">Zu den Bausteinen</button>
       </div>
     </div>
   </section>
@@ -188,8 +188,7 @@
       sort: 'recommended'
     };
 
-    function prefersReduce() { return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches; }
-    function scrollBehavior() { return prefersReduce() ? 'instant' : 'smooth'; }
+    // prefersReduce()/scrollBehavior() kommen als window.-Helper aus shared/base.js
 
     // ===== NAV & FOOTER =====
     renderNav('baukasten', {
@@ -258,14 +257,14 @@
       } else if (state.sort === 'alpha') {
         arr.sort((a, b) => a.name.localeCompare(b.name, 'de'));
       } else {
-        // Empfohlen: Leuchttürme zuerst, dann nach Kopien
+        // Empfohlen: Highlights zuerst, dann nach Kopien (Datenfeld heißt weiter leuchtturm)
         arr.sort((a, b) => (b.leuchtturm ? 1 : 0) - (a.leuchtturm ? 1 : 0) || copyCountOf(b) - copyCountOf(a) || a.name.localeCompare(b.name, 'de'));
       }
       return arr;
     }
 
     function bausteinCardHtml(b) {
-      const lhPill = b.leuchtturm ? `<span class="baustein-lh-pill">${LU.strategy}Leuchtturm</span>` : '';
+      const lhPill = b.leuchtturm ? `<span class="baustein-lh-pill">${LU.strategy}Highlight</span>` : '';
       return `
         <article class="baustein-card" id="baustein-${b.id}" data-id="${b.id}" data-kat="${b.kategorie}">
           <div class="baustein-thumb">
@@ -295,7 +294,7 @@
       const list = state.kat ? BAUSTEINE.filter(b => b.kategorie === state.kat) : BAUSTEINE;
       host.innerHTML = sortedBausteine(list).map(bausteinCardHtml).join('');
       const c = document.getElementById('bausteine-count');
-      if (c) c.textContent = `${BAUSTEINE.length} Bausteine · ${BAUKASTEN_STATS.leuchttuerme} Leuchttürme`;
+      if (c) c.textContent = `${BAUSTEINE.length} Bausteine · ${BAUKASTEN_STATS.leuchttuerme} Highlights`;
     }
 
     // ===== (b) MEISTKOPIERT-RANKING =====
@@ -328,7 +327,7 @@
       return `
         <article class="bk-data-card" id="bk-data-${d.id}" data-id="${d.id}">
           <div class="bk-data-kopf">
-            <span class="bk-data-ic">${d.format === 'Markdown' ? LU['file-text'] : LU.database}</span>
+            <span class="bk-data-ic">${d.format === 'Markdown' ? LU['file-text'] : (d.format === 'SVG' ? LU.palette : LU.database)}</span>
             <span class="bk-data-name">${escHtml(d.datei)}</span>
             <span class="bk-data-format">${escHtml(d.format)}</span>
           </div>
@@ -350,7 +349,7 @@
       if (!host) return;
       host.innerHTML = BEISPIELDATEN.map(dataCardHtml).join('');
       const c = document.getElementById('data-count');
-      if (c) c.textContent = `${BEISPIELDATEN.length} Dateien · ${BEISPIELDATEN_STATS.csv} CSV + ${BEISPIELDATEN_STATS.markdown} Markdown`;
+      if (c) c.textContent = `${BEISPIELDATEN.length} Dateien · ${BEISPIELDATEN_STATS.csv} CSV + ${BEISPIELDATEN_STATS.markdown} Markdown + ${BEISPIELDATEN_STATS.svg} SVG`;
       const hint = document.getElementById('bk-data-hinweis');
       if (hint) hint.textContent = 'Erfundene Übungsdaten — kein echtes Kundenmaterial. Namen, Marken und Zahlen sind anonymisiert bzw. plausibel erfunden.';
     }
@@ -457,7 +456,7 @@
     function highlightCard(id) {
       const anchor = () => {
         const el = document.getElementById('baustein-' + id);
-        if (el) el.scrollIntoView({ behavior: scrollBehavior(), block: 'center' });
+        if (el) el.scrollIntoView({ behavior: window.scrollBehavior(), block: 'center' });
       };
       anchor();
       if (document.fonts && document.fonts.ready) {
@@ -487,7 +486,7 @@
         try { did = decodeURIComponent(md[1]); } catch (e) { return; }
         const el = document.getElementById('bk-data-' + did);   // renderBeispieldaten() lief bereits beim Init
         if (el) {
-          el.scrollIntoView({ behavior: scrollBehavior(), block: 'center' });
+          el.scrollIntoView({ behavior: window.scrollBehavior(), block: 'center' });
           el.classList.add('-highlight');
           setTimeout(() => el.classList.remove('-highlight'), 2400);
         }

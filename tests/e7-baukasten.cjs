@@ -27,7 +27,7 @@ const INDEX_TARGET = TARGET.replace(/baukasten\.html.*$/, 'index.html');
 // Soll-Werte (Stand E7, 2026-07-17), abgeleitet aus data/bausteine.js:
 const EXPECTED_TOTAL = 12;          // BAUSTEINE.length
 const EXPECTED_LEUCHTTUERME = 4;
-const EXPECTED_DATEIEN = 5;         // BEISPIELDATEN.length
+const EXPECTED_DATEIEN = 8;         // BEISPIELDATEN.length (E7-Nachschlag: +1 Briefing, +2 SVG-Testbilder)
 const LEUCHTTURM = 'header-hero';
 const LEUCHTTURM_NAME = 'Header mit Hero';
 const DEEPLINK_ID = 'chart-setup';
@@ -204,7 +204,7 @@ async function runViewport(browser, vp) {
     return {
       dlHrefs: dl,
       dlCount: dl.length,
-      allBeispieldaten: dl.every(h => /^beispieldaten\/.+\.(csv|md)$/.test(h)),
+      allBeispieldaten: dl.every(h => /^beispieldaten\/.+\.(csv|md|svg)$/.test(h)),
       xrefHrefs: xref,
       xrefCount: xref.length,
       // Baukasten-Querverweise müssen auf existierende Baustein-IDs zeigen

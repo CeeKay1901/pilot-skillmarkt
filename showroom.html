@@ -33,8 +33,12 @@
     .sr-desc { display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
     .modal-body .sr-desc { display: block; overflow: visible; }
 
+    /* Ehrlichkeits-Marker liegt im Karten-Körper (statisch), NICHT mehr über dem
+       Live-Thumbnail — dort kollidierte er mit Logos/Badges der Demos selbst. */
+    .sr-marker-row { display: flex; align-items: center; }
+
     /* Feedback-Geste an das kanonische Vote-Muster angeglichen (LU.vote + Zähl-Chip),
-       damit die „Will ich auch"-Reaktion aussieht wie die Zustimmungs-Votes in
+       damit die „Will ich auch“-Reaktion aussieht wie die Zustimmungs-Votes in
        hilfe/lernen. Speicherung (vote:reaktion:<id>) und Logik bleiben unverändert. */
     .sr-react { gap: .7rem; padding: .7rem 1.5rem; font-size: 1.35rem; }
     .sr-react .lu { width: 1.4rem; height: 1.4rem; }
@@ -75,7 +79,7 @@
         Ehrlich gehalten: Ein Marker unterscheidet echte Team-Tools von illustrativen Beispiel-Projekten. Die Beispiel-Projekte sind einer Persona aus dem Team redaktionell zugeordnet, nicht von ihr gebaut — Stimmen &amp; Beispiele sind Demo-Daten. Die Mini-Demos selbst sind echt und laufen.
       </p>
       <div class="hero-cta">
-        <button class="c-cta -yellow-bg" onclick="document.getElementById('main-content').scrollIntoView({behavior:'smooth',block:'start'})">Zu den Projekten</button>
+        <button class="c-cta -yellow-bg" onclick="document.getElementById('main-content').scrollIntoView({behavior:window.scrollBehavior(),block:'start'})">Zu den Projekten</button>
       </div>
     </div>
   </section>
@@ -116,7 +120,7 @@
           <h2 id="cases-h">Projekte im Showroom</h2>
           <span class="lib-sec-count" id="cases-count"></span>
         </div>
-        <p class="lib-note">Jede Karte zeigt ein skaliertes, nicht interaktives Vorschaubild der echten Demo. „Ansehen" öffnet die echte, klickbare Datei in einem neuen Tab; „Details" öffnet die ganze Geschichte samt Nachbau-Anleitung. Filter nach Säule, Art und Aufwand, sortier nach „Meistgewollt" — die Reaktions-Zähler zählen lokal in deinem Browser.</p>
+        <p class="lib-note">Jede Karte zeigt ein skaliertes, nicht interaktives Vorschaubild der echten Demo. „Ansehen“ öffnet die echte, klickbare Datei in einem neuen Tab; „Details“ öffnet die ganze Geschichte samt Nachbau-Anleitung. Filter nach Säule, Art und Aufwand, sortier nach „Meistgewollt“ — die Reaktions-Zähler zählen lokal in deinem Browser.</p>
         <div class="sr-toolbar">
           <div class="sr-cats" id="sr-cats" role="group" aria-label="Projekte nach Säule filtern"></div>
           <div class="sr-selects">
@@ -153,7 +157,7 @@
           <span class="lib-sec-ic lu-slot" id="rank-ic"></span>
           <h2 id="rank-h">Meistgewollt im Team</h2>
         </div>
-        <p class="lib-note">Ein kleines Ranking nach „Will ich auch!"-Reaktionen. Die Startwerte sind ehrliche Demo-Seeds; jede Reaktion, die du auslöst, zählt lokal dazu. Klick einen Eintrag an, um das Projekt zu öffnen.</p>
+        <p class="lib-note">Ein kleines Ranking nach „Will ich auch“-Reaktionen. Die Startwerte sind ehrliche Demo-Seeds; jede Reaktion, die du auslöst, zählt lokal dazu. Klick einen Eintrag an, um das Projekt zu öffnen.</p>
         <div class="sr-rank" id="sr-rank"></div>
       </div>
     </section>
@@ -190,9 +194,10 @@
 
   <script src="data/cases.js"></script>          <!-- CASES + CASE_STATS -->
   <script src="data/contributors.js"></script>   <!-- PILOTS (Personas der inszenierten Cases) -->
-  <script src="data/skills.js"></script>          <!-- SKILLS — Querverweis-Ziele (Nachbauen) -->
-  <script src="data/prompts.js"></script>         <!-- PROMPTS — Querverweis-Ziele (Nachbauen) -->
-  <script src="data/bausteine.js"></script>       <!-- BAUSTEINE + BEISPIELDATEN — Querverweis-Ziele -->
+  <script src="data/skills.js"></script>          <!-- SKILLS — Skill-Namen in der Fakten-Box -->
+  <!-- BEWUSST NICHT eager geladen: data/prompts.js (97 KB) und data/bausteine.js (103 KB).
+       Die Seite nutzt keines dieser Globals — Querverweise arbeiten nur mit den Labels aus
+       data/cases.js. Die globale Suche (Strg+K) lädt fehlende data-Dateien selbst lazy nach. -->
   <script src="shared/base.js"></script>
   <script>
     // ===== STATE (base.js-Konvention) =====
@@ -208,8 +213,8 @@
     };
     // KEIN window.RatingConfig — Cases nutzen keine Sterne, nur Reaktionen (vote:reaktion:<id>).
 
-    function prefersReduce() { return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches; }
-    function scrollBehavior() { return prefersReduce() ? 'instant' : 'smooth'; }
+    // prefersReduce()/scrollBehavior() kommen als window.-Helfer aus shared/base.js
+    // (Shared-Helper-Kontrakt) — hier keine lokalen Kopien mehr.
 
     // ===== NAV & FOOTER =====
     renderNav('showroom', {
@@ -234,15 +239,16 @@
       if (name === 'pilot-Tool') return 'automatisch vom pilot-Tool erzeugt';
       return '';
     }
-    function markerHtml(c, inline) {
-      const st = inline ? ' style="position:static"' : '';
+    // Immer statisch positioniert (im Fluss) — die absolute Overlay-Variante über dem
+    // Thumbnail ist entfallen (kollidierte mit Logos/Badges der Demo-Seiten selbst).
+    function markerHtml(c) {
       return c.istEcht
-        ? `<span class="sr-badge -echt"${st}>${LU.check}Echtes Team-Tool</span>`
-        : `<span class="sr-badge -beispiel"${st}>${LU.sparkles}Beispiel-Projekt</span>`;
+        ? `<span class="sr-badge -echt" style="position:static">${LU.check}Echtes Team-Tool</span>`
+        : `<span class="sr-badge -beispiel" style="position:static">${LU.sparkles}Beispiel-Projekt</span>`;
     }
     function reactVotes(c) { return getVotes('reaktion', c.id, c.reaktionSeed); }
 
-    // ===== REAKTION „Will ich auch!" (vote:reaktion:<id>, KEINE Sterne) =====
+    // ===== REAKTION „Will ich auch“ (vote:reaktion:<id>, KEINE Sterne) =====
     function reactionBtnHtml(c) {
       const voted = hasVoted('reaktion', c.id);
       return `<button type="button" class="sr-react${voted ? ' -on' : ''}" aria-pressed="${voted}"
@@ -258,7 +264,7 @@
       document.querySelectorAll(`[data-react="${id}"]`).forEach(b => {
         b.classList.toggle('-on', now); b.setAttribute('aria-pressed', String(now));
       });
-      showToast(now ? 'Notiert — „Will ich auch!"' : 'Reaktion zurückgenommen');
+      showToast(now ? 'Notiert — „Will ich auch“' : 'Reaktion zurückgenommen');
       renderRanking();
     }
 
@@ -308,11 +314,11 @@
       return `
         <article class="sr-card" id="case-${c.id}" data-id="${c.id}" data-saeule="${c.saeule}" data-art="${c.art}" data-aufwand="${c.aufwandStufe}">
           <div class="sr-thumb">
-            ${markerHtml(c, false)}
-            <iframe class="sr-frame" src="${c.liveUrl}" loading="lazy" sandbox="allow-scripts allow-same-origin"
+            <iframe class="sr-frame" src="${c.liveUrl}" loading="lazy"
                     tabindex="-1" aria-hidden="true" title="Vorschau (nicht interaktiv): ${escHtml(c.titel)}"></iframe>
           </div>
           <div class="sr-body">
+            <div class="sr-marker-row">${markerHtml(c)}</div>
             <div class="sr-kopf">
               <span class="sr-name">${escHtml(c.titel)}</span>
               <span class="sr-sub">${escHtml(ART_LABEL[c.art] || c.art)}</span>
@@ -359,7 +365,7 @@
           <p class="section-label sr-spot-label">Projekt des Monats</p>
           <h2 id="sr-spot-h">${escHtml(c.titel)}</h2>
           <p class="sr-spot-text">${escHtml(c.kurz)}</p>
-          <div class="sr-spot-meta">${markerHtml(c, true)}<span class="sr-tag">${escHtml(c.aufwand)}</span></div>
+          <div class="sr-spot-meta">${markerHtml(c)}<span class="sr-tag">${escHtml(c.aufwand)}</span></div>
           <div class="sr-spot-actions">
             ${reactionBtnHtml(c)}
             <a class="c-cta -yellow-bg" href="${c.liveUrl}" target="_blank" rel="noopener">Ansehen</a>
@@ -367,7 +373,7 @@
           </div>
         </div>
         <div class="sr-spot-frame-wrap">
-          <iframe class="sr-spot-frame" src="${c.liveUrl}" loading="lazy" sandbox="allow-scripts allow-same-origin"
+          <iframe class="sr-spot-frame" src="${c.liveUrl}" loading="lazy"
                   tabindex="-1" aria-hidden="true" title="Vorschau (nicht interaktiv): ${escHtml(c.titel)}"></iframe>
         </div>`;
     }
@@ -377,7 +383,7 @@
       document.getElementById('modal-name').textContent = item.titel;
       const rolle = personaRolle(item.persona);
       document.getElementById('modal-meta').innerHTML =
-        markerHtml(item, true)
+        markerHtml(item)
         + `<span class="modal-meta-sep">·</span><span>${escHtml(item.persona)}${rolle ? ' · ' + escHtml(rolle) : ''}</span>`
         + `<span class="modal-meta-sep">·</span><span>${escHtml(item.aufwand)}</span>`;
       const tabBar = document.querySelector('#modal .modal-tabs');
@@ -436,8 +442,8 @@
     function renderCaseVorschau(item) {
       return `
         <div class="preview-frame-wrap"><iframe class="preview-frame" src="${item.liveUrl}"
-           sandbox="allow-scripts allow-same-origin" title="Live-Vorschau: ${escHtml(item.titel)}"></iframe></div>
-        <p class="preview-note">Läuft in einem isolierten Rahmen. „Ansehen" öffnet die echte Datei in einem neuen Tab.</p>
+           title="Live-Vorschau: ${escHtml(item.titel)}"></iframe></div>
+        <p class="preview-note">Die eingebettete Demo ist echt und klickbar. „Ansehen“ öffnet dieselbe Datei in einem neuen Tab.</p>
         <div class="sr-actions" style="margin-top:1rem">
           <a class="lib-btn -primary" href="${item.liveUrl}" target="_blank" rel="noopener">${LU.eye}Ansehen (neuer Tab)</a>
         </div>`;
@@ -473,7 +479,7 @@
     function highlightCard(id) {
       const anchor = () => {
         const el = document.getElementById('case-' + id);
-        if (el) el.scrollIntoView({ behavior: scrollBehavior(), block: 'center' });
+        if (el) el.scrollIntoView({ behavior: window.scrollBehavior(), block: 'center' });
       };
       anchor();
       if (document.fonts && document.fonts.ready) {
@@ -513,16 +519,16 @@
       highlightCard(id);
     }
 
-    // ===== „PROJEKT EINREICHEN" (prominentester Demo-Flow der Seite) =====
+    // ===== „PROJEKT EINREICHEN“ (prominentester Demo-Flow der Seite) =====
     function openCaseSubmit() {
       openSubmitFlow({
         type: 'case',
         title: 'Zeig, was du gebaut hast',
         intro: 'Ein Projekt, das anderen zeigt, was mit KI möglich ist — mit der ehrlichen Geschichte dahinter.',
         fields: [
-          { key: 'name', label: 'Projektname', required: true, placeholder: 'z. B. „Reporting-Generator"' },
+          { key: 'name', label: 'Projektname', required: true, placeholder: 'z. B. „Reporting-Generator“' },
           { key: 'problem', label: 'Welches Problem löst es?', type: 'textarea', required: true, placeholder: 'Was war der Anlass — und was tut das Projekt?' },
-          { key: 'aufwand', label: 'Grober Aufwand', placeholder: 'z. B. „Feierabend-Projekt, ~2 Stunden"' },
+          { key: 'aufwand', label: 'Grober Aufwand', placeholder: 'z. B. „Feierabend-Projekt, ~2 Stunden“' },
           { key: 'link', label: 'Link zur Demo (optional)', placeholder: 'https://…' }
         ],
         submitLabel: 'Projekt einreichen (Demo)'

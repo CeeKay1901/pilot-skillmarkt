@@ -3,14 +3,18 @@
  * E8-Messlatte für den Showroom (showroom.html) des pilot AI Marketplace.
  *
  * Prüft: reale Hero-Zahlen (== data), Anzahl Case-Karten == CASES.length, skaliertes
- * lazy Live-iframe-Thumbnail je Karte (src gesetzt + sandbox allow-scripts allow-same-origin
- * + aria-hidden + tabindex -1 + pointer-events:none), Ehrlichkeits-Marker echt/beispiel
- * (== data + „Demo-Daten"-Hinweis), Detail-Modal mit Story-Tabs (Überblick · So ist es
- * entstanden · Nachbauen · Vorschau), Reaktions-Button „Will ich auch" (vote:reaktion:*,
- * togglet + persistiert, KEINE Sterne), Nachbauen-Querverweise auf gültige SKILLS/PROMPTS/
- * BAUSTEINE, „Ansehen"-Links auf existierende Dateien (neuer Tab), Deep-Link ?case=<id>,
- * „Projekt einreichen"-Demo, Nav-Regression (nav-showroom im Mehr-Dropdown, alle IDs) und
- * die Verzahnung mit der Startseite. Muster: tests/e7-baukasten.cjs.
+ * lazy Live-iframe-Thumbnail je Karte (src gesetzt, OHNE sandbox-Attribut — eigenes
+ * Material, das frühere sandbox="allow-scripts allow-same-origin" bot keine Isolation
+ * und erzeugte nur Konsolen-Warnungen; + aria-hidden + tabindex -1 + pointer-events:none),
+ * kein Eager-Load von data/prompts.js und data/bausteine.js (Globals ungenutzt, die
+ * globale Suche lazy-lädt selbst), Ehrlichkeits-Marker echt/beispiel im Karten-Körper
+ * statt über dem Thumbnail (== data + „Demo-Daten“-Hinweis), Detail-Modal mit Story-Tabs
+ * (Überblick · So ist es entstanden · Nachbauen · Vorschau), Reaktions-Button
+ * „Will ich auch“ (vote:reaktion:*, togglet + persistiert, KEINE Sterne), Nachbauen-
+ * Querverweise auf gültige SKILLS/PROMPTS/BAUSTEINE, „Ansehen“-Links auf existierende
+ * Dateien (neuer Tab), Deep-Link ?case=<id>, „Projekt einreichen“-Demo, Nav-Regression
+ * (nav-showroom im Mehr-Dropdown, alle IDs) und die Verzahnung mit der Startseite.
+ * Muster: tests/e7-baukasten.cjs.
  *
  * Aufruf:
  *   PLAYWRIGHT_BROWSERS_PATH=$HOME/.cache/ms-playwright node tests/e8-showroom.cjs [URL]
@@ -30,8 +34,8 @@ const EXPECTED_TOTAL = 10;          // CASES.length
 const EXPECTED_ECHT = 4;            // istEcht:true
 const EXPECTED_BEISPIEL = 6;        // istEcht:false
 const EXPECTED_SAEULEN = 6;         // verschiedene Säulen
-const LEUCHTTURM = 'umfrage-auswerter';
-const LEUCHTTURM_NAME = 'Umfrage-Auswerter';
+const SPOTLIGHT_ID = 'umfrage-auswerter';
+const SPOTLIGHT_NAME = 'Umfrage-Auswerter';
 const DEEPLINK_ID = 'tkp-rechner';
 const DEEPLINK_NAME = 'TKP-Rechner';
 
@@ -98,13 +102,16 @@ async function runViewport(browser, vp) {
       && counts.heroBeispiel === EXPECTED_BEISPIEL && counts.heroSaeulen === EXPECTED_SAEULEN,
     { jsErrors: [...jsErrors], ...counts, blockedResourceErrors: blockedResourceErrors.length });
 
-  // ---------- (2) Karten-iframe: src (echte Datei) + sandbox + aria-hidden + tabindex + pointer-events:none ----------
+  // ---------- (2) Karten-iframe: src (echte Datei) + OHNE sandbox + aria-hidden + tabindex + pointer-events:none ----------
+  // Sollwert-Änderung (2026-07-22): sandbox="allow-scripts allow-same-origin" ist entfallen —
+  // die Kombination bot faktisch keine Isolation (eigene lokale Dateien) und erzeugte pro
+  // iframe eine Konsolen-Warnung. Eingebettet wird ausschließlich eigenes Repo-Material.
   const frameInfo = await page.evaluate(() => {
     const frames = [...document.querySelectorAll('#sr-grid .sr-card .sr-frame')];
     return {
       count: frames.length,
       allSrc: frames.every(f => (f.getAttribute('src') || '').length > 3),
-      allSandbox: frames.every(f => f.getAttribute('sandbox') === 'allow-scripts allow-same-origin'),
+      allNoSandbox: frames.every(f => !f.hasAttribute('sandbox')),
       allAriaHidden: frames.every(f => f.getAttribute('aria-hidden') === 'true'),
       allTabindex: frames.every(f => f.getAttribute('tabindex') === '-1'),
       allNoPointer: frames.every(f => getComputedStyle(f).pointerEvents === 'none'),
@@ -112,19 +119,36 @@ async function runViewport(browser, vp) {
     };
   });
   check('02_live_preview_iframe',
-    frameInfo.count === EXPECTED_TOTAL && frameInfo.allSrc && frameInfo.allSandbox
+    frameInfo.count === EXPECTED_TOTAL && frameInfo.allSrc && frameInfo.allNoSandbox
       && frameInfo.allAriaHidden && frameInfo.allTabindex && frameInfo.allNoPointer && frameInfo.allLazy,
     frameInfo);
 
-  // ---------- (3) Ehrlichkeits-Marker echt/beispiel == data + „Demo-Daten"-Hinweis ----------
+  // ---------- (2b) Kein Eager-Load ungenutzter data-Dateien (Bloat-Sollzustand) ----------
+  // data/prompts.js (~97 KB) und data/bausteine.js (~103 KB) werden von showroom.html nicht
+  // genutzt und dürfen nicht mehr als <script src> geladen sein; die globale Suche (Strg+K)
+  // lädt sie bei Bedarf selbst lazy nach (shared/base.js, GSEARCH_SOURCES).
+  const bloatInfo = await page.evaluate(() => ({
+    eagerPrompts: !!document.querySelector('script[src*="data/prompts.js"]'),
+    eagerBausteine: !!document.querySelector('script[src*="data/bausteine.js"]'),
+    eagerCases: !!document.querySelector('script[src*="data/cases.js"]'),   // gebraucht, muss bleiben
+    eagerSkills: !!document.querySelector('script[src*="data/skills.js"]'), // gebraucht (Fakten-Box), muss bleiben
+  }));
+  check('02b_no_eager_unused_data',
+    !bloatInfo.eagerPrompts && !bloatInfo.eagerBausteine && bloatInfo.eagerCases && bloatInfo.eagerSkills,
+    bloatInfo);
+
+  // ---------- (3) Ehrlichkeits-Marker echt/beispiel == data + „Demo-Daten“-Hinweis ----------
   const markerInfo = await page.evaluate(() => {
     const cards = [...document.querySelectorAll('#sr-grid .sr-card')];
     const echt = cards.filter(c => c.querySelector('.sr-badge.-echt')).length;
     const beispiel = cards.filter(c => c.querySelector('.sr-badge.-beispiel')).length;
     const allHaveOne = cards.every(c => c.querySelector('.sr-badge.-echt') || c.querySelector('.sr-badge.-beispiel'));
+    // Sollwert-Änderung (2026-07-22): Der Marker sitzt im Karten-Körper, NICHT mehr als
+    // Overlay über dem Live-Thumbnail (dort kollidierte er mit Logos/Badges der Demos).
+    const noneOnThumb = cards.every(c => !c.querySelector('.sr-thumb .sr-badge'));
     const bodyText = document.body.textContent || '';
     return {
-      echt, beispiel, allHaveOne,
+      echt, beispiel, allHaveOne, noneOnThumb,
       dataEcht: CASES.filter(c => c.istEcht).length,
       dataBeispiel: CASES.filter(c => !c.istEcht).length,
       demoHint: /Demo-Daten/.test(bodyText),
@@ -132,7 +156,8 @@ async function runViewport(browser, vp) {
     };
   });
   check('03_ehrlichkeits_marker',
-    markerInfo.allHaveOne && markerInfo.echt === EXPECTED_ECHT && markerInfo.echt === markerInfo.dataEcht
+    markerInfo.allHaveOne && markerInfo.noneOnThumb
+      && markerInfo.echt === EXPECTED_ECHT && markerInfo.echt === markerInfo.dataEcht
       && markerInfo.beispiel === EXPECTED_BEISPIEL && markerInfo.beispiel === markerInfo.dataBeispiel
       && markerInfo.demoHint && markerInfo.footerHint,
     markerInfo);
@@ -167,7 +192,7 @@ async function runViewport(browser, vp) {
     { filterInfo, sortInfo, resetCount });
 
   // ---------- (4) Detail-Modal: Story-Tabs, switchTab('story') + ('vorschau'), Esc ----------
-  await page.evaluate((id) => openModal(id), LEUCHTTURM);
+  await page.evaluate((id) => openModal(id), SPOTLIGHT_ID);
   await page.waitForSelector('#modal-overlay.open', { timeout: 5000 });
   const modalInfo = await page.evaluate(() => ({
     open: document.getElementById('modal-overlay').classList.contains('open'),
@@ -189,7 +214,7 @@ async function runViewport(browser, vp) {
     return {
       hasFrame: !!f,
       src: f ? (f.getAttribute('src') || '') : '',
-      sandbox: f ? f.getAttribute('sandbox') : '',
+      noSandbox: f ? !f.hasAttribute('sandbox') : false, // Sollwert-Änderung: sandbox entfallen (s. Check 2)
       interactive: f ? getComputedStyle(f).pointerEvents !== 'none' : false,
     };
   });
@@ -197,16 +222,16 @@ async function runViewport(browser, vp) {
   await page.waitForTimeout(200);
   const modalClosed = await page.evaluate(() => !document.getElementById('modal-overlay').classList.contains('open'));
   check('04_detail_modal_story_tabs',
-    modalInfo.open && modalInfo.name === LEUCHTTURM_NAME && modalInfo.metaMarker
+    modalInfo.open && modalInfo.name === SPOTLIGHT_NAME && modalInfo.metaMarker
       && modalInfo.tabs.length === 4 && modalInfo.tabs[0] === 'Überblick'
       && modalInfo.tabs[1] === 'So ist es entstanden' && modalInfo.tabs[2] === 'Nachbauen'
       && modalInfo.tabs[3] === 'Vorschau' && storyOk
       && previewInfo.hasFrame && previewInfo.src.length > 3
-      && previewInfo.sandbox === 'allow-scripts allow-same-origin' && previewInfo.interactive
+      && previewInfo.noSandbox && previewInfo.interactive
       && modalClosed,
     { modalInfo, storyOk, previewInfo, modalClosed });
 
-  // ---------- (5) Reaktion „Will ich auch": vote:reaktion:* togglet + persistiert, KEINE Sterne ----------
+  // ---------- (5) Reaktion „Will ich auch“: vote:reaktion:* togglet + persistiert, KEINE Sterne ----------
   const firstId = await page.evaluate(() => document.querySelector('#sr-grid .sr-card').dataset.id);
   const before = await page.evaluate((id) => ({
     ls: localStorage.getItem('vote:reaktion:' + id),
@@ -244,7 +269,17 @@ async function runViewport(browser, vp) {
     { firstId, before, afterOn, afterOff, reloadLs });
 
   // ---------- (6) Nachbauen-Querverweise auf gültige SKILLS/PROMPTS/BAUSTEINE ----------
-  await page.evaluate((id) => { openModal(id); switchTab('nachbauen'); }, LEUCHTTURM);
+  // showroom.html lädt data/prompts.js und data/bausteine.js bewusst NICHT mehr eager
+  // (Check 2b) — für die ID-Validierung hier die Ziel-Kataloge in die Seite injizieren
+  // (derselbe Weg, den die globale Suche lazy geht; top-level const ist danach im
+  // globalen Lexikal-Environment für evaluate sichtbar).
+  if (await page.evaluate(() => typeof PROMPTS === 'undefined')) {
+    await page.addScriptTag({ url: 'data/prompts.js' });
+  }
+  if (await page.evaluate(() => typeof BAUSTEINE === 'undefined')) {
+    await page.addScriptTag({ url: 'data/bausteine.js' });
+  }
+  await page.evaluate((id) => { openModal(id); switchTab('nachbauen'); }, SPOTLIGHT_ID);
   await page.waitForTimeout(200);
   const xref = await page.evaluate(() => {
     const links = [...document.querySelectorAll('#modal-body .sr-xref a')].map(a => a.getAttribute('href'));
@@ -293,7 +328,7 @@ async function runViewport(browser, vp) {
       && allXrefValid && promptToast.toast && /prompt/i.test(promptToast.text),
     { xref, promptToast, allXrefValid });
 
-  // ---------- (7) „Ansehen"-Links: neuer Tab + echte, abrufbare Dateien ----------
+  // ---------- (7) „Ansehen“-Links: neuer Tab + echte, abrufbare Dateien ----------
   const ansehen = await page.evaluate(() => {
     const cards = [...document.querySelectorAll('#sr-grid .sr-card')];
     const rows = cards.map(c => {
@@ -361,7 +396,7 @@ async function runViewport(browser, vp) {
     deepInfo.canonical && deepInfo.modalOpen && deepInfo.modalName === DEEPLINK_NAME && deepInfo.highlighted,
     deepInfo);
 
-  // ---------- (9) „Projekt einreichen": Demo-Flow bis Danke ----------
+  // ---------- (9) „Projekt einreichen“: Demo-Flow bis Danke ----------
   await page.evaluate(() => closeModal());
   await page.evaluate(() => { document.getElementById('sr-submit-cta').click(); });
   await page.waitForSelector('#submit-overlay.open', { timeout: 5000 });
@@ -395,7 +430,7 @@ async function runViewport(browser, vp) {
       hasCatalog: !!document.getElementById('nav-catalog'),
       hasPrompts: !!document.getElementById('nav-prompts'),
       hasHilfe: !!document.getElementById('nav-hilfe'),
-      // E10-Merge: nav-lernen ist entfallen (Lernen ging in „Lernen & Hilfe"/nav-hilfe auf).
+      // E10-Merge: nav-lernen ist entfallen (Lernen ging in „Lernen & Hilfe“/nav-hilfe auf).
       hasBibliothek: !!document.getElementById('nav-bibliothek'),
       hasBaukasten: !!document.getElementById('nav-baukasten'),
       hasMoreBtn: !!document.getElementById('nav-more-btn'),
@@ -516,7 +551,7 @@ async function runIndexChecks(browser) {
       && indexInfo.areaMeta.includes(String(EXPECTED_ECHT)) && indexInfo.areaMeta.includes(String(EXPECTED_BEISPIEL)),
     { areaCount: indexInfo.areaCount, meta: indexInfo.areaMeta, dataCases: indexInfo.dataCases });
   check('i4_area_card_clickable',
-    indexInfo.areaCta && indexInfo.areaSpotHref === 'showroom.html?case=' + LEUCHTTURM
+    indexInfo.areaCta && indexInfo.areaSpotHref === 'showroom.html?case=' + SPOTLIGHT_ID
       && indexInfo.areaSpotReact.trim().length > 0 && indexInfo.navShowroom
       && indexInfo.livePills === 6 && indexInfo.soonPills === 0,
     { areaCta: indexInfo.areaCta, areaSpotHref: indexInfo.areaSpotHref,

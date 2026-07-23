@@ -113,6 +113,7 @@
     h1, h2, h3 { text-wrap: balance; }
 
     html { font-size: 10px; scroll-behavior: smooth; }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 
     body {
       font-family: var(--font-sans);
@@ -274,8 +275,6 @@
     .skill-card:hover::after, .skill-card:focus-visible::after { transform: scaleX(1); }
     .skill-card:focus-visible { outline: 2px solid var(--c-black); outline-offset: 2px; }
 
-    .card-header { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
-
     .skill-badge {
       font-size: 1.2rem; font-weight: 700; padding: .3rem 1rem;
       border-radius: var(--r-xl); text-transform: uppercase; letter-spacing: .05em;
@@ -404,10 +403,6 @@
     .filter-tag-chip.active {
       background: var(--c-black); color: var(--c-white);
     }
-    .filter-row {
-      display: flex; align-items: center; gap: 2rem; justify-content: space-between;
-      flex-wrap: wrap;
-    }
     .endorsed-toggle {
       display: flex; align-items: center; gap: .8rem;
       font-size: 1.5rem; cursor: pointer;
@@ -419,9 +414,6 @@
       border-radius: var(--radius-pill);
       font-size: 1.5rem; font-family: inherit;
       background: var(--c-white); cursor: pointer;
-    }
-    .filter-meta {
-      display: flex; align-items: center; justify-content: space-between; gap: 1rem;
     }
     #results-count { font-size: 1.4rem; color: var(--c-gray-m); }
 
@@ -610,15 +602,7 @@
     .empty-title { font-size: 2.4rem; font-weight: 700; color: var(--c-black); margin-bottom: 1rem; }
     .empty-text { font-size: 1.6rem; color: var(--c-gray-m); }
 
-    /* ===== ENDORSEMENT CARD ===== */
-    .endorsement-card {
-      display: flex; gap: 1.6rem; align-items: flex-start;
-      padding: 2rem; background: var(--c-bg);
-      border-radius: 1rem; margin-bottom: 1.6rem;
-    }
-    .endorsement-text { font-size: 1.5rem; line-height: 1.6; color: var(--c-gray-m); margin-bottom: 1rem; }
-    .endorsement-name { font-size: 1.5rem; font-weight: 700; margin-bottom: .2rem; }
-    .endorsement-role { font-size: 1.3rem; color: var(--c-gray-d); }
+    /* ===== ENDORSEMENTS (nur der Leer-Zustand wird noch genutzt) ===== */
     .no-endorsements { font-size: 1.5rem; color: var(--c-gray-m); font-style: italic; }
 
     /* ===== MODAL DETAIL STYLES ===== */
@@ -640,35 +624,6 @@
     .rating-form-label { font-size: 1.5rem; font-weight: 600; margin-bottom: .4rem; display: block; }
     .user-rating-hint { font-size: 1.3rem; color: var(--c-gray-m); margin-top: .4rem; }
 
-    .info-btn {
-      background: none; border: none; color: rgba(252,252,252,.6);
-      font-size: 2rem; cursor: pointer; transition: var(--trans); padding: .4rem;
-      line-height: 1; flex-shrink: 0;
-    }
-    .info-btn:hover { color: var(--c-yellow); }
-    .info-modal-overlay {
-      position: fixed; inset: 0; z-index: 250;
-      background: rgba(38,38,38,.7); backdrop-filter: blur(4px);
-      display: none; align-items: center; justify-content: center; padding: 2rem;
-    }
-    .info-modal-overlay.open { display: flex; }
-    .info-modal {
-      background: var(--c-white); border-radius: var(--r-md);
-      max-width: 48rem; width: 100%; padding: 3rem;
-      position: relative; animation: slideUp .2s ease;
-    }
-    .info-modal-close {
-      position: absolute; top: 1.6rem; right: 1.6rem;
-      background: none; border: none; font-size: 2rem; cursor: pointer; color: var(--c-gray-m);
-    }
-    .info-modal h3 { font-size: 2.4rem; font-weight: 700; margin-bottom: 1.6rem; }
-    .info-modal p { font-size: 1.6rem; line-height: 1.6; color: var(--c-ink-strong); margin-bottom: 1.2rem; }
-    .info-modal-cta {
-      background: var(--c-bg); border-left: 3px solid var(--c-yellow);
-      padding: 1.2rem 1.6rem; border-radius: 0 .8rem .8rem 0;
-      font-size: 1.4rem; margin-top: 1.6rem;
-    }
-
     /* ===== ROLE CHIPS ===== */
     .role-chips {
       display: flex; flex-direction: column; align-items: flex-start; gap: .8rem;
@@ -676,7 +631,6 @@
       border-bottom: 1px solid var(--c-bg);
     }
     .chip-row { display: flex; align-items: center; gap: .8rem; flex-wrap: wrap; }
-    .role-label { font-size: 1.4rem; color: var(--c-gray-m); font-weight: 500; white-space: nowrap; min-width: 8.6rem; }
     .role-chip {
       padding: .6rem 1.4rem;
       font-size: 1.4rem; font-family: inherit;
@@ -813,10 +767,6 @@
     .rv-icon { font-size: 1.8rem; }
     @media (max-width: 1023px) { .recently-viewed { padding: 0 var(--pad-m) 1.6rem; } }
 
-    /* ===== NEW BADGE ===== */
-
-    .new-badge { background: var(--c-yellow); color: var(--c-black); font-size: 1.1rem; font-weight: 700; padding: .2rem .7rem; border-radius: var(--r-pill); letter-spacing: .04em; text-transform: uppercase; }
-
     /* ===== SEARCH HINT ===== */
     .search-hint { font-size: 1.1rem; color: var(--c-gray-m); display: block; margin-top: .4rem; }
     .search-hint kbd { background: var(--c-bg); border: 1px solid var(--c-gray-l); border-radius: .3rem; padding: .1rem .4rem; font-family: inherit; font-size: 1rem; }
@@ -826,7 +776,6 @@
     .skip-link { position: absolute; top: -100%; left: 1rem; background: var(--c-yellow); color: var(--c-black); padding: 1rem 2rem; font-weight: 700; font-size: 1.4rem; border-radius: 0 0 .8rem .8rem; z-index: 9999; text-decoration: none; }
     .skip-link:focus { top: 0; }
     .modal-close { min-width: 4.4rem; min-height: 4.4rem; display: flex; align-items: center; justify-content: center; }
-    .info-modal-close { min-width: 4.4rem; min-height: 4.4rem; display: flex; align-items: center; justify-content: center; }
 
     /* ===== FEATURE 3: TAB COUNT ===== */
     .tab-count { display: inline-flex; align-items: center; justify-content: center; background: rgba(0,0,0,.08); border-radius: var(--r-xl); padding: .1rem .7rem; font-size: 1.1rem; font-weight: 700; margin-left: .4rem; min-width: 2rem; }
@@ -932,7 +881,6 @@
     .ex-t-user { color: var(--c-white); }
     .ex-t-user .ex-term-prompt { color: var(--c-yellow); }
     .ex-t-sys { color: #8a8a82; }
-    .ex-t-ok { color: var(--term-ok); }
     .ex-t-hl { color: var(--c-yellow); }
     /* Echtes Claude-Code-Terminalverhalten: Claude-Text (⏺), Tool-Calls, Ergebnis (⎿).
        padding + negativer text-indent = hängender Einzug bei Umbrüchen, wie in der CLI */
@@ -1016,14 +964,6 @@
     .site-header :focus-visible, footer :focus-visible,
     .hero :focus-visible, .pilots-section :focus-visible { outline-color: var(--c-yellow); }
 
-    /* Hairline für Sektions-Rhythmus */
-    .hairline {
-      border: 0;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, currentColor 20%, currentColor 80%, transparent);
-      opacity: .25;
-    }
-
     /* Display-Headline (clamp-Skala) */
     .display {
       font-size: var(--fs-display);
@@ -1055,25 +995,13 @@
     }
     .anim-reveal.in-view { opacity: 1; translate: 0 0; }
 
-    /* Hover-Lift für Karten */
-    .hover-lift { transition: translate .2s var(--ae), box-shadow .2s var(--ae); }
-    .hover-lift:hover { translate: 0 -3px; box-shadow: var(--shadow-md); }
-
     @media (prefers-reduced-motion: reduce) {
       .anim-fade-up, .anim-stagger > * { animation: none; }
       .anim-reveal { transition: none; opacity: 1; translate: 0 0; }
     }
 
-    /* Dezente Hintergrund-Patterns für Sektions-Rhythmus */
-    .bg-dots {
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Ccircle cx='2' cy='2' r='1.3' fill='%23808080' opacity='.35'/%3E%3C/svg%3E");
-    }
-    .bg-grid {
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Cpath d='M40 0H0v40' fill='none' stroke='%23808080' stroke-opacity='.25' stroke-width='1'/%3E%3C/svg%3E");
-    }
-
     /* ===================== CHAT-VORSCHAU (E3) =====================
-       Nachgestellte Chat-Ansicht (Langdock-Leuchttürme, prompts.html):
+       Nachgestellte Chat-Ansicht (Langdock-Highlights, prompts.html):
        User-Blase (dunkel, Mono — der Prompt) → KI-Antwort (hell, Inter).
        Dezent-editorial, bewusst keine Messenger-Optik. */
     .chat { background: var(--paper); border: 1px solid var(--line); border-radius: var(--r-lg); overflow: hidden; }
@@ -1191,10 +1119,14 @@
        und blenden den rechten Rand weich aus — ein Hinweis, dass es weitergeht,
        falls es doch mal knapp wird. */
     @media (max-width: 1023px) {
+      /* Deutliche Fade-Kante als Scroll-Affordanz: statt hartem Abschneiden vor dem
+         Such-Button laufen die Pills rechts sichtbar in einen Verlauf aus. Das
+         padding-right sorgt dafür, dass das letzte Item beim Zu-Ende-Scrollen
+         vollständig aus der Fade-Zone herauskommt. */
       .main-nav {
-        padding-right: .3rem;
-        -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 1.4rem), transparent);
-                mask-image: linear-gradient(to right, #000 calc(100% - 1.4rem), transparent);
+        padding-right: 2.8rem;
+        -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 3.2rem), transparent);
+                mask-image: linear-gradient(to right, #000 calc(100% - 3.2rem), transparent);
       }
     }
     @media (max-width: 640px) {
@@ -1452,7 +1384,7 @@
     /* ============================================================
        E7 (Baukasten) — additive Komponenten für baukasten.html.
        Baustein-Grid & -Karten, iframe-Live-Vorschau (.preview-frame),
-       Code-Ansicht mit Copy, „Sag Claude"-Prompt-Block, Meistkopiert-
+       Code-Ansicht mit Copy, „Sag Claude“-Prompt-Block, Meistkopiert-
        Ranking, Beispieldaten-Karten, Filter/Sort-Leiste. pilot-CI,
        nur additiv — bestehende Regeln bleiben unangetastet.
        ============================================================ */
@@ -1541,7 +1473,7 @@
       font-size: 1.25rem; color: var(--c-gray-m); line-height: 1.5; margin: .4rem 0 0;
     }
 
-    /* ----- „Sag Claude"-Prompt-Block ----- */
+    /* ----- „Sag Claude“-Prompt-Block ----- */
     .bk-prompt-block {
       background: var(--paper); border: 1px solid var(--line); border-left: 3px solid var(--c-yellow);
       border-radius: var(--r-sm); padding: 1.4rem 1.6rem; margin: .6rem 0 1.2rem;
@@ -1614,7 +1546,7 @@
        E8 (Showroom) — additive Komponenten für showroom.html.
        Case-Grid & -Karten, skaliertes lazy-iframe-Thumbnail (.sr-frame),
        Ehrlichkeits-Marker (.sr-badge -echt/-beispiel), Reaktions-Button
-       „Will ich auch" (.sr-react), Projekt-des-Monats-Spotlight, Story-
+       „Will ich auch“ (.sr-react), Projekt-des-Monats-Spotlight, Story-
        Tab-Inhalte, Nachbauen-Querverweis-Chips, Filter/Sort-Leiste,
        Fakten-Box. pilot-CI, nur additiv — .sr-only NIE überschreiben.
        ============================================================ */
@@ -1692,7 +1624,7 @@
     }
     .sr-actions { display: flex; align-items: center; gap: .8rem; flex-wrap: wrap; margin-top: .6rem; }
 
-    /* ----- Reaktions-Button „Will ich auch" (vote:reaktion:<id>) ----- */
+    /* ----- Reaktions-Button „Will ich auch“ (vote:reaktion:<id>) ----- */
     .sr-react {
       display: inline-flex; align-items: center; gap: .5rem;
       border: 1px solid var(--line-strong); background: transparent; color: var(--c-gray-d);
@@ -1727,7 +1659,7 @@
     }
     .sr-spot .sr-badge.-beispiel { background: rgba(252,252,252,.08); color: var(--c-white); border-color: rgba(252,252,252,.28); }
 
-    /* ----- Story-Tab-Inhalte („So ist es entstanden") ----- */
+    /* ----- Story-Tab-Inhalte („So ist es entstanden“) ----- */
     .sr-story-block { margin: 0 0 1.6rem; }
     .sr-story-block p { font-size: 1.45rem; line-height: 1.6; color: var(--c-ink-body); margin: .4rem 0 0; }
     .sr-prompt-box {
@@ -1835,6 +1767,10 @@
       font-family: inherit; font-size: 1.9rem; color: var(--c-black);
     }
     #gsearch-input::placeholder { color: var(--c-gray-l); }
+    /* Nur EIN Schließen-Knopf im Overlay: der runde ✕ daneben. WebKit rendert bei
+       type="search" sonst ein zweites natives ✕ im Feld — ausgeblendet. */
+    #gsearch-input::-webkit-search-cancel-button,
+    #gsearch-input::-webkit-search-decoration { -webkit-appearance: none; appearance: none; display: none; }
     .gsearch-close {
       flex-shrink: 0; width: 3.4rem; height: 3.4rem; border-radius: 50%;
       border: none; background: var(--c-bg); color: var(--c-gray-d);
@@ -1904,46 +1840,10 @@
     }
     @media (prefers-reduced-motion: reduce) { .about-modal { animation: none; } }
 
-    /* ===== GETTING-STARTED / ERKLÄR-BLOCK (E9-Angleichung: bibliothek/baukasten/showroom) =====
-       Additiv & shared. Bestandsseiten (lernen/skills/hilfe/prompts) definieren dieselben
-       Klassen seitenlokal — deren <style> lädt nach base.css und gewinnt, Werte sind identisch. */
-    .getting-started { background: var(--c-white); border-bottom: 1px solid var(--line); }
-    .gs-inner { max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-d); }
-    .gs-toggle {
-      display: flex; align-items: center; gap: 1.2rem; width: 100%;
-      background: none; border: none; cursor: pointer; font-family: inherit;
-      font-size: 1.6rem; font-weight: 700; color: var(--c-black);
-      padding: 1.8rem 0; text-align: left;
-    }
-    .gs-toggle:hover { color: var(--c-gray-m); }
-    .gs-arrow { margin-left: auto; font-size: 1.8rem; transition: transform .2s; }
-    .gs-toggle[aria-expanded="true"] .gs-arrow { transform: rotate(90deg); }
-    .gs-content { padding-bottom: 2.4rem; }
-    .gs-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.4rem; }
-    .gs-step { display: flex; gap: 1.6rem; align-items: flex-start; }
-    .gs-num {
-      width: 3.2rem; height: 3.2rem; flex-shrink: 0; background: var(--c-yellow);
-      color: var(--c-black); border-radius: 50%; display: flex; align-items: center;
-      justify-content: center; font-size: 1.5rem; font-weight: 700; font-family: var(--font-mono);
-    }
-    .gs-step strong { font-size: 1.5rem; display: block; margin-bottom: .4rem; }
-    .gs-step p { font-size: 1.4rem; color: var(--c-gray-m); line-height: 1.5; }
-    .gs-start-pin {
-      display: inline-flex; align-items: center; gap: .6rem; margin-top: 2rem;
-      background: var(--c-yellow); color: var(--c-black); font-weight: 700;
-      font-size: 1.4rem; padding: .9rem 1.6rem; border-radius: 999px; border: none;
-      cursor: pointer; font-family: inherit; text-decoration: none;
-    }
-    .gs-start-pin:hover { background: var(--c-black); color: var(--c-yellow); }
-    @media (max-width: 1023px) {
-      .gs-inner { padding: 0 var(--pad-m); }
-      .gs-steps { grid-template-columns: 1fr; gap: 1.6rem; }
-    }
-
     /* ============================================================
        E10 — KOMPAKTES ERKLÄR-MODUL JE BEREICH (.area-intro)
        Ruhiger, editorialer Kopf-Block direkt unter dem Hero. Drei knappe
-       Teile: „Was ist das? · Wofür nutze ich es? · So fange ich an."
+       Teile: „Was ist das? · Wofür nutze ich es? · So fange ich an.“
        Ersetzt die alten Ein-Satz-Intros (.gs-oneline / .sr-orient / .gs-line).
        Selbsttragende Bandbreite (eigene Fläche + max-width + Padding), damit
        ALLE 5 Bereiche (Prompts, Lernen&Hilfe, Bibliothek, Baukasten, Showroom)

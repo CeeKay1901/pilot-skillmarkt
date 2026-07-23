@@ -67,7 +67,7 @@
 </div>
 <script>
 // Sehr kompakter, sicherer Markdown-Renderer (nur was wir brauchen).
-const esc = s => s.replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+const esc = s => s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function inline(s){
   return esc(s)
     .replace(/`([^`]+)`/g, '<code>$1</code>')

@@ -999,7 +999,7 @@ const BRAND = {
       "mono": "'JetBrains Mono' für Code, Terminal und Prompt-Snippets.",
       "hinweis": "Die offizielle pilot-Brand-Schrift ist \"Centra No1\" (kommerziell, nicht in dieser Bibliothek). Inter ist der freie, DSGVO-freundliche Ersatz, den dieser Marketplace real verwendet."
     },
-    "ton": "Deutsch, Du-Form, editorial und sachlich. Keine Marketing-Ausrufe, keine Emojis. Symbole ausschließlich als Lucide-Inline-SVGs. Das Wort \"Hub\" wird vermieden — stattdessen \"Startseite\".",
+    "ton": "Deutsch, Du-Form, editorial und sachlich. Keine Marketing-Ausrufe, keine Emojis. Symbole ausschließlich als Lucide-Inline-SVGs. Für die zentrale Einstiegsseite gilt durchgängig der Begriff „Startseite“.",
     "quelle": "Verifizierbar in shared/base.css (Custom Properties) — dies ist der reale CI-Spickzettel dieses Marketplace, keine offizielle Vorlage."
   },
   "logos": [

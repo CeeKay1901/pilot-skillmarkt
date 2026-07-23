@@ -4,9 +4,9 @@
   Layout-These: Die Startseite ist ein Verteiler, kein zweiter Katalog — der Outcome-Router
   („Was willst du tun?“) IST der Hero: eine dunkle Bühne mit neun Ziel-Kacheln direkt im
   Sichtfeld; alle Ziele sind live und verlinken sofort ins passende Werkzeug. Danach wird es
-  Sektion für Sektion ruhiger: asymmetrische
-  Bereichs-Landkarte (Katalog groß und solide, alle sechs Bereiche live),
-  editoriale Doppelspalte aus „Meine Reise“ und „Neu dazugekommen“, Getting-Started als
+  Sektion für Sektion ruhiger: Bereichs-Landkarte als ruhiges 3×2-Raster
+  (alle sechs Bereiche live und in gleicher Dichte, Katalog dezent betont),
+  editoriale Doppelspalte aus „Gemerkt & bewertet“ und „Neu dazugekommen“, Getting-Started als
   nummerierte Zeile — Rhythmus statt Karten-Schema F.
 -->
 <html lang="de">
@@ -41,12 +41,12 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="pilot AI Marketplace">
   <meta property="og:title" content="pilot AI Marketplace — Ein Ort für alles, was ihr mit KI baut">
-  <meta property="og:description" content="Skills, Prompts, Hilfe und echte Projekte aus dem Team — entdecken, verstehen, selbst nutzen. Von Piloten gebaut, von Piloten empfohlen.">
+  <meta property="og:description" content="Skills, Prompts, Hilfe, echte Team-Tools und Beispiel-Projekte — entdecken, verstehen, selbst nutzen. Von Piloten gebaut, von Piloten empfohlen.">
   <meta property="og:url" content="https://ceekay1901.github.io/pilot-skillmarkt/">
   <meta property="og:image" content="https://ceekay1901.github.io/pilot-skillmarkt/og-image.png">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="pilot AI Marketplace">
-  <meta name="twitter:description" content="Skills, Prompts, Hilfe und echte Projekte aus dem Team — entdecken, verstehen, selbst nutzen.">
+  <meta name="twitter:description" content="Skills, Prompts, Hilfe, echte Team-Tools und Beispiel-Projekte — entdecken, verstehen, selbst nutzen.">
   <meta name="twitter:image" content="https://ceekay1901.github.io/pilot-skillmarkt/og-image.png">
   <link rel="preload" href="assets/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="shared/base.css">
@@ -130,39 +130,28 @@
       .rt-foot { padding-top: .8rem; }
     }
 
-    /* ===== BEREICHS-LANDKARTE (asymmetrisch: Katalog groß, fünf Bereiche im Raster-Takt — alle sechs live) ===== */
+    /* ===== BEREICHS-LANDKARTE (ruhiges 3×2-Raster: alle sechs Bereiche im gleichen Takt, Katalog nur dezent betont) ===== */
     .areas { padding: 7.6rem 0 7.2rem; border-bottom: 1px solid var(--line); }
     .areas-inner { max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-d); }
     .areas h2 { font-size: var(--fs-h2); font-weight: var(--fw-semi); letter-spacing: -.02em; margin: .6rem 0 1rem; }
     .areas-sub { font-size: 1.6rem; color: var(--c-gray-d); line-height: 1.5; max-width: 68ch; }
     .areas-grid {
-      display: grid; grid-template-columns: 1.15fr 1fr 1fr; gap: 1.6rem;
-      margin-top: 3.6rem;
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.6rem;
+      margin-top: 3.6rem; align-items: stretch;
     }
     .area-card { border-radius: var(--r-lg); padding: 2.4rem 2.4rem 2.2rem; display: flex; flex-direction: column; gap: .8rem; }
-    /* Live-Bereich = solide Fläche mit gelber Kante */
-    .area-live {
-      grid-row: 1 / span 3;
-      background: var(--paper); border: 1px solid var(--line);
-      border-top: 3px solid var(--c-yellow);
-      box-shadow: var(--shadow-md);
-      padding: 3rem 3rem 2.8rem;
-    }
-    /* Zweiter Live-Bereich (Prompt-Sammlung): solide wie der Katalog, aber im Raster-Takt */
-    .area-live-sm {
+    /* Live-Bereiche = solide Flächen mit gelber Kante, alle in gleicher Dichte */
+    .area-live, .area-live-sm {
       background: var(--paper); border: 1px solid var(--line);
       border-top: 3px solid var(--c-yellow);
       box-shadow: var(--shadow-sm);
     }
-    .area-live-sm .area-count { margin: 1rem 0 .2rem; }
-    .area-live-sm .area-count-num { font-size: 3.6rem; }
-    .area-live-sm .area-spot { margin-top: 1.4rem; padding: 1.2rem 1.4rem; }
-    .area-live-sm .area-cta-row { padding-top: 1.8rem; }
+    /* Katalog-Karte: gleicher Takt, nur ein Hauch mehr Gewicht über den Schatten */
+    .area-live { box-shadow: var(--shadow-md); }
     .area-head { display: flex; align-items: center; gap: 1.2rem; }
     .area-ic { color: var(--c-black); display: flex; }
     .area-ic .lu { width: 2.2rem; height: 2.2rem; }
     .area-card h3 { font-size: 1.9rem; font-weight: var(--fw-semi); letter-spacing: -.01em; }
-    .area-live h3 { font-size: 2.4rem; }
     .area-pill {
       margin-left: auto; flex-shrink: 0;
       font-family: var(--font-mono); font-size: 1.05rem; font-weight: 500;
@@ -171,14 +160,13 @@
     }
     .area-pill.-live { background: var(--c-yellow); color: var(--c-black); }
     .area-text { font-size: 1.45rem; line-height: 1.55; color: var(--c-ink-body); }
-    .area-live .area-text { font-size: 1.55rem; }
-    .area-count { display: flex; align-items: baseline; gap: 1rem; margin: 1.6rem 0 .2rem; }
-    .area-count-num { font-size: 5.6rem; font-weight: 700; letter-spacing: -.03em; line-height: 1; font-variant-numeric: tabular-nums; }
+    .area-count { display: flex; align-items: baseline; gap: 1rem; margin: 1rem 0 .2rem; }
+    .area-count-num { font-size: 3.6rem; font-weight: 700; letter-spacing: -.03em; line-height: 1; font-variant-numeric: tabular-nums; }
     .area-count-label { font-family: var(--font-mono); font-size: 1.2rem; letter-spacing: .12em; text-transform: uppercase; color: var(--c-gray-m); }
     .area-meta { font-size: 1.35rem; color: var(--c-gray-d); }
-    /* Leuchtturm-Skill im Katalog-Kärtchen */
+    /* Highlight-Skill im Katalog-Kärtchen */
     .area-spot {
-      margin-top: 2rem; padding: 1.6rem 1.8rem;
+      margin-top: 1.4rem; padding: 1.2rem 1.4rem;
       background: var(--c-bg); border-radius: var(--r-md);
       text-decoration: none; display: block; color: inherit;
       border: 1px solid transparent; transition: var(--trans);
@@ -192,15 +180,14 @@
     .area-spot-name { font-size: 1.7rem; font-weight: var(--fw-semi); }
     .area-spot-tag { font-size: 1.4rem; color: var(--c-gray-d); margin: .2rem 0 .6rem; }
     .area-spot .rating-text { font-size: 1.25rem; }
-    .area-cta-row { margin-top: auto; padding-top: 2.4rem; }
+    .area-cta-row { margin-top: auto; padding-top: 1.8rem; }
     @media (max-width: 1023px) {
       .areas { padding: 5.2rem 0 5rem; }
       .areas-grid { grid-template-columns: 1fr; }
-      .area-live { grid-row: auto; padding: 2.4rem 2rem 2.2rem; }
+      .area-card { padding: 2.4rem 2rem 2.2rem; }
     }
     @media (min-width: 641px) and (max-width: 1023px) {
       .areas-grid { grid-template-columns: 1fr 1fr; }
-      .area-live { grid-column: 1 / -1; }
     }
 
     /* ===== DOPPELSPALTE: MEINE REISE + NEU DAZUGEKOMMEN ===== */
@@ -315,7 +302,7 @@
           <a class="rt-card" href="showroom.html">
             <span class="rt-ic"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg></span>
             <span class="rt-label">Sehen, was möglich ist</span>
-            <span class="rt-hint">Echte Projekte aus dem Team — zum Anklicken.</span>
+            <span class="rt-hint">Echte Team-Tools und Beispiel-Projekte — zum Anklicken.</span>
             <span class="rt-foot"><span class="rt-dest">Zum Showroom</span></span>
           </a>
           <a class="rt-card" href="lernen-hilfe.html#befehle">
@@ -345,7 +332,7 @@
           <a class="rt-card is-guide" href="skills.html">
             <span class="rt-ic"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z"/></svg></span>
             <span class="rt-label">Deinen ersten Skill finden</span>
-            <span class="rt-hint"><span data-live="skills-total">37</span> Skills — sortiert nach Aufgabe, nicht nach Abteilung.</span>
+            <span class="rt-hint"><span data-live="skills-total">34</span> Skills — sortiert nach Aufgabe, nicht nach Abteilung.</span>
             <span class="rt-foot"><span class="rt-dest">Zum Katalog</span></span>
           </a>
         </div>
@@ -401,7 +388,7 @@
             </div>
             <p class="area-text">Kopierfertige Prompts mit gelben Platzhaltern, Varianten und der Erklärung, warum sie funktionieren — für Langdock und Claude Code.</p>
             <a class="area-spot" href="prompts.html?p=briefing-zusammenfassung">
-              <span class="area-spot-label">Leuchtturm</span>
+              <span class="area-spot-label">Highlight</span>
               <span class="area-spot-name">Briefing-Zusammenfassung</span>
               <p class="area-spot-tag">Langes Kunden-Briefing rein, arbeitsfähige Zusammenfassung raus</p>
               <span id="area-prompt-spot-rating"></span>
@@ -424,7 +411,7 @@
             <p class="area-meta" id="area-lernenhilfe-meta"></p>
             <p class="area-text">Alles zum Verstehen und Weiterkommen an einem Ort: geprüfte Lern-Ressourcen als Kompass, Befehle und Kniffe im Team-Ranking, ein Glossar in einfacher Sprache und Schritt-für-Schritt-Lösungen für die häufigsten Blocker.</p>
             <a class="area-spot" href="lernen-hilfe.html?befehl=clear">
-              <span class="area-spot-label">Leuchtturm</span>
+              <span class="area-spot-label">Highlight</span>
               <span class="area-spot-name">/clear</span>
               <p class="area-spot-tag">Der wichtigste Handgriff, wenn Claude „komisch wird“ — mit Mini-Terminal-Demo</p>
               <span id="area-lernenhilfe-spot-votes"></span>
@@ -447,7 +434,7 @@
             <p class="area-meta" id="area-bibliothek-meta"></p>
             <p class="area-text">Frei nutzbares Material für deine Projekte: Schriften mit Live-Vorschau, ein durchsuchbarer Icon-Browser, Farbpaletten mit WCAG-Kontrast-Check, Muster und der pilot-CI-Spickzettel. Nur OFL/MIT/ISC/CC0 — Lizenz sichtbar an jedem Asset.</p>
             <a class="area-spot" href="bibliothek.html?a=inter">
-              <span class="area-spot-label">Leuchtturm</span>
+              <span class="area-spot-label">Highlight</span>
               <span class="area-spot-name">Inter — Live-Vorschau</span>
               <p class="area-spot-tag">Beispieltext antippen, Größe live regeln, @font-face &amp; Download direkt daneben</p>
               <span id="area-bibliothek-spot-rating"></span>
@@ -470,7 +457,7 @@
             <p class="area-meta" id="area-baukasten-meta"></p>
             <p class="area-text">Fertige Code-Bausteine mit Live-Vorschau und Beispieldaten zum Üben — jeder mit einem „Sag Claude einfach …“-Prompt, der ihn für dich anpasst.</p>
             <a class="area-spot" href="baukasten.html?b=header-hero">
-              <span class="area-spot-label">Leuchtturm</span>
+              <span class="area-spot-label">Highlight</span>
               <span class="area-spot-name">Header mit Hero</span>
               <p class="area-spot-tag">Der komplette „above the fold“-Auftakt in einem Rutsch — Nav, Schlagzeile, zwei Buttons</p>
               <span id="area-baukasten-spot-rating"></span>
@@ -491,9 +478,9 @@
               <span class="area-count-label">Projekte</span>
             </div>
             <p class="area-meta" id="area-showroom-meta"></p>
-            <p class="area-text">Projekte von Kolleg:innen zum Anklicken — mit der ehrlichen Geschichte, wie sie entstanden sind, und allem, was du zum Nachbauen brauchst.</p>
+            <p class="area-text">Echte Team-Tools und markierte Beispiel-Projekte zum Anklicken — mit der ehrlichen Geschichte, wie sie entstanden sind, und allem, was du zum Nachbauen brauchst.</p>
             <a class="area-spot" href="showroom.html?case=umfrage-auswerter">
-              <span class="area-spot-label">Leuchtturm</span>
+              <span class="area-spot-label">Highlight</span>
               <span class="area-spot-name">Umfrage-Auswerter</span>
               <p class="area-spot-tag">Ein echtes Feierabend-Tool: CSV rein, Antwortverteilung als Balken raus — ganz ohne Excel</p>
               <span id="area-showroom-spot-react"></span>
@@ -510,8 +497,8 @@
     <section class="jrow" id="reise" aria-label="Dein Fortschritt und Neuigkeiten">
       <div class="jrow-inner">
         <div class="jcol anim-reveal">
-          <p class="section-label">Meine Reise</p>
-          <h2>Was du schon geschafft hast</h2>
+          <p class="section-label">Gemerkt & bewertet</p>
+          <h2>Deine Sachen</h2>
           <div id="journey-body"><!-- per JS: Fortschritt oder Empty-State --></div>
         </div>
         <div class="jcol anim-reveal" id="neu">
@@ -536,7 +523,7 @@
               <span class="news-date">17. Juli</span>
               <div>
                 <p class="news-title">Der Showroom ist da</p>
-                <p class="news-text">Echte Projekte aus dem Team zum Anklicken — mit der ehrlichen Geschichte, wie sie entstanden sind, und allem zum Nachbauen. <a href="showroom.html">Zum Showroom</a>, wer festhängt, findet Rat unter <a href="lernen-hilfe.html">Lernen &amp; Hilfe</a>.</p>
+                <p class="news-text">Echte Team-Tools und markierte Beispiel-Projekte zum Anklicken — mit der ehrlichen Geschichte, wie sie entstanden sind, und allem zum Nachbauen. <a href="showroom.html">Zum Showroom</a>, wer festhängt, findet Rat unter <a href="lernen-hilfe.html">Lernen &amp; Hilfe</a>.</p>
               </div>
             </li>
             <li class="news-item">
@@ -613,7 +600,11 @@
     // ===== ECHTE ZÄHLER (live aus data/skills.js — nichts erfunden) =====
     const COUNTS = {
       // typgetrennt gezählt — Plugins/Frameworks (itemType, ab E2) zählen nicht als „Skills"
-      skills: SKILLS.filter(s => (s.itemType || 'skill') === 'skill').length,
+      // Zahlen-Ehrlichkeit: sichtbare Skill-Zahl OHNE die drei HIDDEN-Einträge (= 34,
+      // konsistent zu skills.html/VISIBLE_SKILL_COUNT). HIDDEN kommt aus data/skills.js.
+      skills: (typeof VISIBLE_SKILL_COUNT === 'number')
+        ? VISIBLE_SKILL_COUNT
+        : SKILLS.filter(s => (s.itemType || 'skill') === 'skill' && (typeof HIDDEN === 'undefined' || !HIDDEN.has(s.id))).length,
       plugins: SKILLS.filter(s => s.itemType === 'plugin').length,
       frameworks: SKILLS.filter(s => s.itemType === 'framework').length,
       prompts: Object.keys(START_PROMPTS).length,
@@ -704,7 +695,7 @@
       const bkCount = document.getElementById('area-baukasten-count');
       if (bkCount) animateCount(bkCount, BAUSTEINE.length, 1100);
       const bkMeta = document.getElementById('area-baukasten-meta');
-      if (bkMeta) bkMeta.textContent = `davon ${BAUKASTEN_STATS.leuchttuerme} Leuchttürme · ${BAUKASTEN_STATS.kategorien} Kategorien · ${BEISPIELDATEN_STATS.total} Beispieldateien zum Üben`;
+      if (bkMeta) bkMeta.textContent = `davon ${BAUKASTEN_STATS.leuchttuerme} Highlights · ${BAUKASTEN_STATS.kategorien} Kategorien · ${BEISPIELDATEN_STATS.total} Beispieldateien zum Üben`;
       // Leuchtturm: Seed-Bewertung des Header-Hero-Bausteins (rate:baustein:* wird
       // auf baukasten.html gepflegt) — hier direkt aus dem Seed angezeigt.
       const spotRating = document.getElementById('area-baukasten-spot-rating');
@@ -724,7 +715,7 @@
       // eigene Stimme über vote:reaktion:*, aus base.js).
       const react = document.getElementById('area-showroom-spot-react');
       const lhCase = CASES.find(c => c.id === 'umfrage-auswerter');
-      if (react && lhCase) react.innerHTML = `<span class="rating-text">${getVotes('reaktion', lhCase.id, lhCase.reaktionSeed)} × „Will ich auch"</span>`;
+      if (react && lhCase) react.innerHTML = `<span class="rating-text">${getVotes('reaktion', lhCase.id, lhCase.reaktionSeed)} × „Will ich auch“</span>`;
     });
 
     // ===== MEINE REISE (sektionsübergreifend aus localStorage, via base.js) =====
@@ -783,8 +774,8 @@
       if (favItems.length + triedCount + bewertungen + reaktionen === 0) {
         body.innerHTML = `
           <div class="jr-empty">
-            <p>Hier entsteht deine Reise — mach den ersten Schritt. Favoriten, ausprobierte Skills, Bewertungen und Reaktionen sammeln sich ab dann an dieser Stelle, über alle Bereiche hinweg.</p>
-            <a class="c-cta -black-border" href="skills.html?skill=erste-schritte">Starte mit „Erste Schritte“</a>
+            <p>Noch nichts gemerkt. Sobald du etwas favorisierst, ausprobierst oder bewertest, sammelt es sich hier — über alle Bereiche hinweg, damit du es wiederfindest.</p>
+            <a class="c-cta -black-border" href="skills.html">Im Katalog stöbern</a>
           </div>`;
         return;
       }

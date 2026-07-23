@@ -7,7 +7,7 @@
      BAUSTEINE          — 12 selbst-enthaltene HTML+CSS-Bausteine als
                           Ausgangspunkt. Jeder Baustein ist ein Startpunkt,
                           den Claude für dich anpasst — deshalb trägt jeder
-                          einen kopierfertigen „Sag Claude einfach: …"-Prompt.
+                          einen kopierfertigen „Sag Claude einfach: …“-Prompt.
                           Felder: id, name, kategorie (layout | inhalt |
                           formular | daten | navigation), leuchtturm,
                           schwierigkeit, beschreibung, einsatz, tags, code
@@ -19,12 +19,12 @@
                           um die normalisierten Felder rating {average,count}
                           und copyCount (siehe unten) — nur umbenannt, nichts
                           erfunden.
-     BEISPIELDATEN      — 5 erfundene, anonymisierte Übungsdateien unter
-                          beispieldaten/ (4 CSV + 1 Markdown). KEIN echtes
-                          Kundenmaterial. Größen/Zeilen/Spalten sind real aus
-                          den Dateien gezählt. Jede Datei trägt eine
-                          Übungsidee mit Querverweis auf den passenden
-                          Baustein bzw. Skill/Prompt.
+     BEISPIELDATEN      — 8 erfundene, anonymisierte Übungsdateien unter
+                          beispieldaten/ (4 CSV + 2 Markdown + 2 SVG-
+                          Testbilder). KEIN echtes Kundenmaterial. Größen/
+                          Zeilen/Spalten sind real aus den Dateien gezählt.
+                          Jede Datei trägt eine Übungsidee mit Querverweis
+                          auf den passenden Baustein bzw. Skill/Prompt.
      BAUKASTEN_STATS    — real gezählte Kennzahlen (Bausteine, Leuchttürme,
                           Kategorien, Beispieldateien) für die Hero-Zahlen.
      BEISPIELDATEN_STATS— real gezählte Kennzahlen der Übungsdateien.
@@ -50,7 +50,7 @@ const BAUSTEINE = [
     kategorie: 'layout',
     leuchtturm: true,
     schwierigkeit: 'einfach',
-    beschreibung: 'Der erste Bildschirm einer Landingpage: Navigationsleiste, große Schlagzeile mit Akzentwort, kurzer Untertitel und zwei Buttons. Löst den klassischen „above the fold"-Auftakt in einem Rutsch.',
+    beschreibung: 'Der erste Bildschirm einer Landingpage: Navigationsleiste, große Schlagzeile mit Akzentwort, kurzer Untertitel und zwei Buttons. Löst den klassischen „above the fold“-Auftakt in einem Rutsch.',
     einsatz: 'Startseite für eine neue Kampagnen-Landingpage oder ein internes Tool, das Kolleg:innen sofort verstehen sollen.',
     tags: ['header', 'hero', 'navigation', 'landingpage', 'startseite', 'schlagzeile', 'buttons', 'oben'],
     code: `<style>
@@ -143,7 +143,7 @@ const BAUSTEINE = [
   </div>
 </header>
 </body></html>`,
-    claudePrompt: 'Nutze diesen Baustein als Ausgangspunkt und passe ihn an: Behalte die Struktur (Nav-Leiste oben, große Schlagzeile, Untertitel, zwei Buttons). Ersetze das Logo durch „[dein Projektname]", die Navigationspunkte durch [deine Menüpunkte], die Schlagzeile durch „[deine Aussage]" mit dem hervorgehobenen Akzentwort „[Wort]", und die Button-Texte durch „[Button 1]" und „[Button 2]". Wenn du eine andere Markenfarbe brauchst, ändere die CSS-Variable --akzent. Tipp: Für den passenden Ton hilft dir der Skill frontend-design.',
+    claudePrompt: 'Nutze diesen Baustein als Ausgangspunkt und passe ihn an: Behalte die Struktur (Nav-Leiste oben, große Schlagzeile, Untertitel, zwei Buttons). Ersetze das Logo durch „[dein Projektname]“, die Navigationspunkte durch [deine Menüpunkte], die Schlagzeile durch „[deine Aussage]“ mit dem hervorgehobenen Akzentwort „[Wort]“, und die Button-Texte durch „[Button 1]“ und „[Button 2]“. Wenn du eine andere Markenfarbe brauchst, ändere die CSS-Variable --akzent. Tipp: Für den passenden Ton hilft dir der Skill frontend-design.',
     seedKopien: 34,
     seedRating: { schnitt: 4.8, anzahl: 11 }
   },
@@ -157,7 +157,7 @@ const BAUSTEINE = [
     kategorie: 'layout',
     leuchtturm: false,
     schwierigkeit: 'einfach',
-    beschreibung: 'Ein responsives Raster aus gleich aussehenden Karten mit Icon, Titel, Text und Link. Umbricht automatisch von vier auf eine Spalte. Löst „mehrere gleichwertige Dinge übersichtlich nebeneinander".',
+    beschreibung: 'Ein responsives Raster aus gleich aussehenden Karten mit Icon, Titel, Text und Link. Umbricht automatisch von vier auf eine Spalte. Löst „mehrere gleichwertige Dinge übersichtlich nebeneinander“.',
     einsatz: 'Leistungs- oder Teamübersicht auf einer Website, oder Kachel-Startseite für ein internes Tool-Verzeichnis.',
     tags: ['grid', 'karten', 'cards', 'raster', 'kacheln', 'leistungen', 'responsive', 'icons'],
     code: `<style>
@@ -250,7 +250,7 @@ const BAUSTEINE = [
   </div>
 </section>
 </body></html>`,
-    claudePrompt: 'Nutze diesen Baustein als Ausgangspunkt und passe ihn an: Behalte das Karten-Raster, aber mach [Anzahl] Karten daraus. Setze die Überschrift auf „[deine Überschrift]" und befülle jede Karte mit Titel und einem Satz zu [dein Thema, z. B. deine Leistungen]. Die Icons darfst du passend austauschen. Farben nur ändern, wenn nötig, über die CSS-Variablen oben.',
+    claudePrompt: 'Nutze diesen Baustein als Ausgangspunkt und passe ihn an: Behalte das Karten-Raster, aber mach [Anzahl] Karten daraus. Setze die Überschrift auf „[deine Überschrift]“ und befülle jede Karte mit Titel und einem Satz zu [dein Thema, z. B. deine Leistungen]. Die Icons darfst du passend austauschen. Farben nur ändern, wenn nötig, über die CSS-Variablen oben.',
     seedKopien: 28,
     seedRating: { schnitt: 4.6, anzahl: 9 }
   },
@@ -264,7 +264,7 @@ const BAUSTEINE = [
     kategorie: 'layout',
     leuchtturm: false,
     schwierigkeit: 'einfach',
-    beschreibung: 'Zwei Spalten nebeneinander: links eine Bildfläche (hier als anpassbare Inline-Grafik), rechts Überschrift, Fließtext, Häkchen-Liste und Button. Auf dem Handy stapeln sich beide. Löst den erklärenden Abschnitt „zeigen und erklären".',
+    beschreibung: 'Zwei Spalten nebeneinander: links eine Bildfläche (hier als anpassbare Inline-Grafik), rechts Überschrift, Fließtext, Häkchen-Liste und Button. Auf dem Handy stapeln sich beide. Löst den erklärenden Abschnitt „zeigen und erklären“.',
     einsatz: 'Vorstellung eines Angebots oder Tools auf einer Landingpage, wo ein Screenshot oder eine Grafik neben dem Text stehen soll.',
     tags: ['bild', 'text', 'split', 'zweispaltig', 'feature', 'abschnitt', 'illustration', 'responsive'],
     code: `<style>
@@ -350,7 +350,7 @@ const BAUSTEINE = [
   </div>
 </section>
 </body></html>`,
-    claudePrompt: 'Nutze diesen Baustein als Ausgangspunkt und passe ihn an: Behalte den Zwei-Spalten-Aufbau (Bild links, Text rechts). Setze die Überschrift auf „[deine Überschrift]", den Absatz auf [worum es geht] und ersetze die drei Häkchen-Punkte durch [deine drei Vorteile]. Wenn du ein echtes Bild hast, tausche die Platzhalter-Grafik gegen ein <img>-Tag aus. Für die Reihenfolge Bild rechts statt links gib dem Media-Block order:2.',
+    claudePrompt: 'Nutze diesen Baustein als Ausgangspunkt und passe ihn an: Behalte den Zwei-Spalten-Aufbau (Bild links, Text rechts). Setze die Überschrift auf „[deine Überschrift]“, den Absatz auf [worum es geht] und ersetze die drei Häkchen-Punkte durch [deine drei Vorteile]. Wenn du ein echtes Bild hast, tausche die Platzhalter-Grafik gegen ein <img>-Tag aus. Für die Reihenfolge Bild rechts statt links gib dem Media-Block order:2.',
     seedKopien: 19,
     seedRating: { schnitt: 4.4, anzahl: 7 }
   },
@@ -364,7 +364,7 @@ const BAUSTEINE = [
     kategorie: 'navigation',
     leuchtturm: false,
     schwierigkeit: 'einfach',
-    beschreibung: 'Der Seitenabschluss: dunkler Fuß mit Logo, kurzem Claim, mehreren Linkspalten und einer Zeile mit Copyright, Rechtslinks und kleinen Icons. Löst „unten sauber abschließen und Wichtiges verlinken".',
+    beschreibung: 'Der Seitenabschluss: dunkler Fuß mit Logo, kurzem Claim, mehreren Linkspalten und einer Zeile mit Copyright, Rechtslinks und kleinen Icons. Löst „unten sauber abschließen und Wichtiges verlinken“.',
     einsatz: 'Abschluss jeder Website oder Landingpage — Impressum, Datenschutz und Kontaktwege gehören hier gebündelt hin.',
     tags: ['footer', 'fuß', 'navigation', 'impressum', 'links', 'kontakt', 'abschluss', 'copyright'],
     code: `<style>
@@ -461,7 +461,7 @@ const BAUSTEINE = [
   </div>
 </footer>
 </body></html>`,
-    claudePrompt: 'Nutze diesen Baustein als Ausgangspunkt und passe ihn an: Behalte den dunklen Footer mit Linkspalten und der unteren Zeile. Ersetze Logo und Claim durch „[dein Projekt]" und [dein Claim], benenne die drei Linkspalten in [deine Rubriken] um und passe die Links an. Impressum und Datenschutz bitte auf deine echten Seiten verlinken. Farben nur bei Bedarf über die CSS-Variablen ändern.',
+    claudePrompt: 'Nutze diesen Baustein als Ausgangspunkt und passe ihn an: Behalte den dunklen Footer mit Linkspalten und der unteren Zeile. Ersetze Logo und Claim durch „[dein Projekt]“ und [dein Claim], benenne die drei Linkspalten in [deine Rubriken] um und passe die Links an. Impressum und Datenschutz bitte auf deine echten Seiten verlinken. Farben nur bei Bedarf über die CSS-Variablen ändern.',
     seedKopien: 22,
     seedRating: { schnitt: 4.5, anzahl: 8 }
   },
@@ -475,8 +475,8 @@ const BAUSTEINE = [
     kategorie: 'inhalt',
     leuchtturm: false,
     schwierigkeit: 'einfach',
-    beschreibung: 'Ein breites, dunkles Aufforderungs-Band mit kräftiger Aussage und einem Button. Setzt einen klaren Handlungsimpuls zwischen zwei Abschnitten. Löst „jetzt soll die Besucherin etwas tun".',
-    einsatz: 'Trennt Abschnitte auf einer Landingpage und schiebt zur nächsten Aktion — etwa „Beratungstermin anfragen" nach der Leistungsübersicht.',
+    beschreibung: 'Ein breites, dunkles Aufforderungs-Band mit kräftiger Aussage und einem Button. Setzt einen klaren Handlungsimpuls zwischen zwei Abschnitten. Löst „jetzt soll die Besucherin etwas tun“.',
+    einsatz: 'Trennt Abschnitte auf einer Landingpage und schiebt zur nächsten Aktion — etwa „Beratungstermin anfragen“ nach der Leistungsübersicht.',
     tags: ['cta', 'call to action', 'band', 'aufforderung', 'button', 'aktion', 'abschluss'],
     code: `<style>
   .pi-cta {
@@ -526,7 +526,7 @@ const BAUSTEINE = [
   </div>
 </section>
 </body></html>`,
-    claudePrompt: 'Nutze diesen Baustein als Ausgangspunkt und passe ihn an: Behalte das dunkle Band mit Text links und Button rechts. Setze die Aussage auf „[deine Frage/Aussage]" mit dem hervorgehobenen Wort „[Akzentwort]", den kleinen Zusatz auf [Detail] und den Button auf „[Button-Text]". Verlinke den Button auf [dein Ziel, z. B. dein Kontaktformular].',
+    claudePrompt: 'Nutze diesen Baustein als Ausgangspunkt und passe ihn an: Behalte das dunkle Band mit Text links und Button rechts. Setze die Aussage auf „[deine Frage/Aussage]“ mit dem hervorgehobenen Wort „[Akzentwort]“, den kleinen Zusatz auf [Detail] und den Button auf „[Button-Text]“. Verlinke den Button auf [dein Ziel, z. B. dein Kontaktformular].',
     seedKopien: 17,
     seedRating: { schnitt: 4.3, anzahl: 6 }
   },
@@ -540,7 +540,7 @@ const BAUSTEINE = [
     kategorie: 'inhalt',
     leuchtturm: false,
     schwierigkeit: 'einfach',
-    beschreibung: 'Ein flaches Raster aus Merkmalen — je Eintrag ein Icon, ein Titel und ein Satz. Ohne Kartenrahmen, ruhiger als das Karten-Grid. Löst „mehrere Vorteile knapp aufzählen".',
+    beschreibung: 'Ein flaches Raster aus Merkmalen — je Eintrag ein Icon, ein Titel und ein Satz. Ohne Kartenrahmen, ruhiger als das Karten-Grid. Löst „mehrere Vorteile knapp aufzählen“.',
     einsatz: 'Vorteile eines Angebots oder Funktionen eines internen Tools kompakt auflisten, etwa unter dem Hero.',
     tags: ['features', 'liste', 'vorteile', 'merkmale', 'icons', 'aufzählung', 'raster'],
     code: `<style>
@@ -614,7 +614,7 @@ const BAUSTEINE = [
   </div>
 </section>
 </body></html>`,
-    claudePrompt: 'Nutze diesen Baustein als Ausgangspunkt und passe ihn an: Behalte das Icon-Titel-Text-Raster. Setze die Überschrift auf „[deine Überschrift]" und ersetze die vier Einträge durch [deine Vorteile/Funktionen] mit je einem kurzen Satz. Passende Icons darfst du wählen. Wenn du mehr Einträge brauchst, kopiere einen pi-feat__item-Block.',
+    claudePrompt: 'Nutze diesen Baustein als Ausgangspunkt und passe ihn an: Behalte das Icon-Titel-Text-Raster. Setze die Überschrift auf „[deine Überschrift]“ und ersetze die vier Einträge durch [deine Vorteile/Funktionen] mit je einem kurzen Satz. Passende Icons darfst du wählen. Wenn du mehr Einträge brauchst, kopiere einen pi-feat__item-Block.',
     seedKopien: 15,
     seedRating: { schnitt: 4.4, anzahl: 6 }
   },
@@ -628,7 +628,7 @@ const BAUSTEINE = [
     kategorie: 'inhalt',
     leuchtturm: true,
     schwierigkeit: 'mittel',
-    beschreibung: 'Drei Pakete nebeneinander, das mittlere hervorgehoben mit Empfehlungs-Fähnchen. Je Paket Name, Preis, Leistungs-Häkchen und Button. Löst die klassische „welches Paket passt"-Entscheidung.',
+    beschreibung: 'Drei Pakete nebeneinander, das mittlere hervorgehoben mit Empfehlungs-Fähnchen. Je Paket Name, Preis, Leistungs-Häkchen und Button. Löst die klassische „welches Paket passt“-Entscheidung.',
     einsatz: 'Leistungspakete einer Agentur transparent zeigen, oder Stufen eines internen Angebots (etwa Support-Level) vergleichbar machen.',
     tags: ['preise', 'pakete', 'tarife', 'pricing', 'vergleich', 'plan', 'empfohlen', 'karten'],
     code: `<style>
@@ -789,7 +789,7 @@ const BAUSTEINE = [
     kategorie: 'inhalt',
     leuchtturm: false,
     schwierigkeit: 'einfach',
-    beschreibung: 'Ein hervorgehobenes Kundenzitat mit großem Anführungszeichen, Name, Rolle und Monogramm-Avatar. Löst „Vertrauen durch eine echte Stimme aufbauen".',
+    beschreibung: 'Ein hervorgehobenes Kundenzitat mit großem Anführungszeichen, Name, Rolle und Monogramm-Avatar. Löst „Vertrauen durch eine echte Stimme aufbauen“.',
     einsatz: 'Kundenstimme auf einer Landingpage oder eine Referenz-Aussage im Angebot — Beispieltext, kein echtes Kundenmaterial.',
     tags: ['testimonial', 'zitat', 'kundenstimme', 'referenz', 'vertrauen', 'quote', 'avatar'],
     code: `<style>
@@ -848,7 +848,7 @@ const BAUSTEINE = [
   </figure>
 </section>
 </body></html>`,
-    claudePrompt: 'Nutze diesen Baustein als Ausgangspunkt und passe ihn an: Behalte das zentrierte Zitat mit Avatar. Setze den Zitattext auf „[dein Zitat]", den Namen auf [Name], die Rolle auf [Position, Firma] und die zwei Initialen im Avatar entsprechend. Wichtig: Nur echte, freigegebene Aussagen verwenden — dieser Beispieltext ist erfunden.',
+    claudePrompt: 'Nutze diesen Baustein als Ausgangspunkt und passe ihn an: Behalte das zentrierte Zitat mit Avatar. Setze den Zitattext auf „[dein Zitat]“, den Namen auf [Name], die Rolle auf [Position, Firma] und die zwei Initialen im Avatar entsprechend. Wichtig: Nur echte, freigegebene Aussagen verwenden — dieser Beispieltext ist erfunden.',
     seedKopien: 12,
     seedRating: { schnitt: 4.2, anzahl: 5 }
   },
@@ -862,7 +862,7 @@ const BAUSTEINE = [
     kategorie: 'formular',
     leuchtturm: true,
     schwierigkeit: 'mittel',
-    beschreibung: 'Ein vollständig gestaltetes Kontaktformular mit Info-Spalte und Feldern (Name, E-Mail, Betreff-Auswahl, Nachricht, Einwilligung). Sauberer Fokus-Zustand, kein echtes Versenden. Löst „professionell aussehende Anfrage-Strecke".',
+    beschreibung: 'Ein vollständig gestaltetes Kontaktformular mit Info-Spalte und Feldern (Name, E-Mail, Betreff-Auswahl, Nachricht, Einwilligung). Sauberer Fokus-Zustand, kein echtes Versenden. Löst „professionell aussehende Anfrage-Strecke“.',
     einsatz: 'Kontaktseite einer Website oder Anfrage-Maske eines internen Tools. Hinweis: Der Versand muss separat angebunden werden.',
     tags: ['formular', 'kontakt', 'eingabe', 'felder', 'input', 'anfrage', 'nachricht', 'einwilligung'],
     code: `<style>
@@ -992,7 +992,7 @@ const BAUSTEINE = [
     kategorie: 'daten',
     leuchtturm: true,
     schwierigkeit: 'mittel',
-    beschreibung: 'Zwei Diagramme ganz ohne Chart-Bibliothek: ein Balkendiagramm aus reinem CSS und ein Liniendiagramm als Inline-SVG mit Fläche und Rasterlinien. Werte stehen direkt im Markup und sind leicht austauschbar. Löst „Zahlen schnell sichtbar machen".',
+    beschreibung: 'Zwei Diagramme ganz ohne Chart-Bibliothek: ein Balkendiagramm aus reinem CSS und ein Liniendiagramm als Inline-SVG mit Fläche und Rasterlinien. Werte stehen direkt im Markup und sind leicht austauschbar. Löst „Zahlen schnell sichtbar machen“.',
     einsatz: 'Kampagnen-KPIs oder Budgetverläufe in einem selbstgebauten Dashboard oder Report darstellen, ohne externe Skripte laden zu müssen.',
     tags: ['chart', 'diagramm', 'balken', 'linie', 'svg', 'css', 'kpi', 'dashboard', 'daten', 'ohne lib'],
     code: `<style>
@@ -1129,7 +1129,7 @@ const BAUSTEINE = [
     kategorie: 'daten',
     leuchtturm: false,
     schwierigkeit: 'einfach',
-    beschreibung: 'Eine sauber gestaltete Datentabelle mit dunkler Kopfzeile, Zebra-Zeilen, rechtsbündigen Zahlen, Status-Badges und horizontalem Scrollen auf kleinen Bildschirmen. Löst „Zahlen und Zustände lesbar auflisten".',
+    beschreibung: 'Eine sauber gestaltete Datentabelle mit dunkler Kopfzeile, Zebra-Zeilen, rechtsbündigen Zahlen, Status-Badges und horizontalem Scrollen auf kleinen Bildschirmen. Löst „Zahlen und Zustände lesbar auflisten“.',
     einsatz: 'Kampagnen-, Budget- oder Aufgabenübersicht in einem internen Tool — überall, wo strukturierte Zeilen mit Status gebraucht werden.',
     tags: ['tabelle', 'table', 'daten', 'zeilen', 'zebra', 'status', 'badge', 'übersicht', 'liste'],
     code: `<style>
@@ -1234,7 +1234,7 @@ const BAUSTEINE = [
     kategorie: 'daten',
     leuchtturm: false,
     schwierigkeit: 'einfach',
-    beschreibung: 'Ein Band aus großen Kennzahlen mit kurzer Beschriftung — vier Werte nebeneinander, auf dem Handy gestapelt. Löst „Erfolge auf einen Blick zeigen".',
+    beschreibung: 'Ein Band aus großen Kennzahlen mit kurzer Beschriftung — vier Werte nebeneinander, auf dem Handy gestapelt. Löst „Erfolge auf einen Blick zeigen“.',
     einsatz: 'Ergebnisse einer Kampagne oder Eckdaten der Agentur prominent auf einer Landingpage oder im Report zeigen.',
     tags: ['statistik', 'kennzahlen', 'kpi', 'zahlen', 'band', 'metriken', 'erfolge', 'counter'],
     code: `<style>
@@ -1294,7 +1294,7 @@ const BAUSTEINE = [
 
 /* ---- Normalisierte Felder für die Rating-/Kopier-Engine (base.js) ----
    getEffectiveRating() erwartet item.rating = { average, count }; der
-   „Meistkopiert"-Zähler liest item.copyCount. Beides wird hier NUR aus den
+   „Meistkopiert“-Zähler liest item.copyCount. Beides wird hier NUR aus den
    vorhandenen Seed-Feldern abgeleitet (umbenannt), nichts erfunden. */
 BAUSTEINE.forEach(function (b) {
   b.rating = b.seedRating ? { average: b.seedRating.schnitt, count: b.seedRating.anzahl } : null;
@@ -1318,10 +1318,10 @@ const BEISPIELDATEN = [
     spalten: 9,
     spaltenHinweis: 'Kampagne · Marke · Kanal · Impressions · Klicks · CTR · Conversions · Spend_EUR · CPA_EUR',
     beschreibung: 'Kampagnen-Leistungsdaten von vier erfundenen Marken über mehrere Kanäle: Impressions, Klicks, CTR, Conversions, Spend und CPA. Der ideale Rohstoff, um aus nackten Zahlen ein kleines Dashboard zu bauen.',
-    uebungstext: 'Lad die Datei in Claude und sag: „Bau mir aus diesen KPIs ein Balkendiagramm nach Kanal." Nimm den Chart-Baustein als Ausgangspunkt.',
+    uebungstext: 'Lad die Datei in Claude und sag: „Bau mir aus diesen KPIs ein Balkendiagramm nach Kanal.“ Nimm den Chart-Baustein als Ausgangspunkt.',
     uebungZiele: [
       { label: 'Chart-Baustein öffnen', href: 'baukasten.html?b=chart-setup', typ: 'baustein' },
-      { label: 'Prompt „CSV erklären"', href: 'prompts.html?p=csv-erklaeren', typ: 'prompt' }
+      { label: 'Prompt „CSV erklären“', href: 'prompts.html?p=csv-erklaeren', typ: 'prompt' }
     ]
   },
   {
@@ -1335,10 +1335,10 @@ const BEISPIELDATEN = [
     spalten: 6,
     spaltenHinweis: 'Monat · Kanal · Plan_Budget_EUR · Ist_Ausgabe_EUR · Abweichung_EUR · Abweichung_Prozent',
     beschreibung: 'Media-Budget nach Monat und Kanal mit Plan-, Ist- und Abweichungswerten. Gut geeignet, um eine saubere Tabelle mit farbig hervorgehobenen Abweichungen zu bauen.',
-    uebungstext: 'Sag Claude: „Mach aus dieser Budget-Tabelle eine übersichtliche HTML-Tabelle und färbe negative Abweichungen rot." Der Tabellen-Baustein ist der Startpunkt.',
+    uebungstext: 'Sag Claude: „Mach aus dieser Budget-Tabelle eine übersichtliche HTML-Tabelle und färbe negative Abweichungen rot.“ Der Tabellen-Baustein ist der Startpunkt.',
     uebungZiele: [
       { label: 'Tabellen-Baustein öffnen', href: 'baukasten.html?b=tabellen-look', typ: 'baustein' },
-      { label: 'Skill „xlsx"', href: 'skills.html?skill=xlsx', typ: 'skill' }
+      { label: 'Skill „xlsx“', href: 'skills.html?skill=xlsx', typ: 'skill' }
     ]
   },
   {
@@ -1352,10 +1352,10 @@ const BEISPIELDATEN = [
     spalten: 10,
     spaltenHinweis: 'Datum · Marke · Plattform · Format · Reichweite · Likes · Kommentare · Shares · Saves · Engagement_Rate',
     beschreibung: 'Reichweite, Likes, Kommentare, Shares, Saves und Engagement-Rate einzelner Social-Posts über mehrere Plattformen und Formate. Zeigt schön, welches Format wirklich zieht.',
-    uebungstext: 'Sag Claude: „Zeig mir die drei stärksten Posts als Kennzahlen-Band." Das Stat-Band ist die Vorlage dafür.',
+    uebungstext: 'Sag Claude: „Zeig mir die drei stärksten Posts als Kennzahlen-Band.“ Das Stat-Band ist die Vorlage dafür.',
     uebungZiele: [
       { label: 'Stat-Band-Baustein öffnen', href: 'baukasten.html?b=stat-band', typ: 'baustein' },
-      { label: 'Prompt „CSV erklären"', href: 'prompts.html?p=csv-erklaeren', typ: 'prompt' }
+      { label: 'Prompt „CSV erklären“', href: 'prompts.html?p=csv-erklaeren', typ: 'prompt' }
     ]
   },
   {
@@ -1369,10 +1369,10 @@ const BEISPIELDATEN = [
     spalten: 9,
     spaltenHinweis: 'Respondenten_ID · Alter_Bucket · Region · Q1–Q5 (Skala) · Offene_Antwort',
     beschreibung: 'Rohantworten einer erfundenen Markenumfrage — Alters-Bucket, Region, fünf Skalenfragen und eine offene Antwort je Person. Übungsstoff für Auswertung und Visualisierung.',
-    uebungstext: 'Sag Claude: „Fasse die Skalenfragen als Durchschnitt je Region zusammen und mach ein Diagramm daraus." Der Chart-Baustein passt dafür.',
+    uebungstext: 'Sag Claude: „Fasse die Skalenfragen als Durchschnitt je Region zusammen und mach ein Diagramm daraus.“ Der Chart-Baustein passt dafür.',
     uebungZiele: [
       { label: 'Chart-Baustein öffnen', href: 'baukasten.html?b=chart-setup', typ: 'baustein' },
-      { label: 'Prompt „CSV erklären"', href: 'prompts.html?p=csv-erklaeren', typ: 'prompt' }
+      { label: 'Prompt „CSV erklären“', href: 'prompts.html?p=csv-erklaeren', typ: 'prompt' }
     ]
   },
   {
@@ -1386,10 +1386,61 @@ const BEISPIELDATEN = [
     spalten: null,
     spaltenHinweis: 'Ausgangslage · Ziele · Zielgruppe · Pflichtseiten · Ton',
     beschreibung: 'Ein erfundenes Kunden-Briefing für einen Website-Relaunch — Ausgangslage, Ziele, Zielgruppe, Pflichtseiten und gewünschter Ton. Übungsstoff für Zusammenfassung und die erste Hero-Sektion.',
-    uebungstext: 'Sag Claude: „Fasse dieses Briefing in fünf Bulletpoints zusammen und schreib mir daraus eine Hero-Schlagzeile." Der Header-Hero-Baustein wird dein Gerüst.',
+    uebungstext: 'Sag Claude: „Fasse dieses Briefing in fünf Bulletpoints zusammen und schreib mir daraus eine Hero-Schlagzeile.“ Der Header-Hero-Baustein wird dein Gerüst.',
     uebungZiele: [
       { label: 'Header-Hero-Baustein öffnen', href: 'baukasten.html?b=header-hero', typ: 'baustein' },
-      { label: 'Prompt „Briefing zusammenfassen"', href: 'prompts.html?p=briefing-zusammenfassung', typ: 'prompt' }
+      { label: 'Prompt „Briefing zusammenfassen“', href: 'prompts.html?p=briefing-zusammenfassung', typ: 'prompt' }
+    ]
+  },
+  {
+    id: 'briefing-social-kampagne',
+    datei: 'briefing-social-kampagne.md',
+    pfad: 'beispieldaten/briefing-social-kampagne.md',
+    format: 'Markdown',
+    groesseBytes: 1823,
+    zeilen: 51,
+    datensaetze: null,
+    spalten: null,
+    spaltenHinweis: 'Ausgangslage · Aufgabe · Zielgruppe · Kanäle · Kernbotschaften · Ton',
+    beschreibung: 'Ein erfundenes Kampagnen-Briefing der Marke Grünwerk: Social-Media-Kampagne zum Saisonstart mit Zielgruppe, Kanälen, Kernbotschaften und Tonalität. Übungsstoff für Content-Planung.',
+    uebungstext: 'Sag Claude: „Entwickle aus diesem Briefing eine Social-Post-Serie für die erste Kampagnenwoche.“ Die Ergebnisse kannst du im Karten-Grid-Baustein als Redaktionsplan anordnen.',
+    uebungZiele: [
+      { label: 'Karten-Grid-Baustein öffnen', href: 'baukasten.html?b=karten-grid', typ: 'baustein' },
+      { label: 'Prompt „Social-Post-Serie“', href: 'prompts.html?p=social-post-serie', typ: 'prompt' }
+    ]
+  },
+  {
+    id: 'testbild-produkt',
+    datei: 'testbild-produkt.svg',
+    pfad: 'beispieldaten/testbild-produkt.svg',
+    format: 'SVG',
+    groesseBytes: 1694,
+    zeilen: 26,
+    datensaetze: null,
+    spalten: null,
+    spaltenHinweis: '1200 × 900 (4:3) · Flächen in pilot-Farben · als Testbild gekennzeichnet',
+    beschreibung: 'Ein Produkt-Platzhalterbild der erfundenen Marke VELOMO — stilisiertes E-Bike als flache Vektorgrafik. Zum Üben, wenn ein Layout ein Bild braucht, du aber noch keins hast.',
+    uebungstext: 'Sag Claude: „Bau das Testbild als <img> in den Bild-Text-Baustein ein.“ Und wenn du ein echtes Motiv willst: Der Prompt „Bildbrief“ hilft dir, es sauber zu beschreiben.',
+    uebungZiele: [
+      { label: 'Bild-Text-Baustein öffnen', href: 'baukasten.html?b=bild-text-split', typ: 'baustein' },
+      { label: 'Prompt „Bildbrief“', href: 'prompts.html?p=bildbrief', typ: 'prompt' }
+    ]
+  },
+  {
+    id: 'testbild-kampagne',
+    datei: 'testbild-kampagne.svg',
+    pfad: 'beispieldaten/testbild-kampagne.svg',
+    format: 'SVG',
+    groesseBytes: 2063,
+    zeilen: 29,
+    datensaetze: null,
+    spalten: null,
+    spaltenHinweis: '1600 × 900 (16:9) · Headline als Platzhalter-Balken · als Testbild gekennzeichnet',
+    beschreibung: 'Ein Kampagnen-Platzhalterbild der erfundenen Marke Quellgold im Querformat — mit freier Fläche, wo später Claim und Call-to-Action hinkommen. Gut als Startpunkt für eine Kampagnen-Sektion.',
+    uebungstext: 'Sag Claude: „Bau eine Hero-Sektion, die dieses Kampagnenbild großflächig nutzt.“ Den passenden Claim für die Platzhalter-Balken textest du mit der Claim-Werkstatt.',
+    uebungZiele: [
+      { label: 'Header-Hero-Baustein öffnen', href: 'baukasten.html?b=header-hero', typ: 'baustein' },
+      { label: 'Prompt „Claim-Werkstatt“', href: 'prompts.html?p=claim-werkstatt', typ: 'prompt' }
     ]
   }
 ];
@@ -1408,6 +1459,7 @@ const BEISPIELDATEN_STATS = {
   total: BEISPIELDATEN.length,
   csv: BEISPIELDATEN.filter(function (d) { return d.format === 'CSV'; }).length,
   markdown: BEISPIELDATEN.filter(function (d) { return d.format === 'Markdown'; }).length,
+  svg: BEISPIELDATEN.filter(function (d) { return d.format === 'SVG'; }).length,
   gesamtBytes: BEISPIELDATEN.reduce(function (s, d) { return s + d.groesseBytes; }, 0),
   gesamtZeilen: BEISPIELDATEN.reduce(function (s, d) { return s + d.zeilen; }, 0)
 };

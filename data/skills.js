@@ -845,7 +845,8 @@
           "count": 10
         },
         "endorsedBy": [
-          "Anna Schreiber"
+          "Anna Schreiber",
+          "Mia Hoffmann"
         ],
         "endorsements": [
           {
@@ -1502,7 +1503,8 @@
           "count": 9
         },
         "endorsedBy": [
-          "Anna Schreiber"
+          "Anna Schreiber",
+          "Sophie Klein"
         ]
       },
       {
@@ -1591,7 +1593,9 @@
           "average": 4.5,
           "count": 6
         },
-        "endorsedBy": []
+        "endorsedBy": [
+          "Anna Schreiber"
+        ]
       },
       {
         "category": "anthropic",
@@ -1722,7 +1726,8 @@
           "count": 8
         },
         "endorsedBy": [
-          "Jan Richter"
+          "Jan Richter",
+          "Christopher Kipp"
         ]
       },
       {
@@ -1788,7 +1793,8 @@
           "count": 10
         },
         "endorsedBy": [
-          "Christopher Kipp"
+          "Christopher Kipp",
+          "Jan Richter"
         ]
       },
       {
@@ -1832,7 +1838,9 @@
           "average": 4.2,
           "count": 4
         },
-        "endorsedBy": []
+        "endorsedBy": [
+          "Anna Schreiber"
+        ]
       }
       ,{
         "id": "frontend-design",
@@ -2500,6 +2508,11 @@
     //  - theme-factory: echte Dublette zu brand-guidelines (Farb/Font-System anwenden), generische Themes ohne pilot-Bezug
     //  - web-artifacts-builder: einziger „advanced" mit Framework-Signal (React/shadcn) — widerspricht „nicht dev-lastig"
     const HIDDEN = new Set(['pitch-deck', 'theme-factory', 'web-artifacts-builder']);
+    // Zahlen-Ehrlichkeit: sichtbare Skill-Zahl OHNE die drei HIDDEN-Einträge (aktuell 34).
+    // Einzige Quelle für alle „X Skills"-Zähler — Seiten lesen diesen Wert statt selbst
+    // (und womöglich inklusive HIDDEN) zu zählen. Kein „const COUNTS" hier, damit die
+    // seitenlokale COUNTS-Konstante in index.html nicht kollidiert.
+    const VISIBLE_SKILL_COUNT = SKILLS.filter(s => (s.itemType || 'skill') === 'skill' && !HIDDEN.has(s.id)).length;
     // Aufgaben-Taxonomie: Themen-Tabs denken in „was will ich tun", nicht in Abteilung/Herkunft.
     // Wird nach dem Laden EINMAL auf skill.subcategory geschrieben (Single Source für Tabs/Labels/Filter).
     const TASK_GROUP = {
