@@ -347,7 +347,7 @@ async function runViewport(browser, vp) {
   // data/*.js (Prompts, Bausteine, Assets, Cases, …) nachlädt, bevor es auflöst —
   // ein fester Timeout ist hier zu knapp; auf das tatsächliche .ds-item pollen.
   await page.waitForFunction(
-    () => document.querySelectorAll('#ds-overlay .ds-item, #ds-overlay .empty').length > 0,
+    () => document.querySelectorAll('#ds-overlay .ds-item, #ds-overlay .empty-note').length > 0,
     { timeout: 8000 }
   ).catch(() => {});
   const dsOverlay = await page.evaluate(() => ({

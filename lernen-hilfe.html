@@ -982,7 +982,14 @@
 
     // ===== KARTE (LINK-Karte: Klick-Ziel ist der externe Link, Details klappen auf) =====
     function resBodyHtml(r) {
+      const detailBits = [
+        `<span class="diff-badge ${r.niveau === 'einsteiger' ? 'easy' : 'advanced'}">${NIVEAU_LABEL[r.niveau]}</span>`,
+        `<span class="lang-pill">${r.sprache.toUpperCase()}</span>`,
+        `<span class="res-pf">${PF_LABEL[r.plattform] || r.plattform}</span>`,
+      ];
+      if (!r.intern) detailBits.push(`<span class="res-rating">${renderStars(r.rating.average)}<span>${r.rating.average.toFixed(1)} · ${r.rating.count} ${r.rating.count === 1 ? 'Bewertung' : 'Bewertungen'}</span></span>`);
       let h = `
+        <div><span class="res-body-label">Auf einen Blick</span><div class="res-meta" style="margin-bottom:0">${detailBits.join('<span class="meta-dot">·</span>')}</div></div>
         <div><span class="res-body-label">Was drin ist</span><p>${escHtml(r.beschreibung)}</p></div>`;
       if (r.gelernt && r.gelernt.length) h += `
         <div><span class="res-body-label">Das nimmst du mit</span>
@@ -1011,8 +1018,7 @@
         : `<span class="res-title">${escHtml(r.titel)}</span>`;
       const footHtml = r.intern
         ? `<span class="res-intern-hint">Noch nicht bewertbar — der Link folgt.</span>`
-        : `<span class="res-rating">${renderStars(r.rating.average)}<span>${r.rating.average.toFixed(1)} · ${r.rating.count} ${r.rating.count === 1 ? 'Bewertung' : 'Bewertungen'}</span></span>
-           <button type="button" class="vote-btn${voted ? ' voted' : ''}" aria-pressed="${voted}" onclick="voteRessource('${r.id}')">
+        : `<button type="button" class="vote-btn${voted ? ' voted' : ''}" aria-pressed="${voted}" onclick="voteRessource('${r.id}')">
              ${LU.vote}<span>Hat mir geholfen</span><span class="vote-count">${getVotes('ressource', r.id, r.votes)}</span>
            </button>`;
       return `
@@ -1029,12 +1035,6 @@
             <p class="res-fuerdich"><strong>Für dich, wenn</strong> ${escHtml(r.fuerDich)}</p>
             <div class="res-meta">
               <span class="res-dauer">${LU.uhr}${dauerText(r)}</span>
-              <span class="meta-dot">·</span>
-              <span class="lang-pill">${r.sprache.toUpperCase()}</span>
-              <span class="meta-dot">·</span>
-              <span class="diff-badge ${r.niveau === 'einsteiger' ? 'easy' : 'advanced'}">${NIVEAU_LABEL[r.niveau]}</span>
-              <span class="meta-dot">·</span>
-              <span class="res-pf">${PF_LABEL[r.plattform] || r.plattform}</span>
             </div>
             <div class="res-foot">
               ${footHtml}

@@ -281,7 +281,6 @@
     }
 
     function caseCardHtml(c) {
-      const rolle = personaRolle(c.persona);
       return `
         <article class="sr-card" id="case-${c.id}" data-id="${c.id}" data-saeule="${c.saeule}" data-art="${c.art}" data-aufwand="${c.aufwandStufe}">
           <div class="sr-thumb">
@@ -294,9 +293,8 @@
               <span class="sr-name">${escHtml(c.titel)}</span>
               <span class="sr-sub">${escHtml(ART_LABEL[c.art] || c.art)}</span>
             </div>
-            <p class="sr-persona"><strong>${escHtml(c.persona)}</strong>${rolle ? ' · ' + escHtml(rolle) : ''} · ${escHtml(SAEULE_LABEL[c.saeule] || c.saeule)}</p>
+            <p class="sr-persona"><strong>${escHtml(c.persona)}</strong> · ${escHtml(SAEULE_LABEL[c.saeule] || c.saeule)}</p>
             <p class="sr-desc">${escHtml(c.kurz)}</p>
-            <div class="sr-tags"><span class="sr-tag">${escHtml(c.aufwand)}</span></div>
             <div class="sr-actions">
               ${reactionBtnHtml(c)}
               <a class="lib-btn -primary" href="${c.liveUrl}" target="_blank" rel="noopener">${LU.eye}Ansehen</a>

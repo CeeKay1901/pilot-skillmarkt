@@ -1781,7 +1781,7 @@ function _dsRender() {
     _dsSectionHtml('Gemerkt', s.fav, false) +
     _dsSectionHtml('Bewertet', s.rate, true) +
     _dsSectionHtml('Ausprobiert', s.tried, false);
-  body.innerHTML = html || `<div class="empty">Noch nichts gemerkt. Sobald du etwas favorisierst, bewertest oder ausprobierst, sammelt es sich hier — über alle Bereiche hinweg.</div>`;
+  body.innerHTML = html || `<div class="empty-note">Noch nichts gemerkt. Sobald du etwas favorisierst, bewertest oder ausprobierst, sammelt es sich hier — über alle Bereiche hinweg.</div>`;
 }
 
 function openDeineSachen() {

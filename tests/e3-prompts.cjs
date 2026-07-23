@@ -97,21 +97,21 @@ async function runViewport(browser, vp) {
 
   // ---------- (1b) Karten-Anriss: Clamp schneidet keine dritte Zeile an ----------
   // Der Zwei-Zeilen-Clamp liegt auf dem padding-freien Inner-Element .cp-clamp.
-  // Sichtbare Höhe muss ein ganzes Vielfaches der Zeilenhöhe sein (max. 2 Zeilen) —
-  // ein Rest bedeutet: eine Zeile ist horizontal angeschnitten (alter E3-Bug).
+  // E11-Karten-Diät (Soll): Die Prompt-Vorschau (.card-prompt/.cp-clamp) lebt
+  // nicht mehr auf der Karte, sondern im Detail-Modal. Karten tragen Titel +
+  // einen Satz (.skill-tagline) — beides muss auf jeder Karte vorhanden sein.
   const clampInfo = await page.evaluate(() => {
-    const els = [...document.querySelectorAll('#prompts-grid .card-prompt .cp-clamp')];
-    let bad = 0, clamped = 0;
-    els.forEach(el => {
-      const lh = parseFloat(getComputedStyle(el).lineHeight);
-      const lines = el.clientHeight / lh;
-      if (Math.abs(lines - Math.round(lines)) > 0.05 || Math.round(lines) > 2) bad++;
-      if (el.scrollHeight > el.clientHeight + 1) clamped++; // Clamp greift wirklich
-    });
-    return { count: els.length, bad, clamped };
+    const cards = [...document.querySelectorAll('#prompts-grid .prompt-card')];
+    return {
+      count: cards.length,
+      previewsLeft: document.querySelectorAll('#prompts-grid .card-prompt, #prompts-grid .cp-clamp').length,
+      allHaveTagline: cards.every(c => (c.querySelector('.skill-tagline') || {}).textContent?.trim()),
+      allHaveName: cards.every(c => (c.querySelector('.skill-name') || {}).textContent?.trim()),
+    };
   });
   check('01b_card_prompt_clamp_clean',
-    clampInfo.count === EXPECTED_TOTAL && clampInfo.bad === 0 && clampInfo.clamped > 0,
+    clampInfo.count === EXPECTED_TOTAL && clampInfo.previewsLeft === 0
+      && clampInfo.allHaveTagline && clampInfo.allHaveName,
     clampInfo);
 
   // ---------- (2) Aufgaben-Tabs: Karten-Anzahl pro Tab ----------
@@ -324,16 +324,26 @@ async function runViewport(browser, vp) {
     return { cardId, beforeCard, displayBefore };
   }, PLAIN_PROMPT);
   await page.waitForTimeout(400);
-  const copyCounterAfter = copyCounter ? await page.evaluate((info) => ({
-    afterCard: parseInt(localStorage.getItem('copies:prompt:' + info.cardId) || '0', 10),
-    displayAfter: (document.querySelector(`[data-copies="${info.cardId}"]`) || {}).textContent || '',
-    toastShown: !!document.querySelector('#toast.show'),
-    copied: (window.__copied || '').length > 0,
-  }), copyCounter) : null;
+  // E11-Karten-Diät (Soll): Der Kopier-Zähler wird nicht mehr auf der Karte
+  // angezeigt, sondern im Detail-Modal — dort muss der neue Stand erscheinen.
+  const copyCounterAfter = copyCounter ? await page.evaluate(async (info) => {
+    const afterCard = parseInt(localStorage.getItem('copies:prompt:' + info.cardId) || '0', 10);
+    const toastShown = !!document.querySelector('#toast.show');
+    openModal(info.cardId);
+    await new Promise(r => setTimeout(r, 300));
+    const displayAfter = (document.querySelector(`#modal [data-copies="${info.cardId}"]`) || {}).textContent || '';
+    closeModal();
+    return {
+      afterCard, toastShown, displayAfter,
+      copied: (window.__copied || '').length > 0,
+    };
+  }, copyCounter) : null;
   check('12_copy_counter_increments',
     copyCounter && copyCounterAfter
       && copyCounterAfter.afterCard === copyCounter.beforeCard + 1
-      && copyCounterAfter.displayAfter !== copyCounter.displayBefore
+      // Anzeige = Demo-Seed + lokaler Zähler → nur Muster + lokalen Anteil prüfen
+      && /\d+× kopiert/.test(copyCounterAfter.displayAfter)
+      && parseInt(copyCounterAfter.displayAfter, 10) >= copyCounterAfter.afterCard
       && copyCounterAfter.toastShown && copyCounterAfter.copied,
     { ...copyCounter, ...copyCounterAfter });
 

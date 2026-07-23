@@ -471,17 +471,15 @@
     }
 
     function bausteinCardHtml(b) {
-      const lhPill = b.leuchtturm ? `<span class="baustein-lh-pill">${LU.strategy}Highlight</span>` : '';
       return `
         <article class="baustein-card" id="baustein-${b.id}" data-id="${b.id}" data-kat="${b.kategorie}">
           <div class="baustein-thumb">
-            ${lhPill}
             <iframe class="preview-frame" title="Live-Vorschau: ${escHtml(b.name)}" loading="lazy" sandbox="" srcdoc="${escHtml(b.srcdoc)}"></iframe>
           </div>
           <div class="baustein-body">
             <div class="baustein-kopf">
               <span class="baustein-name">${escHtml(b.name)}</span>
-              <span class="baustein-schwer">${escHtml(kategorieLabel(b))} · ${escHtml(schwierigkeitLabel(b))}</span>
+              <span class="baustein-schwer">${escHtml(kategorieLabel(b))}</span>
             </div>
             <p class="baustein-desc">${escHtml(b.beschreibung)}</p>
             <div class="baustein-meta">
@@ -869,7 +867,6 @@
           </div>
           <p class="ff-stimmung">${escHtml(f.stimmung)}</p>
           <div class="ff-meta">
-            <span class="ff-gewicht">${f.variable ? 'Variabel' : 'Statisch'} · ${escHtml(f.gewichtBereich)}</span>
             <span class="lib-lic">${LU.check}${escHtml(shortLic(f.lizenz))}</span>
           </div>
           <div class="ff-actions">
@@ -900,7 +897,6 @@
             <span class="iconset-anzahl">${s.anzahl.toLocaleString('de-DE')} Icons</span>
           </div>
           <p class="iconset-stil">${escHtml(s.stil)}</p>
-          <p class="iconset-stil" style="color:var(--c-gray-m)">${escHtml(s.wofuer)}</p>
           <div class="iconset-foot">
             <span class="lib-lic">${LU.check}${escHtml(s.lizenz)}</span>
             <a class="lib-btn" href="${s.quelleUrl}" target="_blank" rel="noopener">${LU.extern}Zur Bibliothek</a>

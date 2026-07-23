@@ -298,8 +298,8 @@
     .chip .chip-count { font-size: 1.15rem; opacity: .6; font-variant-numeric: tabular-nums; }
     .chip:focus-visible { outline: 2px solid var(--c-black); outline-offset: 2px; }
 
-    /* ===== EMPTY (E11: EIN Empty-State) ===== */
-    .empty {
+    /* ===== EMPTY-NOTE (E11: EIN Empty-State — nicht ".empty": kollidiert mit .star.empty) ===== */
+    .empty-note {
       padding: 4.4rem 2.4rem; text-align: center;
       border: 1px dashed var(--line-strong); border-radius: var(--r-lg);
       color: var(--c-gray-m); font-size: 1.5rem; line-height: 1.6;
@@ -2012,7 +2012,7 @@
     .ds-close:hover { color: var(--c-black); }
     .ds-close:focus-visible { outline: 2px solid var(--c-black); outline-offset: 2px; }
     .ds-body { flex: 1; overflow-y: auto; padding: 1.6rem 2.4rem 2.4rem; }
-    .ds-body .empty { margin-top: 1.2rem; border: none; padding: 3.2rem 1rem; }
+    .ds-body .empty-note { margin-top: 1.2rem; border: none; padding: 3.2rem 1rem; }
     .ds-loading { padding: 2.4rem 0; color: var(--c-gray-m); font-size: 1.4rem; }
     .ds-section { margin-bottom: 2.2rem; }
     .ds-section-label {
