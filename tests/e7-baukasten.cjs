@@ -397,10 +397,9 @@ async function runIndexChecks(browser) {
   // Vorgabe). Die Assets-Kachel (vormals Bibliothek) bleibt als eigene Kachel auf
   // vorlagen.html?tab=assets bestehen — beide Kacheln führen auf dieselbe Seite.
   const indexInfo = await page.evaluate(() => ({
-    routerTile: !!document.querySelector('.rt-grid a.rt-card[href="vorlagen.html"]'),
-    routerTileDest: (document.querySelector('.rt-grid a.rt-card[href="vorlagen.html"] .rt-dest') || {}).textContent || '',
-    assetsTileStillThere: !!document.querySelector('.rt-grid a.rt-card[href="vorlagen.html?tab=assets"]'),
-    noBaukastenTeaser: !document.querySelector('.rt-card[data-teaser="baukasten"]')
+    areaCtaText: (document.querySelector('.areas-grid .area-cta-row a[href="vorlagen.html"]') || {}).textContent || '',
+    assetsCtaStillThere: !!document.querySelector('.areas-grid .area-cta-row a[href="vorlagen.html?tab=assets"]'),
+    noRouter: !document.querySelector('.rt-grid') && !document.querySelector('.rt-card')
       && (typeof TEASER === 'undefined' || !('baukasten' in TEASER)),
     areaCount: parseInt((document.getElementById('area-baukasten-count') || {}).textContent || '-1', 10),
     areaMeta: (document.getElementById('area-baukasten-meta') || {}).textContent || '',
@@ -415,10 +414,11 @@ async function runIndexChecks(browser) {
     dataBausteine: typeof BAUSTEINE !== 'undefined' ? BAUSTEINE.length : -1,
   }));
   check('i1_index_no_js_errors', jsErrors.length === 0, { jsErrors: [...jsErrors] });
-  check('i2_router_tile_links_vorlagen',
-    indexInfo.routerTile && indexInfo.noBaukastenTeaser && /Baukasten/.test(indexInfo.routerTileDest)
-      && indexInfo.assetsTileStillThere,
-    { routerTile: indexInfo.routerTile, dest: indexInfo.routerTileDest, noBaukastenTeaser: indexInfo.noBaukastenTeaser, assetsTileStillThere: indexInfo.assetsTileStillThere });
+    // E12: Schnellzugriff-Kacheln (.rt-grid) auf Nutzerwunsch entfernt —
+    // der Index-Einstieg in den Bereich läuft über die Bereichs-Karten-CTAs.
+  check('i2_area_card_links_vorlagen',
+    indexInfo.noRouter && /Baukasten/.test(indexInfo.areaCtaText) && indexInfo.assetsCtaStillThere,
+    { noRouter: indexInfo.noRouter, ctaText: indexInfo.areaCtaText, assetsCtaStillThere: indexInfo.assetsCtaStillThere });
   check('i3_counts_match_data',
     indexInfo.areaCount === EXPECTED_TOTAL && indexInfo.dataBausteine === EXPECTED_TOTAL
       && indexInfo.areaMeta.includes(String(EXPECTED_LEUCHTTUERME))
@@ -435,12 +435,12 @@ async function runIndexChecks(browser) {
     indexInfo.newsHasBaukasten && indexInfo.newsCount >= 3 && indexInfo.newsCount <= 4,
     { newsHasBaukasten: indexInfo.newsHasBaukasten, newsCount: indexInfo.newsCount });
 
-  // Router-Kachel navigiert wirklich
-  await page.click('.rt-grid a.rt-card[href="vorlagen.html"]');
+  // Bereichs-CTA navigiert wirklich
+  await page.click('.areas-grid .area-cta-row a[href="vorlagen.html"]');
   await page.waitForTimeout(1200);
   const landed = await page.evaluate(() =>
     location.pathname.endsWith('vorlagen.html') && document.querySelectorAll('#bk-grid .baustein-card').length > 0);
-  check('i6_router_tile_navigates', landed, { url: page.url() });
+  check('i6_area_cta_navigates', landed, { url: page.url() });
 
   // Nav-Regression: nav-vorlagen auf allen Bestandsseiten vorhanden, mit korrektem
   // href — aktiv genau dann, wenn die jeweilige Seite selbst vorlagen.html ist.

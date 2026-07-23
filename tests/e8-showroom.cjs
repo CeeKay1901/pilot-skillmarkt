@@ -522,12 +522,11 @@ async function runIndexChecks(browser) {
   // vorlagen.html (Bausteine-Tab bzw. ?tab=assets); nav-baukasten/nav-bibliothek sind
   // entfallen, dafür gibt es das gemeinsame #nav-vorlagen.
   const indexInfo = await page.evaluate(() => ({
-    routerTile: !!document.querySelector('.rt-grid a.rt-card[href="showroom.html"]'),
-    routerTileDest: (document.querySelector('.rt-grid a.rt-card[href="showroom.html"] .rt-dest') || {}).textContent || '',
-    noShowroomTeaser: !document.querySelector('.rt-card[data-teaser="showroom"]')
+    areaCtaText: (document.querySelector('.areas-grid .area-cta-row a[href="showroom.html"]') || {}).textContent || '',
+    noRouter: !document.querySelector('.rt-grid') && !document.querySelector('.rt-card')
       && (typeof TEASER === 'undefined' || !('showroom' in TEASER)),
-    vorlagenTileStillThere: !!document.querySelector('.rt-grid a.rt-card[href="vorlagen.html"]'),
-    assetsTileStillThere: !!document.querySelector('.rt-grid a.rt-card[href="vorlagen.html?tab=assets"]'),
+    vorlagenCtaStillThere: !!document.querySelector('.areas-grid .area-cta-row a[href="vorlagen.html"]'),
+    assetsCtaStillThere: !!document.querySelector('.areas-grid .area-cta-row a[href="vorlagen.html?tab=assets"]'),
     areaCount: parseInt((document.getElementById('area-showroom-count') || {}).textContent || '-1', 10),
     areaMeta: (document.getElementById('area-showroom-meta') || {}).textContent || '',
     areaCta: !!document.querySelector('.area-card a.c-cta[href="showroom.html"]'),
@@ -547,11 +546,13 @@ async function runIndexChecks(browser) {
     dataBeispiel: typeof CASE_STATS !== 'undefined' ? CASE_STATS.beispiel : -1,
   }));
   check('i1_index_no_js_errors', jsErrors.length === 0, { jsErrors: [...jsErrors] });
-  check('i2_router_tile_links_showroom',
-    indexInfo.routerTile && indexInfo.noShowroomTeaser && /Showroom/.test(indexInfo.routerTileDest)
-      && indexInfo.vorlagenTileStillThere && indexInfo.assetsTileStillThere,
-    { routerTile: indexInfo.routerTile, dest: indexInfo.routerTileDest, noShowroomTeaser: indexInfo.noShowroomTeaser,
-      vorlagenTileStillThere: indexInfo.vorlagenTileStillThere, assetsTileStillThere: indexInfo.assetsTileStillThere });
+    // E12: Schnellzugriff-Kacheln (.rt-grid) auf Nutzerwunsch entfernt —
+    // der Index-Einstieg in den Bereich läuft über die Bereichs-Karten-CTAs.
+  check('i2_area_card_links_showroom',
+    indexInfo.noRouter && /Showroom/.test(indexInfo.areaCtaText)
+      && indexInfo.vorlagenCtaStillThere && indexInfo.assetsCtaStillThere,
+    { noRouter: indexInfo.noRouter, ctaText: indexInfo.areaCtaText,
+      vorlagenCtaStillThere: indexInfo.vorlagenCtaStillThere, assetsCtaStillThere: indexInfo.assetsCtaStillThere });
   check('i3_counts_match_data',
     indexInfo.areaCount === EXPECTED_TOTAL && indexInfo.dataCases === EXPECTED_TOTAL
       && indexInfo.dataEcht === EXPECTED_ECHT && indexInfo.dataBeispiel === EXPECTED_BEISPIEL
@@ -571,12 +572,12 @@ async function runIndexChecks(browser) {
       newsHasPrompts: indexInfo.newsHasPrompts, newsHasLernen: indexInfo.newsHasLernen,
       newsHasBibliothek: indexInfo.newsHasBibliothek, newsHasBaukasten: indexInfo.newsHasBaukasten });
 
-  // Router-Kachel navigiert wirklich
-  await page.click('.rt-grid a.rt-card[href="showroom.html"]');
+  // Bereichs-CTA navigiert wirklich
+  await page.click('.areas-grid .area-cta-row a[href="showroom.html"]');
   await page.waitForTimeout(1200);
   const landed = await page.evaluate(() =>
     location.pathname.endsWith('showroom.html') && document.querySelectorAll('#sr-grid .sr-card').length > 0);
-  check('i6_router_tile_navigates', landed, { url: page.url() });
+  check('i6_area_cta_navigates', landed, { url: page.url() });
 
   // Nav-Regression: nav-showroom auf allen Bestandsseiten vorhanden, nicht aktiv.
   // E11-IA: bibliothek.html/baukasten.html sind jetzt Redirect-Stubs für vorlagen.html

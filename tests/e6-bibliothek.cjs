@@ -446,9 +446,8 @@ async function runIndexChecks(browser) {
   // E11-IA: die Bibliotheks-Kachel/CTA/Spot verlinken jetzt vorlagen.html?tab=assets
   // bzw. vorlagen.html?a=<id> statt bibliothek.html (Punkt 4 der IA-Vorgabe).
   const indexInfo = await page.evaluate(() => ({
-    routerTile: !!document.querySelector('.rt-grid a.rt-card[href="vorlagen.html?tab=assets"]'),
-    routerTileDest: (document.querySelector('.rt-grid a.rt-card[href="vorlagen.html?tab=assets"] .rt-dest') || {}).textContent || '',
-    noBaukastenTeaser: !document.querySelector('.rt-card[data-teaser="baukasten"]')
+    areaCtaText: (document.querySelector('.areas-grid .area-cta-row a[href="vorlagen.html?tab=assets"]') || {}).textContent || '',
+    noRouter: !document.querySelector('.rt-grid') && !document.querySelector('.rt-card')
       && (typeof TEASER === 'undefined' || !('baukasten' in TEASER)),
     areaCount: parseInt((document.getElementById('area-bibliothek-count') || {}).textContent || '-1', 10),
     areaMeta: (document.getElementById('area-bibliothek-meta') || {}).textContent || '',
@@ -463,9 +462,11 @@ async function runIndexChecks(browser) {
     dataAssets: typeof ASSETS !== 'undefined' ? ASSETS.length : -1,
   }));
   check('i1_index_no_js_errors', jsErrors.length === 0, { jsErrors: [...jsErrors] });
-  check('i2_router_tile_links_vorlagen_assets',
-    indexInfo.routerTile && indexInfo.noBaukastenTeaser && /Bibliothek/.test(indexInfo.routerTileDest),
-    { routerTile: indexInfo.routerTile, dest: indexInfo.routerTileDest, noBaukastenTeaser: indexInfo.noBaukastenTeaser });
+    // E12: Schnellzugriff-Kacheln (.rt-grid) auf Nutzerwunsch entfernt —
+    // der Index-Einstieg in den Bereich läuft über die Bereichs-Karten-CTAs.
+  check('i2_area_card_links_vorlagen_assets',
+    indexInfo.noRouter && /Bibliothek/.test(indexInfo.areaCtaText),
+    { noRouter: indexInfo.noRouter, ctaText: indexInfo.areaCtaText });
   check('i3_counts_match_data',
     indexInfo.areaCount === EXPECTED_TOTAL && indexInfo.dataAssets === EXPECTED_TOTAL
       && indexInfo.areaMeta.includes(String(EXPECTED_FONTS))
@@ -484,14 +485,14 @@ async function runIndexChecks(browser) {
     indexInfo.newsHasBibliothek && indexInfo.newsCount >= 3 && indexInfo.newsCount <= 4,
     { newsHasBibliothek: indexInfo.newsHasBibliothek, newsCount: indexInfo.newsCount });
 
-  // Router-Kachel navigiert wirklich
-  await page.click('.rt-grid a.rt-card[href="vorlagen.html?tab=assets"]');
+  // Bereichs-CTA navigiert wirklich
+  await page.click('.areas-grid .area-cta-row a[href="vorlagen.html?tab=assets"]');
   await page.waitForTimeout(1200);
   const landed = await page.evaluate(() =>
     location.pathname.endsWith('vorlagen.html')
       && new URLSearchParams(location.search).get('tab') === 'assets'
       && document.querySelectorAll('#font-grid .font-card').length > 0);
-  check('i6_router_tile_navigates', landed, { url: page.url() });
+  check('i6_area_cta_navigates', landed, { url: page.url() });
 
   // Nav-Regression: nav-vorlagen auf allen Bestandsseiten vorhanden, mit korrektem
   // href — aktiv genau dann, wenn die jeweilige Seite selbst vorlagen.html ist.

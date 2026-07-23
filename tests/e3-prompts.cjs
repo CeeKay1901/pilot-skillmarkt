@@ -455,9 +455,8 @@ async function runIndexChecks(browser) {
   await page.waitForTimeout(1500); // animateCount ausrollen lassen
 
   const indexInfo = await page.evaluate(() => ({
-    routerTile: !!document.querySelector('.rt-grid a.rt-card[href="prompts.html"]'),
-    routerTileDest: (document.querySelector('.rt-grid a.rt-card[href="prompts.html"] .rt-dest') || {}).textContent || '',
-    noPromptTeaser: !document.querySelector('.rt-card[data-teaser="prompts"]'),
+    areaCtaText: (document.querySelector('.areas-grid .area-cta-row a[href="prompts.html"]') || {}).textContent || '',
+    noRouter: !document.querySelector('.rt-grid') && !document.querySelector('.rt-card'),
     statPrompts: parseInt((document.getElementById('stat-prompts') || {}).textContent || '-1', 10),
     areaPromptCount: parseInt((document.getElementById('area-prompt-count') || {}).textContent || '-1', 10),
     areaCta: !!document.querySelector('.area-live-sm a.c-cta[href="prompts.html"]'),
@@ -469,9 +468,11 @@ async function runIndexChecks(browser) {
     expected: PROMPTS.length,
   }));
   check('i1_index_no_js_errors', jsErrors.length === 0, { jsErrors: [...jsErrors] });
-  check('i2_router_tile_links_prompts',
-    indexInfo.routerTile && indexInfo.noPromptTeaser && /Sammlung/.test(indexInfo.routerTileDest),
-    { routerTile: indexInfo.routerTile, dest: indexInfo.routerTileDest, noPromptTeaser: indexInfo.noPromptTeaser });
+    // E12: Schnellzugriff-Kacheln (.rt-grid) auf Nutzerwunsch entfernt —
+    // der Index-Einstieg in den Bereich läuft über die Bereichs-Karten-CTAs.
+  check('i2_area_card_links_prompts',
+    indexInfo.noRouter && /Sammlung/.test(indexInfo.areaCtaText),
+    { noRouter: indexInfo.noRouter, ctaText: indexInfo.areaCtaText });
   // E11-Soll: die Hero-Stat-Zeile (#stat-prompts) ist mit dem Hero der Startseite
   // entfallen — der Daten-Abgleich läuft jetzt allein über die Bereichs-Karte
   // (#area-prompt-count); zusätzlich wird abgesichert, dass die Stat-Zeile weg ist.
@@ -487,12 +488,12 @@ async function runIndexChecks(browser) {
     indexInfo.newsHasPrompts && indexInfo.newsCount >= 3 && indexInfo.newsCount <= 4,
     { newsHasPrompts: indexInfo.newsHasPrompts, newsCount: indexInfo.newsCount });
 
-  // Router-Kachel navigiert wirklich
-  await page.click('.rt-grid a.rt-card[href="prompts.html"]');
+  // Bereichs-CTA navigiert wirklich
+  await page.click('.areas-grid .area-cta-row a[href="prompts.html"]');
   await page.waitForTimeout(1200);
   const landedOnPrompts = await page.evaluate(() =>
     location.pathname.endsWith('prompts.html') && !!document.getElementById('prompts-grid'));
-  check('i6_router_tile_navigates', landedOnPrompts, { url: page.url() });
+  check('i6_area_cta_navigates', landedOnPrompts, { url: page.url() });
 
   await context.close();
   const failed = Object.entries(checks).filter(([, c]) => !c.pass).map(([id]) => id);
