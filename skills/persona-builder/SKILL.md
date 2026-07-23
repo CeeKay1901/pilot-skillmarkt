@@ -10,7 +10,7 @@ Mach die Zielgruppe fürs ganze Team greifbar.
 
 ## Vorgehen
 1. **Input sichten**: Briefing, Marktdaten, vorhandene Insights.
-2. 1–3 Personas nach `references/template.md` ausarbeiten.
+2. 1–3 Personas nach dem Raster in `references/template.md` ausarbeiten (Feld-für-Feld-Anleitung, durchgespieltes Beispiel, Abgrenzung Persona vs. Segment, typische Fehler).
 3. Jede Persona konkret & unterscheidbar machen (kein Klischee).
 4. **Ansprache-Tipps** je Persona für Kreation & Media ableiten.
 

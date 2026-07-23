@@ -52,10 +52,10 @@ const CASES = [
       bausteine: [
         { id: 'chart-setup', label: 'Chart-Setup (ohne Bibliothek)' },
         { id: 'tabellen-look', label: 'Tabellen-Look' }
-      ],
-      beispieldaten: [
-        { id: 'umfrage-rohdaten', label: 'Umfrage-Rohdaten (CSV)' }
       ]
+      /* E12-QA: umfrage-rohdaten.csv ist Breitformat (Respondenten × Q1–Q5) und
+         passt zum Dashboard-Case — dieses Tool erwartet Langformat (Frage;Antwort),
+         darum hier bewusst kein Beispieldaten-Verweis. */
     },
     liveUrl: 'umfrage-auswertung.html',
     reaktionSeed: 23,
