@@ -196,19 +196,36 @@ function renderNav(activePage, opts) {
   _dsUpdateCount();   /* E11: Zähl-Badge „Deine Sachen“ */
 
   // Mobile (≤1023px): die Nav ist ein horizontal scrollender Streifen mit allen
-  // Sektionen flach (der „Mehr“-Button ist ausgeblendet). Ab 6 Zielen kann der
-  // aktive Punkt außerhalb des Viewports starten — beim Laden mittig scrollen,
-  // damit die aktuelle Seite sofort sichtbar ist. Rect-basiert (positions-agnostisch).
-  if (window.matchMedia && window.matchMedia('(max-width: 1023px)').matches) {
-    const nav = document.querySelector('.main-nav');
-    // Nicht den ersten Treffer nehmen: der „Mehr“-Button trägt auf Sekundär-Seiten
-    // ebenfalls .active, ist mobil aber display:none. Das sichtbare aktive Item wählen.
-    const active = nav && [...nav.querySelectorAll('.nav-link.active')].filter(a => a.offsetParent !== null).pop();
-    if (nav && active && nav.scrollWidth > nav.clientWidth + 1) {
-      const navRect = nav.getBoundingClientRect();
-      const aRect = active.getBoundingClientRect();
-      nav.scrollLeft += (aRect.left - navRect.left) - (nav.clientWidth - aRect.width) / 2;
+  // fünf Sektionen flach. Zwei Dinge müssen stimmen (E12-Mobil-Pass):
+  //   (a) der aktive Punkt ist beim Laden sichtbar (mittig einscrollen),
+  //   (b) die Scrollbarkeit ist klar erkennbar — eine positions-abhängige
+  //       Fade-Kante (rechts / beidseitig / links) signalisiert „hier geht’s
+  //       weiter“. Die Kante steuert data-scroll auf .main-nav, das CSS legt
+  //       die passende Maske drüber. Rect-basiert (positions-agnostisch).
+  const nav = document.querySelector('.main-nav');
+  if (nav) {
+    // Fade-Zustand aus Scroll-Position ableiten: none | start | mid | end.
+    const setFade = () => {
+      const overflow = nav.scrollWidth - nav.clientWidth;
+      if (overflow <= 1) { nav.setAttribute('data-scroll', 'none'); return; }
+      const atStart = nav.scrollLeft <= 1;
+      const atEnd = nav.scrollLeft >= overflow - 1;
+      nav.setAttribute('data-scroll', atStart ? 'start' : atEnd ? 'end' : 'mid');
+    };
+    // Nur mobil (≤1023px) auto-zentrieren; die Fade-Kante lebt ebenfalls dort,
+    // schadet aber auf Desktop nicht (data-scroll="none" → keine Maske).
+    if (window.matchMedia && window.matchMedia('(max-width: 1023px)').matches) {
+      // Nicht den ersten Treffer nehmen: nur ein sichtbares aktives Item wählen.
+      const active = [...nav.querySelectorAll('.nav-link.active')].filter(a => a.offsetParent !== null).pop();
+      if (active && nav.scrollWidth > nav.clientWidth + 1) {
+        const navRect = nav.getBoundingClientRect();
+        const aRect = active.getBoundingClientRect();
+        nav.scrollLeft += (aRect.left - navRect.left) - (nav.clientWidth - aRect.width) / 2;
+      }
     }
+    setFade();
+    nav.addEventListener('scroll', setFade, { passive: true });
+    window.addEventListener('resize', setFade, { passive: true });
   }
 }
 

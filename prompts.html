@@ -141,6 +141,11 @@
     .prompt-copy-chip { color: var(--c-black); border-color: var(--c-black); font-weight: 600; }
     .prompt-copy-chip:hover { background: var(--c-yellow); border-color: var(--c-yellow); color: var(--c-black); }
     .prompt-copy-chip .lu { width: 1.4rem; height: 1.4rem; }
+    /* E12-Mobil: der „Kopieren"-Chip ist die primäre Aktion je Prompt-Karte —
+       auf Touch auf WCAG-Trefferfläche (≥44px) heben. Desktop unverändert. */
+    @media (hover: none) and (pointer: coarse) {
+      .prompt-copy-chip { min-height: 4.4rem; }
+    }
 
     /* Filtergruppen-Beschriftung in der Chip-Zeile */
     .chip-lbl {

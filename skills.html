@@ -771,6 +771,11 @@
       .demo-replay { position: relative; }
       .demo-replay::after { content: ''; position: absolute; inset: -12px; }
       .card-trigger-chip, .trigger-badge, .demo-case { min-height: 4.4rem; }
+      /* E12-Mobil: Filter-Tabs/Chips auf WCAG-Trefferfläche (≥44px). Touch-only,
+         Desktop unverändert. Text bleibt vertikal zentriert. */
+      .type-tab { min-height: 4.4rem; display: inline-flex; align-items: center; }
+      .facet-chip { min-height: 4.4rem; align-items: center; }
+      .type-info-toggle { min-height: 4.4rem; }
     }
 
     /* Explainer responsive */

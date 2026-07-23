@@ -835,6 +835,8 @@
     /* Touch: größere Trefferflächen (WCAG 2.5.5) */
     @media (hover: none) and (pointer: coarse) {
       .role-chip, .cat-tab { min-height: 4.4rem; }
+      /* E12 Mobil-Sweep: Filter-Pills + Karten-Buttons auf vorlagen/showroom */
+      .bk-cat, .sr-cat, .lib-btn { min-height: 4.4rem; }
       .nav-link { min-height: 4.4rem; display: inline-flex; align-items: center; }
       /* kleine Bedienelemente: unsichtbare Hit-Area auf ~44px aufblasen */
       .fav-btn, .star-btn { position: relative; }
@@ -984,7 +986,9 @@
       .sf-overlay { padding: 0; align-items: flex-end; }
       .sf-modal { border-radius: var(--r-lg) var(--r-lg) 0 0; max-height: 95vh; }
       .sf-body { padding: 1.8rem 1.6rem 2.4rem; }
-      .sf-header { padding: 2rem 1.6rem 1.2rem; }
+      .sf-header { padding: 2rem 1.6rem 1.2rem; align-items: center; }
+      /* E12-Mobil: Schließen-Knopf des Einreichen-Sheets auf WCAG-Trefferfläche (≥44px). */
+      .sf-close { min-width: 4.4rem; min-height: 4.4rem; display: inline-flex; align-items: center; justify-content: center; margin: -.6rem -.6rem -.6rem 0; }
     }
 
     /* iOS Safari zoomt bei Formularfeldern < 16px automatisch hinein — deshalb
@@ -1002,28 +1006,62 @@
        und blenden den rechten Rand weich aus — ein Hinweis, dass es weitergeht,
        falls es doch mal knapp wird. */
     @media (max-width: 1023px) {
-      /* Deutliche Fade-Kante als Scroll-Affordanz: statt hartem Abschneiden vor dem
-         Such-Button laufen die Pills rechts sichtbar in einen Verlauf aus. Das
-         padding-right sorgt dafür, dass das letzte Item beim Zu-Ende-Scrollen
-         vollständig aus der Fade-Zone herauskommt. */
+      /* Positions-abhängige Fade-Kante als klare Scroll-Affordanz (E12): renderNav
+         setzt data-scroll (start|mid|end|none) je nach scrollLeft. Am Anfang
+         faded nur rechts, in der Mitte beidseitig, am Ende nur links — so ist
+         immer sichtbar, in welche Richtung es weitergeht. Scroll-Snap rastet die
+         Pills sauber ein. padding sorgt dafür, dass Rand-Items ganz aus der
+         Fade-Zone herausscrollen. */
       .main-nav {
-        padding-right: 2.8rem;
-        -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 3.2rem), transparent);
-                mask-image: linear-gradient(to right, #000 calc(100% - 3.2rem), transparent);
+        padding: 0 .4rem;
+        scroll-snap-type: x proximity;
+        scroll-padding-inline: 2.4rem;
+        --fade: 3rem;
+      }
+      .nav-link { scroll-snap-align: center; }
+      .main-nav[data-scroll="start"] {
+        -webkit-mask-image: linear-gradient(to right, #000 calc(100% - var(--fade)), transparent);
+                mask-image: linear-gradient(to right, #000 calc(100% - var(--fade)), transparent);
+      }
+      .main-nav[data-scroll="mid"] {
+        -webkit-mask-image: linear-gradient(to right, transparent, #000 var(--fade), #000 calc(100% - var(--fade)), transparent);
+                mask-image: linear-gradient(to right, transparent, #000 var(--fade), #000 calc(100% - var(--fade)), transparent);
+      }
+      .main-nav[data-scroll="end"] {
+        -webkit-mask-image: linear-gradient(to right, transparent, #000 var(--fade));
+                mask-image: linear-gradient(to right, transparent, #000 var(--fade));
       }
     }
     @media (max-width: 640px) {
-      .header-inner { gap: 1.4rem; }
+      /* Nav so viel Fensterbreite wie möglich geben: Header-Padding, -Gaps und die
+         beiden Icon-Buttons rechts kompakter, damit statt ~2 nun 3 Pills
+         gleichzeitig sichtbar sind (Rest per Wisch, Fade signalisiert es). */
+      .header-inner { gap: .6rem; padding-left: 1.4rem; padding-right: 1.4rem; }
       .main-nav { gap: .1rem; }
-      .nav-link { font-size: 1.15rem; padding: .5rem .7rem; }
-      /* Marke als kompaktes Lockup (wie im Footer): „pilot“ über der Kennung */
+      .nav-link { font-size: 1.2rem; padding: .5rem .7rem; }
+      .nav-suche-btn, .nav-ds-btn { padding: 0 .8rem; }
+      /* Marke als kompaktes Lockup (wie im Footer): „pilot“ über der Kennung.
+         Die Overline gibt die Lockup-Breite vor — knapper gesetzt spart Platz
+         fürs Nav-Fenster, bleibt aber lesbar sichtbar (RAHMEN: Lockup bleibt). */
       .site-header .logo { flex-direction: column; align-items: flex-start; gap: .3rem; }
       .site-header .logo-mark { font-size: 1.7rem; }
-      .site-header .overline { font-size: .9rem; letter-spacing: .16em; }
+      .site-header .overline { font-size: .8rem; letter-spacing: .08em; }
+    }
+    @media (max-width: 480px) {
+      /* E12-M6: „Lernen & Hilfe“ ist mobil das längste Label und drängt die
+         anderen aus dem schmalen Fenster. Anzeigetext auf „Lernen“ kürzen —
+         OHNE das DOM anzufassen: der echte Textknoten (und damit textContent,
+         aria, Test-IDs) bleibt „Lernen & Hilfe“, nur die Darstellung wird per
+         Pseudo-Element ersetzt. So bleiben E10 (Desktop) und alle Nav-Checks grün. */
+      #nav-hilfe { font-size: 0; letter-spacing: 0; }
+      #nav-hilfe::before {
+        content: "Lernen"; font-size: 1.2rem; font-weight: inherit; letter-spacing: -.01em;
+      }
     }
     @media (max-width: 400px) {
-      .header-inner { gap: 1rem; }
+      .header-inner { gap: .5rem; padding-left: 1.2rem; padding-right: 1.2rem; }
       .nav-link { padding: .5rem .55rem; letter-spacing: -.01em; }
+      .site-header .overline { font-size: .75rem; letter-spacing: .06em; }
     }
 
     /* =====================================================================
