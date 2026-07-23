@@ -131,6 +131,9 @@
     /* ===== DEINE SACHEN (localStorage-Fortschritt) ===== */
     .jrow { padding: 5.2rem 0 6.4rem; }
     .jrow-inner { max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-d); }
+    /* E12 N2: „Deine Sachen“ füllte nur die linke Hälfte (~50% Void). Spalte
+       moderat auf Lesebreite begrenzen und zentrieren — kein Redesign. */
+    .jcol { max-width: 76rem; margin-left: auto; margin-right: auto; }
     .jcol h2 { font-size: 2.4rem; font-weight: var(--fw-semi); letter-spacing: -.015em; margin: .4rem 0 1.4rem; }
     .jr-stats { display: flex; gap: 4rem; flex-wrap: wrap; margin: 1.6rem 0 2rem; }
     .jr-stat { display: flex; flex-direction: column; gap: .4rem; padding-left: 1.4rem; border-left: 2px solid var(--c-yellow); }
@@ -309,17 +312,17 @@
         <h2 id="fresh-h">Neu im Marketplace</h2>
         <ul class="news-list">
           <li class="news-item">
-            <span class="news-date">17. Juli</span>
+            <span class="news-date">23. Juli</span>
             <div>
-              <p class="news-title">Der Baukasten ist da</p>
-              <p class="news-text">Fertige Code-Bausteine mit Live-Vorschau und „Sag Claude einfach …"-Prompt. <a href="vorlagen.html">Zum Baukasten</a> · passende Prompts in der <a href="prompts.html">Prompt-Sammlung</a></p>
+              <p class="news-title">Frisch im Katalog &amp; kuratiert</p>
+              <p class="news-text">Zwei neue Skills im Katalog: <strong>dataviz</strong> (Charts &amp; Dashboards) und <strong>webapp-testing</strong> (Tools im echten Browser durchklicken). Dazu frisch durchgesehene Einträge in <a href="lernen-hilfe.html#glossar">Glossar &amp; Ressourcen</a> · <a href="skills.html">zum Katalog</a></p>
             </div>
           </li>
           <li class="news-item">
             <span class="news-date">17. Juli</span>
             <div>
-              <p class="news-title">Der Lern-Bereich ist da</p>
-              <p class="news-text">24 geprüfte Lern-Ressourcen, gefiltert nach deiner Zeit. <a href="lernen-hilfe.html#ressourcen">Zu Lernen &amp; Hilfe</a></p>
+              <p class="news-title">Der Baukasten ist da</p>
+              <p class="news-text">Fertige Code-Bausteine mit Live-Vorschau und „Sag Claude einfach …"-Prompt. <a href="vorlagen.html">Zum Baukasten</a> · passende Prompts in der <a href="prompts.html">Prompt-Sammlung</a></p>
             </div>
           </li>
           <li class="news-item">

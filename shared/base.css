@@ -1220,9 +1220,11 @@
              und die .lib-submit-Familie; Markup: section.submit-band > .submit-band-inner
              > h2 + p.submit-band-text + button.c-cta + p.submit-band-note) ----- */
     .submit-band { background: var(--paper-warm); border-top: 1px solid var(--line); padding: 6.4rem 0 6.8rem; }
-    .submit-band-inner { max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-d); }
+    /* E12 N2: Inhalt zentriert statt linksbündig — vorher füllte das Band nur die
+       linke Hälfte (~50% Void). Moderat, kein Redesign: Textspalte begrenzt & mittig. */
+    .submit-band-inner { max-width: 68ch; margin: 0 auto; padding: 0 var(--pad-d); text-align: center; }
     .submit-band h2 { font-size: var(--fs-h2); font-weight: var(--fw-semi); letter-spacing: -.02em; margin: .6rem 0 1rem; color: var(--c-black); }
-    .submit-band-text { font-size: 1.6rem; line-height: 1.6; color: var(--c-ink-body, var(--c-gray-d)); max-width: 62ch; margin: 0 0 2.4rem; }
+    .submit-band-text { font-size: 1.6rem; line-height: 1.6; color: var(--c-ink-body, var(--c-gray-d)); max-width: 62ch; margin: 0 auto 2.4rem; }
     .submit-band-note { font-family: var(--font-mono); font-size: 1.15rem; color: var(--c-gray-m); margin: 1.4rem 0 0; }
 
     /* ----- Responsive ----- */
@@ -1258,11 +1260,12 @@
       margin: 0 0 2.4rem; padding-bottom: 1.6rem; border-bottom: 1px solid var(--line);
     }
     .bk-cats { display: flex; gap: .6rem; flex-wrap: wrap; }
+    /* E12 M1: Filter-Pills exakt auf die .chip-Optik gebracht (gap/padding/size/weight). */
     .bk-cat {
-      display: inline-flex; align-items: center; gap: .5rem;
+      display: inline-flex; align-items: center; gap: .6rem;
       border: 1px solid var(--line-strong); background: transparent; color: var(--c-gray-m);
-      border-radius: var(--r-pill); padding: .6rem 1.3rem;
-      font-family: inherit; font-size: 1.3rem; font-weight: 600; cursor: pointer; transition: var(--trans);
+      border-radius: var(--r-pill); padding: .5rem 1.3rem;
+      font-family: inherit; font-size: 1.35rem; font-weight: 500; cursor: pointer; transition: var(--trans);
     }
     .bk-cat:hover { border-color: var(--c-black); color: var(--c-black); }
     .bk-cat.active { background: var(--c-black); border-color: var(--c-black); color: var(--c-white); }
@@ -1411,11 +1414,12 @@
       margin: 0 0 2.4rem; padding-bottom: 1.6rem; border-bottom: 1px solid var(--line);
     }
     .sr-cats { display: flex; gap: .6rem; flex-wrap: wrap; }
+    /* E12 M1: Filter-Pills exakt auf die .chip-Optik gebracht (gap/padding/size/weight). */
     .sr-cat {
-      display: inline-flex; align-items: center; gap: .5rem;
+      display: inline-flex; align-items: center; gap: .6rem;
       border: 1px solid var(--line-strong); background: transparent; color: var(--c-gray-m);
-      border-radius: var(--r-pill); padding: .6rem 1.3rem;
-      font-family: inherit; font-size: 1.3rem; font-weight: 600; cursor: pointer; transition: var(--trans);
+      border-radius: var(--r-pill); padding: .5rem 1.3rem;
+      font-family: inherit; font-size: 1.35rem; font-weight: 500; cursor: pointer; transition: var(--trans);
     }
     .sr-cat:hover { border-color: var(--c-black); color: var(--c-black); }
     .sr-cat.active { background: var(--c-black); border-color: var(--c-black); color: var(--c-white); }

@@ -15,18 +15,38 @@
   <link rel="preload" href="assets/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="shared/base.css">
   <style>
-  /* ===== Tab-Leiste (E11: Vorlagen = Bausteine + Design-Assets) ===== */
-  .vl-tabs { display: flex; gap: 2.4rem; margin-top: 2rem; border-bottom: 1px solid var(--line); }
+  /* ===== Tab-Leiste (E11: Vorlagen = Bausteine + Design-Assets) =====
+     E12: eine Tab-Sprache — .vl-subnav ist optisch identisch zu .pillar-nav
+     (lernen-hilfe) und .skills-subnav: sticky unter der Nav, gelber 3px-Underline,
+     Count-Badges. */
+  .vl-subnav {
+    position: sticky; top: var(--header-h); z-index: 60;
+    background: var(--paper);
+    box-shadow: 0 1px 0 var(--line), 0 6px 20px -14px rgba(38,38,38,.25);
+  }
+  .vl-tabs {
+    max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-d);
+    display: flex; gap: .4rem; overflow-x: auto; scrollbar-width: none;
+  }
+  .vl-tabs::-webkit-scrollbar { display: none; }
   .vl-tab {
     appearance: none; background: none; border: none; cursor: pointer;
-    font-family: inherit; font-size: 1.55rem; font-weight: 500;
-    color: var(--c-gray-m); padding: 0 .2rem 1.1rem;
-    border-bottom: 2px solid transparent; margin-bottom: -1px;
-    transition: var(--trans);
+    display: inline-flex; align-items: center; gap: .8rem;
+    font-family: inherit; font-size: 1.5rem; font-weight: 600; white-space: nowrap;
+    color: var(--c-black); padding: 1.3rem 1.6rem;
+    border-bottom: 3px solid transparent; transition: var(--trans);
   }
-  .vl-tab:hover { color: var(--c-black); }
-  .vl-tab.active { color: var(--c-black); font-weight: var(--fw-semi); border-bottom-color: var(--c-black); }
+  .vl-tab:hover { border-bottom-color: var(--c-yellow); }
+  .vl-tab.active { color: var(--c-black); border-bottom-color: var(--c-yellow); }
   .vl-tab:focus-visible { outline: 2px solid var(--c-black); outline-offset: 2px; }
+  .vl-count {
+    display: inline-flex; align-items: center; justify-content: center;
+    background: var(--c-yellow); color: var(--c-black);
+    border-radius: var(--r-xl); padding: .1rem .8rem;
+    font-family: var(--font-mono); font-size: 1.15rem; font-weight: 700; min-width: 2.2rem;
+  }
+  .vl-tab.active .vl-count { background: var(--c-black); color: var(--c-yellow); }
+  @media (max-width: 1023px) { .vl-tabs { padding: 0 var(--pad-m); } }
 
   /* ===== Baukasten-Styles (aus baukasten.html) ===== */
     /* ============================================================
@@ -148,12 +168,17 @@
     <div class="page-head-inner">
       <h1>Vorlagen</h1>
       <p class="page-sub">Fertige Code-Bausteine mit Live-Vorschau und frei nutzbare Design-Assets — kopieren und von Claude anpassen lassen.</p>
-      <div class="vl-tabs" role="tablist" aria-label="Vorlagen-Bereiche">
-        <button type="button" id="vltab-bausteine" class="vl-tab active" role="tab" aria-selected="true" aria-controls="panel-bausteine" onclick="vlShowTab('bausteine', true)">Bausteine</button>
-        <button type="button" id="vltab-assets" class="vl-tab" role="tab" aria-selected="false" aria-controls="panel-assets" onclick="vlShowTab('assets', true)">Design-Assets</button>
-      </div>
     </div>
   </header>
+
+  <!-- E12: Tab-Leiste UNTER dem Page-Head, sticky — gleiche Sprache wie
+       skills-subnav / pillar-nav. IDs/Rollen unverändert. -->
+  <nav class="vl-subnav" aria-label="Vorlagen-Bereiche">
+    <div class="vl-tabs" role="tablist" aria-label="Vorlagen-Bereiche">
+      <button type="button" id="vltab-bausteine" class="vl-tab active" role="tab" aria-selected="true" aria-controls="panel-bausteine" onclick="vlShowTab('bausteine', true)">Bausteine <span class="vl-count" id="vl-count-bausteine" hidden></span></button>
+      <button type="button" id="vltab-assets" class="vl-tab" role="tab" aria-selected="false" aria-controls="panel-assets" onclick="vlShowTab('assets', true)">Design-Assets <span class="vl-count" id="vl-count-assets" hidden></span></button>
+    </div>
+  </nav>
 
   <!-- TAB: BAUSTEINE (Body aus baukasten.html, IDs unverändert) -->
   <div id="panel-bausteine" role="tabpanel" aria-labelledby="vltab-bausteine">
@@ -721,6 +746,10 @@
       renderRanking();
       renderBeispieldaten();
 
+      // E12: Count-Badge am Bausteine-Tab (identisch zu lernen-hilfe-Zählern)
+      const _bc = document.getElementById('vl-count-bausteine');
+      if (_bc) { _bc.textContent = BAUSTEINE.length; _bc.hidden = false; }
+
       const sortSel = document.getElementById('bk-sort');
       if (sortSel) sortSel.addEventListener('change', e => setSort(e.target.value));
 
@@ -1215,6 +1244,10 @@
       renderPalettes();
       renderPatterns();
       renderBrand();
+
+      // E12: Count-Badge am Design-Assets-Tab (Schriften + übrige Assets)
+      const _ac = document.getElementById('vl-count-assets');
+      if (_ac) { _ac.textContent = FONTS.length + ASSETS.length; _ac.hidden = false; }
 
       initModalEngine();
       initModalSwipe();

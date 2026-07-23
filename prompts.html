@@ -40,6 +40,9 @@
       padding: 1.6rem 2rem; white-space: pre-wrap; word-break: break-word;
       color: var(--c-ink-strong, var(--c-black)); margin: 0;
     }
+    /* E12 M5: Beispiel-Ergebnis (ASCII-/Tabellen-Blöcke) NICHT umbrechen — sonst
+       verlieren die Spalten die Ausrichtung. Non-wrap + horizontal scrollen. */
+    .prompt-code.-scroll { white-space: pre; word-break: normal; overflow-x: auto; }
 
     /* Kopier-Zeile im Modal */
     .prompt-copy-row { display: flex; align-items: center; gap: 1.6rem; flex-wrap: wrap; margin-bottom: 1.4rem; }
@@ -715,7 +718,7 @@
     function renderModalBeispiel(p) {
       return `
         <p class="example-note">So kann ein Ergebnis aussehen — nachgestelltes Beispiel mit fiktiven Marken. Dein Ergebnis hängt davon ab, wie du die Platzhalter füllst.</p>
-        <pre class="prompt-code">${escHtml(p.exampleOutput || '')}</pre>
+        <pre class="prompt-code -scroll">${escHtml(p.exampleOutput || '')}</pre>
       `;
     }
 

@@ -86,6 +86,24 @@
       /* Aufgeklappt: volle Filter, aber nie höher als der Viewport — Rest scrollt intern */
       .filter-bar.condensed.m-open { max-height: calc(100dvh - var(--header-h)); overflow-y: auto; }
     }
+    /* E12: die kondensierte Filterleiste pinnt UNTER der jetzt sticky Sub-Nav
+       (Höhe 4.8rem/48px), nicht auf gleicher Höhe — sonst überlappen sie. Gilt
+       für alle Breiten (Sub-Nav klebt auch mobil an top:var(--header-h)). */
+    .filter-bar.condensed { top: calc(var(--header-h) + 4.8rem); }
+    /* E12 M2: Desktop pinnt beim Scrollen NUR eine schlanke Zeile (Suche + Aufgaben-
+       Tabs) — Typ-Leiste, Sortier-/Themen-Panel scrollen mit raus. Vorher klebte der
+       ganze ~305px-Block (⅓ Viewport). Die Verdichtungs-JS (window._filterCheck)
+       bleibt unangetastet; hier nur das kondensierte Layout. */
+    @media (min-width: 1024px) {
+      .filter-bar.condensed .type-row,
+      .filter-bar.condensed .type-info,
+      .filter-bar.condensed .filter-toggle-btn,
+      .filter-bar.condensed .filter-collapsible { display: none; }
+      .filter-bar.condensed .filter-inner { flex-direction: row; align-items: center; gap: 2rem; }
+      .filter-bar.condensed [data-page-search] { flex: 0 1 34rem; min-width: 0; }
+      .filter-bar.condensed [data-page-search] #search { width: 100%; }
+      .filter-bar.condensed .cat-tabs { flex: 1 1 auto; border-bottom: none; min-width: 0; }
+    }
     /* E11: #search zieht in den hellen Slot [data-page-search] — die dunkle
        Header-Optik aus base.css (#search, ID-Spezifität) hier neutralisieren. */
     [data-page-search] #search {
@@ -94,19 +112,25 @@
     }
     [data-page-search] #search::placeholder { color: var(--c-gray-m); }
     [data-page-search] #search:focus { outline: none; border-color: var(--c-black); background: var(--c-white); }
-    .skills-subnav { border-bottom: 1px solid var(--c-gray-l); background: var(--c-bg); }
+    /* E12: eine Tab-Sprache — identisch zur .pillar-nav (lernen-hilfe): unter dem
+       Page-Head, sticky unter der Nav, gelber 3px-Underline. */
+    .skills-subnav {
+      position: sticky; top: var(--header-h); z-index: 60;
+      background: var(--paper);
+      box-shadow: 0 1px 0 var(--line), 0 6px 20px -14px rgba(38,38,38,.25);
+    }
     .skills-subnav-inner {
       max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-d);
-      display: flex; gap: .2rem; overflow-x: auto; scrollbar-width: none;
+      display: flex; gap: .4rem; overflow-x: auto; scrollbar-width: none;
     }
     .skills-subnav-inner::-webkit-scrollbar { display: none; }
     .skills-subtab {
       appearance: none; background: none; border: none; cursor: pointer;
-      font: inherit; font-size: 1.45rem; font-weight: 600; white-space: nowrap;
-      color: var(--c-gray-m); padding: 1.3rem 1.6rem;
-      border-bottom: 2px solid transparent; margin-bottom: -1px; transition: var(--trans);
+      font: inherit; font-size: 1.5rem; font-weight: 600; white-space: nowrap;
+      color: var(--c-black); padding: 1.3rem 1.6rem;
+      border-bottom: 3px solid transparent; transition: var(--trans);
     }
-    .skills-subtab:hover { color: var(--c-black); }
+    .skills-subtab:hover { border-bottom-color: var(--c-yellow); }
     .skills-subtab.active, .skills-subtab[aria-selected="true"] { color: var(--c-black); border-bottom-color: var(--c-yellow); }
     /* Anthropic-Skills: eingebaut vs. nachinstallieren */
     .install-badge { font-family: var(--font-mono); font-size: 1.15rem; font-weight: 600; padding: .3rem 1rem; border-radius: var(--r-pill); white-space: nowrap; }
@@ -355,6 +379,10 @@
       .pilots-grid { grid-template-columns: repeat(2, 1fr); }
     }
 
+    /* E12 M4: Karten-Fuß balancieren — Rating bleibt immer links, der Slot behält
+       dieselbe Höhe, ob ein /trigger-Chip da ist oder nicht (kein Layout-Sprung,
+       keine neuen Inhalte). */
+    .skill-card .card-footer { min-height: 3rem; justify-content: space-between; }
     /* Card Trigger Chip */
     .card-trigger-chip {
       font-size: 1.2rem; padding: .3rem .8rem;
@@ -888,6 +916,17 @@
 
   <!-- HEADER & FOOTER: werden von shared/base.js injiziert (renderNav, siehe Seiten-Script unten) -->
 
+  <!-- PAGE-HEAD (E11: kompakter Seitenkopf statt Hero) — E12: als persistenter
+       Seitenkopf ÜBER die Sub-Nav gezogen, damit die Tab-Leiste (wie bei
+       vorlagen/lernen-hilfe) UNTER der H1 sitzt. showView blendet den Kopf auf
+       den Erklär-/Builder-Views aus (diese bringen eigene Hero-H1 mit). -->
+  <header class="page-head" id="skills-page-head">
+    <div class="page-head-inner">
+      <h1>Skills</h1>
+      <p class="page-sub"><span id="page-sub-count">35</span> Skills aus dem Agentur-Alltag — von Piloten gebaut und empfohlen.</p>
+    </div>
+  </header>
+
   <!-- ===================== SEITEN-LOKALE SUB-NAV =====================
        Katalog | Was sind Skills? | Skill bauen. Ersetzt die früheren
        Header-Nav-Peers (nav-explainer/nav-builder). Persistent über allen
@@ -907,17 +946,6 @@
 
   <!-- ===================== VIEW: KATALOG ===================== -->
   <div id="view-catalog" role="tabpanel" aria-labelledby="subtab-catalog">
-
-  <!-- PAGE-HEAD (E11: kompakter Seitenkopf statt Hero) -->
-  <header class="page-head">
-    <div class="page-head-inner">
-      <h1>Skills</h1>
-      <p class="page-sub"><span id="page-sub-count">35</span> Skills aus dem Agentur-Alltag — von Piloten gebaut und empfohlen.</p>
-      <div class="page-actions">
-        <button class="c-cta -black-border" onclick="showView('explainer')">Was sind Skills?</button>
-      </div>
-    </div>
-  </header>
 
   <!-- RECENTLY VIEWED -->
   <div id="recently-viewed" class="recently-viewed" hidden></div>
@@ -1009,6 +1037,18 @@
       </div>
     </section>
   </div><!-- /catalog-main -->
+
+  <!-- E12 M3: kanonisches Mitmachen-Band (wie prompts/vorlagen/showroom/lernen-hilfe).
+       CTA führt auf den Sub-Tab „Skill bauen“ — kein neuer Demo-Flow. -->
+  <section class="submit-band" aria-labelledby="skills-submit-h">
+    <div class="submit-band-inner">
+      <p class="section-label">Mitmachen</p>
+      <h2 id="skills-submit-h">Du hast einen Skill gebaut?</h2>
+      <p class="submit-band-text">Der Katalog lebt von dem, was im Alltag wirklich hilft. Bau deinen Skill im Formular, lade die fertige <code>SKILL.md</code> herunter — oder reich sie mit einem Klick ein.</p>
+      <a class="c-cta -yellow-bg" href="skills.html?view=builder" onclick="event.preventDefault();showView('builder');">Skill bauen &amp; einreichen</a>
+      <p class="submit-band-note">Demo-Flow: deine Eingaben bleiben lokal in deinem Browser.</p>
+    </div>
+  </section>
   </div><!-- /view-catalog -->
 
   <!-- ===================== VIEW: WAS SIND SKILLS ===================== -->
@@ -3693,6 +3733,9 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
       const subtabs = { catalog: 'subtab-catalog', explainer: 'subtab-explainer', builder: 'subtab-builder' };
       if (!views[view]) view = 'catalog';
       Object.entries(views).forEach(([k, id]) => { const el = document.getElementById(id); if (el) el.hidden = (k !== view); });
+      // E12: persistenter Seitenkopf „Skills“ nur auf dem Katalog; Erklär-/Builder-
+      // Views bringen ihre eigene Hero-H1 mit (sonst zwei sichtbare H1).
+      const _ph = document.getElementById('skills-page-head'); if (_ph) _ph.hidden = (view !== 'catalog');
       Object.entries(subtabs).forEach(([k, id]) => {
         const el = document.getElementById(id); if (!el) return;
         const on = (k === view);
