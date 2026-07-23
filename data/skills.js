@@ -1110,58 +1110,6 @@
         "badge": "neu"
       },
       {
-        "id": "wettbewerbs-monitor",
-        "platforms": { "code": true, "langdock": true },
-        "name": "Wettbewerbs-Monitor",
-        "tagline": "Aktivitäten & Kampagnen der Konkurrenz im Blick",
-        "description": "Fasst öffentlich sichtbare Wettbewerbsaktivitäten zusammen: Kampagnen, Botschaften, Kanäle und Tonalität — als kompakter Überblick mit Handlungsimpulsen.",
-        "longDescription": "Behalte den Markt im Blick, ohne täglich manuell zu recherchieren. Der Skill verdichtet, was Wettbewerber öffentlich tun — Kampagnen, Claims, Kanal-Mix, Tonalität — und leitet daraus Impulse für die eigene Positionierung ab. Ideal als regelmäßiger Wettbewerbs-Snapshot.",
-        "exampleOutput": "Wettbewerbs-Snapshot — 3 Marken (Juli)\n\nMarke A: neue Nachhaltigkeits-Kampagne, TikTok-Fokus\nMarke B: Preis-Kommunikation, viel Retargeting\nMarke C: ruhig — kaum neue Aktivität\n\n💡 Impuls: Lücke bei \"Transparenz\"-Story — hier ansetzen",
-        "category": "pilot-inhouse",
-        "subcategory": "strategy",
-        "trigger": "/wettbewerb",
-        "author": "Strategie-Team pilot",
-        "version": "1.0.0",
-        "addedAt": "2026-05-25",
-        "updatedAt": "2026-06-27",
-        "tags": [
-          "strategy",
-          "wettbewerb",
-          "monitoring",
-          "insights",
-          "markt"
-        ],
-        "useCases": [
-          "Wettbewerbs-Monitoring",
-          "Positionierung",
-          "Pitch-Vorbereitung",
-          "Markt-Snapshot"
-        ],
-        "difficulty": "medium",
-        "timeToRun": "10–15 Min",
-        "requirements": [
-          "Claude Code"
-        ],
-        "rating": {
-          "average": 4,
-          "count": 8
-        },
-        "endorsedBy": [
-          "Lukas Weber"
-        ],
-        "endorsements": [
-          {
-            "name": "Lukas Weber",
-            "role": "SEO Strategist",
-            "initials": "LW",
-            "text": "Guter Startpunkt für die Wettbewerbsanalyse — spart die erste Sammelarbeit."
-          }
-        ],
-        "comments": [],
-        "featured": false,
-        "badge": "neu"
-      },
-      {
         "id": "pitch-deck",
         "platforms": { "code": true, "langdock": true },
         "name": "Pitch Deck Assistent",
@@ -2099,6 +2047,78 @@
       },
 
       {
+        "id": "dataviz",
+        "platforms": { "code": true, "langdock": true },
+        "name": "dataviz",
+        "tagline": "Charts, die eine Aussage treffen — Diagrammwahl, Farbe & Barrierefreiheit",
+        "description": "Anthropics Data-Visualization-Skill: eine erprobte Entscheidungshilfe, welcher Diagrammtyp zu welchen Daten passt — plus fertige Python-Muster (matplotlib/seaborn/plotly), Farbregeln und eine Barrierefreiheits-Checkliste.",
+        "longDescription": "Die Lücke zwischen „Zahlen aufbereiten“ und „Zahlen zeigen“: Dieser offizielle Anthropic-Skill (aus dem knowledge-work-plugins-Repo) bringt Claude bei, Diagramme nach Design-Prinzipien zu bauen statt nach Bauchgefühl. Eine Auswahltabelle ordnet 13+ Diagrammtypen der jeweiligen Datenbeziehung zu (Trend, Vergleich, Verteilung, Anteil …), inklusive klarer „nimm-das-nicht“-Regeln (keine Tortendiagramme, kein 3D). Dazu kopierfertige Python-Muster für Linien-, Balken-, Histogramm-, Heatmap- und Small-Multiples-Charts, farbsichere Paletten und eine Checkliste für lesbare, barrierefreie Grafiken. In Claude Code erzeugt er echte Chart-Dateien; als reine SKILL.md ist er auch in Langdock als Gestaltungs-Leitfaden nutzbar. Ideal für Report-Charts, Dashboards und Slide-Grafiken, die überall gleich aussehen.",
+        "exampleOutput": "Frage: „Umsatz je Kanal übers Jahr — welcher Chart?“\n\nEmpfehlung: gruppiertes Balkendiagramm, nicht Torte\n  → Balken bei 0 beginnen (sonst verzerrt)\n  → nach Wert sortieren, nicht alphabetisch\n  → Blau/Orange statt Rot/Grün (farbenblind-sicher)\n  → Titel sagt die Aussage: „Search trägt 48 % des Umsatzes“\n\n+ fertiger matplotlib-Codeblock zum Einsetzen",
+        "category": "community",
+        "subcategory": "praesentieren",
+        "trigger": null,
+        "author": "Anthropic (knowledge-work-plugins)",
+        "version": "1.0.0",
+        "addedAt": "2026-07-23",
+        "updatedAt": "2026-07-23",
+        "tags": ["daten", "charts", "visualisierung", "auswerten", "community"],
+        "useCases": ["Den richtigen Diagrammtyp für einen Datensatz wählen", "Report- und Slide-Charts konsistent gestalten", "Farbsichere, barrierefreie Grafiken bauen"],
+        "difficulty": "medium",
+        "timeToRun": "10–30 Min",
+        "requirements": ["Claude Code (für die Diagramm-Erzeugung)"],
+        "rating": { "average": 4.4, "count": 5 },
+        "endorsedBy": ["Lukas Weber"],
+        "endorsements": [
+          {
+            "name": "Lukas Weber",
+            "role": "SEO Strategist",
+            "initials": "LW",
+            "text": "Endlich Charts, die eine Aussage transportieren, statt bloß Zahlen zu zeigen — die Diagramm-Auswahltabelle nehme ich sogar ohne Claude her."
+          }
+        ],
+        "comments": [],
+        "featured": false,
+        "badge": "neu",
+        "source": "https://github.com/anthropics/knowledge-work-plugins/tree/main/data/skills/data-visualization"
+      },
+
+      {
+        "id": "webapp-testing",
+        "platforms": { "code": true, "langdock": false },
+        "name": "webapp-testing",
+        "tagline": "Klickt deine App durch — tut sie wirklich, was sie soll?",
+        "description": "Anthropics offizieller Playwright-Toolkit-Skill: lässt Claude deine selbstgebaute Web-App im echten Browser durchklicken — Funktionen testen, UI-Verhalten prüfen, Screenshots machen und Browser-Logs auslesen.",
+        "longDescription": "Der Gegenpart zu webaudit: webaudit prüft UX, SEO und Barrierefreiheit — dieser Skill prüft, ob dein Tool tatsächlich funktioniert. Claude schreibt kleine Playwright-Skripte, startet deine App bei Bedarf selbst (Helfer-Skript with_server.py) und klickt sie durch wie ein echter Mensch: Formular ausfüllen, Knopf drücken, Ergebnis kontrollieren. Der eingebaute „erst schauen, dann handeln“-Ablauf (Screenshot/DOM ansehen, Selektoren finden, dann klicken) macht die Tests verlässlich, und der Skill wartet korrekt, bis die Seite fertig geladen ist. Genau das Sicherheitsnetz für Citizen Coder, die ihr Tool ans Team geben wollen: nicht „sieht gut aus“, sondern „macht nachweislich, was es soll“. Läuft in Claude Code (braucht Playwright/Python), nicht in Langdock.",
+        "exampleOutput": "Test: TKP-Rechner durchklicken\n\n1) Seite geöffnet, auf networkidle gewartet ✓\n2) Reichweite 500.000, TKP 12 € eingegeben\n3) Button „Berechnen“ geklickt\n4) Ergebnis gelesen: 6.000,00 € ✓ (erwartet: 6.000,00 €)\n5) Screenshot abgelegt: /tmp/inspect.png\n\nErgebnis: 1 Flow getestet, 0 Fehler — Tool tut, was es soll.",
+        "category": "community",
+        "subcategory": "bauen",
+        "trigger": null,
+        "author": "Anthropic (anthropics/skills)",
+        "version": "1.0.0",
+        "addedAt": "2026-07-23",
+        "updatedAt": "2026-07-23",
+        "tags": ["bauen", "testen", "qualität", "playwright", "community"],
+        "useCases": ["Klick-Flows im eigenen Tool testen", "UI-Fehler im echten Browser finden", "Vor der Übergabe prüfen: tut das Tool, was es soll?"],
+        "difficulty": "medium",
+        "timeToRun": "15–40 Min",
+        "requirements": ["Claude Code", "Playwright (Python)"],
+        "rating": { "average": 4.3, "count": 4 },
+        "endorsedBy": ["Jan Richter"],
+        "endorsements": [
+          {
+            "name": "Jan Richter",
+            "role": "Tech Lead & Citizen-Coding-Mentor",
+            "initials": "JR",
+            "text": "webaudit sagt dir, ob die Seite schön ist — dieser Skill sagt dir, ob der Knopf wirklich rechnet. Beides zusammen ergibt eine echte Freigabe."
+          }
+        ],
+        "comments": [],
+        "featured": false,
+        "badge": "neu",
+        "source": "https://github.com/anthropics/skills/tree/main/skills/webapp-testing"
+      },
+
+      {
         "id": "algorithmic-art",
         "platforms": { "code": true, "langdock": false },
         "install": "plugin",
@@ -2508,7 +2528,7 @@
     //  - theme-factory: echte Dublette zu brand-guidelines (Farb/Font-System anwenden), generische Themes ohne pilot-Bezug
     //  - web-artifacts-builder: einziger „advanced" mit Framework-Signal (React/shadcn) — widerspricht „nicht dev-lastig"
     const HIDDEN = new Set(['pitch-deck', 'theme-factory', 'web-artifacts-builder']);
-    // Zahlen-Ehrlichkeit: sichtbare Skill-Zahl OHNE die drei HIDDEN-Einträge (aktuell 34).
+    // Zahlen-Ehrlichkeit: sichtbare Skill-Zahl OHNE die drei HIDDEN-Einträge (aktuell 35 nach E12).
     // Einzige Quelle für alle „X Skills"-Zähler — Seiten lesen diesen Wert statt selbst
     // (und womöglich inklusive HIDDEN) zu zählen. Kein „const COUNTS" hier, damit die
     // seitenlokale COUNTS-Konstante in index.html nicht kollidiert.
@@ -2519,13 +2539,14 @@
       'erste-schritte': 'loslegen', 'erste-automation': 'loslegen', 'brainstorming': 'loslegen',
       'prototyp-bauen': 'bauen', 'webseite-bauen': 'bauen', 'tool-teilen': 'bauen', 'frontend-design': 'bauen',
       'webaudit': 'bauen', 'systematic-debugging': 'bauen', 'verification-before-completion': 'bauen', 'skill-creator': 'bauen',
-      'web-artifacts-builder': 'bauen',
+      'web-artifacts-builder': 'bauen', 'webapp-testing': 'bauen',
       'briefing-gen': 'texten', 'tonalitaets-check': 'texten', 'meeting-notes': 'texten', 'internal-comms': 'texten', 'doc-coauthoring': 'texten',
       'moodboard': 'gestalten', 'canvas-design': 'gestalten', 'brand-guidelines': 'gestalten', 'algorithmic-art': 'gestalten', 'theme-factory': 'gestalten',
       'pptx': 'praesentieren', 'xlsx': 'praesentieren', 'docx': 'praesentieren', 'pdf': 'praesentieren',
       'slides-aus-daten': 'praesentieren', 'daten-aufbereiten': 'praesentieren', 'report-summary': 'praesentieren',
+      'dataviz': 'praesentieren',
       'campaign-check': 'media', 'mediaplan-audit': 'media', 'tracking-audit': 'media', 'keyword-research': 'media',
-      'markt-research': 'media', 'persona-builder': 'media', 'wettbewerbs-monitor': 'media', 'content-recycling': 'media', 'social-kalender': 'media',
+      'markt-research': 'media', 'persona-builder': 'media', 'content-recycling': 'media', 'social-kalender': 'media',
       'pitch-deck': 'praesentieren',
       // E2: Plugins & Frameworks — auch sie ordnen sich in die Aufgaben-Tabs ein
       'superpowers': 'bauen', 'ralph-loop': 'bauen', 'gsd': 'bauen', 'test-driven-development': 'bauen',
@@ -2566,6 +2587,15 @@
       'report-summary': 'Fass diesen Report auf eine halbe Seite zusammen — Kernaussagen und Handlungsempfehlung: [Report einfügen]',
       'docx': 'Erstell mir ein Word-Dokument für [Zweck] mit folgendem Inhalt: [Inhalt einfügen]',
       'xlsx': 'Bau mir eine Excel-Tabelle, die [Zweck] — die Rohdaten hänge ich an.',
+      // E12: Startprompts für die Bau-Kern-Skills, die bisher keinen hatten
+      'prototyp-bauen': 'Ich brauche ein kleines internes Tool: [was es tun soll, z. B. „aus Reichweite und TKP den Kontaktpreis rechnen“]. Eingaben: [Felder]. Ergebnis: [was rauskommen soll]. Bau mir das als eine HTML-Datei, die ich per Doppelklick öffnen kann — ich kann nicht programmieren, frag nach, wenn was unklar ist.',
+      'daten-aufbereiten': 'Bereite die Datei [export.csv] in meinem Projektordner auf: Dubletten raus, Datums- und Zahlenformate vereinheitlichen, Lücken markieren statt raten. Leg das Original unverändert liegen und schreib jede Änderung in ein kurzes Änderungs-Log.',
+      'campaign-check': 'Prüf mein Kampagnen-Setup in [kampagne.csv] vor dem Launch: UTM-Parameter, Landingpages und Budget-Caps. Gib mir eine Ampel je Anzeige und eine Liste konkreter Fixes mit Zeilennummer — sag klar, ob wir starten können oder nicht.',
+      'briefing-gen': 'Mach aus meinen Stichpunkten ein sauberes Kunden-Briefing: [Notizen einfügen]. Frag gezielt nach, wo etwas fehlt (Ziel, Zielgruppe, Budget, Timing), und erfinde nichts dazu.',
+      'brainstorming': 'Ich habe eine Idee für ein internes Tool: [deine Idee]. Stell mir erst die richtigen Fragen — Ziel, Nutzer:innen, Grenzen — und fass das Ergebnis als kurzes Konzept zusammen, bevor irgendwas gebaut wird.',
+      // E12: die zwei neuen Community-Skills
+      'dataviz': 'Ich habe diese Daten: [Tabelle/CSV]. Welcher Diagrammtyp transportiert die Aussage [was ich zeigen will] am besten? Bau mir den Chart konsistent und farbsicher — Titel als Aussage, Achsen beschriftet, barrierefrei.',
+      'webapp-testing': 'Klick mein Tool [datei.html oder URL] im echten Browser durch: Fülle [Eingaben] aus, drück [Button] und prüf, ob [erwartetes Ergebnis] herauskommt. Mach unterwegs einen Screenshot und sag mir, ob alle Flows funktionieren.',
       // E2: Nutzungs-Prompts für Plugins (nach der Installation)
       'superpowers': 'Ich habe eine Idee für ein internes Tool: [deine Idee]. Lass uns sie erst gemeinsam durchdenken, bevor du baust.',
       'frontend-design': 'Bau mir eine Landingpage für [Thema] — mit eigenständiger, hochwertiger Gestaltung statt Template-Look.',
@@ -2627,7 +2657,6 @@
       'meeting-notes':       ALL_ROLES,
       'markt-research':      ['strategie', 'media'],
       'persona-builder':     ['strategie', 'kreation'],
-      'wettbewerbs-monitor': ['strategie', 'media'],
       'pitch-deck':          ['strategie', 'pm', 'kreation'],
       'daten-aufbereiten':   ['data', 'media'],
       'report-summary':      ['data', 'media', 'pm'],
@@ -2648,6 +2677,8 @@
       'brainstorming':       ALL_ROLES,
       'systematic-debugging': ALL_ROLES,
       'verification-before-completion': ALL_ROLES,
+      'dataviz':             ['data', 'media', 'strategie', 'pm'],
+      'webapp-testing':      ['kreation', 'media', 'data', 'pm'],
       'algorithmic-art':     ['kreation'],
       'superpowers':         ALL_ROLES,
       'ralph-loop':          ALL_ROLES,

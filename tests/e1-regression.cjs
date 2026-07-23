@@ -26,20 +26,22 @@ const { chromium } = require('/usr/lib/node_modules/playwright');
 const ARG = process.argv[2] || 'http://localhost:8412/skills.html';
 const TARGET = /\.html/.test(ARG) ? ARG : new URL('skills.html', ARG).href;
 
-// Soll-Werte (Stand E2 Schritt 2, 2026-07-16): sichtbare Karten pro Aufgaben-Tab,
-// Merge-Karten zählen als 1 Karte. Änderung ggü. E1-Baseline (31/3/8/5/4/4/7):
-//  +5 neue Einträge — Plugins superpowers & ralph-loop (Bauen), Frameworks
-//  gsd & test-driven-development (Bauen) und brainstorm-plan-execute (Loslegen).
-//  frontend-design & skill-creator wurden zu itemType 'plugin' konvertiert
-//  (bleiben in Bauen — der Default-Typ-Tab „Alle" zählt sie weiter mit).
+// Soll-Werte: sichtbare Karten pro Aufgaben-Tab, Merge-Karten zählen als 1 Karte.
+// E12-Soll (2026-07-23): Kaskade nach der Kuratierung — Alle 36→37, Bauen 12→13,
+// Präsentieren 4→5, Media 7→6. Herleitung:
+//  - STREICHEN wettbewerbs-monitor (Media-Skill, keine Merge-Karte) → Media −1 (7→6),
+//    Alle −1.
+//  - NEU webapp-testing (Community, Aufgabe „Bauen") → Bauen +1 (12→13), Alle +1.
+//  - NEU dataviz (Community, Aufgabe „Präsentieren") → Präsentieren +1 (4→5), Alle +1.
+//  Summe „Alle" = 4+13+5+4+5+6 = 37. Loslegen/Texten/Gestalten unverändert.
 const EXPECTED_TAB_COUNTS = {
-  'Alle': 36,
+  'Alle': 37,
   'Loslegen': 4,
-  'Bauen': 12,
+  'Bauen': 13,
   'Texten': 5,
   'Gestalten': 4,
-  'Präsentieren': 4,
-  'Media': 7,
+  'Präsentieren': 5,
+  'Media': 6,
 };
 
 const VIEWPORTS = [

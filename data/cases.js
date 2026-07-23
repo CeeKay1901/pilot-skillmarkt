@@ -439,7 +439,7 @@ const CASES = [
     },
     faktenBox: {
       dauer: '~4 Stunden (Beispiel-Einordnung)',
-      skills: ['wettbewerbs-monitor', 'markt-research'],
+      skills: ['markt-research'],
       prompts: ['wettbewerber-werbung'],
       bausteine: ['karten-grid', 'stat-band']
     },
@@ -447,7 +447,6 @@ const CASES = [
     nachbauStartprompt: 'Baue mir einen Wettbewerbs-Radar als einzelne HTML-Datei. Eingabe: mehrere Wettbewerber und wenige Bewertungsachsen (z. B. Preis, Reichweite, Innovation, Markenstärke), je Achse ein Wert von 1 bis 5. Ausgabe: ein Radar-Diagramm aus reinem SVG plus eine Vergleichstabelle, mit dem sichtbaren Hinweis, dass die Werte eigene Einschätzungen sind. Keine externe Bibliothek, offline per Doppelklick, mobil-tauglich. pilot-CI: Schwarz #262626, Gelb #ffe05e, Papier #f1f1ec.',
     querverweise: {
       skills: [
-        { id: 'wettbewerbs-monitor', label: 'Wettbewerbs-Monitor' },
         { id: 'markt-research', label: 'Markt-Research' }
       ],
       prompts: [

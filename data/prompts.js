@@ -460,7 +460,7 @@ XVERWEIS hat den „nicht gefunden“-Fall eingebaut — die Formel sucht nur no
   {
     id: 'vibecoding-kickoff',
     name: 'Vibecoding-Kickoff',
-    tagline: 'Der erste Prompt für dein eigenes kleines Tool — mit den fünf Angaben, die Claude wirklich braucht, statt sie zu raten: Zweck, Nutzer, Daten, Aussehen, Fertig-Kriterium.',
+    tagline: 'Der erste Prompt für dein eigenes kleines Tool — mit den fünf Angaben, die Claude wirklich braucht, statt sie zu raten: Zweck, Nutzer, Daten, Aussehen, Fertig-Kriterium. Hier lieferst du die Angaben selbst; willst du dich lieber ausfragen lassen, nimm „Lass dich interviewen“.',
     taskGroup: 'bauen',
     platforms: { code: true },
     difficulty: 'medium',
@@ -582,7 +582,7 @@ Vorgehen:
   {
     id: 'feedback-formulierer',
     name: 'Feedback-Formulierer',
-    tagline: 'Hartes inhaltliches Feedback, das ankommt statt zu verletzen — die KI ändert die Verpackung, nicht die Substanz. Mit eingebauter Kontrolle, ob die Schärfe noch stimmt.',
+    tagline: 'Hartes inhaltliches Feedback, das ankommt statt zu verletzen — die KI ändert die Verpackung, nicht die Substanz. Mit eingebauter Kontrolle, ob die Schärfe noch stimmt. Für internes Feedback an Kolleg:innen; für ausgehende Kundenmails nimm den E-Mail-Ton-Check.',
     taskGroup: 'texten',
     platforms: { langdock: true },
     difficulty: 'easy',
@@ -962,7 +962,7 @@ Semikolons enthält, und dann das passende Trennzeichen verwenden.
   {
     id: 'tool-anforderungen',
     name: 'Lass dich interviewen, bevor du baust',
-    tagline: 'Die KI stellt dir die Fragen — und aus deinen Antworten wird ein Steckbrief, der dein Tool-Projekt auf Kurs hält.',
+    tagline: 'Die KI stellt dir die Fragen — und aus deinen Antworten wird ein Steckbrief, der dein Tool-Projekt auf Kurs hält. Der Gegenentwurf zum Vibecoding-Kickoff, bei dem du die Angaben selbst mitbringst.',
     taskGroup: 'bauen',
     platforms: { langdock: true, code: true },
     difficulty: 'easy',
@@ -1102,7 +1102,7 @@ FAVORITEN: Nr. 2 (konkretes Alltagsbild, das jede WG kennt) und Nr. 9
   {
     id: 'email-ton-check',
     name: 'E-Mail-Ton-Check vor dem Absenden',
-    tagline: 'Lies deine Mail einmal mit den Augen der Empfängerin — bevor sie es tut.',
+    tagline: 'Lies deine Mail einmal mit den Augen der Empfängerin — bevor sie es tut. Für ausgehende (Kunden-)Mails; internes Feedback an Kolleg:innen formuliert der Feedback-Formulierer.',
     taskGroup: 'texten',
     platforms: { langdock: true },
     difficulty: 'easy',
@@ -1527,8 +1527,8 @@ die Alltagslücke ist größer und unbesetzt.`,
       { author: 'Christopher Kipp', role: 'Innovation Lead', initials: 'CK', date: '2026-06-29', rating: 4.2, text: 'Punkt 4 ist der Unterschied zwischen Beobachten und Beraten.' }
     ],
     addedAt: '2026-07-16',
-    skillRef: 'wettbewerbs-monitor',
-    skillRefName: 'Wettbewerbs-Monitor'
+    skillRef: 'markt-research',
+    skillRefName: 'Markt-Research'
   },
 
   {

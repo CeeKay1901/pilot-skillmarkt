@@ -4,17 +4,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>pilot Skill Marketplace — Citizen Coding mit Claude Code</title>
-  <meta name="description" content="Der interne Skill-Marktplatz der pilot Agenturgruppe: 34 echte Skills für Claude Code &amp; Langdock entdecken, verstehen und selbst nutzen — von Briefings über Mediaplan-Checks bis zum eigenen Tool.">
+  <meta name="description" content="Der interne Skill-Marktplatz der pilot Agenturgruppe: 35 echte Skills für Claude Code &amp; Langdock entdecken, verstehen und selbst nutzen — von Briefings über Mediaplan-Checks bis zum eigenen Tool.">
   <meta name="theme-color" content="#262626">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="pilot Skill Marketplace">
   <meta property="og:title" content="pilot Skill Marketplace — Citizen Coding mit Claude Code">
-  <meta property="og:description" content="34 echte Skills für Claude Code &amp; Langdock entdecken, verstehen und selbst nutzen. Von Piloten gebaut, von Piloten empfohlen.">
+  <meta property="og:description" content="35 echte Skills für Claude Code &amp; Langdock entdecken, verstehen und selbst nutzen. Von Piloten gebaut, von Piloten empfohlen.">
   <meta property="og:url" content="https://ceekay1901.github.io/pilot-skillmarkt/skills.html">
   <meta property="og:image" content="https://ceekay1901.github.io/pilot-skillmarkt/og-image.png">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="pilot Skill Marketplace">
-  <meta name="twitter:description" content="34 echte Skills für Claude Code &amp; Langdock entdecken, verstehen und selbst nutzen.">
+  <meta name="twitter:description" content="35 echte Skills für Claude Code &amp; Langdock entdecken, verstehen und selbst nutzen.">
   <meta name="twitter:image" content="https://ceekay1901.github.io/pilot-skillmarkt/og-image.png">
   <link rel="preload" href="assets/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="shared/base.css">
@@ -912,7 +912,7 @@
   <header class="page-head">
     <div class="page-head-inner">
       <h1>Skills</h1>
-      <p class="page-sub">34 Skills aus dem Agentur-Alltag — von Piloten gebaut und empfohlen.</p>
+      <p class="page-sub"><span id="page-sub-count">35</span> Skills aus dem Agentur-Alltag — von Piloten gebaut und empfohlen.</p>
       <div class="page-actions">
         <button class="c-cta -black-border" onclick="showView('explainer')">Was sind Skills?</button>
       </div>
@@ -1509,6 +1509,14 @@ Gib einen priorisierten Report aus:
     // ===== KURATIERUNG: ausblenden, Aufgaben-Taxonomie, Merge-Gruppen =====
 
     SKILLS.forEach(s => { if (TASK_GROUP[s.id]) s.subcategory = TASK_GROUP[s.id]; });
+
+    // Zahlen-Ehrlichkeit: die nackte Skill-Zahl im Seitenkopf ist eine ITEM-Zahl
+    // (VISIBLE_SKILL_COUNT, ohne HIDDEN) — nicht die karten-basierte Tab-Zahl.
+    // Der statische Wert im HTML ist nur Fallback; hier aus der Datenquelle gespeist.
+    (function setPageSubCount() {
+      const el = document.getElementById('page-sub-count');
+      if (el && typeof VISIBLE_SKILL_COUNT === 'number') el.textContent = VISIBLE_SKILL_COUNT;
+    })();
 
 
     const MEMBER_OF = {};

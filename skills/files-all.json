@@ -119,6 +119,9 @@
   "references/beispiel.md",
   "references/kanaele.md"
  ],
+ "dataviz": [
+  "SKILL.md"
+ ],
  "daten-aufbereiten": [
   "SKILL.md",
   "references/beispiel.md",
@@ -406,6 +409,14 @@
   "scripts/init-artifact.sh",
   "scripts/shadcn-components.tar.gz"
  ],
+ "webapp-testing": [
+  "SKILL.md",
+  "examples/console_logging.py",
+  "examples/element_discovery.py",
+  "examples/static_html_automation.py",
+  "LICENSE.txt",
+  "scripts/with_server.py"
+ ],
  "webaudit": [
   "SKILL.md",
   "references/checklist-code.md",
@@ -418,11 +429,6 @@
   "SKILL.md",
   "references/beispiel.md",
   "references/design.md"
- ],
- "wettbewerbs-monitor": [
-  "SKILL.md",
-  "references/beispiel.md",
-  "references/dimensionen.md"
  ],
  "xlsx": [
   "SKILL.md",
