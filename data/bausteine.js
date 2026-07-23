@@ -1320,7 +1320,7 @@ const BEISPIELDATEN = [
     beschreibung: 'Kampagnen-Leistungsdaten von vier erfundenen Marken über mehrere Kanäle: Impressions, Klicks, CTR, Conversions, Spend und CPA. Der ideale Rohstoff, um aus nackten Zahlen ein kleines Dashboard zu bauen.',
     uebungstext: 'Lad die Datei in Claude und sag: „Bau mir aus diesen KPIs ein Balkendiagramm nach Kanal.“ Nimm den Chart-Baustein als Ausgangspunkt.',
     uebungZiele: [
-      { label: 'Chart-Baustein öffnen', href: 'baukasten.html?b=chart-setup', typ: 'baustein' },
+      { label: 'Chart-Baustein öffnen', href: 'vorlagen.html?b=chart-setup', typ: 'baustein' },
       { label: 'Prompt „CSV erklären“', href: 'prompts.html?p=csv-erklaeren', typ: 'prompt' }
     ]
   },
@@ -1337,7 +1337,7 @@ const BEISPIELDATEN = [
     beschreibung: 'Media-Budget nach Monat und Kanal mit Plan-, Ist- und Abweichungswerten. Gut geeignet, um eine saubere Tabelle mit farbig hervorgehobenen Abweichungen zu bauen.',
     uebungstext: 'Sag Claude: „Mach aus dieser Budget-Tabelle eine übersichtliche HTML-Tabelle und färbe negative Abweichungen rot.“ Der Tabellen-Baustein ist der Startpunkt.',
     uebungZiele: [
-      { label: 'Tabellen-Baustein öffnen', href: 'baukasten.html?b=tabellen-look', typ: 'baustein' },
+      { label: 'Tabellen-Baustein öffnen', href: 'vorlagen.html?b=tabellen-look', typ: 'baustein' },
       { label: 'Skill „xlsx“', href: 'skills.html?skill=xlsx', typ: 'skill' }
     ]
   },
@@ -1354,7 +1354,7 @@ const BEISPIELDATEN = [
     beschreibung: 'Reichweite, Likes, Kommentare, Shares, Saves und Engagement-Rate einzelner Social-Posts über mehrere Plattformen und Formate. Zeigt schön, welches Format wirklich zieht.',
     uebungstext: 'Sag Claude: „Zeig mir die drei stärksten Posts als Kennzahlen-Band.“ Das Stat-Band ist die Vorlage dafür.',
     uebungZiele: [
-      { label: 'Stat-Band-Baustein öffnen', href: 'baukasten.html?b=stat-band', typ: 'baustein' },
+      { label: 'Stat-Band-Baustein öffnen', href: 'vorlagen.html?b=stat-band', typ: 'baustein' },
       { label: 'Prompt „CSV erklären“', href: 'prompts.html?p=csv-erklaeren', typ: 'prompt' }
     ]
   },
@@ -1371,7 +1371,7 @@ const BEISPIELDATEN = [
     beschreibung: 'Rohantworten einer erfundenen Markenumfrage — Alters-Bucket, Region, fünf Skalenfragen und eine offene Antwort je Person. Übungsstoff für Auswertung und Visualisierung.',
     uebungstext: 'Sag Claude: „Fasse die Skalenfragen als Durchschnitt je Region zusammen und mach ein Diagramm daraus.“ Der Chart-Baustein passt dafür.',
     uebungZiele: [
-      { label: 'Chart-Baustein öffnen', href: 'baukasten.html?b=chart-setup', typ: 'baustein' },
+      { label: 'Chart-Baustein öffnen', href: 'vorlagen.html?b=chart-setup', typ: 'baustein' },
       { label: 'Prompt „CSV erklären“', href: 'prompts.html?p=csv-erklaeren', typ: 'prompt' }
     ]
   },
@@ -1388,7 +1388,7 @@ const BEISPIELDATEN = [
     beschreibung: 'Ein erfundenes Kunden-Briefing für einen Website-Relaunch — Ausgangslage, Ziele, Zielgruppe, Pflichtseiten und gewünschter Ton. Übungsstoff für Zusammenfassung und die erste Hero-Sektion.',
     uebungstext: 'Sag Claude: „Fasse dieses Briefing in fünf Bulletpoints zusammen und schreib mir daraus eine Hero-Schlagzeile.“ Der Header-Hero-Baustein wird dein Gerüst.',
     uebungZiele: [
-      { label: 'Header-Hero-Baustein öffnen', href: 'baukasten.html?b=header-hero', typ: 'baustein' },
+      { label: 'Header-Hero-Baustein öffnen', href: 'vorlagen.html?b=header-hero', typ: 'baustein' },
       { label: 'Prompt „Briefing zusammenfassen“', href: 'prompts.html?p=briefing-zusammenfassung', typ: 'prompt' }
     ]
   },
@@ -1405,7 +1405,7 @@ const BEISPIELDATEN = [
     beschreibung: 'Ein erfundenes Kampagnen-Briefing der Marke Grünwerk: Social-Media-Kampagne zum Saisonstart mit Zielgruppe, Kanälen, Kernbotschaften und Tonalität. Übungsstoff für Content-Planung.',
     uebungstext: 'Sag Claude: „Entwickle aus diesem Briefing eine Social-Post-Serie für die erste Kampagnenwoche.“ Die Ergebnisse kannst du im Karten-Grid-Baustein als Redaktionsplan anordnen.',
     uebungZiele: [
-      { label: 'Karten-Grid-Baustein öffnen', href: 'baukasten.html?b=karten-grid', typ: 'baustein' },
+      { label: 'Karten-Grid-Baustein öffnen', href: 'vorlagen.html?b=karten-grid', typ: 'baustein' },
       { label: 'Prompt „Social-Post-Serie“', href: 'prompts.html?p=social-post-serie', typ: 'prompt' }
     ]
   },
@@ -1422,7 +1422,7 @@ const BEISPIELDATEN = [
     beschreibung: 'Ein Produkt-Platzhalterbild der erfundenen Marke VELOMO — stilisiertes E-Bike als flache Vektorgrafik. Zum Üben, wenn ein Layout ein Bild braucht, du aber noch keins hast.',
     uebungstext: 'Sag Claude: „Bau das Testbild als <img> in den Bild-Text-Baustein ein.“ Und wenn du ein echtes Motiv willst: Der Prompt „Bildbrief“ hilft dir, es sauber zu beschreiben.',
     uebungZiele: [
-      { label: 'Bild-Text-Baustein öffnen', href: 'baukasten.html?b=bild-text-split', typ: 'baustein' },
+      { label: 'Bild-Text-Baustein öffnen', href: 'vorlagen.html?b=bild-text-split', typ: 'baustein' },
       { label: 'Prompt „Bildbrief“', href: 'prompts.html?p=bildbrief', typ: 'prompt' }
     ]
   },
@@ -1439,7 +1439,7 @@ const BEISPIELDATEN = [
     beschreibung: 'Ein Kampagnen-Platzhalterbild der erfundenen Marke Quellgold im Querformat — mit freier Fläche, wo später Claim und Call-to-Action hinkommen. Gut als Startpunkt für eine Kampagnen-Sektion.',
     uebungstext: 'Sag Claude: „Bau eine Hero-Sektion, die dieses Kampagnenbild großflächig nutzt.“ Den passenden Claim für die Platzhalter-Balken textest du mit der Claim-Werkstatt.',
     uebungZiele: [
-      { label: 'Header-Hero-Baustein öffnen', href: 'baukasten.html?b=header-hero', typ: 'baustein' },
+      { label: 'Header-Hero-Baustein öffnen', href: 'vorlagen.html?b=header-hero', typ: 'baustein' },
       { label: 'Prompt „Claim-Werkstatt“', href: 'prompts.html?p=claim-werkstatt', typ: 'prompt' }
     ]
   }

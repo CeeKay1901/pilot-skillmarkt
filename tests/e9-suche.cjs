@@ -7,8 +7,9 @@
  *   02 · Cmd/Ctrl+K öffnet #gsearch-overlay.open, #gsearch-input ist fokussiert.
  *   03 · Tippen eines gruppenübergreifenden Begriffs liefert ≥1 Gruppen-Header + Treffer als
  *        role="option" mit korrektem Deep-Link-href (Regex je Typ).
- *   04 · Lazy-Load: auf bibliothek.html (lädt SKILLS/PROMPTS NICHT) liefert die Suche nach einem
- *        Prompt trotzdem Treffer — Beleg für dynamisches Nachladen der fehlenden data/*.js.
+ *   04 · Lazy-Load: auf vorlagen.html (lädt SKILLS/PROMPTS NICHT, nur bausteine.js+assets.js)
+ *        liefert die Suche nach einem Prompt trotzdem Treffer — Beleg für dynamisches
+ *        Nachladen der fehlenden data/*.js. [E11-IA: vormals bibliothek.html]
  *   05 · Esc schließt das Overlay (.open weg), Fokus zurück auf die Lupe/Opener.
  *   06 · 0 JS-Fehler über den ganzen Flow (blocked-resource-Errors gefiltert wie e8).
  *   07 · Tastatur-Navigation: ArrowDown setzt aria-activedescendant + .is-active.
@@ -30,10 +31,13 @@ const { chromium } = require('/usr/lib/node_modules/playwright');
 const ARG = process.argv[2] || 'http://localhost:8412/skills.html';
 const TARGET = /\.html/.test(ARG) ? ARG : new URL('skills.html', ARG).href;
 const PROMPTS_TARGET = TARGET.replace(/skills\.html.*$/, 'prompts.html');
-const BIBLIO_TARGET = TARGET.replace(/skills\.html.*$/, 'bibliothek.html');
+// E11-IA: bibliothek.html/baukasten.html sind Redirect-Stubs ohne eigenes SKILLS/
+// PROMPTS-Laden; vorlagen.html (Nachfolger, lädt nur bausteine.js+assets.js) ist die
+// Seite ohne diese Globals und dient hier als Lazy-Load-Beleg.
+const VORLAGEN_TARGET = TARGET.replace(/skills\.html.*$/, 'vorlagen.html');
 
 // Deep-Link-Muster je Typ (Vertrag). Ein gültiger Treffer-href matcht genau eines davon.
-const DEEPLINK_RE = /(skills\.html\?skill=|prompts\.html\?p=|hilfe\.html\?(befehl|begriff)=|lernen\.html\?r=|bibliothek\.html\?a=|baukasten\.html\?b=|showroom\.html\?case=)/;
+const DEEPLINK_RE = /(skills\.html\?skill=|prompts\.html\?p=|hilfe\.html\?(befehl|begriff)=|lernen\.html\?r=|vorlagen\.html\?a=|vorlagen\.html\?b=|showroom\.html\?case=)/;
 
 const VIEWPORTS = [
   { name: 'desktop', viewport: { width: 1280, height: 800 } },
@@ -149,8 +153,9 @@ async function runViewport(browser, vp) {
   }));
   check('05_esc_closes', !closeInfo.open && closeInfo.focusBackOnLupe, closeInfo);
 
-  // ---------- (4) Lazy-Load: bibliothek.html lädt SKILLS/PROMPTS nicht, findet Prompt trotzdem ----------
-  await page.goto(BIBLIO_TARGET, { waitUntil: 'load' });
+  // ---------- (4) Lazy-Load: vorlagen.html lädt SKILLS/PROMPTS nicht, findet Prompt trotzdem ----------
+  // E11-IA: vormals bibliothek.html — vorlagen.html lädt nur data/bausteine.js + data/assets.js.
+  await page.goto(VORLAGEN_TARGET, { waitUntil: 'load' });
   await page.waitForSelector('#nav-suche-btn', { timeout: 10000 });
   // data/*.js deklarieren mit `const` → globale lexikalische Bindung, KEINE window-
   // Eigenschaft. Deshalb den Bezeichner direkt per typeof prüfen (nicht window.PROMPTS).

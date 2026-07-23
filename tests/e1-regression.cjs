@@ -322,6 +322,46 @@ async function runViewport(browser, vp) {
     favState.favorites.length > 0 && favState.activeBtn && !favState.modalAccidentallyOpened,
     favState);
 
+  // ---------- (09b) „Deine Sachen": Badge-Zähler + Overlay-Inhalt + Esc schließt ----------
+  // E11-IA: NEU — #nav-ds-btn zeigt per Badge (#nav-ds-count), wie viele Items gemerkt/
+  // bewertet/ausprobiert sind; Klick öffnet #ds-overlay.open mit mindestens einem
+  // .ds-item, Esc schließt es wieder. Eigener, isolierter fav:-Zustand (alle vorherigen
+  // fav:-Keys — auch der aus Check 09 — werden vor dem Setzen entfernt), damit die
+  // Badge-Zahl deterministisch "1" ist.
+  await page.evaluate(() => {
+    Object.keys(localStorage).filter(k => k.startsWith('fav:')).forEach(k => localStorage.removeItem(k));
+    localStorage.setItem('fav:skill:erste-schritte', '1');
+  });
+  await page.goto('about:blank');
+  await page.goto(TARGET, { waitUntil: 'load' });
+  await page.waitForSelector('#skills-grid .skill-card', { timeout: 10000 });
+  await page.waitForSelector('#nav-ds-btn', { timeout: 10000 });
+  const dsBadge = await page.evaluate(() => {
+    const btn = document.getElementById('nav-ds-btn');
+    const badge = document.getElementById('nav-ds-count');
+    return { btnExists: !!btn, badgeText: badge ? badge.textContent : '', badgeHidden: badge ? badge.hidden : true };
+  });
+  await page.click('#nav-ds-btn');
+  await page.waitForSelector('#ds-overlay.open', { timeout: 5000 });
+  // _dsRender wartet auf _gsEnsureData(), das auf dieser Seite alle noch fehlenden
+  // data/*.js (Prompts, Bausteine, Assets, Cases, …) nachlädt, bevor es auflöst —
+  // ein fester Timeout ist hier zu knapp; auf das tatsächliche .ds-item pollen.
+  await page.waitForFunction(
+    () => document.querySelectorAll('#ds-overlay .ds-item, #ds-overlay .empty').length > 0,
+    { timeout: 8000 }
+  ).catch(() => {});
+  const dsOverlay = await page.evaluate(() => ({
+    hasItem: document.querySelectorAll('#ds-overlay .ds-item').length > 0,
+  }));
+  await page.keyboard.press('Escape');
+  await page.waitForTimeout(200);
+  const dsClosedAfterEsc = await page.evaluate(() =>
+    !document.getElementById('ds-overlay').classList.contains('open'));
+  check('09b_deine_sachen_badge_and_overlay',
+    dsBadge.btnExists && dsBadge.badgeText === '1' && !dsBadge.badgeHidden
+      && dsOverlay.hasItem && dsClosedAfterEsc,
+    { dsBadge, dsOverlay, dsClosedAfterEsc });
+
   // ---------- (11) Kein horizontaler Overflow (helle Shell, Etappe 1) ----------
   // E11-Soll: #gs-progress ist mit dem entfernten Getting-Started-/Erklärer-Block
   // entfallen. Ersatzprüfung: die kompaktierte Seite erzeugt keinen horizontalen

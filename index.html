@@ -250,13 +250,13 @@
             <span class="rt-hint">Befehle, Begriffe und Lösungen für typische Blocker.</span>
             <span class="rt-foot"><span class="rt-dest">Zu Lernen &amp; Hilfe</span></span>
           </a>
-          <a class="rt-card" href="bibliothek.html">
+          <a class="rt-card" href="vorlagen.html?tab=assets">
             <span class="rt-ic"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg></span>
             <span class="rt-label">Etwas Hübsches bauen</span>
             <span class="rt-hint">Fonts, Icons, Farbpaletten — startklar fürs nächste Projekt.</span>
             <span class="rt-foot"><span class="rt-dest">Zur Bibliothek</span></span>
           </a>
-          <a class="rt-card" href="baukasten.html">
+          <a class="rt-card" href="vorlagen.html">
             <span class="rt-ic"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="7" height="7" x="14" y="3" rx="1"/><path d="M10 21V8a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-5a1 1 0 0 0-1-1H3"/></svg></span>
             <span class="rt-label">Mit einer Vorlage starten</span>
             <span class="rt-hint">Fertige Bausteine, die Claude für dich anpasst — mit Live-Vorschau.</span>
@@ -288,7 +288,7 @@
             <span class="news-date">17. Juli</span>
             <div>
               <p class="news-title">Der Baukasten ist da</p>
-              <p class="news-text">Fertige Code-Bausteine mit Live-Vorschau und „Sag Claude einfach …"-Prompt. <a href="baukasten.html">Zum Baukasten</a> · passende Prompts in der <a href="prompts.html">Prompt-Sammlung</a></p>
+              <p class="news-text">Fertige Code-Bausteine mit Live-Vorschau und „Sag Claude einfach …"-Prompt. <a href="vorlagen.html">Zum Baukasten</a> · passende Prompts in der <a href="prompts.html">Prompt-Sammlung</a></p>
             </div>
           </li>
           <li class="news-item">
@@ -309,7 +309,7 @@
             <span class="news-date">17. Juli</span>
             <div>
               <p class="news-title">Die Asset-Bibliothek ist da</p>
-              <p class="news-text">Schriften, Icons, Paletten und Muster — frei nutzbar, Lizenz sichtbar. <a href="bibliothek.html">Zur Asset-Bibliothek</a></p>
+              <p class="news-text">Schriften, Icons, Paletten und Muster — frei nutzbar, Lizenz sichtbar. <a href="vorlagen.html?tab=assets">Zur Asset-Bibliothek</a></p>
             </div>
           </li>
         </ul>
@@ -402,14 +402,14 @@
             </div>
             <p class="area-meta" id="area-bibliothek-meta"></p>
             <p class="area-text">Schriften, Icons, Farbpaletten und Muster — frei nutzbar, Lizenz sichtbar an jedem Asset.</p>
-            <a class="area-spot" href="bibliothek.html?a=inter">
+            <a class="area-spot" href="vorlagen.html?a=inter">
               <span class="area-spot-label">Highlight</span>
               <span class="area-spot-name">Inter — Live-Vorschau</span>
               <p class="area-spot-tag">Beispieltext antippen, Größe live regeln, @font-face &amp; Download direkt daneben</p>
               <span id="area-bibliothek-spot-rating"></span>
             </a>
             <div class="area-cta-row">
-              <a class="c-cta -yellow-bg" href="bibliothek.html">Bibliothek öffnen</a>
+              <a class="c-cta -yellow-bg" href="vorlagen.html?tab=assets">Bibliothek öffnen</a>
             </div>
           </article>
 
@@ -425,14 +425,14 @@
             </div>
             <p class="area-meta" id="area-baukasten-meta"></p>
             <p class="area-text">Fertige Code-Bausteine mit Live-Vorschau — jeder mit einem Prompt, der ihn für dich anpasst.</p>
-            <a class="area-spot" href="baukasten.html?b=header-hero">
+            <a class="area-spot" href="vorlagen.html?b=header-hero">
               <span class="area-spot-label">Highlight</span>
               <span class="area-spot-name">Header mit Hero</span>
               <p class="area-spot-tag">Der komplette „above the fold“-Auftakt in einem Rutsch — Nav, Schlagzeile, zwei Buttons</p>
               <span id="area-baukasten-spot-rating"></span>
             </a>
             <div class="area-cta-row">
-              <a class="c-cta -yellow-bg" href="baukasten.html">Baukasten öffnen</a>
+              <a class="c-cta -yellow-bg" href="vorlagen.html">Baukasten öffnen</a>
             </div>
           </article>
 
@@ -628,8 +628,8 @@
       const linkFor = {
         skill:    id => 'skills.html?skill=' + encodeURIComponent(id),
         prompt:   id => 'prompts.html?p=' + encodeURIComponent(id),
-        asset:    id => 'bibliothek.html?a=' + encodeURIComponent(id),
-        baustein: id => 'baukasten.html?b=' + encodeURIComponent(id),
+        asset:    id => 'vorlagen.html?a=' + encodeURIComponent(id),
+        baustein: id => 'vorlagen.html?b=' + encodeURIComponent(id),
         case:     id => 'showroom.html?case=' + encodeURIComponent(id)
       };
       const nameFor = (type, id) => {

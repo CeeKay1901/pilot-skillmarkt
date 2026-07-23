@@ -297,13 +297,15 @@ async function runViewport(browser, vp) {
     return {
       links,
       count: links.length,
+      // E11-IA: Baustein-/Beispieldaten-Querverweise zeigen jetzt auf vorlagen.html
+      // (Bausteine-Tab) statt baukasten.html (Punkt 5 der IA-Vorgabe).
       skillsValid: links.filter(h => h.startsWith('skills.html?skill=')).every(h => skillIds.includes(dec(h))),
       promptsValid: links.filter(h => h.startsWith('prompts.html?p=')).every(h => promptIds.includes(dec(h))),
-      bausteineValid: links.filter(h => h.startsWith('baukasten.html?b=')).every(h => bausteinIds.includes(dec(h))),
-      datenValid: links.filter(h => h.startsWith('baukasten.html#bk-data-')).every(h => dataIds.includes(h.replace('baukasten.html#bk-data-', ''))),
+      bausteineValid: links.filter(h => h.startsWith('vorlagen.html?b=')).every(h => bausteinIds.includes(dec(h))),
+      datenValid: links.filter(h => h.startsWith('vorlagen.html#bk-data-')).every(h => dataIds.includes(h.replace('vorlagen.html#bk-data-', ''))),
       hasSkill: links.some(h => h.startsWith('skills.html?skill=')),
       hasPrompt: links.some(h => h.startsWith('prompts.html?p=')),
-      hasBaustein: links.some(h => h.startsWith('baukasten.html?b=')),
+      hasBaustein: links.some(h => h.startsWith('vorlagen.html?b=')),
     };
   });
   // Startprompt-Copy → Toast
@@ -425,52 +427,49 @@ async function runViewport(browser, vp) {
       && thanksInfo.hasThanks && thanksInfo.draft.includes('Reporting-Generator'),
     { flowInfo, thanksInfo });
 
-  // ---------- (10) Nav & Footer: Showroom aktiv, Mehr-Dropdown, IDs erhalten ----------
+  // ---------- (10) Nav & Footer: 5 flache Links, #nav-showroom aktiv, kein Mehr-Dropdown ----------
+  // E11-IA: nav-showroom ist unverändert ein eigener Punkt (nicht gemergt), aber das
+  // „Mehr ▾"-Dropdown (#nav-more-btn/#nav-more-menu) und #nav-bibliothek/#nav-baukasten
+  // sind entfallen — die Hauptnav zeigt jetzt exakt 5 flache Punkte inkl. #nav-vorlagen.
   const navInfo = await page.evaluate(() => {
     const el = document.getElementById('nav-showroom');
-    const menu = document.getElementById('nav-more-menu');
+    const navLinks = [...document.querySelectorAll('.site-header .main-nav .nav-link')];
     return {
       exists: !!el, label: el ? el.textContent.trim() : '',
+      href: el ? el.getAttribute('href') : '',
       active: !!el && el.classList.contains('active'),
       ariaCurrent: el ? el.getAttribute('aria-current') : '',
+      navLinkCount: navLinks.length,
       hasCatalog: !!document.getElementById('nav-catalog'),
       hasPrompts: !!document.getElementById('nav-prompts'),
+      hasVorlagen: !!document.getElementById('nav-vorlagen'),
       hasHilfe: !!document.getElementById('nav-hilfe'),
-      // E10-Merge: nav-lernen ist entfallen (Lernen ging in „Lernen & Hilfe“/nav-hilfe auf).
-      hasBibliothek: !!document.getElementById('nav-bibliothek'),
-      hasBaukasten: !!document.getElementById('nav-baukasten'),
-      hasMoreBtn: !!document.getElementById('nav-more-btn'),
-      moreHasShowroom: !!(menu && menu.querySelector('#nav-showroom')),
-      moreHasBaukasten: !!(menu && menu.querySelector('#nav-baukasten')),
-      moreBtnActive: !!document.getElementById('nav-more-btn') && document.getElementById('nav-more-btn').classList.contains('active'),
+      noMoreBtn: !document.getElementById('nav-more-btn'),
+      noMoreMenu: !document.getElementById('nav-more-menu'),
+      noBibliothek: !document.getElementById('nav-bibliothek'),
+      noBaukasten: !document.getElementById('nav-baukasten'),
       footer: !!document.querySelector('.site-footer'),
     };
   });
-  check('10_nav_showroom_active',
-    navInfo.exists && navInfo.label === 'Showroom' && navInfo.active && navInfo.ariaCurrent === 'page'
-      && navInfo.hasCatalog && navInfo.hasPrompts && navInfo.hasHilfe
-      && navInfo.hasBibliothek && navInfo.hasBaukasten
-      && navInfo.hasMoreBtn && navInfo.moreHasShowroom && navInfo.moreHasBaukasten
-      && navInfo.moreBtnActive && navInfo.footer,
+  check('10_nav_showroom_active_no_dropdown',
+    navInfo.exists && navInfo.label === 'Showroom' && navInfo.href === 'showroom.html'
+      && navInfo.active && navInfo.ariaCurrent === 'page' && navInfo.navLinkCount === 5
+      && navInfo.hasCatalog && navInfo.hasPrompts && navInfo.hasVorlagen && navInfo.hasHilfe
+      && navInfo.noMoreBtn && navInfo.noMoreMenu && navInfo.noBibliothek && navInfo.noBaukasten
+      && navInfo.footer,
     navInfo);
 
-  // ---------- (11) Viewport-spezifisch: Dropdown Desktop vs. flach mobil (aktives Item sichtbar) ----------
+  // ---------- (11) Alle 5 Nav-Punkte sichtbar; mobil scrollt das aktive Item in den Viewport ----------
+  // E11-IA: kein Dropdown-Fall mehr auf Desktop — dort reicht ein Sichtbarkeits-Check
+  // aller 5 Punkte. Mobil bleibt der Scroll-in-View-Beweis für das aktive Item relevant.
   if (vp.name === 'desktop') {
-    await page.evaluate(() => document.getElementById('nav-more-btn').click());
-    await page.waitForTimeout(150);
-    const opened = await page.evaluate(() => ({
-      expanded: document.getElementById('nav-more-btn').getAttribute('aria-expanded'),
-      menuVisible: !document.getElementById('nav-more-menu').hidden,
-    }));
-    await page.keyboard.press('Escape');
-    await page.waitForTimeout(150);
-    const closedAfterEsc = await page.evaluate(() => document.getElementById('nav-more-menu').hidden);
-    check('11_more_dropdown_desktop',
-      opened.expanded === 'true' && opened.menuVisible && closedAfterEsc,
-      { opened, closedAfterEsc });
+    const flatNav = await page.evaluate(() => {
+      const links = [...document.querySelectorAll('.site-header .main-nav .nav-link')];
+      return { count: links.length, allVisible: links.every(a => a.offsetParent !== null) };
+    });
+    check('11_nav_flat_desktop', flatNav.count === 5 && flatNav.allVisible, flatNav);
   } else {
     const mobileNav = await page.evaluate(() => {
-      const btn = document.getElementById('nav-more-btn');
       const showroom = document.getElementById('nav-showroom');
       const nav = document.querySelector('.main-nav');
       let inViewport = false;
@@ -479,13 +478,12 @@ async function runViewport(browser, vp) {
         inViewport = sr.left >= nr.left - 1 && sr.right <= nr.right + 1;
       }
       return {
-        moreBtnHidden: !btn || getComputedStyle(btn).display === 'none',
         showroomVisible: !!showroom && showroom.offsetParent !== null,
         showroomInViewport: inViewport, // Mobil-Scroll-Fix holt das aktive Item mittig
       };
     });
-    check('11_more_flat_mobile',
-      mobileNav.moreBtnHidden && mobileNav.showroomVisible && mobileNav.showroomInViewport,
+    check('11_nav_flat_mobile_active_in_view',
+      mobileNav.showroomVisible && mobileNav.showroomInViewport,
       mobileNav);
   }
 
@@ -520,13 +518,16 @@ async function runIndexChecks(browser) {
   await page.goto(INDEX_TARGET, { waitUntil: 'load' });
   await page.waitForTimeout(1700); // animateCount ausrollen lassen
 
+  // E11-IA: die früher separaten Baukasten-/Bibliothek-Kacheln führen jetzt beide auf
+  // vorlagen.html (Bausteine-Tab bzw. ?tab=assets); nav-baukasten/nav-bibliothek sind
+  // entfallen, dafür gibt es das gemeinsame #nav-vorlagen.
   const indexInfo = await page.evaluate(() => ({
     routerTile: !!document.querySelector('.rt-grid a.rt-card[href="showroom.html"]'),
     routerTileDest: (document.querySelector('.rt-grid a.rt-card[href="showroom.html"] .rt-dest') || {}).textContent || '',
     noShowroomTeaser: !document.querySelector('.rt-card[data-teaser="showroom"]')
       && (typeof TEASER === 'undefined' || !('showroom' in TEASER)),
-    baukastenTileStillThere: !!document.querySelector('.rt-grid a.rt-card[href="baukasten.html"]'),
-    biblioTileStillThere: !!document.querySelector('.rt-grid a.rt-card[href="bibliothek.html"]'),
+    vorlagenTileStillThere: !!document.querySelector('.rt-grid a.rt-card[href="vorlagen.html"]'),
+    assetsTileStillThere: !!document.querySelector('.rt-grid a.rt-card[href="vorlagen.html?tab=assets"]'),
     areaCount: parseInt((document.getElementById('area-showroom-count') || {}).textContent || '-1', 10),
     areaMeta: (document.getElementById('area-showroom-meta') || {}).textContent || '',
     areaCta: !!document.querySelector('.area-card a.c-cta[href="showroom.html"]'),
@@ -538,8 +539,8 @@ async function runIndexChecks(browser) {
     newsHasShowroom: [...document.querySelectorAll('.news-item .news-text a')].some(a => a.getAttribute('href') === 'showroom.html'),
     newsHasPrompts: [...document.querySelectorAll('.news-item .news-text a')].some(a => a.getAttribute('href') === 'prompts.html'),
     newsHasLernen: [...document.querySelectorAll('.news-item .news-text a')].some(a => (a.getAttribute('href') || '').indexOf('lernen-hilfe.html') === 0),
-    newsHasBibliothek: [...document.querySelectorAll('.news-item .news-text a')].some(a => a.getAttribute('href') === 'bibliothek.html'),
-    newsHasBaukasten: [...document.querySelectorAll('.news-item .news-text a')].some(a => a.getAttribute('href') === 'baukasten.html'),
+    newsHasBibliothek: [...document.querySelectorAll('.news-item .news-text a')].some(a => a.getAttribute('href') === 'vorlagen.html?tab=assets'),
+    newsHasBaukasten: [...document.querySelectorAll('.news-item .news-text a')].some(a => a.getAttribute('href') === 'vorlagen.html'),
     newsCount: document.querySelectorAll('.news-item').length,
     dataCases: typeof CASES !== 'undefined' ? CASES.length : -1,
     dataEcht: typeof CASE_STATS !== 'undefined' ? CASE_STATS.echt : -1,
@@ -548,9 +549,9 @@ async function runIndexChecks(browser) {
   check('i1_index_no_js_errors', jsErrors.length === 0, { jsErrors: [...jsErrors] });
   check('i2_router_tile_links_showroom',
     indexInfo.routerTile && indexInfo.noShowroomTeaser && /Showroom/.test(indexInfo.routerTileDest)
-      && indexInfo.baukastenTileStillThere && indexInfo.biblioTileStillThere,
+      && indexInfo.vorlagenTileStillThere && indexInfo.assetsTileStillThere,
     { routerTile: indexInfo.routerTile, dest: indexInfo.routerTileDest, noShowroomTeaser: indexInfo.noShowroomTeaser,
-      baukastenTileStillThere: indexInfo.baukastenTileStillThere, biblioTileStillThere: indexInfo.biblioTileStillThere });
+      vorlagenTileStillThere: indexInfo.vorlagenTileStillThere, assetsTileStillThere: indexInfo.assetsTileStillThere });
   check('i3_counts_match_data',
     indexInfo.areaCount === EXPECTED_TOTAL && indexInfo.dataCases === EXPECTED_TOTAL
       && indexInfo.dataEcht === EXPECTED_ECHT && indexInfo.dataBeispiel === EXPECTED_BEISPIEL
@@ -577,9 +578,11 @@ async function runIndexChecks(browser) {
     location.pathname.endsWith('showroom.html') && document.querySelectorAll('#sr-grid .sr-card').length > 0);
   check('i6_router_tile_navigates', landed, { url: page.url() });
 
-  // Nav-Regression: nav-showroom auf allen Bestandsseiten vorhanden, nicht aktiv
+  // Nav-Regression: nav-showroom auf allen Bestandsseiten vorhanden, nicht aktiv.
+  // E11-IA: bibliothek.html/baukasten.html sind jetzt Redirect-Stubs für vorlagen.html
+  // — Seitenliste entsprechend zusammengeführt; hasBaukasten -> hasVorlagen.
   const navPages = {};
-  for (const p of ['skills.html', 'prompts.html', 'lernen-hilfe.html', 'bibliothek.html', 'baukasten.html']) {
+  for (const p of ['skills.html', 'prompts.html', 'lernen-hilfe.html', 'vorlagen.html']) {
     await page.goto(INDEX_TARGET.replace(/index\.html.*$/, p), { waitUntil: 'load' });
     await page.waitForSelector('#nav-showroom', { timeout: 10000 }).catch(() => {});
     navPages[p] = await page.evaluate(() => {
@@ -588,12 +591,12 @@ async function runIndexChecks(browser) {
         exists: !!el,
         href: el ? el.getAttribute('href') : '',
         notActive: !!el && !el.classList.contains('active'),
-        hasBaukasten: !!document.getElementById('nav-baukasten'),
+        hasVorlagen: !!document.getElementById('nav-vorlagen'),
       };
     });
   }
   check('i7_nav_showroom_on_all_pages',
-    Object.values(navPages).every(n => n.exists && n.href === 'showroom.html' && n.notActive && n.hasBaukasten),
+    Object.values(navPages).every(n => n.exists && n.href === 'showroom.html' && n.notActive && n.hasVorlagen),
     navPages);
 
   await context.close();

@@ -397,8 +397,8 @@
       const grp = (label, chips) => chips ? `<div class="sr-xref-group"><span class="sr-xref-label">${label}</span><div class="sr-xref">${chips}</div></div>` : '';
       const skillChips = (q.skills || []).map(z => `<a class="lib-btn" href="skills.html?skill=${encodeURIComponent(z.id)}">${LU.strategy}${escHtml(z.label)}</a>`).join('');
       const promptChips = (q.prompts || []).map(z => `<a class="lib-btn" href="prompts.html?p=${encodeURIComponent(z.id)}">${LU.ai}${escHtml(z.label)}</a>`).join('');
-      const bausteinChips = (q.bausteine || []).map(z => `<a class="lib-btn" href="baukasten.html?b=${encodeURIComponent(z.id)}">${LU.blocks}${escHtml(z.label)}</a>`).join('');
-      const datenChips = (q.beispieldaten || []).map(z => `<a class="lib-btn" href="baukasten.html#bk-data-${encodeURIComponent(z.id)}">${LU.database}${escHtml(z.label)}</a>`).join('');
+      const bausteinChips = (q.bausteine || []).map(z => `<a class="lib-btn" href="vorlagen.html?b=${encodeURIComponent(z.id)}">${LU.blocks}${escHtml(z.label)}</a>`).join('');
+      const datenChips = (q.beispieldaten || []).map(z => `<a class="lib-btn" href="vorlagen.html#bk-data-${encodeURIComponent(z.id)}">${LU.database}${escHtml(z.label)}</a>`).join('');
       return `
         <p class="section-label" style="margin-top:0">Startprompt zum Nachbauen</p>
         <div class="sr-prompt-box"><p>${escHtml(item.nachbauStartprompt || '')}</p>

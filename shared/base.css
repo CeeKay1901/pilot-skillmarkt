@@ -1958,3 +1958,81 @@
       .area-intro-inner { padding: 2.4rem var(--pad-m); }
       .area-intro-grid { grid-template-columns: 1fr; gap: 2rem; }
     }
+
+    /* =====================================================================
+       E11 — „DEINE SACHEN“ (Header-Menü: Gemerkt / Bewertet / Ausprobiert)
+       ===================================================================== */
+    .nav-ds-btn {
+      position: relative;
+      display: inline-flex; align-items: center; justify-content: center;
+      min-height: 4.4rem; min-width: 4.4rem; padding: 0 1rem;
+      background: transparent; border: 1px solid rgba(252,252,252,.2);
+      border-radius: var(--r-pill);
+      color: rgba(252,252,252,.72); cursor: pointer;
+      flex-shrink: 0; transition: var(--trans);
+      margin-left: auto;
+    }
+    .nav-ds-btn:hover,
+    .nav-ds-btn:focus-visible { color: var(--c-yellow); border-color: var(--c-yellow); outline: none; }
+    .nav-ds-btn .lu { width: 1.8rem; height: 1.8rem; }
+    .nav-ds-count {
+      position: absolute; top: -.4rem; right: -.4rem;
+      min-width: 1.8rem; height: 1.8rem; padding: 0 .5rem;
+      display: inline-flex; align-items: center; justify-content: center;
+      background: var(--c-yellow); color: var(--c-black);
+      border-radius: var(--r-pill);
+      font-size: 1.1rem; font-weight: 700; font-variant-numeric: tabular-nums;
+    }
+    .ds-overlay {
+      position: fixed; inset: 0; z-index: 210;
+      background: rgba(38,38,38,.4);
+      display: none; justify-content: flex-end;
+    }
+    .ds-overlay.open { display: flex; }
+    .ds-panel {
+      width: min(40rem, 92vw); height: 100%;
+      background: var(--paper);
+      border-left: 1px solid var(--line);
+      display: flex; flex-direction: column;
+      box-shadow: var(--shadow-lg);
+      animation: dsIn .22s var(--ease-out);
+    }
+    @keyframes dsIn { from { transform: translateX(2rem); opacity: 0; } to { transform: none; opacity: 1; } }
+    @media (prefers-reduced-motion: reduce) { .ds-panel { animation: none; } }
+    .ds-head {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 2rem 2.4rem 1.6rem; border-bottom: 1px solid var(--line);
+    }
+    .ds-head h2 { font-size: 1.9rem; font-weight: var(--fw-semi); letter-spacing: -.02em; }
+    .ds-close {
+      background: none; border: none; cursor: pointer;
+      font-size: 1.8rem; color: var(--c-gray-m); padding: .6rem;
+      border-radius: var(--r-sm); transition: var(--trans);
+    }
+    .ds-close:hover { color: var(--c-black); }
+    .ds-close:focus-visible { outline: 2px solid var(--c-black); outline-offset: 2px; }
+    .ds-body { flex: 1; overflow-y: auto; padding: 1.6rem 2.4rem 2.4rem; }
+    .ds-body .empty { margin-top: 1.2rem; border: none; padding: 3.2rem 1rem; }
+    .ds-loading { padding: 2.4rem 0; color: var(--c-gray-m); font-size: 1.4rem; }
+    .ds-section { margin-bottom: 2.2rem; }
+    .ds-section-label {
+      font-size: 1.15rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .12em; color: var(--c-gray-m); margin-bottom: .6rem;
+    }
+    .ds-item {
+      display: flex; align-items: baseline; justify-content: space-between; gap: 1.2rem;
+      padding: .9rem .2rem; text-decoration: none;
+      border-bottom: 1px solid var(--line);
+      transition: var(--trans);
+    }
+    .ds-item:last-child { border-bottom: none; }
+    .ds-item:hover .ds-item-title { text-decoration: underline; text-underline-offset: .25em; }
+    .ds-item:focus-visible { outline: 2px solid var(--c-black); outline-offset: 2px; border-radius: var(--r-xs); }
+    .ds-item-title { font-size: 1.5rem; font-weight: 500; color: var(--c-black); }
+    .ds-item-meta { font-size: 1.25rem; color: var(--c-gray-m); flex-shrink: 0; display: inline-flex; gap: .8rem; align-items: baseline; }
+    .ds-stars { color: var(--c-warn); letter-spacing: .1em; font-size: 1.2rem; }
+    @media (max-width: 640px) {
+      .ds-panel { width: 100%; border-left: none; }
+      .nav-ds-btn { min-width: 4rem; padding: 0 .8rem; }
+    }
+    .nav-ds-count[hidden] { display: none; }   /* hidden-Attribut gewinnt gegen display:inline-flex */

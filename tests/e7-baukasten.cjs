@@ -21,11 +21,13 @@
 
 const { chromium } = require('/usr/lib/node_modules/playwright');
 
-// E11-Soll: Suite akzeptiert jetzt auch eine Basis-URL (Runner ruft alle Suiten
-// mit der Origin auf) und ergänzt dann selbst baukasten.html.
-const ARG = process.argv[2] || 'http://localhost:8412/baukasten.html';
-const TARGET = /\.html/.test(ARG) ? ARG : new URL('baukasten.html', ARG).href;
-const INDEX_TARGET = TARGET.replace(/baukasten\.html.*$/, 'index.html');
+// E11-IA: Der Baukasten ist in vorlagen.html (Tab „Bausteine", Standard-Tab)
+// aufgegangen; baukasten.html ist nur noch ein Redirect-Stub (siehe neuer Test
+// weiter unten). Suite akzeptiert weiter eine Basis-URL (Runner ruft alle
+// Suiten mit der Origin auf) und ergänzt dann selbst vorlagen.html.
+const ARG = process.argv[2] || 'http://localhost:8412/vorlagen.html';
+const TARGET = /\.html/.test(ARG) ? ARG : new URL('vorlagen.html', ARG).href;
+const INDEX_TARGET = TARGET.replace(/vorlagen\.html.*$/, 'index.html');
 
 // Soll-Werte (Stand E7, 2026-07-17), abgeleitet aus data/bausteine.js:
 const EXPECTED_TOTAL = 12;          // BAUSTEINE.length
@@ -213,24 +215,26 @@ async function runViewport(browser, vp) {
       allBeispieldaten: dl.every(h => /^beispieldaten\/.+\.(csv|md|svg)$/.test(h)),
       xrefHrefs: xref,
       xrefCount: xref.length,
-      // Baukasten-Querverweise müssen auf existierende Baustein-IDs zeigen
-      bausteinRefsValid: xref.filter(h => h.startsWith('baukasten.html?b='))
-        .every(h => bausteinIds.includes(h.replace('baukasten.html?b=', ''))),
-      hasBausteinRef: xref.some(h => h.startsWith('baukasten.html?b=')),
-      pageRefs: [...new Set(xref.filter(h => !h.startsWith('baukasten.html?b=')).map(h => h.split('?')[0]))],
+      // Baustein-Querverweise müssen auf existierende Baustein-IDs zeigen
+      // E11-IA: data/bausteine.js verlinkt jetzt direkt auf vorlagen.html?b= (kein Stub-Hop)
+      bausteinRefsValid: xref.filter(h => h.startsWith('vorlagen.html?b='))
+        .every(h => bausteinIds.includes(h.replace('vorlagen.html?b=', ''))),
+      hasBausteinRef: xref.some(h => h.startsWith('vorlagen.html?b=')),
+      pageRefs: [...new Set(xref.filter(h => !h.startsWith('vorlagen.html?b=')).map(h => h.split('?')[0]))],
     };
   });
   // HEAD-Check: jede Download-Datei ist wirklich abrufbar
+  // E11-IA: TARGET zeigt jetzt auf vorlagen.html — Basis-URL entsprechend ableiten.
   let dlExist = dataLinks.dlCount === EXPECTED_DATEIEN && dataLinks.allBeispieldaten;
   for (const href of dataLinks.dlHrefs) {
-    const url = TARGET.replace(/baukasten\.html.*$/, href);
+    const url = TARGET.replace(/vorlagen\.html.*$/, href);
     const resp = await page.request.get(url).catch(() => null);
     if (!resp || !resp.ok()) { dlExist = false; break; }
   }
   // Ziel-Seiten der Querverweise (skills.html / prompts.html) existieren
   let pageRefsExist = true;
   for (const ref of dataLinks.pageRefs) {
-    const url = TARGET.replace(/baukasten\.html.*$/, ref);
+    const url = TARGET.replace(/vorlagen\.html.*$/, ref);
     const resp = await page.request.get(url).catch(() => null);
     if (!resp || !resp.ok()) { pageRefsExist = false; break; }
   }
@@ -296,65 +300,69 @@ async function runViewport(browser, vp) {
       && thanksInfo.hasThanks && thanksInfo.draft.includes('Preis-Tabelle mit Hover'),
     { flowInfo, thanksInfo });
 
-  // ---------- (12) Nav & Footer: Baukasten aktiv, Mehr-Dropdown, IDs erhalten ----------
+  // ---------- (12) Nav & Footer: 5 flache Links, #nav-vorlagen aktiv, kein Mehr-Dropdown ----------
+  // E11-IA: das „Mehr ▾"-Dropdown (#nav-more-btn/#nav-more-menu) und die separaten
+  // #nav-bibliothek/#nav-baukasten sind entfallen — die Hauptnav zeigt jetzt exakt
+  // 5 flache Punkte, #nav-vorlagen führt auf vorlagen.html und ist hier aktiv.
   const navInfo = await page.evaluate(() => {
-    const el = document.getElementById('nav-baukasten');
-    const menu = document.getElementById('nav-more-menu');
+    const el = document.getElementById('nav-vorlagen');
+    const navLinks = [...document.querySelectorAll('.site-header .main-nav .nav-link')];
     return {
       exists: !!el, label: el ? el.textContent.trim() : '',
+      href: el ? el.getAttribute('href') : '',
       active: !!el && el.classList.contains('active'),
       ariaCurrent: el ? el.getAttribute('aria-current') : '',
+      navLinkCount: navLinks.length,
       hasCatalog: !!document.getElementById('nav-catalog'),
       hasPrompts: !!document.getElementById('nav-prompts'),
+      hasShowroom: !!document.getElementById('nav-showroom'),
       hasHilfe: !!document.getElementById('nav-hilfe'),
-      // E10-Merge: nav-lernen ist entfallen (Lernen ging in „Lernen & Hilfe"/nav-hilfe auf).
-      hasBibliothek: !!document.getElementById('nav-bibliothek'),
-      hasMoreBtn: !!document.getElementById('nav-more-btn'),
-      moreHasBibliothek: !!(menu && menu.querySelector('#nav-bibliothek')),
-      moreHasBaukasten: !!(menu && menu.querySelector('#nav-baukasten')),
-      moreBtnActive: !!document.getElementById('nav-more-btn') && document.getElementById('nav-more-btn').classList.contains('active'),
+      noMoreBtn: !document.getElementById('nav-more-btn'),
+      noMoreMenu: !document.getElementById('nav-more-menu'),
+      noBibliothek: !document.getElementById('nav-bibliothek'),
+      noBaukasten: !document.getElementById('nav-baukasten'),
       footer: !!document.querySelector('.site-footer'),
     };
   });
-  check('12_nav_baukasten_active',
-    navInfo.exists && navInfo.label === 'Baukasten' && navInfo.active && navInfo.ariaCurrent === 'page'
-      && navInfo.hasCatalog && navInfo.hasPrompts && navInfo.hasHilfe && navInfo.hasBibliothek
-      && navInfo.hasMoreBtn && navInfo.moreHasBibliothek && navInfo.moreHasBaukasten
-      && navInfo.moreBtnActive && navInfo.footer,
+  check('12_nav_vorlagen_active_no_dropdown',
+    navInfo.exists && navInfo.label === 'Vorlagen' && navInfo.href === 'vorlagen.html'
+      && navInfo.active && navInfo.ariaCurrent === 'page' && navInfo.navLinkCount === 5
+      && navInfo.hasCatalog && navInfo.hasPrompts && navInfo.hasShowroom && navInfo.hasHilfe
+      && navInfo.noMoreBtn && navInfo.noMoreMenu && navInfo.noBibliothek && navInfo.noBaukasten
+      && navInfo.footer,
     navInfo);
 
-  // ---------- (13) Viewport-spezifisch: Dropdown Desktop vs. flach mobil ----------
-  if (vp.name === 'desktop') {
-    await page.evaluate(() => document.getElementById('nav-more-btn').click());
-    await page.waitForTimeout(150);
-    const opened = await page.evaluate(() => ({
-      expanded: document.getElementById('nav-more-btn').getAttribute('aria-expanded'),
-      menuVisible: !document.getElementById('nav-more-menu').hidden,
-    }));
-    await page.keyboard.press('Escape');
-    await page.waitForTimeout(150);
-    const closedAfterEsc = await page.evaluate(() => document.getElementById('nav-more-menu').hidden);
-    check('13_more_dropdown_desktop',
-      opened.expanded === 'true' && opened.menuVisible && closedAfterEsc,
-      { opened, closedAfterEsc });
-  } else {
-    const mobileNav = await page.evaluate(() => {
-      const btn = document.getElementById('nav-more-btn');
-      const baukasten = document.getElementById('nav-baukasten');
-      const biblio = document.getElementById('nav-bibliothek');
-      return {
-        moreBtnHidden: !btn || getComputedStyle(btn).display === 'none',
-        baukastenVisible: !!baukasten && baukasten.offsetParent !== null,
-        biblioVisible: !!biblio && biblio.offsetParent !== null,
-      };
-    });
-    check('13_more_flat_mobile',
-      mobileNav.moreBtnHidden && mobileNav.baukastenVisible && mobileNav.biblioVisible,
-      mobileNav);
-  }
+  // ---------- (13) Alle 5 Nav-Punkte sichtbar — Desktop wie Mobil (kein Dropdown mehr) ----------
+  // E11-IA: da es keinen Dropdown-Fall mehr gibt, ersetzt ein einzelner Sichtbarkeits-
+  // Check je Viewport den früheren Desktop/Mobil-Ast.
+  const flatNav = await page.evaluate(() => {
+    const links = [...document.querySelectorAll('.site-header .main-nav .nav-link')];
+    return { count: links.length, allVisible: links.every(a => a.offsetParent !== null) };
+  });
+  check('13_nav_flat_all_viewports', flatNav.count === 5 && flatNav.allVisible, flatNav);
+
+  // ---------- (14) Redirect-Stub: baukasten.html?b=<id> -> vorlagen.html, Bausteine-Tab + Modal ----------
+  // E11-IA: NEU — baukasten.html hält Deep-Links am Leben. ?b=<id> muss auf
+  // vorlagen.html landen (Bausteine ist der Standard-Tab) und das passende Modal öffnen.
+  const stubBase = TARGET.replace(/vorlagen\.html.*$/, '');
+  await page.goto('about:blank');
+  await page.goto(stubBase + 'baukasten.html?b=' + DEEPLINK_ID, { waitUntil: 'load' });
+  await page.waitForFunction(() => /vorlagen\.html/.test(location.pathname), { timeout: 6000 }).catch(() => {});
+  await page.waitForTimeout(1100); // applyDeepLink + fonts.ready-Reanchor (wie Check 10)
+  const stubInfo = await page.evaluate(() => ({
+    landedOnVorlagen: location.pathname.endsWith('vorlagen.html'),
+    bausteineTabActive: !!document.getElementById('vltab-bausteine') && document.getElementById('vltab-bausteine').classList.contains('active'),
+    panelBausteineVisible: !!document.getElementById('panel-bausteine') && !document.getElementById('panel-bausteine').hidden,
+    modalOpen: !!document.getElementById('modal-overlay') && document.getElementById('modal-overlay').classList.contains('open'),
+    modalName: (document.getElementById('modal-name') || {}).textContent || '',
+  }));
+  check('14_stub_baukasten_redirect_deeplink',
+    stubInfo.landedOnVorlagen && stubInfo.bausteineTabActive && stubInfo.panelBausteineVisible
+      && stubInfo.modalOpen && stubInfo.modalName === DEEPLINK_NAME,
+    stubInfo);
 
   // ---------- Abschluss ----------
-  check('14_no_js_errors_total', jsErrors.length === 0, {
+  check('15_no_js_errors_total', jsErrors.length === 0, {
     jsErrors: [...jsErrors], blockedResourceErrors: blockedResourceErrors.length,
   });
 
@@ -384,69 +392,73 @@ async function runIndexChecks(browser) {
   await page.goto(INDEX_TARGET, { waitUntil: 'load' });
   await page.waitForTimeout(1600); // animateCount ausrollen lassen
 
+  // E11-IA: die Baukasten-Kachel/CTA/Spot verlinken jetzt vorlagen.html (Bausteine-
+  // Standard-Tab) bzw. vorlagen.html?b=<id> statt baukasten.html (Punkt 4 der IA-
+  // Vorgabe). Die Assets-Kachel (vormals Bibliothek) bleibt als eigene Kachel auf
+  // vorlagen.html?tab=assets bestehen — beide Kacheln führen auf dieselbe Seite.
   const indexInfo = await page.evaluate(() => ({
-    routerTile: !!document.querySelector('.rt-grid a.rt-card[href="baukasten.html"]'),
-    routerTileDest: (document.querySelector('.rt-grid a.rt-card[href="baukasten.html"] .rt-dest') || {}).textContent || '',
-    biblioTileStillThere: !!document.querySelector('.rt-grid a.rt-card[href="bibliothek.html"]'),
+    routerTile: !!document.querySelector('.rt-grid a.rt-card[href="vorlagen.html"]'),
+    routerTileDest: (document.querySelector('.rt-grid a.rt-card[href="vorlagen.html"] .rt-dest') || {}).textContent || '',
+    assetsTileStillThere: !!document.querySelector('.rt-grid a.rt-card[href="vorlagen.html?tab=assets"]'),
     noBaukastenTeaser: !document.querySelector('.rt-card[data-teaser="baukasten"]')
       && (typeof TEASER === 'undefined' || !('baukasten' in TEASER)),
     areaCount: parseInt((document.getElementById('area-baukasten-count') || {}).textContent || '-1', 10),
     areaMeta: (document.getElementById('area-baukasten-meta') || {}).textContent || '',
-    areaCta: !!document.querySelector('.area-card a.c-cta[href="baukasten.html"]'),
-    areaSpotHref: (document.querySelector('a.area-spot[href^="baukasten.html?b="]') || { getAttribute: () => '' }).getAttribute('href') || '',
+    areaCta: !!document.querySelector('.area-card a.c-cta[href="vorlagen.html"]'),
+    areaSpotHref: (document.querySelector('a.area-spot[href^="vorlagen.html?b="]') || { getAttribute: () => '' }).getAttribute('href') || '',
     areaSpotRating: (document.getElementById('area-baukasten-spot-rating') || {}).textContent || '',
     livePills: document.querySelectorAll('.area-card .area-pill.-live').length,
     soonPills: document.querySelectorAll('.area-card .area-pill.-soon').length,
-    navBaukasten: !!document.getElementById('nav-baukasten'),
-    newsHasBaukasten: [...document.querySelectorAll('.news-item .news-text a')].some(a => a.getAttribute('href') === 'baukasten.html'),
+    navVorlagen: !!document.getElementById('nav-vorlagen'),
+    newsHasBaukasten: [...document.querySelectorAll('.news-item .news-text a')].some(a => a.getAttribute('href') === 'vorlagen.html'),
     newsCount: document.querySelectorAll('.news-item').length,
     dataBausteine: typeof BAUSTEINE !== 'undefined' ? BAUSTEINE.length : -1,
   }));
   check('i1_index_no_js_errors', jsErrors.length === 0, { jsErrors: [...jsErrors] });
-  check('i2_router_tile_links_baukasten',
+  check('i2_router_tile_links_vorlagen',
     indexInfo.routerTile && indexInfo.noBaukastenTeaser && /Baukasten/.test(indexInfo.routerTileDest)
-      && indexInfo.biblioTileStillThere,
-    { routerTile: indexInfo.routerTile, dest: indexInfo.routerTileDest, noBaukastenTeaser: indexInfo.noBaukastenTeaser, biblioTileStillThere: indexInfo.biblioTileStillThere });
+      && indexInfo.assetsTileStillThere,
+    { routerTile: indexInfo.routerTile, dest: indexInfo.routerTileDest, noBaukastenTeaser: indexInfo.noBaukastenTeaser, assetsTileStillThere: indexInfo.assetsTileStillThere });
   check('i3_counts_match_data',
     indexInfo.areaCount === EXPECTED_TOTAL && indexInfo.dataBausteine === EXPECTED_TOTAL
       && indexInfo.areaMeta.includes(String(EXPECTED_LEUCHTTUERME))
       && indexInfo.areaMeta.includes(String(EXPECTED_DATEIEN)),
     { areaCount: indexInfo.areaCount, meta: indexInfo.areaMeta, dataBausteine: indexInfo.dataBausteine });
   check('i4_area_card_clickable',
-    indexInfo.areaCta && indexInfo.areaSpotHref === 'baukasten.html?b=' + LEUCHTTURM
-      && indexInfo.areaSpotRating.trim().length > 0 && indexInfo.navBaukasten
+    indexInfo.areaCta && indexInfo.areaSpotHref === 'vorlagen.html?b=' + LEUCHTTURM
+      && indexInfo.areaSpotRating.trim().length > 0 && indexInfo.navVorlagen
       && indexInfo.livePills === 6 && indexInfo.soonPills === 0,
     { areaCta: indexInfo.areaCta, areaSpotHref: indexInfo.areaSpotHref,
-      areaSpotRating: indexInfo.areaSpotRating, navBaukasten: indexInfo.navBaukasten,
+      areaSpotRating: indexInfo.areaSpotRating, navVorlagen: indexInfo.navVorlagen,
       livePills: indexInfo.livePills, soonPills: indexInfo.soonPills });
   check('i5_news_mentions_baukasten',
     indexInfo.newsHasBaukasten && indexInfo.newsCount >= 3 && indexInfo.newsCount <= 4,
     { newsHasBaukasten: indexInfo.newsHasBaukasten, newsCount: indexInfo.newsCount });
 
   // Router-Kachel navigiert wirklich
-  await page.click('.rt-grid a.rt-card[href="baukasten.html"]');
+  await page.click('.rt-grid a.rt-card[href="vorlagen.html"]');
   await page.waitForTimeout(1200);
   const landed = await page.evaluate(() =>
-    location.pathname.endsWith('baukasten.html') && document.querySelectorAll('#bk-grid .baustein-card').length > 0);
+    location.pathname.endsWith('vorlagen.html') && document.querySelectorAll('#bk-grid .baustein-card').length > 0);
   check('i6_router_tile_navigates', landed, { url: page.url() });
 
-  // Nav-Regression: nav-baukasten auf allen Bestandsseiten vorhanden, nicht aktiv
+  // Nav-Regression: nav-vorlagen auf allen Bestandsseiten vorhanden, mit korrektem
+  // href — aktiv genau dann, wenn die jeweilige Seite selbst vorlagen.html ist.
   const navPages = {};
-  for (const p of ['skills.html', 'prompts.html', 'lernen-hilfe.html', 'bibliothek.html']) {
+  for (const p of ['skills.html', 'prompts.html', 'lernen-hilfe.html', 'showroom.html', 'vorlagen.html']) {
     await page.goto(INDEX_TARGET.replace(/index\.html.*$/, p), { waitUntil: 'load' });
-    await page.waitForSelector('#nav-baukasten', { timeout: 10000 }).catch(() => {});
-    navPages[p] = await page.evaluate(() => {
-      const el = document.getElementById('nav-baukasten');
+    await page.waitForSelector('#nav-vorlagen', { timeout: 10000 }).catch(() => {});
+    navPages[p] = await page.evaluate((page) => {
+      const el = document.getElementById('nav-vorlagen');
       return {
         exists: !!el,
         href: el ? el.getAttribute('href') : '',
-        notActive: !!el && !el.classList.contains('active'),
-        hasBibliothek: !!document.getElementById('nav-bibliothek'),
+        activeMatchesPage: !!el && el.classList.contains('active') === (page === 'vorlagen.html'),
       };
-    });
+    }, p);
   }
-  check('i7_nav_baukasten_on_all_pages',
-    Object.values(navPages).every(n => n.exists && n.href === 'baukasten.html' && n.notActive && n.hasBibliothek),
+  check('i7_nav_vorlagen_on_all_pages',
+    Object.values(navPages).every(n => n.exists && n.href === 'vorlagen.html' && n.activeMatchesPage),
     navPages);
 
   await context.close();

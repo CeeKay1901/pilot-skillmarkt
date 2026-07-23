@@ -19,11 +19,13 @@
 
 const { chromium } = require('/usr/lib/node_modules/playwright');
 
-// E11-Soll: Suite akzeptiert jetzt auch eine Basis-URL (Runner ruft alle Suiten
-// mit der Origin auf) und ergänzt dann selbst bibliothek.html.
-const ARG = process.argv[2] || 'http://localhost:8412/bibliothek.html';
-const TARGET = /\.html/.test(ARG) ? ARG : new URL('bibliothek.html', ARG).href;
-const INDEX_TARGET = TARGET.replace(/bibliothek\.html.*$/, 'index.html');
+// E11-IA: Die Asset-Bibliothek ist in vorlagen.html (Tab „Design-Assets“)
+// aufgegangen; bibliothek.html ist nur noch ein Redirect-Stub (siehe Check 16
+// unten). Suite akzeptiert weiter eine Basis-URL (Runner ruft alle Suiten mit
+// der Origin auf) und ergänzt dann selbst vorlagen.html?tab=assets.
+const ARG = process.argv[2] || 'http://localhost:8412/vorlagen.html?tab=assets';
+const TARGET = /\.html/.test(ARG) ? ARG : new URL('vorlagen.html?tab=assets', ARG).href;
+const INDEX_TARGET = TARGET.replace(/vorlagen\.html.*$/, 'index.html');
 
 // Soll-Werte (Stand E6, 2026-07-17), abgeleitet aus data/assets.js:
 const EXPECTED_TOTAL = 30;      // ASSETS = Fonts + Paletten + Muster + Icon-Sets
@@ -237,7 +239,8 @@ async function runViewport(browser, vp) {
   // HEAD-Check: jede referenzierte Datei ist wirklich abrufbar
   let allExist = dlInfo.count === EXPECTED_FONTS && dlInfo.allWoff2;
   for (const href of dlInfo.hrefs) {
-    const url = TARGET.replace(/bibliothek\.html.*$/, href);
+    // E11-IA: TARGET zeigt jetzt auf vorlagen.html — Basis-URL entsprechend ableiten.
+    const url = TARGET.replace(/vorlagen\.html.*$/, href);
     const resp = await page.request.get(url).catch(() => null);
     if (!resp || !resp.ok()) { allExist = false; break; }
   }
@@ -284,14 +287,18 @@ async function runViewport(browser, vp) {
     { rateInfo, rateReload });
 
   // ---------- (12) Deep-Link ?a=<id>: kanonischer Hash, Modal offen, Karte hervorgehoben ----------
-  // Das Karten-Highlight ist BEWUSST transient: bibliothek.html setzt .-highlight und entfernt es
+  // Das Karten-Highlight ist BEWUSST transient: vorlagen.html setzt .-highlight und entfernt es
   // nach 2400 ms wieder. Auf der schweren Seite (lazy Vorschau-iframes) liegt zwischen DOMContent-
   // Loaded (da läuft applyDeepLink und setzt .-highlight) und dem 'load'-Event oft > 2400 ms — ein
   // einmaliges Lesen nach waitUntil:'load' verpasst das Fenster (Timing-Race, kein Produktfehler).
   // Wir warten daher nur bis 'domcontentloaded' und pollen das Highlight zeitnah, bevor der
   // 2400-ms-Timer greift. Absicht unverändert: kanonischer Hash + richtiges Modal offen + Karte hervorgehoben.
+  // E11-IA: TARGET trägt bereits ?tab=assets — die Deep-Link-URL sauber per URL()
+  // zusammenbauen statt zu konkatenieren (sonst entstünde ein zweites „?“ im String).
   await page.goto('about:blank');
-  await page.goto(TARGET + '?a=' + DEEPLINK_ID, { waitUntil: 'domcontentloaded' });
+  const deepUrlA = new URL(TARGET);
+  deepUrlA.searchParams.set('a', DEEPLINK_ID);
+  await page.goto(deepUrlA.href, { waitUntil: 'domcontentloaded' });
   let everHi = false;
   const deepT0 = Date.now();
   while (Date.now() - deepT0 < 2800) {
@@ -343,63 +350,70 @@ async function runViewport(browser, vp) {
       && thanksInfo.hasThanks && thanksInfo.draft.includes('Space Mono'),
     { flowInfo, thanksInfo });
 
-  // ---------- (14) Nav & Footer: Bibliothek aktiv, Mehr-Dropdown, IDs erhalten ----------
+  // ---------- (14) Nav & Footer: 5 flache Links, #nav-vorlagen aktiv, kein Mehr-Dropdown ----------
+  // E11-IA: das „Mehr ▾"-Dropdown (#nav-more-btn/#nav-more-menu) und die separaten
+  // #nav-bibliothek/#nav-baukasten sind entfallen — die Hauptnav zeigt jetzt exakt
+  // 5 flache Punkte, #nav-vorlagen führt auf vorlagen.html und ist hier aktiv.
   const navInfo = await page.evaluate(() => {
-    const el = document.getElementById('nav-bibliothek');
-    const menu = document.getElementById('nav-more-menu');
+    const el = document.getElementById('nav-vorlagen');
+    const navLinks = [...document.querySelectorAll('.site-header .main-nav .nav-link')];
     return {
       exists: !!el, label: el ? el.textContent.trim() : '',
+      href: el ? el.getAttribute('href') : '',
       active: !!el && el.classList.contains('active'),
       ariaCurrent: el ? el.getAttribute('aria-current') : '',
+      navLinkCount: navLinks.length,
       hasCatalog: !!document.getElementById('nav-catalog'),
       hasPrompts: !!document.getElementById('nav-prompts'),
+      hasShowroom: !!document.getElementById('nav-showroom'),
       hasHilfe: !!document.getElementById('nav-hilfe'),
-      // E10-Merge: nav-lernen ist entfallen (Lernen ging in „Lernen & Hilfe"/nav-hilfe auf).
-      hasMoreBtn: !!document.getElementById('nav-more-btn'),
-      moreHasBibliothek: !!(menu && menu.querySelector('#nav-bibliothek')),
-      moreBtnActive: !!(document.getElementById('nav-more-btn') || {}).classList && document.getElementById('nav-more-btn').classList.contains('active'),
+      noMoreBtn: !document.getElementById('nav-more-btn'),
+      noMoreMenu: !document.getElementById('nav-more-menu'),
+      noBibliothek: !document.getElementById('nav-bibliothek'),
+      noBaukasten: !document.getElementById('nav-baukasten'),
       footer: !!document.querySelector('.site-footer'),
     };
   });
-  check('14_nav_bibliothek_active',
-    navInfo.exists && navInfo.label === 'Asset-Bibliothek' && navInfo.active && navInfo.ariaCurrent === 'page'
-      && navInfo.hasCatalog && navInfo.hasPrompts && navInfo.hasHilfe
-      && navInfo.hasMoreBtn && navInfo.moreHasBibliothek
-      && navInfo.moreBtnActive && navInfo.footer,
+  check('14_nav_vorlagen_active_no_dropdown',
+    navInfo.exists && navInfo.label === 'Vorlagen' && navInfo.href === 'vorlagen.html'
+      && navInfo.active && navInfo.ariaCurrent === 'page' && navInfo.navLinkCount === 5
+      && navInfo.hasCatalog && navInfo.hasPrompts && navInfo.hasShowroom && navInfo.hasHilfe
+      && navInfo.noMoreBtn && navInfo.noMoreMenu && navInfo.noBibliothek && navInfo.noBaukasten
+      && navInfo.footer,
     navInfo);
 
-  // ---------- (15) Viewport-spezifisch: Dropdown Desktop vs. flach mobil ----------
-  if (vp.name === 'desktop') {
-    // Dropdown öffnet per Klick, Esc schließt
-    await page.evaluate(() => document.getElementById('nav-more-btn').click());
-    await page.waitForTimeout(150);
-    const opened = await page.evaluate(() => ({
-      expanded: document.getElementById('nav-more-btn').getAttribute('aria-expanded'),
-      menuVisible: !document.getElementById('nav-more-menu').hidden,
-    }));
-    await page.keyboard.press('Escape');
-    await page.waitForTimeout(150);
-    const closedAfterEsc = await page.evaluate(() => document.getElementById('nav-more-menu').hidden);
-    check('15_more_dropdown_desktop',
-      opened.expanded === 'true' && opened.menuVisible && closedAfterEsc,
-      { opened, closedAfterEsc });
-  } else {
-    // Mobil: Mehr-Button ausgeblendet, die moreItems liegen flach/sichtbar in der Leiste
-    const mobileNav = await page.evaluate(() => {
-      const btn = document.getElementById('nav-more-btn');
-      const biblio = document.getElementById('nav-bibliothek');
-      return {
-        moreBtnHidden: !btn || getComputedStyle(btn).display === 'none',
-        biblioVisible: !!biblio && biblio.offsetParent !== null,
-      };
-    });
-    check('15_more_flat_mobile',
-      mobileNav.moreBtnHidden && mobileNav.biblioVisible,
-      mobileNav);
-  }
+  // ---------- (15) Alle 5 Nav-Punkte sichtbar — Desktop wie Mobil (kein Dropdown mehr) ----------
+  // E11-IA: da es keinen Dropdown-Fall mehr gibt, ersetzt ein einzelner Sichtbarkeits-
+  // Check je Viewport den früheren Desktop/Mobil-Ast.
+  const flatNav = await page.evaluate(() => {
+    const links = [...document.querySelectorAll('.site-header .main-nav .nav-link')];
+    return { count: links.length, allVisible: links.every(a => a.offsetParent !== null) };
+  });
+  check('15_nav_flat_all_viewports', flatNav.count === 5 && flatNav.allVisible, flatNav);
+
+  // ---------- (16) Redirect-Stub: bibliothek.html?a=<id> -> vorlagen.html, Assets-Tab + Modal ----------
+  // E11-IA: NEU — bibliothek.html hält Deep-Links am Leben. ?a=<id> muss auf
+  // vorlagen.html landen, den Assets-Tab aktivieren und das passende Modal öffnen.
+  const stubBase = TARGET.replace(/vorlagen\.html.*$/, '');
+  await page.goto('about:blank');
+  await page.goto(stubBase + 'bibliothek.html?a=' + DEEPLINK_ID, { waitUntil: 'load' });
+  await page.waitForFunction(() => /vorlagen\.html/.test(location.pathname), { timeout: 6000 }).catch(() => {});
+  await page.waitForTimeout(400);
+  const stubInfo = await page.evaluate(() => ({
+    landedOnVorlagen: location.pathname.endsWith('vorlagen.html'),
+    hasTabAssets: new URLSearchParams(location.search).get('tab') === 'assets',
+    assetsTabActive: !!document.getElementById('vltab-assets') && document.getElementById('vltab-assets').classList.contains('active'),
+    panelAssetsVisible: !!document.getElementById('panel-assets') && !document.getElementById('panel-assets').hidden,
+    modalOpen: !!document.getElementById('modal-overlay') && document.getElementById('modal-overlay').classList.contains('open'),
+    modalName: (document.getElementById('modal-name') || {}).textContent || '',
+  }));
+  check('16_stub_bibliothek_redirect_deeplink',
+    stubInfo.landedOnVorlagen && stubInfo.hasTabAssets && stubInfo.assetsTabActive
+      && stubInfo.panelAssetsVisible && stubInfo.modalOpen && stubInfo.modalName === 'Fraunces',
+    stubInfo);
 
   // ---------- Abschluss ----------
-  check('16_no_js_errors_total', jsErrors.length === 0, {
+  check('17_no_js_errors_total', jsErrors.length === 0, {
     jsErrors: [...jsErrors], blockedResourceErrors: blockedResourceErrors.length,
   });
 
@@ -429,25 +443,27 @@ async function runIndexChecks(browser) {
   await page.goto(INDEX_TARGET, { waitUntil: 'load' });
   await page.waitForTimeout(1600); // animateCount ausrollen lassen
 
+  // E11-IA: die Bibliotheks-Kachel/CTA/Spot verlinken jetzt vorlagen.html?tab=assets
+  // bzw. vorlagen.html?a=<id> statt bibliothek.html (Punkt 4 der IA-Vorgabe).
   const indexInfo = await page.evaluate(() => ({
-    routerTile: !!document.querySelector('.rt-grid a.rt-card[href="bibliothek.html"]'),
-    routerTileDest: (document.querySelector('.rt-grid a.rt-card[href="bibliothek.html"] .rt-dest') || {}).textContent || '',
+    routerTile: !!document.querySelector('.rt-grid a.rt-card[href="vorlagen.html?tab=assets"]'),
+    routerTileDest: (document.querySelector('.rt-grid a.rt-card[href="vorlagen.html?tab=assets"] .rt-dest') || {}).textContent || '',
     noBaukastenTeaser: !document.querySelector('.rt-card[data-teaser="baukasten"]')
       && (typeof TEASER === 'undefined' || !('baukasten' in TEASER)),
     areaCount: parseInt((document.getElementById('area-bibliothek-count') || {}).textContent || '-1', 10),
     areaMeta: (document.getElementById('area-bibliothek-meta') || {}).textContent || '',
-    areaCta: !!document.querySelector('.area-card a.c-cta[href="bibliothek.html"]'),
-    areaSpotHref: (document.querySelector('a.area-spot[href^="bibliothek.html?a="]') || { getAttribute: () => '' }).getAttribute('href') || '',
+    areaCta: !!document.querySelector('.area-card a.c-cta[href="vorlagen.html?tab=assets"]'),
+    areaSpotHref: (document.querySelector('a.area-spot[href^="vorlagen.html?a="]') || { getAttribute: () => '' }).getAttribute('href') || '',
     areaSpotRating: (document.getElementById('area-bibliothek-spot-rating') || {}).textContent || '',
     livePills: document.querySelectorAll('.area-card .area-pill.-live').length,
     soonPills: document.querySelectorAll('.area-card .area-pill.-soon').length,
-    navBibliothek: !!document.getElementById('nav-bibliothek'),
-    newsHasBibliothek: [...document.querySelectorAll('.news-item .news-text a')].some(a => a.getAttribute('href') === 'bibliothek.html'),
+    navVorlagen: !!document.getElementById('nav-vorlagen'),
+    newsHasBibliothek: [...document.querySelectorAll('.news-item .news-text a')].some(a => a.getAttribute('href') === 'vorlagen.html?tab=assets'),
     newsCount: document.querySelectorAll('.news-item').length,
     dataAssets: typeof ASSETS !== 'undefined' ? ASSETS.length : -1,
   }));
   check('i1_index_no_js_errors', jsErrors.length === 0, { jsErrors: [...jsErrors] });
-  check('i2_router_tile_links_bibliothek',
+  check('i2_router_tile_links_vorlagen_assets',
     indexInfo.routerTile && indexInfo.noBaukastenTeaser && /Bibliothek/.test(indexInfo.routerTileDest),
     { routerTile: indexInfo.routerTile, dest: indexInfo.routerTileDest, noBaukastenTeaser: indexInfo.noBaukastenTeaser });
   check('i3_counts_match_data',
@@ -458,39 +474,42 @@ async function runIndexChecks(browser) {
       && indexInfo.areaMeta.includes(String(EXPECTED_PATTERNS)),
     { areaCount: indexInfo.areaCount, meta: indexInfo.areaMeta, dataAssets: indexInfo.dataAssets });
   check('i4_area_card_clickable',
-    indexInfo.areaCta && indexInfo.areaSpotHref === 'bibliothek.html?a=' + HIGHLIGHT_ID
-      && indexInfo.areaSpotRating.trim().length > 0 && indexInfo.navBibliothek
+    indexInfo.areaCta && indexInfo.areaSpotHref === 'vorlagen.html?a=' + HIGHLIGHT_ID
+      && indexInfo.areaSpotRating.trim().length > 0 && indexInfo.navVorlagen
       && indexInfo.livePills === 6 && indexInfo.soonPills === 0,
     { areaCta: indexInfo.areaCta, areaSpotHref: indexInfo.areaSpotHref,
-      areaSpotRating: indexInfo.areaSpotRating, navBibliothek: indexInfo.navBibliothek,
+      areaSpotRating: indexInfo.areaSpotRating, navVorlagen: indexInfo.navVorlagen,
       livePills: indexInfo.livePills, soonPills: indexInfo.soonPills });
   check('i5_news_mentions_bibliothek',
     indexInfo.newsHasBibliothek && indexInfo.newsCount >= 3 && indexInfo.newsCount <= 4,
     { newsHasBibliothek: indexInfo.newsHasBibliothek, newsCount: indexInfo.newsCount });
 
   // Router-Kachel navigiert wirklich
-  await page.click('.rt-grid a.rt-card[href="bibliothek.html"]');
+  await page.click('.rt-grid a.rt-card[href="vorlagen.html?tab=assets"]');
   await page.waitForTimeout(1200);
   const landed = await page.evaluate(() =>
-    location.pathname.endsWith('bibliothek.html') && document.querySelectorAll('#font-grid .font-card').length > 0);
+    location.pathname.endsWith('vorlagen.html')
+      && new URLSearchParams(location.search).get('tab') === 'assets'
+      && document.querySelectorAll('#font-grid .font-card').length > 0);
   check('i6_router_tile_navigates', landed, { url: page.url() });
 
-  // Nav-Regression: nav-bibliothek auf allen Bestandsseiten vorhanden, nicht aktiv
+  // Nav-Regression: nav-vorlagen auf allen Bestandsseiten vorhanden, mit korrektem
+  // href — aktiv genau dann, wenn die jeweilige Seite selbst vorlagen.html ist.
   const navPages = {};
-  for (const p of ['skills.html', 'prompts.html', 'lernen-hilfe.html']) {
+  for (const p of ['skills.html', 'prompts.html', 'lernen-hilfe.html', 'showroom.html', 'vorlagen.html']) {
     await page.goto(INDEX_TARGET.replace(/index\.html.*$/, p), { waitUntil: 'load' });
-    await page.waitForSelector('#nav-bibliothek', { timeout: 10000 }).catch(() => {});
-    navPages[p] = await page.evaluate(() => {
-      const el = document.getElementById('nav-bibliothek');
+    await page.waitForSelector('#nav-vorlagen', { timeout: 10000 }).catch(() => {});
+    navPages[p] = await page.evaluate((page) => {
+      const el = document.getElementById('nav-vorlagen');
       return {
         exists: !!el,
         href: el ? el.getAttribute('href') : '',
-        notActive: !!el && !el.classList.contains('active'),
+        activeMatchesPage: !!el && el.classList.contains('active') === (page === 'vorlagen.html'),
       };
-    });
+    }, p);
   }
-  check('i7_nav_bibliothek_on_all_pages',
-    Object.values(navPages).every(n => n.exists && n.href === 'bibliothek.html' && n.notActive),
+  check('i7_nav_vorlagen_on_all_pages',
+    Object.values(navPages).every(n => n.exists && n.href === 'vorlagen.html' && n.activeMatchesPage),
     navPages);
 
   await context.close();

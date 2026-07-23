@@ -113,49 +113,28 @@ function renderNav(activePage, opts) {
   // Idempotent: früher injizierte Header/Footer entfernen (keine Dopplung)
   document.querySelectorAll('[data-shared-nav]').forEach(el => el.remove());
 
-  // E6-Umbau (Plan §2.4): Mit der 5. Sektion (bibliothek.html) wird die Leiste
-  // umgebaut. Primäre Direkt-Links bleiben Katalog/Prompts/Hilfe; die sekundären
-  // Sektionen (Asset-Bibliothek u.a.) wandern in ein „Mehr ▾“-Dropdown
-  // (Desktop: Klick öffnet, Esc/Außenklick schließt, aria-expanded). Mobil
-  // (≤1023px) lösen die CSS-Regeln das Dropdown flach in die scrollende Leiste
-  // auf. HARTE REGRESSIONS-GARANTIE: nav-catalog/nav-prompts/nav-hilfe
-  // (+ nav-bibliothek/nav-baukasten/nav-showroom im „Mehr“-Dropdown) stehen IMMER
-  // im DOM, das aktive Item trägt class="active" + aria-current="page" + exakten
-  // Labeltext. E10-Merge: „Lernen & Hilfe“ trägt weiter die ID nav-hilfe (führt
-  // jetzt auf lernen-hilfe.html); der frühere nav-lernen-Eintrag ist entfallen.
+  // E11-IA: Fünf flache Punkte, kein „Mehr ▾“-Dropdown mehr — die Kiste zeigt
+  // ihren ganzen Inhalt. Bibliothek + Baukasten sind zu vorlagen.html
+  // verschmolzen (alte URLs sind Redirect-Stubs). REGRESSIONS-GARANTIE:
+  // nav-catalog/nav-prompts/nav-vorlagen/nav-showroom/nav-hilfe stehen IMMER
+  // im DOM, das aktive Item trägt class="active" + aria-current="page".
   const sharedItems = [
     { id: 'nav-catalog', page: 'katalog', label: 'Katalog', href: 'skills.html' },
     { id: 'nav-prompts', page: 'prompts', label: 'Prompts', href: 'prompts.html' },
+    { id: 'nav-vorlagen', page: 'vorlagen', label: 'Vorlagen', href: 'vorlagen.html' },
+    { id: 'nav-showroom', page: 'showroom', label: 'Showroom', href: 'showroom.html' },
     { id: 'nav-hilfe', page: 'hilfe', label: 'Lernen & Hilfe', href: 'lernen-hilfe.html' }
   ];
-  const sharedMoreItems = [
-    { id: 'nav-bibliothek', page: 'bibliothek', label: 'Asset-Bibliothek', href: 'bibliothek.html' },
-    { id: 'nav-baukasten', page: 'baukasten', label: 'Baukasten', href: 'baukasten.html' },
-    { id: 'nav-showroom', page: 'showroom', label: 'Showroom', href: 'showroom.html' }   // E8 (additiv, 4. Mehr-Eintrag)
-  ];
-  // Ein Item → <a>/<button>. sharedOnclick-Fähigkeit für BEIDE Listen erhalten
-  // (skills.html nutzt sharedOnclick.katalog). menuitem=true rendert die
-  // Dropdown-Variante (role="menuitem") — sonst der klassische .nav-link.
-  function itemToHtml(it, menuitem) {
+  // Ein Item → <a>/<button>. sharedOnclick-Fähigkeit erhalten
+  // (skills.html nutzt sharedOnclick.katalog).
+  function itemToHtml(it) {
     const active = it.page === activePage;
-    const cls = 'nav-link' + (active ? ' active' : '') + (menuitem ? ' nav-more-item' : '');
-    const roleAttr = menuitem ? ' role="menuitem"' : '';
+    const cls = 'nav-link' + (active ? ' active' : '');
     const onclick = opts.sharedOnclick && opts.sharedOnclick[it.page];
-    if (onclick) return `<button type="button" class="${cls}" id="${it.id}"${roleAttr} onclick="${onclick}">${it.label}</button>`;
-    return `<a class="${cls}" id="${it.id}" href="${it.href}"${roleAttr}${active ? ' aria-current="page"' : ''}>${it.label}</a>`;
+    if (onclick) return `<button type="button" class="${cls}" id="${it.id}" onclick="${onclick}">${it.label}</button>`;
+    return `<a class="${cls}" id="${it.id}" href="${it.href}"${active ? ' aria-current="page"' : ''}>${it.label}</a>`;
   }
-  const linkHtml = sharedItems.map(it => itemToHtml(it, false));
-  // „Mehr ▾“-Dropdown mit den sekundären Sektionen. Der Button bekommt aktiven
-  // Look, wenn die aktive Seite in den moreItems liegt (lernen/bibliothek).
-  const moreActive = sharedMoreItems.some(it => it.page === activePage);
-  const moreMenuHtml = sharedMoreItems.map(it => itemToHtml(it, true)).join('\n          ');
-  const moreHtml = `<div class="nav-more" data-nav-more>
-        <button type="button" class="nav-link nav-more-btn${moreActive ? ' active' : ''}" id="nav-more-btn" aria-expanded="false" aria-haspopup="true" aria-controls="nav-more-menu">Mehr <span class="nav-more-caret" aria-hidden="true">▾</span></button>
-        <div class="nav-more-menu" id="nav-more-menu" role="menu" aria-label="Weitere Bereiche" hidden>
-          ${moreMenuHtml}
-        </div>
-      </div>`;
-  linkHtml.push(moreHtml);
+  const linkHtml = sharedItems.map(it => itemToHtml(it));
 
   /* E11: Das Seiten-Filterfeld lebt nicht mehr im Header (doppelte Such-
      Affordanz neben dem Strg-K-Trigger). opts.search wird weiter akzeptiert,
@@ -174,6 +153,7 @@ function renderNav(activePage, opts) {
         <span class="overline">AI Marketplace</span>
       </a>
       <nav class="main-nav" aria-label="Hauptnavigation">${linkHtml.join('\n        ')}</nav>
+      <button type="button" class="nav-ds-btn" id="nav-ds-btn" aria-label="Deine Sachen — Gemerktes und Bewertetes" aria-haspopup="dialog" onclick="openDeineSachen()"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg><span class="nav-ds-count" id="nav-ds-count" hidden></span></button>
       <button type="button" class="nav-suche-btn" id="nav-suche-btn" aria-label="Marketplace durchsuchen (Cmd/Ctrl+K)" aria-haspopup="dialog" onclick="openGlobalSearch()">${LU.search}<span class="nav-suche-kbd" aria-hidden="true"><kbd>${_gsShortcutLabel()}</kbd></span></button>
     </div>
   </header>`;
@@ -214,6 +194,7 @@ function renderNav(activePage, opts) {
 
   initNavMore();
   initGlobalSearch();
+  _dsUpdateCount();   /* E11: Zähl-Badge „Deine Sachen“ */
 
   // Mobile (≤1023px): die Nav ist ein horizontal scrollender Streifen mit allen
   // Sektionen flach (der „Mehr“-Button ist ausgeblendet). Ab 6 Zielen kann der
@@ -1340,8 +1321,9 @@ const GS_AREA_LABELS = {
   'skills.html':       'Katalog',
   'prompts.html':      'Prompt-Sammlung',
   'lernen-hilfe.html': 'Lernen & Hilfe',
-  'bibliothek.html':   'Asset-Bibliothek',
-  'baukasten.html':    'Baukasten',
+  'vorlagen.html':     'Vorlagen',
+  'bibliothek.html':   'Vorlagen',   /* Alt-URL (Stub) — Label zeigt den neuen Ort */
+  'baukasten.html':    'Vorlagen',
   'showroom.html':     'Showroom',
   'index.html':        'Startseite'
 };
@@ -1378,11 +1360,11 @@ const GSEARCH_GROUPS = [
     title: it => it.titel, sub: it => it.fuerDich || it.beschreibung,
     fields: it => [[it.titel || '', 5], [(it.tags || []).join(' '), 3], [it.beschreibung || '', 1], [it.fuerDich || '', 1]] },
   { key: 'asset', label: 'Assets', glob: 'ASSETS',
-    href: it => 'bibliothek.html?a=' + encodeURIComponent(it.id),
+    href: it => 'vorlagen.html?a=' + encodeURIComponent(it.id),
     title: it => it.name, sub: it => it.typ,
     fields: it => [[it.name || '', 5], [it.typ || '', 2], [it.kategorie || '', 2]] },
   { key: 'baustein', label: 'Bausteine', glob: 'BAUSTEINE',
-    href: it => 'baukasten.html?b=' + encodeURIComponent(it.id),
+    href: it => 'vorlagen.html?b=' + encodeURIComponent(it.id),
     title: it => it.name, sub: it => it.beschreibung,
     fields: it => [[it.name || '', 5], [(it.tags || []).join(' '), 3], [it.beschreibung || '', 2], [it.einsatz || '', 1]] },
   { key: 'case', label: 'Projekte', glob: 'CASES',
@@ -1688,3 +1670,150 @@ function closeAboutModal() {
   if (!modalOpen && !submitOpen && !gsOpen) document.body.style.overflow = '';
   if (window._aboutOpener) { try { window._aboutOpener.focus(); } catch (e) {} window._aboutOpener = null; }
 }
+
+/* ===== „DEINE SACHEN“ (E11) =====
+   Gemerktes, Bewertetes und Ausprobiertes — von jeder Seite über das Header-
+   Menü erreichbar. Aggregation per Prefix-Scan über die typ-namespaced
+   localStorage-Keys (fav:/rate:/tried:); Titel und Links kommen aus
+   GSEARCH_GROUPS, fehlende Daten werden wie bei der globalen Suche lazy
+   nachgeladen. Alles bleibt lokal im Browser. */
+
+const DS_TYPE_LABEL = {
+  skill: 'Skill', plugin: 'Plugin', framework: 'Framework', prompt: 'Prompt',
+  baustein: 'Baustein', asset: 'Asset', case: 'Projekt', befehl: 'Befehl',
+  begriff: 'Begriff', faq: 'FAQ', ressource: 'Ressource'
+};
+
+function _dsScan() {
+  const kinds = { fav: [], rate: [], tried: [] };
+  Object.keys(kinds).forEach(kind => {
+    lsKeysWithPrefix(kind + ':').forEach(k => {
+      const parts = k.split(':');
+      if (parts.length < 3) return;
+      const typ = parts[1], id = parts.slice(2).join(':');
+      const e = { typ, id };
+      if (kind === 'rate') { const v = parseInt(lsGet(k), 10); if (!v) return; e.stars = v; }
+      kinds[kind].push(e);
+    });
+  });
+  return kinds;
+}
+
+function _dsResolve(typ, id) {
+  let g = GSEARCH_GROUPS.find(x => x.key === typ);
+  let item = null;
+  if (g) {
+    const arr = _gsGlobal(g.glob);
+    if (Array.isArray(arr)) item = arr.find(it => it && it.id === id) || null;
+  }
+  if (!item) {
+    for (const x of GSEARCH_GROUPS) {
+      const arr = _gsGlobal(x.glob);
+      const hit = Array.isArray(arr) ? arr.find(it => it && it.id === id) : null;
+      if (hit) { g = x; item = hit; break; }
+    }
+  }
+  if (!g || !item) return null;
+  return { title: g.title(item), href: g.href(item), typ };
+}
+
+function _dsCount() { return lsKeysWithPrefix('fav:').length; }
+
+function _dsUpdateCount() {
+  const badge = document.getElementById('nav-ds-count');
+  if (!badge) return;
+  const n = _dsCount();
+  badge.textContent = n;
+  badge.hidden = n === 0;
+}
+
+function _dsSectionHtml(label, entries, withStars) {
+  const rows = entries.map(e => {
+    const r = _dsResolve(e.typ, e.id);
+    if (!r) return '';
+    const stars = withStars && e.stars
+      ? `<span class="ds-stars" aria-label="${e.stars} von 5 Sternen">${'★'.repeat(e.stars)}${'☆'.repeat(5 - e.stars)}</span>` : '';
+    return `<a class="ds-item" href="${r.href}"><span class="ds-item-title">${escHtml(r.title)}</span><span class="ds-item-meta">${DS_TYPE_LABEL[r.typ] || r.typ}${stars}</span></a>`;
+  }).filter(Boolean).join('');
+  if (!rows) return '';
+  return `<div class="ds-section"><p class="ds-section-label">${label}</p>${rows}</div>`;
+}
+
+function _ensureDsOverlay() {
+  let ov = document.getElementById('ds-overlay');
+  if (ov) return ov;
+  ov = document.createElement('div');
+  ov.className = 'ds-overlay';
+  ov.id = 'ds-overlay';
+  ov.innerHTML = `
+    <div class="ds-panel" role="dialog" aria-modal="true" aria-labelledby="ds-title">
+      <div class="ds-head">
+        <h2 id="ds-title">Deine Sachen</h2>
+        <button type="button" class="ds-close" onclick="closeDeineSachen()" aria-label="Deine Sachen schließen">✕</button>
+      </div>
+      <div class="ds-body" id="ds-body"></div>
+    </div>`;
+  document.body.appendChild(ov);
+  ov.addEventListener('click', e => { if (e.target === ov) closeDeineSachen(); });
+  if (!document._dsKeyBound) {
+    document._dsKeyBound = true;
+    document.addEventListener('keydown', e => {
+      const open = ov.classList.contains('open');
+      if (!open) return;
+      if (e.key === 'Escape') { e.stopPropagation(); closeDeineSachen(); return; }
+      if (e.key === 'Tab') {
+        const focusable = [...ov.querySelectorAll('button, a[href]')];
+        if (!focusable.length) return;
+        const first = focusable[0], last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+      }
+    }, true);
+  }
+  return ov;
+}
+
+function _dsRender() {
+  const body = document.getElementById('ds-body');
+  if (!body) return;
+  const s = _dsScan();
+  const html =
+    _dsSectionHtml('Gemerkt', s.fav, false) +
+    _dsSectionHtml('Bewertet', s.rate, true) +
+    _dsSectionHtml('Ausprobiert', s.tried, false);
+  body.innerHTML = html || `<div class="empty">Noch nichts gemerkt. Sobald du etwas favorisierst, bewertest oder ausprobierst, sammelt es sich hier — über alle Bereiche hinweg.</div>`;
+}
+
+function openDeineSachen() {
+  const ov = _ensureDsOverlay();
+  window._dsOpener = document.activeElement;
+  ov.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  const body = document.getElementById('ds-body');
+  if (body) body.innerHTML = '<div class="ds-loading">Lädt …</div>';
+  _gsEnsureData().then(() => _dsRender()).catch(() => _dsRender());
+  setTimeout(() => { const c = document.querySelector('#ds-overlay .ds-close'); if (c) c.focus(); }, 40);
+}
+
+function closeDeineSachen() {
+  const ov = document.getElementById('ds-overlay');
+  if (ov) ov.classList.remove('open');
+  const modalOpen = document.getElementById('modal-overlay') && document.getElementById('modal-overlay').classList.contains('open');
+  const submitOpen = document.getElementById('submit-overlay') && document.getElementById('submit-overlay').classList.contains('open');
+  const gsOpen = document.getElementById('gsearch-overlay') && document.getElementById('gsearch-overlay').classList.contains('open');
+  if (!modalOpen && !submitOpen && !gsOpen) document.body.style.overflow = '';
+  if (window._dsOpener) { try { window._dsOpener.focus(); } catch (e) {} window._dsOpener = null; }
+}
+
+/* Zähl-Badge aktuell halten: nach jeder Merken-/Bewerten-/Ausprobiert-Aktion */
+(function _dsHookMutations() {
+  ['toggleFavorite', 'markTried', 'submitRating'].forEach(name => {
+    const orig = window[name];
+    if (typeof orig !== 'function') return;
+    window[name] = function () {
+      const r = orig.apply(this, arguments);
+      try { _dsUpdateCount(); } catch (e) {}
+      return r;
+    };
+  });
+})();
