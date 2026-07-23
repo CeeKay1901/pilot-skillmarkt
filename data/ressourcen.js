@@ -1,9 +1,10 @@
 // pilot AI Marketplace — Lernen-Sektion: RESSOURCEN (ausgelagerte Daten, Etappe E5).
 // Klassisches Script, definiert globale Konstanten:
-//   RESSOURCEN       — 27 kuratierte Lern-Ressourcen (24 externe + 3 interne Platzhalter).
-//                      Jeder externe Link wurde am 2026-07-17 verifiziert (Erreichbarkeit,
+//   RESSOURCEN       — 28 kuratierte Lern-Ressourcen (25 externe + 3 interne Platzhalter).
+//                      Externe Links wurden am 2026-07-17 verifiziert (Erreichbarkeit,
 //                      Titel, Anbieter/Kanal, Dauer — YouTube per oEmbed + Watch-Page,
-//                      Doku/Artikel per Volltext-Abruf). Redaktionsquellen: E5-Faktenblätter.
+//                      Doku/Artikel per Volltext-Abruf); code-how-it-works, code-in-action-kurs
+//                      und doku-prompt-engineering am 2026-07-23 (E12-Kuratierung). Redaktionsquellen: E5-Faktenblätter.
 //   RESSOURCE_START  — ID des „Start hier“-Pins (redaktionelle Empfehlung, Begründung s. u.)
 //   RESSOURCE_TYPEN  — Typ-Labels fürs UI (Reihenfolge = Tab-Reihenfolge)
 //
@@ -160,6 +161,23 @@ const RESSOURCEN = [
     tags: ['mastering', 'anthropic', 'boris cherny', 'arbeitsweisen', 'vortrag']
   },
   {
+    id: 'code-how-it-works',
+    titel: 'So funktioniert Claude Code — die Arbeitsweise verstehen',
+    url: 'https://code.claude.com/docs/de/how-claude-code-works',
+    typ: 'doku', niveau: 'einsteiger', dauerMin: 15, dauerCa: true, sprache: 'de', plattform: 'code',
+    quelle: 'Anthropic — Claude-Code-Doku',
+    fuerDich: 'du verstehen willst, warum Claude Code anders tickt als ein Chat-Fenster — auf Deutsch, bevor du dich an die englischen Videos wagst.',
+    beschreibung: 'Die offizielle deutsche Doku-Seite, die erklärt, wie Claude Code arbeitet: die „agentische Schleife“ aus Kontext sammeln, handeln und Ergebnis prüfen, welche Werkzeuge Claude nutzt, worauf es in deinem Projekt zugreift und wie Sessions, Kontextfenster und Sicherheits-Checkpoints zusammenhängen. Genau das Hintergrundwissen, das erklärt, warum die Befehle auf dieser Seite überhaupt nötig sind. Deutsche Doku-Version; einzelne Fachbegriffe bleiben englisch.',
+    gelernt: ['Was die „agentische Schleife“ ist — und warum Claude Schritt für Schritt arbeitet', 'Worauf Claude Code in deinem Projekt zugreift', 'Wie Sessions, Kontextfenster und Checkpoints zusammenspielen'],
+    geprueft: '2026-07-23',
+    rating: { average: 4.4, count: 7 }, votes: 8,
+    stimmen: [
+      { text: 'Der Text, den ich Neuen schicke, wenn sie fragen „warum vergisst Claude Sachen?“ — danach ergeben /clear und /compact plötzlich Sinn.', autor: 'Jan Richter', rolle: 'Tech Lead & Citizen-Coding-Mentor' }
+    ],
+    addedAt: '2026-07-23',
+    tags: ['claude code', 'funktionsweise', 'agentische schleife', 'kontext', 'grundlagen', 'deutsch']
+  },
+  {
     id: 'code-vibecoding-prod',
     titel: 'Vibe coding in prod — wo KI-Programmieren funktioniert und wo nicht',
     url: 'https://www.youtube.com/watch?v=fHWFF_pnqDk',
@@ -215,15 +233,15 @@ const RESSOURCEN = [
     url: 'https://anthropic.skilljar.com/claude-code-in-action',
     typ: 'kurs', niveau: 'fortgeschritten', dauerMin: 180, dauerCa: true, sprache: 'en', plattform: 'code',
     quelle: 'Anthropic Academy (Skilljar)',
-    fuerDich: 'du es genauer wissen willst als jedes Tutorial — und ein Zertifikat fürs LinkedIn-Profil nicht verkehrt findest.',
-    beschreibung: 'Anthropics kostenloser Selbstlernkurs (ca. 3 Stunden, mit Abschlusszertifikat): wie Claude Code unter der Haube arbeitet, Kontext-Management, eigene Befehle, Integrationen bis hin zu Hooks. Richtet sich eher an Technik-Interessierte; ein bisschen Terminal- und Git-Grundverständnis hilft.',
-    geprueft: '2026-07-17',
+    fuerDich: 'du Claude Code schon sicher beherrschst und lernen willst, wie man lange, autonome Sessions und teamweite Workflows aufsetzt — für den Einstieg ist das noch zu viel.',
+    beschreibung: 'Anthropics kostenloser Selbstlernkurs mit Abschlusszertifikat, inzwischen neu ausgerichtet: Er zeigt, wie man Claude Code über lange Sessions autonom arbeiten lässt, Aufgaben an geplante Läufe übergibt und unbeaufsichtigte Ergebnisse überprüft. Richtet sich laut Anthropic ausdrücklich an Entwickler:innen, die Claude Code bereits nutzen und teamweite Workflows aufbauen — für Einsteiger:innen aus der Vibecoding-Gruppe eher ein Ziel für später als ein Startpunkt.',
+    geprueft: '2026-07-23',
     rating: { average: 4.2, count: 6 }, votes: 7,
     stimmen: [
-      { text: 'Der Kurs erklärt, was im Hintergrund passiert, wenn Claude „nachdenkt“. Danach prompted man anders.', autor: 'Jan Richter', rolle: 'Tech Lead & Citizen-Coding-Mentor' }
+      { text: 'Starker Kurs — aber erst, wenn ihr Claude Code sicher beherrscht. Autonome Langläufe sind nichts für die erste Woche.', autor: 'Jan Richter', rolle: 'Tech Lead & Citizen-Coding-Mentor' }
     ],
     addedAt: '2026-07-17',
-    tags: ['kurs', 'zertifikat', 'anthropic academy', 'hooks', 'kontext-management']
+    tags: ['kurs', 'zertifikat', 'anthropic academy', 'autonome sessions', 'team-workflows']
   },
   {
     id: 'doku-github-pages',
@@ -370,19 +388,19 @@ const RESSOURCEN = [
   },
   {
     id: 'doku-prompt-engineering',
-    titel: 'Prompt Engineering: Der offizielle Überblick von Anthropic',
-    url: 'https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/overview',
-    typ: 'doku', niveau: 'fortgeschritten', dauerMin: 10, dauerCa: true, sprache: 'en', plattform: 'allgemein',
+    titel: 'Prompting Best Practices: Die Technik-Referenz von Anthropic',
+    url: 'https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices',
+    typ: 'doku', niveau: 'fortgeschritten', dauerMin: 15, dauerCa: true, sprache: 'en', plattform: 'allgemein',
     quelle: 'Anthropic — Claude-Doku',
-    fuerDich: 'deine Prompts mal top, mal Flop sind und du verstehen willst, welche Stellschrauben es systematisch gibt.',
-    beschreibung: 'Anthropics Einstiegsseite ins Thema bessere Prompts: wann Prompt-Optimierung überhaupt das richtige Mittel ist, welche Techniken es gibt (von klaren Anweisungen über Beispiele bis Rollen-Prompts) — mit Links auf die ausführliche Technik-Referenz und ein interaktives Übungs-Tutorial. Gilt für Claude generell — Langdock nutzt dieselben Modelle.',
-    geprueft: '2026-07-17',
+    fuerDich: 'deine Prompts mal top, mal Flop sind und du eine vollständige Referenz willst, welche Stellschrauben es systematisch gibt.',
+    beschreibung: 'Anthropics ausführliche, laufend gepflegte Referenz für bessere Prompts: konkrete Techniken von klaren Anweisungen über Beispiele und XML-Struktur bis zu Thinking und agentischen Abläufen, dazu modellspezifische Hinweise. Technischer und vollständiger als eine reine Einstiegsseite — gilt für Claude generell, und weil Langdock dieselben Modelle nutzt, greifen die Regeln dort genauso.',
+    geprueft: '2026-07-23',
     rating: { average: 4.0, count: 5 }, votes: 6,
     stimmen: [
-      { text: 'Die Technik-Liste funktioniert 1:1 auch in Langdock — gleiche Modelle, gleiche Regeln.', autor: 'Lukas Weber', rolle: 'SEO Strategist' }
+      { text: 'Die Techniken funktionieren 1:1 auch in Langdock — gleiche Modelle, gleiche Regeln.', autor: 'Lukas Weber', rolle: 'SEO Strategist' }
     ],
     addedAt: '2026-07-17',
-    tags: ['prompt engineering', 'anthropic', 'techniken', 'überblick']
+    tags: ['prompt engineering', 'anthropic', 'techniken', 'best practices', 'referenz']
   },
   {
     id: 'lr-anthropic-ai-fluency',

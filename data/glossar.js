@@ -1,6 +1,6 @@
 // pilot AI Marketplace — Hilfe-Center, Säulen 2+3: GLOSSAR & FAQ (ausgelagerte Daten, Etappe E4).
 // Klassisches Script, definiert globale Konstanten:
-//   GLOSSAR — 44 Begriffe. Je Eintrag:
+//   GLOSSAR — 41 Begriffe. Je Eintrag:
 //     id         URL-tauglich, eindeutig (Deep-Link lernen-hilfe.html?begriff=<id>)
 //     wort       Anzeigename; buchstabe = A-Z-Sprungleiste (explizit, nicht abgeleitet)
 //     satz       genau EIN einfacher Erklärsatz (immer sichtbar)
@@ -184,18 +184,6 @@ const GLOSSAR = [
     ]
   },
   {
-    id: 'fine-tuning',
-    wort: 'Fine-Tuning',
-    buchstabe: 'F',
-    votes: 2,
-    satz: 'Fine-Tuning bedeutet, ein KI-Modell mit eigenen Trainingsdaten nachzutrainieren, damit es sich dauerhaft anders verhält — das ist aufwendig und für unseren Alltag fast nie nötig.',
-    beispiel: 'Damit Claude im pilot-Ton schreibt, brauchst du kein Fine-Tuning — ein guter Prompt mit Tonalitäts-Beispielen (oder der Tonalitäts-Check-Skill) erreicht dasselbe in fünf Minuten.',
-    tiefe: 'Die Abgrenzung: Prompts und Skills ändern das Verhalten pro Gespräch, Fine-Tuning verändert das Modell selbst — mit eigenem Trainingslauf, Kosten und Pflegeaufwand. Faustregel: Erst Prompt, dann Wissen anbinden, und Fine-Tuning nur, wenn Spezialist:innen es nach Prüfung empfehlen. Für Citizen Coding bei pilot ist es kein Werkzeug im Alltag.',
-    verweise: [
-      { t: 'skill', id: 'tonalitaets-check', name: 'Tonalitäts-Check' }
-    ]
-  },
-  {
     id: 'frontend',
     wort: 'Frontend',
     buchstabe: 'F',
@@ -215,7 +203,7 @@ const GLOSSAR = [
     votes: 22,
     satz: 'Git ist ein Werkzeug, das jede Änderung an deinem Projekt protokolliert, sodass du jederzeit zu einem früheren Stand zurückkehren kannst.',
     beispiel: 'Claude hat beim Umbau deines Reporting-Tools etwas zerlegt? Mit Git holst du den Stand von heute Vormittag zurück — nichts ist verloren.',
-    tiefe: 'Git ist der Standard für Versionierung und die Grundlage von GitHub. Du musst die Befehle nicht auswendig können: Sag Claude Code „sichere den Stand“ oder „geh zum letzten Commit zurück“, und es übersetzt das in Git. Wichtig ist nur das Prinzip: regelmäßig sichern, dann ist Experimentieren risikofrei.',
+    tiefe: 'Git ist der Standard für Versionierung und die Grundlage von GitHub. So endet auch das `final_v2_NEU_wirklich-final`-Chaos: Statt Dateien umzubenennen, hält Git jede Version mit Datum, Autor:in und Notiz in einer sauberen Kette fest. Du musst die Befehle nicht auswendig können: Sag Claude Code „sichere den Stand“ oder „geh zum letzten Commit zurück“, und es übersetzt das in Git. Wichtig ist nur das Prinzip: regelmäßig sichern, dann ist Experimentieren risikofrei.',
     verweise: [
       { t: 'skill', id: 'tool-teilen', name: 'Tool teilen' }
     ]
@@ -497,18 +485,6 @@ const GLOSSAR = [
     ]
   },
   {
-    id: 'temperatur',
-    wort: 'Temperatur (Kreativität)',
-    buchstabe: 'T',
-    votes: 4,
-    satz: 'Die Temperatur ist ein Regler dafür, wie vorhersehbar oder überraschend eine KI formuliert — niedrig heißt nüchtern und gleichförmig, hoch heißt freier und wagemutiger.',
-    beispiel: 'Für 20 Claim-Ideen darf es kreativ zugehen, für die Zusammenfassung eines Kundenvertrags willst du null Überraschung — in Langdock lässt sich das bei manchen Assistenten einstellen.',
-    tiefe: 'Technisch steuert die Temperatur, wie stark das Modell auch unwahrscheinlichere Wörter in Betracht zieht. Im Alltag mit Claude Code stellst du sie nicht selbst ein — du erreichst dasselbe über die Aufgabenstellung: „gib mir zehn wilde Varianten“ versus „bleib streng bei den Fakten“.',
-    verweise: [
-      { t: 'prompt', id: 'claim-werkstatt', name: 'Kampagnen-Claim-Werkstatt' }
-    ]
-  },
-  {
     id: 'terminal',
     wort: 'Terminal',
     buchstabe: 'T',
@@ -531,18 +507,6 @@ const GLOSSAR = [
     verweise: [
       { t: 'begriff', id: 'kontextfenster' },
       { t: 'prompt', id: 'fachbegriff-erklaerer', name: 'Fachbegriff-Erklärer' }
-    ]
-  },
-  {
-    id: 'versionierung',
-    wort: 'Versionierung',
-    buchstabe: 'V',
-    votes: 3,
-    satz: 'Versionierung bedeutet, jede Änderung an einem Projekt nachvollziehbar zu speichern, sodass frühere Stände jederzeit wiederherstellbar sind.',
-    beispiel: 'Statt `final_v2_NEU_wirklich-final.pptx`-Chaos hat dein Tool im Repo eine saubere Kette von Commits — jede Version hat Datum, Autor:in und eine Notiz.',
-    tiefe: 'Das Standardwerkzeug dafür ist Git. Der Gewinn ist vor allem psychologisch: Wer weiß, dass nichts verloren gehen kann, traut sich zu experimentieren. Genau deshalb ist „regelmäßig committen“ die vielleicht wichtigste Citizen-Coding-Gewohnheit.',
-    verweise: [
-      { t: 'skill', id: 'tool-teilen', name: 'Tool teilen' }
     ]
   },
   {

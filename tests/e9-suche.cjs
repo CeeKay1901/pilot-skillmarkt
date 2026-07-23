@@ -37,7 +37,7 @@ const PROMPTS_TARGET = TARGET.replace(/skills\.html.*$/, 'prompts.html');
 const VORLAGEN_TARGET = TARGET.replace(/skills\.html.*$/, 'vorlagen.html');
 
 // Deep-Link-Muster je Typ (Vertrag). Ein gültiger Treffer-href matcht genau eines davon.
-const DEEPLINK_RE = /(skills\.html\?skill=|prompts\.html\?p=|hilfe\.html\?(befehl|begriff)=|lernen\.html\?r=|vorlagen\.html\?a=|vorlagen\.html\?b=|showroom\.html\?case=)/;
+const DEEPLINK_RE = /(skills\.html\?skill=|prompts\.html\?p=|hilfe\.html\?(befehl|begriff|faq)=|lernen(-hilfe)?\.html\?r=|vorlagen\.html\?a=|vorlagen\.html\?b=|showroom\.html\?case=)/;
 
 const VIEWPORTS = [
   { name: 'desktop', viewport: { width: 1280, height: 800 } },

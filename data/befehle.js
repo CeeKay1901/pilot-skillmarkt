@@ -121,7 +121,7 @@ const BEFEHLE = [
     plattform: 'code',
     nutzen: 'Schaltet zwischen den Arbeitsmodi um — im Plan-Modus erklärt Claude erst, was es vorhat, bevor irgendetwas verändert wird. Perfekt für alle, die erst schauen wollen.',
     beispiel: 'Vor dem Aufräumen des Asset-Ordners: `Shift+Tab` bis „plan mode“ erscheint. Claude legt einen Plan vor, du gibst erst dann frei.',
-    tipp: 'Für den Anfang reichen zwei Modi: Manual (Standard — Claude fragt vor Änderungen nach) und Plan (erst planen, dann freigeben).',
+    tipp: 'Shift+Tab schaltet der Reihe nach durch drei Modi: Standard (im Anzeiger „Manual“ — Claude fragt vor jeder Änderung), Accept Edits (Datei-Änderungen laufen ohne Rückfrage, andere Befehle weiterhin mit) und Plan (Claude plant erst und ändert nichts, bis du freigibst). Für den Anfang genügen dir Standard und Plan.',
     votes: 38,
     demo: {
       script: [
@@ -238,7 +238,7 @@ const BEFEHLE = [
     plattform: 'code',
     nutzen: 'Macht einen Zeilenumbruch, ohne die Nachricht abzuschicken — für längere Briefings direkt im Eingabefeld.',
     beispiel: 'Du diktierst drei Anforderungen als Liste: nach jedem Punkt `Shift+Enter`, erst am Ende Enter zum Abschicken.',
-    tipp: 'Klappt nicht in jedem Terminal von Haus aus — der Fallback `\\` + Enter funktioniert überall ohne Einrichtung. Für VS Code & Co. richtet einmalig `/terminal-setup` das Kürzel ein.',
+    tipp: 'Klappt nicht in jedem Terminal von Haus aus — `Ctrl+J` erzeugt dagegen überall einen Zeilenumbruch, ebenso der Fallback `\\` + Enter, beide ohne Einrichtung. Für VS Code & Co. richtet einmalig `/terminal-setup` das Shift+Enter-Kürzel ein.',
     votes: 14
   },
   {
