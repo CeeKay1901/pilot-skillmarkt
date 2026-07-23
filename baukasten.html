@@ -24,14 +24,13 @@
        Basis, relative Font-Pfade lösen dort nicht auf). Hier nur ein
        paar seitenlokale Feinheiten + die Kommentar-Form-Klassen.
        ============================================================ */
-    .bk-lead {
-      display: inline-flex; align-items: center; gap: .8rem;
-      font-family: var(--font-mono); font-size: 1.25rem; line-height: 1.6;
-      color: rgba(252,252,252,.72); background: rgba(252,252,252,.06);
-      border: 1px solid rgba(252,252,252,.16); border-radius: var(--r-pill);
-      padding: .7rem 1.4rem; margin-top: 2rem;
-    }
-    .bk-lead .lu { width: 1.6rem; height: 1.6rem; color: var(--c-yellow); flex-shrink: 0; }
+    /* Etappe 1 (helle Shell): Mitmachen-Band von dunkler Deko-Fläche auf
+       helle Fläche umgestellt — nur Farben, keine Inhaltslogik. */
+    .lib-submit { background: var(--paper-warm); color: var(--c-black); border-top: 1px solid var(--line); }
+    .lib-submit h2 { color: var(--c-black); }
+    .lib-submit p { color: var(--c-gray-m); }
+    .lib-submit .section-label { color: var(--c-gray-m); }
+    .lib-submit-note { color: var(--c-gray-m); }
     .bk-rank-wrap { max-width: 56rem; }
     .am-comment-form { display: flex; flex-direction: column; gap: .8rem; margin: 1rem 0 1.6rem; }
     .am-comment-form input, .am-comment-form textarea {
@@ -49,47 +48,13 @@
 
   <!-- HEADER & FOOTER: werden von shared/base.js injiziert (renderNav, siehe Seiten-Script) -->
 
-  <!-- HERO -->
-  <section class="hero">
-    <div class="hero-glow" aria-hidden="true"></div>
-    <div class="hero-inner hero-top">
-      <p class="overline" style="color:#ffe05e">pilot · Baukasten</p>
-      <h1 class="hero-h1">Nicht bei null<br><span style="color:var(--c-yellow)">anfangen.</span></h1>
-      <p class="subline">Bausteine sind Startpunkte, keine fertigen Seiten. Du kopierst einen — einen Header, eine Preistabelle, ein Kontaktformular — und lässt ihn von Claude für dich anpassen: andere Farben, deine Texte, deine Struktur. Jeder Baustein zeigt dir live, wie er aussieht, und bringt einen kopierfertigen „Sag Claude einfach …“-Prompt mit.</p>
-      <div class="hero-stats" id="hero-stats">
-        <div class="hero-stat-box"><span class="hero-stat-num" id="bk-stat-bausteine">0</span><span class="hero-stat-label">Bausteine</span></div>
-        <div class="hero-stat-box"><span class="hero-stat-num" id="bk-stat-leuchttuerme">0</span><span class="hero-stat-label">Highlights</span></div>
-        <div class="hero-stat-box"><span class="hero-stat-num" id="bk-stat-dateien">0</span><span class="hero-stat-label">Beispieldateien</span></div>
-      </div>
-      <p class="bk-lead">
-        <span class="lu-slot" id="bk-lead-ic" aria-hidden="true"></span>
-        Alle Bausteine sind selbst geschriebenes, frei nutzbares pilot-Material — kein CDN, keine fremde Lib.
-      </p>
-      <div class="hero-cta">
-        <button class="c-cta -yellow-bg" onclick="document.getElementById('main-content').scrollIntoView({behavior:window.scrollBehavior(),block:'start'})">Zu den Bausteinen</button>
-      </div>
+  <!-- SEITENKOPF -->
+  <header class="page-head">
+    <div class="page-head-inner">
+      <h1>Bausteine</h1>
+      <p class="page-sub">Fertige Code-Bausteine mit Live-Vorschau — kopieren, in Claude einfügen, für deinen Fall anpassen lassen.</p>
     </div>
-  </section>
-
-  <!-- KURZ ERKLÄRT: kompaktes Erklär-Modul (E10, .area-intro aus shared/base.css) -->
-  <section class="area-intro" aria-label="Kurz erklärt">
-    <div class="area-intro-inner">
-      <div class="area-intro-grid">
-        <div class="area-intro-part">
-          <p class="area-intro-label">Was ist das?</p>
-          <p class="area-intro-text">Fertige Oberflächen-Bausteine als Startpunkte — Header, Preistabellen, Kontaktformulare und mehr — jeder mit Live-Vorschau, kopierbarem Code und einem „Sag Claude einfach …“-Prompt. Alles selbst geschrieben und frei nutzbar.</p>
-        </div>
-        <div class="area-intro-part">
-          <p class="area-intro-label">Wofür nutze ich es?</p>
-          <p class="area-intro-text">Wenn du nicht vor einer leeren Seite starten willst: Du kopierst einen passenden Baustein und lässt ihn von Claude auf deinen Fall anpassen — andere Farben, deine Texte, deine Struktur. So wird aus einem Beispiel schnell dein Kampagnen-Tool oder deine kleine Team-Seite.</p>
-        </div>
-        <div class="area-intro-part">
-          <p class="area-intro-label">So fange ich an.</p>
-          <p class="area-intro-text">Sieh dir die <a class="area-intro-link" href="#main-content">Bausteine</a> live an, öffne die Details eines Bausteins und kopier entweder den Code oder den mitgelieferten „Sag Claude einfach …“-Prompt. <a class="area-intro-link" href="skills.html?view=explainer">Was ist Claude Code?</a></p>
-        </div>
-      </div>
-    </div>
-  </section>
+  </header>
 
   <main>
     <!-- (a) BAUSTEINE -->
@@ -527,16 +492,9 @@
     document.addEventListener('DOMContentLoaded', () => {
       // Sektions-Icons setzen (Lucide aus der LU-Map)
       const icons = {
-        'bk-lead-ic': LU.check, 'bausteine-ic': LU.blocks, 'rank-ic': LU['copy-check'], 'data-ic': LU.database
+        'bausteine-ic': LU.blocks, 'rank-ic': LU['copy-check'], 'data-ic': LU.database
       };
       Object.entries(icons).forEach(([id, svg]) => { const el = document.getElementById(id); if (el) el.innerHTML = svg; });
-
-      // Hero-Zahlen — nur real Gezähltes aus BAUSTEINE / den Stats
-      [['bk-stat-bausteine', BAUKASTEN_STATS.total], ['bk-stat-leuchttuerme', BAUKASTEN_STATS.leuchttuerme],
-       ['bk-stat-dateien', BEISPIELDATEN_STATS.total]].forEach(([id, n]) => {
-        const el = document.getElementById(id);
-        if (el) animateCount(el, n, 1000);
-      });
 
       renderCats();
       renderBausteine();

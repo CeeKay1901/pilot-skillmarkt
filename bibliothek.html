@@ -17,7 +17,7 @@
   <style>
     /* ============================================================
        bibliothek.html — Asset-Bibliothek (seitenspezifisch, E6).
-       Gemeinsames Design-System + alle .lib-*/.font-card/.swatch …
+       Gemeinsames Design-System + alle .lib-, .font-card-, .swatch- …
        Klassen liegen in shared/base.css. HIER stehen nur:
        (a) die @font-face-Blöcke der Bibliotheks-Fonts (damit die
            Live-Vorschauen im echten Font rendern und andere Seiten
@@ -100,14 +100,13 @@
     .lib-note code { font-family: var(--font-mono); font-size: .92em; }
     .brand-hinweis { font-family: var(--font-sans); font-size: 1.4rem; line-height: 1.6; }
     .lib-submit-note { font-family: var(--font-sans); font-size: 1.3rem; }
-    .lib-lizenz-zusage {
-      display: inline-flex; align-items: center; gap: .8rem;
-      font-family: var(--font-sans); font-size: 1.35rem; line-height: 1.6;
-      color: rgba(252,252,252,.72); background: rgba(252,252,252,.06);
-      border: 1px solid rgba(252,252,252,.16); border-radius: var(--r-pill);
-      padding: .7rem 1.4rem; margin-top: 2rem;
-    }
-    .lib-lizenz-zusage .lu { width: 1.6rem; height: 1.6rem; color: var(--c-yellow); }
+    /* Etappe 1 (helle Shell): Mitmachen-Band von dunkler Deko-Fläche auf
+       helle Fläche umgestellt — nur Farben, keine Inhaltslogik. */
+    .lib-submit { background: var(--paper-warm); color: var(--c-black); border-top: 1px solid var(--line); }
+    .lib-submit h2 { color: var(--c-black); }
+    .lib-submit p { color: var(--c-gray-m); }
+    .lib-submit .section-label { color: var(--c-gray-m); }
+    .lib-submit-note { color: var(--c-gray-m); }
     .am-comment-form { display: flex; flex-direction: column; gap: .8rem; margin: 1rem 0 1.6rem; }
     .am-comment-form input, .am-comment-form textarea {
       font-family: inherit; font-size: 1.4rem; padding: .9rem 1.1rem;
@@ -124,48 +123,13 @@
 
   <!-- HEADER & FOOTER: werden von shared/base.js injiziert (renderNav, siehe Seiten-Script) -->
 
-  <!-- HERO -->
-  <section class="hero">
-    <div class="hero-glow" aria-hidden="true"></div>
-    <div class="hero-inner hero-top">
-      <p class="overline" style="color:#ffe05e">pilot · Asset-Bibliothek</p>
-      <h1 class="hero-h1">Startklar fürs<br><span style="color:var(--c-yellow)">nächste Projekt.</span></h1>
-      <p class="subline">Fonts, Icons, Farben und Muster sind das Material, aus dem gute Oberflächen entstehen — aber die Lizenzfrage kostet Zeit und Nerven. Hier liegt nur, was du bedenkenlos einsetzen darfst: jede Schrift, jedes Set, jede Farbe frei nutzbar, mit Quelle und Lizenz direkt am Asset.</p>
-      <div class="hero-stats" id="hero-stats">
-        <div class="hero-stat-box"><span class="hero-stat-num" id="stat-fonts">0</span><span class="hero-stat-label">Schriften</span></div>
-        <div class="hero-stat-box"><span class="hero-stat-num" id="stat-icons">0</span><span class="hero-stat-label">Icons zum Kopieren</span></div>
-        <div class="hero-stat-box"><span class="hero-stat-num" id="stat-palettes">0</span><span class="hero-stat-label">Farbpaletten</span></div>
-        <div class="hero-stat-box"><span class="hero-stat-num" id="stat-patterns">0</span><span class="hero-stat-label">Muster &amp; Verläufe</span></div>
-      </div>
-      <p class="lib-lizenz-zusage">
-        <span class="lu-slot" id="lizenz-ic" aria-hidden="true"></span>
-        Nur frei nutzbares Material — OFL, MIT, ISC oder CC0. Die Lizenz steht sichtbar an jedem Asset.
-      </p>
-      <div class="hero-cta">
-        <button class="c-cta -yellow-bg" onclick="document.getElementById('main-content').scrollIntoView({behavior:window.scrollBehavior(),block:'start'})">Zur Bibliothek</button>
-      </div>
+  <!-- SEITENKOPF -->
+  <header class="page-head">
+    <div class="page-head-inner">
+      <h1>Design-Assets</h1>
+      <p class="page-sub">Frei nutzbare Schriften, Icons, Farbpaletten und Muster — die Lizenz (OFL, MIT, ISC, CC0) steht sichtbar an jedem Asset.</p>
     </div>
-  </section>
-
-  <!-- KURZ ERKLÄRT: kompaktes Erklär-Modul je Bereich (E10, ersetzt den früheren Ein-Satz-Intro) -->
-  <section class="area-intro" aria-label="Kurz erklärt">
-    <div class="area-intro-inner">
-      <div class="area-intro-grid">
-        <div class="area-intro-part">
-          <p class="area-intro-label">Was ist das?</p>
-          <p class="area-intro-text">Ein Materiallager fürs Gestalten: frei nutzbare Schriften mit Live-Vorschau, ein Icon-Browser, Farbpaletten mit Kontrast-Check und dezente Muster und Verläufe — jedes mit sichtbarer Lizenz.</p>
-        </div>
-        <div class="area-intro-part">
-          <p class="area-intro-label">Wofür nutze ich es?</p>
-          <p class="area-intro-text">Wenn ein Projekt Oberfläche bekommt — ein Pitch-Deck-Web-Snippet, ein Kampagnen-Tool, ein Report — greifst du hier auf Material zu, das du bedenkenlos einsetzen darfst, ohne die Lizenzfrage jedes Mal neu zu klären. Nur OFL, MIT, ISC oder CC0, Quelle und Lizenz stehen am Asset.</p>
-        </div>
-        <div class="area-intro-part">
-          <p class="area-intro-label">So fange ich an.</p>
-          <p class="area-intro-text">Stöber durch die vier Bereiche, tipp einen Font-Beispieltext an oder klick eine Farbe bzw. ein Icon — der Wert landet direkt in deiner Zwischenablage, zum Einfügen oder Weiterreichen an <a class="area-intro-link" href="skills.html?view=explainer">Claude Code</a>.</p>
-        </div>
-      </div>
-    </div>
-  </section>
+  </header>
 
   <main>
     <!-- (a) FONTS -->
@@ -742,17 +706,10 @@
     document.addEventListener('DOMContentLoaded', () => {
       // Sektions-Icons setzen (Lucide aus der LU-Map)
       const icons = {
-        'lizenz-ic': LU.check, 'fonts-ic': LU.font, 'icons-ic': LU.iconset,
+        'fonts-ic': LU.font, 'icons-ic': LU.iconset,
         'pal-ic': LU.palette, 'pat-ic': LU.pattern, 'brand-ic': LU.brand
       };
       Object.entries(icons).forEach(([id, svg]) => { const el = document.getElementById(id); if (el) el.innerHTML = svg; });
-
-      // Hero-Zahlen — nur real Gezähltes aus den Daten
-      [['stat-fonts', ASSET_STATS.fonts], ['stat-icons', ASSET_STATS.iconsSearchable],
-       ['stat-palettes', ASSET_STATS.palettes], ['stat-patterns', ASSET_STATS.patterns]].forEach(([id, n]) => {
-        const el = document.getElementById(id);
-        if (el) animateCount(el, n, 1000);
-      });
 
       renderFontCats();
       renderFonts();

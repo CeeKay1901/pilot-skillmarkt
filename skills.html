@@ -23,43 +23,6 @@
        skills.html — Katalog / Onepager / Builder (seitenspezifisch).
        Gemeinsames Design-System liegt in shared/base.css.
        ============================================================ */
-    .featured-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 2.4rem;
-    }
-
-    /* Featured/Spotlight-Karten (dunkler Hero) */
-    .skill-card.featured {
-      background: rgba(255,255,255,.055);
-      border: 1px solid rgba(255,255,255,.1);
-      border-left: 3px solid var(--c-yellow);
-      color: var(--c-white);
-      box-shadow: none;
-    }
-    .skill-card.featured:hover {
-      background: rgba(255,255,255,.09);
-      border-left-color: var(--c-yellow);
-      box-shadow: 0 24px 50px -18px rgba(0,0,0,.5);
-      transform: translateY(-6px);
-    }
-    .skill-card.featured::after { display: none; }
-    .skill-card.featured .skill-name { color: var(--c-white); }
-    .skill-card.featured .skill-desc { color: rgba(252,252,252,.7); }
-    .skill-card.featured .skill-meta { color: rgba(252,252,252,.5); }
-    .skill-card.featured .tag-chip {
-      background: transparent; border: none; color: rgba(252,252,252,.55);
-    }
-    .skill-card.featured .tag-chip:hover, .skill-card.featured .tag-chip.active {
-      background: transparent; color: var(--c-yellow);
-    }
-    .skill-card.featured .rating-text { color: rgba(252,252,252,.6); }
-    .skill-card.featured .diff-badge { border-color: rgba(255,255,255,.18); color: rgba(252,252,252,.72); }
-    .skill-card.featured .diff-badge::before { background: rgba(255,255,255,.4); }
-    .skill-card.featured .diff-badge.easy::before { background: var(--c-yellow); }
-    .skill-card.featured .diff-badge.medium::before { background: #e8c56a; }
-    .skill-card.featured .diff-badge.advanced::before { background: rgba(252,252,252,.9); }
-
     .cat-badge {
       font-size: 1.2rem; font-weight: 500; padding: .3rem 1rem;
       border-radius: var(--r-xl); letter-spacing: .02em;
@@ -70,10 +33,6 @@
     .cat-badge.anthropic { background: var(--c-yellow); color: var(--c-black); }
     .cat-badge.gsd { background: var(--c-gray-l); color: var(--c-black); }
     .cat-badge.community { background: transparent; border: 1px solid var(--c-gray-l); color: var(--c-gray-m); }
-    .skill-card.featured .cat-badge.pilot-inhouse { background: rgba(255,224,94,.2); color: var(--c-yellow); }
-    .skill-card.featured .cat-badge.anthropic { background: var(--c-yellow); color: var(--c-black); }
-    .skill-card.featured .cat-badge.gsd { background: rgba(186,184,171,.2); color: var(--c-gray-l); }
-    .skill-card.featured .cat-badge.community { background: transparent; border-color: rgba(252,252,252,.3); color: rgba(252,252,252,.65); }
     /* Typ-Badge (E2): nur Plugins & Frameworks tragen ihn — Skills bleiben ruhig */
     .type-badge {
       font-family: var(--font-mono); font-size: 1.05rem; font-weight: 600;
@@ -82,7 +41,6 @@
       border: 1px solid var(--c-black); color: var(--c-black); background: transparent;
       white-space: nowrap; flex-shrink: 0;
     }
-    .skill-card.featured .type-badge { border-color: rgba(252,252,252,.4); color: rgba(252,252,252,.8); }
     .card-top-left { display: inline-flex; align-items: center; gap: .8rem; min-width: 0; }
     /* Typ-Leiste (E2): zweite Filterdimension über den Aufgaben-Tabs (Skill / Plugin / Framework) */
     .type-row { display: flex; align-items: center; justify-content: space-between; gap: .8rem 2rem; flex-wrap: wrap; }
@@ -116,8 +74,8 @@
       .filter-bar.condensed:not(.m-open) .filter-inner {
         flex-direction: row; align-items: center; gap: 1rem;
       }
-      .filter-bar.condensed:not(.m-open) .search-wrap-m { flex: 1 1 10rem; min-width: 0; padding: 0; }
-      .filter-bar.condensed:not(.m-open) .search-wrap-m input { width: 100%; }
+      .filter-bar.condensed:not(.m-open) [data-page-search] { flex: 1 1 10rem; min-width: 0; max-width: none; padding: 0; }
+      .filter-bar.condensed:not(.m-open) [data-page-search] input { width: 100%; }
       .filter-bar.condensed:not(.m-open) .filter-toggle-btn {
         width: auto; flex: 0 0 auto; gap: .6rem; padding: .8rem 0; border-bottom: none;
         font-size: 1.4rem; white-space: nowrap;
@@ -128,6 +86,14 @@
       /* Aufgeklappt: volle Filter, aber nie höher als der Viewport — Rest scrollt intern */
       .filter-bar.condensed.m-open { max-height: calc(100dvh - var(--header-h)); overflow-y: auto; }
     }
+    /* E11: #search zieht in den hellen Slot [data-page-search] — die dunkle
+       Header-Optik aus base.css (#search, ID-Spezifität) hier neutralisieren. */
+    [data-page-search] #search {
+      background: var(--paper); border: 1px solid var(--line-strong); color: var(--c-black);
+      padding: 1rem 1.8rem; font-size: 1.5rem;
+    }
+    [data-page-search] #search::placeholder { color: var(--c-gray-m); }
+    [data-page-search] #search:focus { outline: none; border-color: var(--c-black); background: var(--c-white); }
     .skills-subnav { border-bottom: 1px solid var(--c-gray-l); background: var(--c-bg); }
     .skills-subnav-inner {
       max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-d);
@@ -166,8 +132,6 @@
     .card-platforms { display: inline-flex; gap: .5rem; flex-wrap: wrap; vertical-align: middle; }
     .pf-chip { font-family: var(--font-mono); font-size: 1.05rem; font-weight: 600; letter-spacing: .04em; padding: .25rem .9rem; border-radius: var(--radius-pill); border: 1px solid var(--c-gray-l); color: var(--c-gray-d); background: transparent; }
     .pf-chip.pf-code { background: var(--c-black); color: var(--c-yellow); border-color: var(--c-black); }
-    .skill-card.featured .pf-chip { border-color: rgba(252,252,252,.25); color: rgba(252,252,252,.65); }
-    .skill-card.featured .pf-chip.pf-code { background: var(--c-yellow); color: var(--c-black); border-color: var(--c-yellow); }
 
     /* Modal: „Wo du diesen Skill einsetzen kannst“ */
     .pf-list { display: flex; flex-direction: column; gap: .8rem; }
@@ -191,38 +155,39 @@
       .expf-panel { padding: 2rem 1.8rem; }
     }
 
-    .skill-card.featured .skill-badge.neu { background: var(--c-white); color: var(--c-black); }
-    .skill-card.featured .skill-badge.empfohlen { background: var(--c-yellow); color: var(--c-black); }
-    .skill-card.featured .skill-tagline { color: rgba(252,252,252,.65); }
-    .skill-card.featured .avatar { border-color: var(--c-black); }
-
-    /* ===== PILOTS SECTION ===== */
+    /* ===== PILOTS SECTION (E11: helle Fläche statt dunklem Band) ===== */
     .pilots-section {
-      background: linear-gradient(180deg, #1f1f1d, var(--c-black));
-      color: var(--c-white);
+      background: var(--c-bg);
+      color: var(--c-black);
+      border-top: 1px solid var(--line);
       padding: 8rem 0;
+    }
+    .pilots-section .overline {
+      color: var(--c-black); display: inline-block;
+      box-shadow: inset 0 -0.6em 0 var(--c-yellow);
     }
     .pilots-inner {
       max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-d);
     }
     .pilots-section h2 {
-      font-size: 3.6rem; font-weight: 500; color: var(--c-white);
+      font-size: 3.6rem; font-weight: 500; color: var(--c-black);
       margin: 1rem 0 4rem;
     }
     .pilots-grid {
       display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.4rem;
     }
     .pilot-card {
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.12);
+      background: var(--paper);
+      border: 1px solid var(--line);
       border-radius: var(--r-lg);
       padding: 3rem;
       cursor: pointer;
-      transition: transform .28s cubic-bezier(.2,.7,.2,1), background .2s, border-color .2s;
+      box-shadow: var(--shadow-sm);
+      transition: transform .28s cubic-bezier(.2,.7,.2,1), background .2s, border-color .2s, box-shadow .28s ease;
     }
     .pilot-card:hover {
-      background: rgba(255,255,255,.1);
-      border-color: rgba(255,224,94,.4);
+      border-color: var(--c-black);
+      box-shadow: var(--shadow-md);
       transform: translateY(-5px);
     }
     .pilot-avatar-lg {
@@ -231,20 +196,20 @@
       border-radius: 50%; display: flex; align-items: center; justify-content: center;
       font-size: 2rem; font-weight: 700; margin-bottom: 2rem;
     }
-    .pilot-name { font-size: 1.8rem; font-weight: 700; color: var(--c-white); margin-bottom: .4rem; }
-    .pilot-role { font-size: 1.4rem; color: var(--c-gray-l); margin-bottom: .2rem; }
+    .pilot-name { font-size: 1.8rem; font-weight: 700; color: var(--c-black); margin-bottom: .4rem; }
+    .pilot-role { font-size: 1.4rem; color: var(--c-gray-d); margin-bottom: .2rem; }
     .pilot-dept { font-size: 1.3rem; color: var(--c-gray-m); margin-bottom: 1.6rem; }
-    .pilot-bio { font-size: 1.5rem; color: rgba(252,252,252,.7); line-height: 1.6; margin-bottom: 2rem; }
+    .pilot-bio { font-size: 1.5rem; color: var(--c-gray-d); line-height: 1.6; margin-bottom: 2rem; }
     .pilot-skills { display: flex; gap: .6rem; flex-wrap: wrap; }
     .pilot-skill-chip {
       font-size: 1.2rem; padding: .3rem .9rem;
-      background: rgba(255,224,94,.15); color: var(--c-yellow);
-      border: 1px solid rgba(255,224,94,.3);
+      background: var(--c-white); color: var(--c-black);
+      border: 1px solid var(--c-gray-l);
       border-radius: var(--r-xl); cursor: pointer;
       transition: var(--trans);
       font-family: inherit; line-height: 1.4;
     }
-    .pilot-skill-chip:hover { background: rgba(255,224,94,.25); }
+    .pilot-skill-chip:hover { background: var(--c-yellow); border-color: var(--c-yellow); }
 
     .trigger-badge {
       font-size: 1.4rem; font-weight: 600; padding: .6rem 1.4rem;
@@ -305,51 +270,6 @@
     .pilot-tab-name { font-size: 1.6rem; font-weight: 700; margin-bottom: .2rem; }
     .pilot-tab-role { font-size: 1.3rem; color: var(--c-gray-m); margin-bottom: .8rem; }
     .pilot-tab-quote { font-size: 1.5rem; line-height: 1.6; color: var(--c-ink-body); font-style: italic; }
-
-    /* ===== GETTING STARTED ===== */
-    .getting-started {
-      background: transparent;
-      border-top: 1px solid var(--line);
-    }
-    .gs-inner {
-      max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-d);
-    }
-    .gs-toggle {
-      width: 100%; display: flex; align-items: center; gap: 1rem;
-      padding: 1.6rem 0; background: none; border: none;
-      font-size: 1.5rem; font-weight: 600; font-family: inherit;
-      color: var(--c-black); cursor: pointer;
-      text-align: left;
-    }
-    .gs-toggle:hover { color: var(--c-gray-m); }
-    .gs-arrow { margin-left: auto; font-size: 1.8rem; transition: transform .2s; }
-    .gs-toggle[aria-expanded="true"] .gs-arrow { transform: rotate(90deg); }
-    .gs-content { padding-bottom: 2.4rem; }
-    .gs-steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2.4rem; }
-    .gs-step a { color: var(--c-black); font-weight: 600; text-decoration: none; border-bottom: 1px solid var(--c-yellow); }
-    .gs-step a:hover { background: var(--c-yellow); }
-    .gs-step .gs-num { background: var(--c-yellow); }
-    .gs-progress-badge {
-      font-family: var(--font-mono); font-size: 1.1rem; font-weight: 600;
-      letter-spacing: .04em; color: var(--c-black);
-      background: var(--c-yellow); border-radius: var(--radius-pill);
-      padding: .2rem 1rem;
-    }
-    .gs-step { display: flex; gap: 1.6rem; align-items: flex-start; }
-    .gs-num {
-      width: 3.2rem; height: 3.2rem; flex-shrink: 0;
-      background: var(--c-yellow); color: var(--c-black);
-      border-radius: 50%; display: flex; align-items: center; justify-content: center;
-      font-size: 1.6rem; font-weight: 700;
-    }
-    .gs-step strong { font-size: 1.5rem; display: block; margin-bottom: .4rem; }
-    .gs-step p { font-size: 1.4rem; color: var(--c-gray-m); line-height: 1.5; }
-    .gs-step code {
-      background: var(--c-white); border: 1px solid var(--c-gray-l);
-      border-radius: var(--r-xs); padding: .1rem .5rem; font-size: 1.3rem;
-      font-family: var(--font-mono); color: var(--c-black);
-    }
-    @media (max-width: 1023px) { .gs-steps { grid-template-columns: 1fr; gap: 1.6rem; } }
 
     /* ===== STIMMEN AUS DEM TEAM (E2) ===== */
     .team-voices { border-top: 1px solid var(--line); }
@@ -442,18 +362,12 @@
 
     /* ===== RESPONSIVE (Katalog-spezifisch) ===== */
     @media (max-width: 1023px) {
-      /* Featured-Karten als wischbares Karussell statt 6er-Stapel — der Hero
-         schrumpft von ~3 auf ~1,5 Bildschirmhöhen, die nächste Karte schaut rein */
-      .featured-grid { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 1.2rem; margin: 0 -2rem; padding: 0 2rem 1rem; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
-      .featured-grid::-webkit-scrollbar { display: none; }
-      .featured-grid > * { flex: 0 0 84%; scroll-snap-align: center; }
       .pilots-grid { grid-template-columns: 1fr; }
       .info-grid { grid-template-columns: 1fr; }
       /* iOS zoomt bei Feldern < 16px automatisch hinein — deshalb 1.6rem */
       .bld-form input, .bld-form textarea, .bld-form select { font-size: 1.6rem; }
     }
     @media (min-width: 768px) and (max-width: 1023px) {
-      .featured-grid { grid-template-columns: repeat(2, 1fr); }
       .pilots-grid { grid-template-columns: repeat(2, 1fr); }
     }
 
@@ -469,7 +383,6 @@
     }
     .card-trigger-chip.no-trigger { font-family: inherit; font-style: italic; }
     .card-footer-right { display: flex; align-items: center; gap: .8rem; }
-    .skill-card.featured .card-trigger-chip { background: rgba(255,255,255,.1); border-color: rgba(255,255,255,.2); color: rgba(252,252,252,.6); }
 
     .install-guide summary::-webkit-details-marker { display: none; }
     .install-guide[open] summary span:last-child { transform: rotate(180deg); display: inline-block; }
@@ -494,13 +407,8 @@
     /* Tastatur-Fokus für per role=button/tabindex bedienbare Container & Chips */
     .pilot-card:focus-visible, .ex-starter-card:focus-visible, .pilot-skill-chip:focus-visible { outline: 2px solid var(--c-black); outline-offset: 2px; }
 
-    .skill-card.featured .card-sub { color: rgba(252,252,252,.55); }
-    .skill-card.featured .fav-btn { color: rgba(252,252,252,.4); }
-    .skill-card.featured .fav-btn.active, .skill-card.featured .fav-btn:hover { color: var(--c-yellow); }
-    .skill-card.featured .card-actions { border-top-color: rgba(255,255,255,.12); }
     button.card-trigger-chip { cursor: pointer; font-family: var(--font-mono); }
     button.card-trigger-chip:hover { background: var(--c-yellow); border-color: var(--c-yellow); color: var(--c-black); }
-    .skill-card.featured .card-open-hint { color: var(--c-yellow); }
 
     @media (max-width: 640px) {
       .trigger-badge { font-size: 1.25rem; padding: .5rem 1.1rem; margin-bottom: 1rem; }
@@ -520,7 +428,7 @@
     }
     .ex-h1 {
       font-size: var(--fs-display); font-weight: var(--fw-semi); line-height: .98; letter-spacing: -.042em;
-      color: var(--c-white); margin-bottom: 3rem;
+      color: var(--c-black); margin-bottom: 3rem;
       font-feature-settings: "kern" 1, "liga" 1;
     }
     .ex-h2 {
@@ -529,27 +437,26 @@
       font-feature-settings: "kern" 1, "liga" 1;
     }
     .ex-hl { color: var(--c-black); background: linear-gradient(transparent 62%, var(--c-yellow) 62%); padding: 0 .2rem; }
-    .ex-dark .ex-hl, .ex-hero .ex-hl { color: var(--c-yellow); background: none; }
+    .ex-dark .ex-hl { color: var(--c-yellow); background: none; }
     .ex-body { font-size: 1.9rem; line-height: 1.6; color: #4a4a46; max-width: 68rem; }
     .ex-body-light { color: rgba(252,252,252,.75); }
 
-    /* Explainer Hero */
+    /* Explainer Hero (E11: helle Fläche statt dunklem Band) */
     .ex-hero {
-      background: radial-gradient(120% 120% at 80% 0%, #333330 0%, var(--c-black) 55%);
-      padding: 10rem 0 8rem; position: relative; overflow: hidden;
+      background: var(--c-bg); border-bottom: 1px solid var(--line);
+      padding: 6rem 0 5rem; position: relative; overflow: hidden;
     }
-    .ex-hero::before {
-      content: ''; position: absolute; top: -20%; right: -10%; width: 60rem; height: 60rem;
-      background: radial-gradient(circle, rgba(255,224,94,.14), transparent 65%);
-      pointer-events: none;
+    .ex-hero .overline, .bld-hero .overline {
+      color: var(--c-black); display: inline-block;
+      box-shadow: inset 0 -0.6em 0 var(--c-yellow);
     }
     .ex-hero .ex-wrap { position: relative; }
-    .ex-lead { font-size: 2.2rem; line-height: 1.55; color: rgba(252,252,252,.82); max-width: 62rem; margin-bottom: 3.6rem; font-weight: 400; }
-    .ex-lead strong { color: var(--c-white); font-weight: 600; }
+    .ex-lead { font-size: 2.2rem; line-height: 1.55; color: var(--c-gray-d); max-width: 62rem; margin-bottom: 3.6rem; font-weight: 400; }
+    .ex-lead strong { color: var(--c-black); font-weight: 600; }
     .ex-hero-cta { display: flex; gap: 1.4rem; flex-wrap: wrap; }
     .ex-scroll-hint {
       display: flex; flex-direction: column; align-items: center; gap: .6rem;
-      margin-top: 6rem; color: rgba(252,252,252,.4); font-size: 1.2rem;
+      margin-top: 6rem; color: var(--c-gray-m); font-size: 1.2rem;
       text-transform: uppercase; letter-spacing: .2em; width: fit-content;
     }
     .ex-arrow-down { font-size: 2rem; animation: exBounce 1.8s var(--ex-ease) infinite; }
@@ -577,33 +484,32 @@
     /* Terminal-Prompt-Zeichen (in Ohne/Mit-Skill & Auslöser genutzt) */
     .ex-term-prompt { color: var(--c-yellow); font-weight: 700; margin-right: .6rem; }
 
-    /* Vergleichsmatrix Langdock & Claude Code */
-    .cmp { margin-top: 4rem; border: 1px solid rgba(255,255,255,.12); border-radius: var(--r-lg); overflow: hidden; }
+    /* Vergleichsmatrix Langdock & Claude Code (E11: helle Fläche) */
+    .cmp { margin-top: 4rem; border: 1px solid var(--line-strong); border-radius: var(--r-lg); overflow: hidden; background: var(--paper); }
     .cmp-row { display: grid; grid-template-columns: 1.1fr 1fr 1fr; align-items: stretch; }
-    .cmp-row + .cmp-row { border-top: 1px solid rgba(255,255,255,.1); }
-    .cmp-head { background: rgba(255,255,255,.03); }
-    .cmp-dim { padding: 2rem 2.4rem; font-size: 1.5rem; font-weight: 600; color: rgba(252,252,252,.55); display: flex; align-items: center; }
-    .cmp-tool { padding: 2.2rem 2.4rem; display: flex; flex-direction: column; gap: .3rem; border-left: 1px solid rgba(255,255,255,.1); }
-    .cmp-tool-hl { background: rgba(255,224,94,.07); }
-    .cmp-tool-name { font-size: 2.2rem; font-weight: 700; color: var(--c-white); letter-spacing: -.01em; }
-    .cmp-tool-hl .cmp-tool-name { color: var(--c-yellow); }
-    .cmp-tool-kind { font-size: 1.3rem; color: rgba(252,252,252,.5); text-transform: uppercase; letter-spacing: .06em; }
-    .cmp-cell { padding: 2rem 2.4rem; font-size: 1.6rem; line-height: 1.45; color: rgba(252,252,252,.82); border-left: 1px solid rgba(255,255,255,.1); display: flex; align-items: center; }
-    .cmp-cell.cmp-hl { background: rgba(255,224,94,.07); color: var(--c-white); }
-    .cmp-cell em { font-style: italic; color: rgba(252,252,252,.7); }
-    .cmp-cell.cmp-hl em { color: var(--c-yellow); font-style: normal; font-family: var(--font-mono); font-size: 1.45rem; }
-    .cmp-rule { margin-top: 2.4rem; display: flex; align-items: center; gap: 1.6rem; background: rgba(255,224,94,.1); border: 1px solid rgba(255,224,94,.3); border-radius: var(--r-md); padding: 1.8rem 2.4rem; flex-wrap: wrap; }
+    .cmp-row + .cmp-row { border-top: 1px solid var(--line); }
+    .cmp-head { background: var(--c-bg); }
+    .cmp-dim { padding: 2rem 2.4rem; font-size: 1.5rem; font-weight: 600; color: var(--c-gray-m); display: flex; align-items: center; }
+    .cmp-tool { padding: 2.2rem 2.4rem; display: flex; flex-direction: column; gap: .3rem; border-left: 1px solid var(--line); }
+    .cmp-tool-hl { background: rgba(255,224,94,.16); }
+    .cmp-tool-name { font-size: 2.2rem; font-weight: 700; color: var(--c-black); letter-spacing: -.01em; }
+    .cmp-tool-kind { font-size: 1.3rem; color: var(--c-gray-m); text-transform: uppercase; letter-spacing: .06em; }
+    .cmp-cell { padding: 2rem 2.4rem; font-size: 1.6rem; line-height: 1.45; color: var(--c-gray-d); border-left: 1px solid var(--line); display: flex; align-items: center; }
+    .cmp-cell.cmp-hl { background: rgba(255,224,94,.16); color: var(--c-black); }
+    .cmp-cell em { font-style: italic; color: var(--c-gray-m); }
+    .cmp-cell.cmp-hl em { color: var(--c-black); font-style: normal; font-family: var(--font-mono); font-size: 1.45rem; }
+    .cmp-rule { margin-top: 2.4rem; display: flex; align-items: center; gap: 1.6rem; background: rgba(255,224,94,.18); border: 1px solid rgba(224,190,50,.5); border-radius: var(--r-md); padding: 1.8rem 2.4rem; flex-wrap: wrap; }
     .cmp-rule-k { font-size: 1.2rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--c-black); background: var(--c-yellow); padding: .4rem 1.2rem; border-radius: var(--r-xl); flex-shrink: 0; }
-    .cmp-rule span:last-child { font-size: 1.6rem; color: rgba(252,252,252,.85); line-height: 1.5; }
-    .cmp-rule strong { color: var(--c-white); }
+    .cmp-rule span:last-child { font-size: 1.6rem; color: var(--c-gray-d); line-height: 1.5; }
+    .cmp-rule strong { color: var(--c-black); }
     @media (max-width: 767px) {
       .cmp-row { grid-template-columns: 1fr; }
-      .cmp-tool, .cmp-cell { border-left: none; border-top: 1px solid rgba(255,255,255,.08); }
-      .cmp-dim { padding-bottom: .4rem; color: var(--c-yellow); font-size: 1.3rem; text-transform: uppercase; letter-spacing: .08em; }
+      .cmp-tool, .cmp-cell { border-left: none; border-top: 1px solid var(--line); }
+      .cmp-dim { padding-bottom: .4rem; color: var(--c-gray-m); font-size: 1.3rem; text-transform: uppercase; letter-spacing: .08em; }
       .cmp-head { display: none; }
       .cmp-cell.cmp-hl::after { content: 'Claude Code'; }
       .cmp-cell:not(.cmp-hl)::after { content: 'Langdock'; }
-      .cmp-cell::after { display: block; font-size: 1.1rem; color: rgba(252,252,252,.4); text-transform: uppercase; letter-spacing: .08em; margin-top: .4rem; }
+      .cmp-cell::after { display: block; font-size: 1.1rem; color: var(--c-gray-m); text-transform: uppercase; letter-spacing: .08em; margin-top: .4rem; }
       .cmp-cell { flex-direction: column; align-items: flex-start; gap: 0; }
     }
 
@@ -666,25 +572,25 @@
     .ex-anatomy-cta { font-size: 1.6rem; color: var(--c-gray-m); margin-top: 2.4rem; text-align: center; }
     .ex-anatomy-cta strong { color: var(--c-black); }
 
-    /* Auslöser: manuell vs. automatisch */
+    /* Auslöser: manuell vs. automatisch (E11: helle Fläche; die Mono-Zeilen bleiben als Terminal-Momente dunkel) */
     .trg-paths { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 4rem; }
     @media (max-width: 767px) { .trg-paths { grid-template-columns: 1fr; } }
-    .trg-card { position: relative; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.12); border-radius: var(--r-lg); padding: 3rem 2.6rem 2.6rem; }
-    .trg-card-hl { background: rgba(255,224,94,.07); border-color: rgba(255,224,94,.4); }
-    .trg-num { position: absolute; top: -1.6rem; left: 2.6rem; width: 3.2rem; height: 3.2rem; border-radius: 50%; background: rgba(255,255,255,.14); color: var(--c-white); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.6rem; }
+    .trg-card { position: relative; background: var(--paper); border: 1px solid var(--line-strong); border-radius: var(--r-lg); padding: 3rem 2.6rem 2.6rem; }
+    .trg-card-hl { background: rgba(255,224,94,.14); border-color: rgba(224,190,50,.55); }
+    .trg-num { position: absolute; top: -1.6rem; left: 2.6rem; width: 3.2rem; height: 3.2rem; border-radius: 50%; background: var(--c-black); color: var(--c-white); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.6rem; }
     .trg-card-hl .trg-num { background: var(--c-yellow); color: var(--c-black); }
-    .trg-tag { font-size: 1.3rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: rgba(252,252,252,.7); margin-bottom: 1rem; font-family: var(--font-mono); }
-    .trg-tag.-yellow { color: var(--c-yellow); }
-    .trg-text { font-size: 1.6rem; line-height: 1.5; color: rgba(252,252,252,.8); margin-bottom: 1.8rem; }
-    .trg-mono { font-family: var(--font-mono); font-size: 1.5rem; color: var(--c-white); background: rgba(0,0,0,.3); border-radius: var(--r-sm); padding: 1.2rem 1.6rem; }
+    .trg-tag { font-size: 1.3rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--c-gray-m); margin-bottom: 1rem; font-family: var(--font-mono); }
+    .trg-tag.-yellow { color: var(--c-black); }
+    .trg-text { font-size: 1.6rem; line-height: 1.5; color: var(--c-gray-d); margin-bottom: 1.8rem; }
+    .trg-mono { font-family: var(--font-mono); font-size: 1.5rem; color: var(--c-white); background: var(--c-black); border-radius: var(--r-sm); padding: 1.2rem 1.6rem; }
     .trg-mono .ex-term-prompt { color: var(--c-yellow); }
-    .trg-mono-nat { color: rgba(252,252,252,.85); font-family: 'Inter', sans-serif; font-style: italic; }
+    .trg-mono-nat { color: rgba(252,252,252,.9); font-family: 'Inter', sans-serif; font-style: italic; }
 
     .trg-brain { display: grid; grid-template-columns: 20rem 1fr; gap: 2rem; margin-top: 3rem; align-items: start; }
     @media (max-width: 767px) { .trg-brain { grid-template-columns: 1fr; gap: 1rem; } }
-    .trg-brain-k { font-family: var(--font-mono); font-size: 1.3rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--c-yellow); padding-top: .4rem; }
-    .trg-brain-body p { font-size: 1.65rem; line-height: 1.6; color: rgba(252,252,252,.8); }
-    .trg-brain-body code { font-family: var(--font-mono); font-size: .92em; color: var(--c-yellow); background: rgba(255,224,94,.1); padding: .1rem .5rem; border-radius: var(--r-xs); }
+    .trg-brain-k { font-family: var(--font-mono); font-size: 1.3rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--c-black); padding-top: .4rem; }
+    .trg-brain-body p { font-size: 1.65rem; line-height: 1.6; color: var(--c-gray-d); }
+    .trg-brain-body code { font-family: var(--font-mono); font-size: .92em; color: var(--c-black); background: rgba(255,224,94,.35); padding: .1rem .5rem; border-radius: var(--r-xs); }
 
     @media (prefers-reduced-motion: reduce) { .ex-arrow-down { animation: none; } }
 
@@ -883,12 +789,12 @@
     }
 
     /* ===================== SKILL-BUILDER ===================== */
-    .bld-hero { background: radial-gradient(120% 120% at 80% 0%, #333330 0%, var(--c-black) 55%); padding: 8rem 0 5rem; }
-    .bld-h1 { font-size: var(--fs-display-sm); font-weight: var(--fw-semi); line-height: 1; letter-spacing: -.042em; color: var(--c-white); margin: 1.2rem 0 2.4rem; }
-    .bld-lead { font-size: 1.9rem; line-height: 1.55; color: rgba(252,252,252,.78); max-width: 68rem; font-weight: 400; }
-    .bld-lead code { font-family: var(--font-mono); font-size: .9em; background: rgba(255,224,94,.12); color: var(--c-yellow); padding: .1rem .6rem; border-radius: var(--r-xs); }
+    /* E11: heller Seitenkopf statt dunklem Band */
+    .bld-hero { background: var(--c-bg); border-bottom: 1px solid var(--line); padding: 6rem 0 4rem; }
+    .bld-h1 { font-size: var(--fs-display-sm); font-weight: var(--fw-semi); line-height: 1; letter-spacing: -.042em; color: var(--c-black); margin: 1.2rem 0 2.4rem; }
+    .bld-lead { font-size: 1.9rem; line-height: 1.55; color: var(--c-gray-d); max-width: 68rem; font-weight: 400; }
+    .bld-lead code { font-family: var(--font-mono); font-size: .9em; background: var(--c-white); border: 1px solid var(--c-gray-l); color: var(--c-black); padding: .1rem .6rem; border-radius: var(--r-xs); }
     .bld-section { padding: 5rem 0 8rem; }
-    .bld-hero .ex-hl { color: var(--c-yellow); background: none; }
     .bld-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 3rem; align-items: start; }
     .bld-grid > * { min-width: 0; }
     @media (max-width: 1023px) { .bld-grid { grid-template-columns: minmax(0, 1fr); } }
@@ -1060,105 +966,19 @@
   <!-- ===================== VIEW: KATALOG ===================== -->
   <div id="view-catalog" role="tabpanel" aria-labelledby="subtab-catalog">
 
+  <!-- PAGE-HEAD (E11: kompakter Seitenkopf statt Hero) -->
+  <header class="page-head">
+    <div class="page-head-inner">
+      <h1>Skills</h1>
+      <p class="page-sub">34 Skills aus dem Agentur-Alltag — von Piloten gebaut und empfohlen.</p>
+      <div class="page-actions">
+        <button class="c-cta -black-border" onclick="showView('explainer')">Was sind Skills?</button>
+      </div>
+    </div>
+  </header>
+
   <!-- RECENTLY VIEWED -->
   <div id="recently-viewed" class="recently-viewed" hidden></div>
-
-  <!-- HERO -->
-  <section class="hero">
-    <div class="hero-glow" aria-hidden="true"></div>
-    <div class="hero-inner hero-top">
-      <p class="overline" style="color:#ffe05e">pilot · Citizen Coding</p>
-      <h1 class="hero-h1">Skills, die<br><span class="hero-rotator" id="hero-rotator" aria-hidden="true">Tools bauen.</span><span class="sr-only">Arbeit erledigen.</span></h1>
-      <p class="subline">Von Piloten gebaut, von Piloten empfohlen. Du beschreibst auf Deutsch, was du brauchst — Claude&nbsp;Code baut es. <strong>Kein Programmier-Vorwissen nötig.</strong></p>
-      <div class="hero-stats" id="hero-stats">
-        <div class="hero-stat-box"><span class="hero-stat-num" data-count="34" id="stat-skills">0</span><span class="hero-stat-label">Skills</span></div>
-        <div class="hero-stat-box"><span class="hero-stat-num" data-count="6" id="stat-pilots">0</span><span class="hero-stat-label">Piloten</span></div>
-        <div class="hero-stat-box"><span class="hero-stat-num" id="stat-cats" data-count="6">0</span><span class="hero-stat-label">Kategorien</span></div>
-        <div class="hero-stat-box"><span class="hero-stat-num" data-count="64" id="stat-endorsed">0</span><span class="hero-stat-label">Empfehlungen</span></div>
-      </div>
-      <div class="hero-cta">
-        <button class="c-cta -yellow-bg" onclick="document.getElementById('outcome-router').scrollIntoView({behavior:window.scrollBehavior?scrollBehavior():'smooth',block:'start'})">Ersten Skill finden</button>
-        <button class="c-cta -yellow-border" onclick="showView('explainer')">Was sind Skills?</button>
-      </div>
-    </div>
-    <div class="hero-ticker" aria-hidden="true"><div class="hero-ticker-track" id="hero-ticker"></div></div>
-    <div class="hero-inner">
-      <p class="hero-spotlight-label">Im Spotlight</p>
-      <div class="featured-grid" id="featured-grid"></div>
-    </div>
-  </section>
-
-  <!-- OUTCOME ROUTER -->
-  <section class="outcome-router" id="outcome-router" aria-labelledby="outcome-h">
-    <div class="outcome-inner">
-      <p class="overline">Los geht's</p>
-      <h2 id="outcome-h" class="outcome-h">Was willst du tun?</h2>
-      <p class="outcome-sub">Wähle ein Ziel — wir zeigen dir den Skill, der dich direkt dorthin bringt. Kein Vorwissen nötig.</p>
-      <div class="outcome-grid">
-        <button class="outcome-card" type="button" onclick="pickOutcome('pptx')">
-          <span class="outcome-ic"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h20"/><path d="M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3"/><path d="m7 21 5-5 5 5"/></svg></span>
-          <span class="outcome-label">Eine Präsentation bauen</span>
-          <span class="outcome-hint">PowerPoint aus deinem Rohmaterial</span>
-        </button>
-        <button class="outcome-card" type="button" onclick="pickOutcome('pdf')">
-          <span class="outcome-ic"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M9 13h6"/><path d="M9 17h6"/></svg></span>
-          <span class="outcome-label">Eine PDF auswerten</span>
-          <span class="outcome-hint">Report, Vertrag oder Studie verdichtet</span>
-        </button>
-        <button class="outcome-card" type="button" onclick="pickOutcome('webseite-bauen')">
-          <span class="outcome-ic"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg></span>
-          <span class="outcome-label">Eine Website oder ein Tool bauen</span>
-          <span class="outcome-hint">Kleine Web-App, die wirklich läuft</span>
-        </button>
-        <button class="outcome-card" type="button" onclick="pickOutcome('slides-aus-daten')">
-          <span class="outcome-ic"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg></span>
-          <span class="outcome-label">Aus Daten Slides machen</span>
-          <span class="outcome-hint">Excel oder CSV → fertige Charts</span>
-        </button>
-        <button class="outcome-card" type="button" onclick="pickOutcome('tonalitaets-check')">
-          <span class="outcome-ic"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z"/></svg></span>
-          <span class="outcome-label">Text markengerecht schreiben</span>
-          <span class="outcome-hint">Auf pilot-Tonalität geprüft</span>
-        </button>
-        <button class="outcome-card is-guide" type="button" onclick="pickOutcome('erste-schritte')">
-          <span class="outcome-ic"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m16.24 7.76-2.12 6.36-6.36 2.12 2.12-6.36z"/></svg></span>
-          <span class="outcome-label">Ich weiß noch nicht</span>
-          <span class="outcome-hint">Zeig mir den Einstieg</span>
-        </button>
-      </div>
-    </div>
-  </section>
-
-  <!-- GETTING STARTED -->
-  <div class="getting-started" id="getting-started">
-    <div class="gs-inner">
-      <button class="gs-toggle" onclick="toggleGS()" aria-expanded="false" id="gs-toggle-btn">
-        <span>Neu bei Skills? So startest du in vier Schritten</span>
-        <span class="gs-progress-badge" id="gs-progress" hidden></span>
-        <span class="gs-arrow">›</span>
-      </button>
-      <div class="gs-content" id="gs-content" hidden>
-        <div class="gs-steps">
-          <div class="gs-step">
-            <span class="gs-num">0</span>
-            <div><strong>Claude Code startklar machen</strong><p>Noch nicht installiert? <a href="https://code.claude.com/docs" target="_blank" rel="noopener">Hier entlang zur Anleitung →</a> Das Terminal sieht technisch aus, ist aber nur ein Textfeld — du tippst deine Aufgabe auf Deutsch hinein.</p></div>
-          </div>
-          <div class="gs-step">
-            <span class="gs-num">1</span>
-            <div><strong>Skill entdecken</strong><p>Wähle oben, was du tun willst — oder durchsuche den Katalog nach Aufgabe, Rolle oder Thema.</p></div>
-          </div>
-          <div class="gs-step">
-            <span class="gs-num">2</span>
-            <div><strong>Startprompt kopieren</strong><p>Öffne einen Skill und kopiere den fertigen Satz unter „So legst du los“ — genau so, wie du es aus Langdock kennst.</p></div>
-          </div>
-          <div class="gs-step">
-            <span class="gs-num">3</span>
-            <div><strong>Loslegen</strong><p>In Claude Code einfügen, Enter — fertig. Viele Skills laufen auch in Langdock; jeder Skill zeigt, wo er funktioniert.</p></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
 
   <!-- STIMMEN AUS DEM TEAM (E2): rotiert echte seeded Kommentare aus den Item-Daten -->
   <section class="team-voices cat-reveal" id="team-voices" aria-label="Stimmen aus dem Team">
@@ -1176,9 +996,8 @@
     <!-- FILTER BAR -->
     <div class="filter-bar" id="filter-bar">
       <div class="filter-inner">
-        <div class="search-wrap-m">
-          <input type="search" id="search-m" aria-label="Nur diese Seite: Skills filtern" placeholder="Nur Katalog filtern …" autocomplete="off">
-        </div>
+        <!-- E11: Seiten-Suchfeld — renderNav rendert opts.search in diesen Slot (ID bleibt #search) -->
+        <div data-page-search></div>
         <div class="type-row">
           <div class="type-tabs" id="type-tabs" role="group" aria-label="Nach Typ filtern"></div>
           <button class="type-info-toggle" id="type-info-toggle" onclick="toggleTypeInfo()" aria-expanded="false" aria-controls="type-info">Skill, Plugin, Framework — was ist der Unterschied? <span class="tt-arrow" aria-hidden="true">▾</span></button>
@@ -1256,12 +1075,12 @@
     <!-- Explainer Hero -->
     <section class="ex-hero">
       <div class="ex-wrap">
-        <p class="overline" style="color:var(--c-yellow)">Citizen Coding bei pilot</p>
+        <p class="overline">Citizen Coding bei pilot</p>
         <h1 class="ex-h1">Was ist<br>ein <span class="ex-hl">Skill</span>?</h1>
         <p class="ex-lead">Ihr kennt KI bisher als <strong>Chat</strong>: fragen, Antwort bekommen. Ein Skill ist der nächste Schritt — ein <strong>gespeicherter Arbeitsablauf</strong>, den die KI für dich ausführt. Zuhause ist er in <strong>Claude Code</strong>, viele laufen aber auch in <strong>Langdock</strong>. Und ihr könnt damit <strong>selbst Dinge bauen</strong>.</p>
         <div class="ex-hero-cta">
           <button class="c-cta -yellow-bg" onclick="exScrollTo('ex-demo')">Live-Demo ansehen</button>
-          <button class="c-cta -yellow-border" onclick="showView('catalog')">Zum Skill-Katalog</button>
+          <button class="c-cta -black-border" onclick="showView('catalog')">Zum Skill-Katalog</button>
         </div>
         <div class="ex-scroll-hint" aria-hidden="true">
           <span>Scroll</span><span class="ex-arrow-down">↓</span>
@@ -1303,11 +1122,11 @@
     </section>
 
     <!-- Langdock & Claude Code -->
-    <section class="ex-section ex-dark reveal">
+    <section class="ex-section ex-bg reveal">
       <div class="ex-wrap">
-        <p class="ex-eyebrow" style="color:var(--c-yellow)">Langdock &amp; Claude Code</p>
-        <h2 class="ex-h2" style="color:var(--c-white)">Zwei Werkzeuge,<br>zwei <span class="ex-hl">Stärken</span></h2>
-        <p class="ex-body ex-body-light">Langdock ist bei uns zu Recht gesetzt: die Top-Modelle im Chat, eigene Assistenten fürs Team, Workflows, euer Firmenwissen angebunden — DSGVO-konform in der EU gehostet. Claude Code nimmt davon nichts weg. Es beginnt dort, wo aus einer guten Antwort ein <em>fertiges Ergebnis</em> werden soll: eine Datei, ein Tool, eine Webseite, die du behältst und weiterentwickelst.</p>
+        <p class="ex-eyebrow">Langdock &amp; Claude Code</p>
+        <h2 class="ex-h2">Zwei Werkzeuge,<br>zwei <span class="ex-hl">Stärken</span></h2>
+        <p class="ex-body">Langdock ist bei uns zu Recht gesetzt: die Top-Modelle im Chat, eigene Assistenten fürs Team, Workflows, euer Firmenwissen angebunden — DSGVO-konform in der EU gehostet. Claude Code nimmt davon nichts weg. Es beginnt dort, wo aus einer guten Antwort ein <em>fertiges Ergebnis</em> werden soll: eine Datei, ein Tool, eine Webseite, die du behältst und weiterentwickelst.</p>
         <div class="cmp">
           <div class="cmp-row cmp-head">
             <div class="cmp-dim"></div>
@@ -1387,11 +1206,11 @@ Gib einen priorisierten Report aus:
     </section>
 
     <!-- Auslöser: manuell vs. automatisch -->
-    <section class="ex-section ex-dark reveal" id="ex-trigger">
+    <section class="ex-section ex-bg reveal" id="ex-trigger">
       <div class="ex-wrap">
-        <p class="ex-eyebrow" style="color:var(--c-yellow)">Auslöser</p>
-        <h2 class="ex-h2" style="color:var(--c-white)">Zwei Wege, wie ein Skill <span class="ex-hl">startet</span></h2>
-        <p class="ex-body ex-body-light">Du musst den Befehl gar nicht kennen. Ein Skill kann auf zwei Arten anspringen — beides gleichzeitig möglich.</p>
+        <p class="ex-eyebrow">Auslöser</p>
+        <h2 class="ex-h2">Zwei Wege, wie ein Skill <span class="ex-hl">startet</span></h2>
+        <p class="ex-body">Du musst den Befehl gar nicht kennen. Ein Skill kann auf zwei Arten anspringen — beides gleichzeitig möglich.</p>
         <div class="trg-paths">
           <div class="trg-card">
             <div class="trg-num">1</div>
@@ -1486,7 +1305,7 @@ Gib einen priorisierten Report aus:
   <div id="view-builder" role="tabpanel" aria-labelledby="subtab-builder" hidden>
     <section class="bld-hero">
       <div class="ex-wrap">
-        <p class="overline" style="color:var(--c-yellow)">Beitragen</p>
+        <p class="overline">Beitragen</p>
         <h1 class="bld-h1">Bau deinen<br><span class="ex-hl">eigenen Skill</span>.</h1>
         <p class="bld-lead">Ein Skill ist nur ein Ordner mit einer <code>SKILL.md</code>. Füll das Formular aus — rechts entsteht die Datei live. Danach lädst du sie als fertigen Skill herunter oder reichst sie mit einem Klick ein.</p>
       </div>
@@ -1673,7 +1492,6 @@ Gib einen priorisierten Report aus:
       setTimeout(() => { state._noCardAnim = false; }, 0);
     };
     window.onTried = (id, tried) => {
-      renderGsProgress();
       if (STARTER_JOURNEY.includes(id)) {
         const done = STARTER_JOURNEY.filter(s => tried.includes(s)).length;
         showToast(done >= STARTER_JOURNEY.length
@@ -1959,20 +1777,6 @@ Gib einen priorisierten Report aus:
 
     // „ausprobiert"-Set (localStorage, analog zu Favoriten) — schließt die Browse→Tun-Schleife
     // getTried/markTried: shared/base.js; Journey-Toast via window.onTried (oben).
-    function renderGsProgress() {
-      const el = document.getElementById('gs-progress');
-      if (!el) return;
-      const done = STARTER_JOURNEY.filter(s => getTried().includes(s)).length;
-      if (done === 0) { el.hidden = true; return; }
-      el.hidden = false;
-      el.textContent = `${done}/${STARTER_JOURNEY.length} geschafft`;
-    }
-
-    // Outcome-Router: Ziel wählen → passenden Skill öffnen
-    function pickOutcome(id) {
-      if (SKILLS.some(s => s.id === id)) openModal(id);
-      else document.getElementById('catalog-top').scrollIntoView({behavior: window.scrollBehavior ? scrollBehavior() : 'smooth'});
-    }
     function copyStartPrompt(evt, id) {
       if (evt) evt.stopPropagation();
       const skill = SKILLS.find(s => s.id === id);
@@ -1986,14 +1790,6 @@ Gib einen priorisierten Report aus:
       } else { fallbackCopy(text); done(); }
     }
     // copyTriggerRunway: shared/base.js
-
-    // ===== RENDER FEATURED =====
-    function renderFeatured() {
-      const featured = SKILLS.filter(s => isFeatured(s)).slice(0, 3);
-      const grid = document.getElementById('featured-grid');
-      if (!grid) return;
-      grid.innerHTML = featured.map(s => renderCard(s, true)).join('');
-    }
 
     // ===== RENDER PILOTS =====
     // Einzige Quelle der Wahrheit: SKILLS[].endorsedBy (data/skills.js). Die Chips je
@@ -2333,7 +2129,7 @@ Gib einen priorisierten Report aus:
     }
     function clearSearch() {
       state.search = '';
-      ['search', 'search-m'].forEach(id => { const s = document.getElementById(id); if (s) s.value = ''; });
+      const s = document.getElementById('search'); if (s) s.value = '';
       render();
     }
 
@@ -3689,7 +3485,7 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
       state.favoritesOnly = false;
       state.sort = 'recommended';
       state.search = '';
-      ['search', 'search-m'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+      const sEl = document.getElementById('search'); if (sEl) sEl.value = '';
       const endEl = document.getElementById('endorsed-only'); if (endEl) endEl.checked = false;
       const sortEl = document.getElementById('sort-select'); if (sortEl) sortEl.value = 'recommended';
       const favBtn = document.getElementById('fav-filter-btn'); if (favBtn) { favBtn.classList.remove('active'); favBtn.setAttribute('aria-pressed','false'); }
@@ -3817,16 +3613,6 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
 
     // ===== INFO MODAL =====
 
-    // ===== GETTING STARTED TOGGLE =====
-    function toggleGS() {
-      const content = document.getElementById('gs-content');
-      const btn = document.getElementById('gs-toggle-btn');
-      const isHidden = content.hidden;
-      content.hidden = !isHidden;
-      btn.setAttribute('aria-expanded', isHidden ? 'true' : 'false');
-      try { localStorage.setItem('gs-seen', '1'); } catch(e) {}
-    }
-
     // ===== MOBILE FILTER TOGGLE =====
     function toggleMobileFilter() {
       const btn = document.getElementById('filter-toggle-btn');
@@ -3921,51 +3707,6 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
       render();
     }
 
-
-    // ===================== HERO-INSZENIERUNG =====================
-    function initHero() {
-      // echte Werte in die Zähler
-      const totalEndorsements = SKILLS.reduce((sum, s) => sum + (s.endorsedBy?.length || 0), 0);
-      // Nur echte, SICHTBARE Skills zählen (ohne HIDDEN) — Plugins/Frameworks und
-      // ausgeblendete Einträge würden das Label „Skills" sonst zur Lüge machen.
-      // Einzige Quelle: VISIBLE_SKILL_COUNT aus data/skills.js.
-      const sk = document.getElementById('stat-skills'); if (sk) sk.dataset.count = VISIBLE_SKILL_COUNT;
-      const pl = document.getElementById('stat-pilots'); if (pl) pl.dataset.count = PILOTS.length;
-      const en = document.getElementById('stat-endorsed'); if (en) en.dataset.count = totalEndorsements;
-      // Kategorien zählen statt hart kodieren — leere zählen nicht
-      const ct = document.getElementById('stat-cats'); if (ct) ct.dataset.count = new Set(SKILLS.map(s => s.subcategory)).size;
-
-      const reduce = window.prefersReduce ? prefersReduce() : (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
-      document.querySelectorAll('.hero-stat-num').forEach(el => {
-        const target = parseInt(el.dataset.count) || 0;
-        if (reduce) { el.textContent = target; return; }
-        animateCount(el, target, 1100);
-      });
-
-      // Wort-Rotator
-      const words = ['Tools bauen.', 'Websites bauen.', 'Reports schreiben.', 'Kampagnen prüfen.', 'Daten aufräumen.', 'Recherchen liefern.'];
-      const rot = document.getElementById('hero-rotator');
-      if (rot && !reduce) {
-        let wi = 0;
-        setInterval(() => {
-          wi = (wi + 1) % words.length;
-          rot.classList.remove('swap'); void rot.offsetWidth;
-          rot.textContent = words[wi];
-          rot.classList.add('swap');
-        }, 2400);
-      }
-
-      // Skill-Ticker
-      const track = document.getElementById('hero-ticker');
-      if (track) {
-        const pool = SKILLS.slice().sort((a,b)=>a.name.localeCompare(b.name,'de'));
-        const chip = s => `<span class="ticker-chip"><span class="ticker-dot"></span>${escHtml(s.name)}${s.trigger ? ` <code>${escHtml(s.trigger)}</code>` : ''}</span>`;
-        const html = pool.map(chip).join('');
-        track.innerHTML = html + html; // doppelt für nahtlose Schleife
-      }
-    }
-
-    // animateCount: shared/base.js
 
     // ===== STIMMEN AUS DEM TEAM (E2) =====
     // Rotiert echte seeded Kommentare aus den Item-Daten (data/skills.js) — nichts erfunden,
@@ -4255,7 +3996,6 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
 
     // ===== INIT =====
     document.addEventListener('DOMContentLoaded', () => {
-      renderFeatured();
       renderRecentlyViewed();
       renderTypeTabs();
       renderCatTabs();
@@ -4279,15 +4019,6 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
         const qsView = new URLSearchParams(location.search).get('view');
         if (qsView && !location.hash && (qsView === 'explainer' || qsView === 'builder')) showView(qsView);
       } catch (e) {}
-      // Getting-Started beim allerersten Besuch offen zeigen (danach gemerkt) — die Kernpersona sieht das Gerüst einmal
-      try {
-        if (!localStorage.getItem('gs-seen')) {
-          const gsc = document.getElementById('gs-content');
-          const gsb = document.getElementById('gs-toggle-btn');
-          if (gsc && gsb) { gsc.hidden = false; gsb.setAttribute('aria-expanded', 'true'); }
-        }
-      } catch(e) {}
-      renderGsProgress();
       // Mobil: Filterpanel startet eingeklappt — der Platz gehört den Skills (Persona-Review P6)
       if (window.matchMedia && window.matchMedia('(max-width: 1023px)').matches) {
         const ftb = document.getElementById('filter-toggle-btn');
@@ -4299,15 +4030,11 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
       window.addEventListener('hashchange', applyHash);
       window.addEventListener('popstate', applyHash);
 
-      // Header-Suche (Desktop) und Filterleisten-Suche (Mobil) halten sich gegenseitig aktuell
-      [['search', 'search-m'], ['search-m', 'search']].forEach(([own, other]) => {
-        document.getElementById(own)?.addEventListener('input', debounce(e => {
-          state.search = e.target.value.toLowerCase().trim();
-          const o = document.getElementById(other);
-          if (o && o.value !== e.target.value) o.value = e.target.value;
-          state._noCardAnim = true; render(); state._noCardAnim = false;
-        }, 150));
-      });
+      // Katalog-Suche (Slot [data-page-search] in der Filterleiste, alle Breiten)
+      document.getElementById('search')?.addEventListener('input', debounce(e => {
+        state.search = e.target.value.toLowerCase().trim();
+        state._noCardAnim = true; render(); state._noCardAnim = false;
+      }, 150));
 
       document.getElementById('endorsed-only').addEventListener('change', e => {
         state.endorsedOnly = e.target.checked;
@@ -4334,7 +4061,6 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
         }
       });
 
-      initHero();
       initVoices();
 
       // Filterleiste: beim Scrollen fixieren + verdichten. Platzhalter hält die

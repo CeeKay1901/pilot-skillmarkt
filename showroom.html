@@ -17,19 +17,25 @@
   <style>
     /* ============================================================
        showroom.html — seitenspezifisch (E8). Das Design-System und
-       alle .sr-*/.case-*/.preview-frame-Klassen liegen additiv in
+       alle .sr-, .case- und .preview-frame-Klassen liegen additiv in
        shared/base.css. Inter + JetBrains Mono @font-face stehen dort
        ebenfalls schon — hier NICHT duplizieren. Nur ein paar seiten-
        lokale Feinheiten für den ehrlichen Hero-Hinweis.
        ============================================================ */
-    .sr-lead {
-      display: inline-flex; align-items: center; gap: .8rem;
-      font-family: var(--font-mono); font-size: 1.25rem; line-height: 1.6;
-      color: rgba(252,252,252,.72); background: rgba(252,252,252,.06);
-      border: 1px solid rgba(252,252,252,.16); border-radius: var(--r-pill);
-      padding: .7rem 1.4rem; margin-top: 2rem; max-width: 72ch;
-    }
-    .sr-lead .lu { width: 1.6rem; height: 1.6rem; color: var(--c-yellow); flex-shrink: 0; }
+    /* Etappe 1 (helle Shell): Spotlight & Mitmachen-Band von dunkler Deko-
+       Fläche auf helle Fläche umgestellt — nur Farben, keine Inhaltslogik. */
+    .sr-spotlight { background: var(--paper-warm); color: var(--c-black); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+    .sr-spot-label { color: var(--c-gray-m); }
+    .sr-spot-inner h2 { color: var(--c-black); }
+    .sr-spot-inner p.sr-spot-text { color: var(--c-gray-m); }
+    .sr-spot-frame-wrap { border-color: var(--line); background: repeating-conic-gradient(#e8e8e2 0% 25%, #f4f1ea 0% 50%) 50% / 1.6rem 1.6rem; }
+    .sr-spotlight .c-cta.-yellow-border { border-color: var(--c-black); color: var(--c-black); }
+    .sr-spotlight .c-cta.-yellow-border:hover { background: var(--c-black); color: var(--c-white); }
+    .lib-submit { background: var(--paper-warm); color: var(--c-black); border-top: 1px solid var(--line); }
+    .lib-submit h2 { color: var(--c-black); }
+    .lib-submit p { color: var(--c-gray-m); }
+    .lib-submit .section-label { color: var(--c-gray-m); }
+    .lib-submit-note { color: var(--c-gray-m); }
     .sr-desc { display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
     .modal-body .sr-desc { display: block; overflow: visible; }
 
@@ -61,48 +67,13 @@
 
   <!-- HEADER & FOOTER: werden von shared/base.js injiziert (renderNav, siehe Seiten-Script) -->
 
-  <!-- HERO -->
-  <section class="hero">
-    <div class="hero-glow" aria-hidden="true"></div>
-    <div class="hero-inner hero-top">
-      <p class="overline" style="color:#ffe05e">pilot · Showroom</p>
-      <h1 class="hero-h1">Sehen, was<br><span style="color:var(--c-yellow)">möglich ist.</span></h1>
-      <p class="subline">Der Showroom sammelt Projekte zum Anklicken — echte Werkzeuge, die im Team schon laufen, und Beispiel-Projekte, die zeigen, wohin die Reise geht. Jedes bringt seine ehrliche Geschichte mit: das Ausgangsproblem, den ersten Prompt, den Stolperstein und das Ergebnis. Und alles, was du brauchst, um es selbst nachzubauen.</p>
-      <div class="hero-stats" id="hero-stats">
-        <div class="hero-stat-box"><span class="hero-stat-num" id="sr-stat-total">0</span><span class="hero-stat-label">Projekte</span></div>
-        <div class="hero-stat-box"><span class="hero-stat-num" id="sr-stat-echt">0</span><span class="hero-stat-label">Echte Team-Tools</span></div>
-        <div class="hero-stat-box"><span class="hero-stat-num" id="sr-stat-beispiel">0</span><span class="hero-stat-label">Beispiel-Projekte</span></div>
-        <div class="hero-stat-box"><span class="hero-stat-num" id="sr-stat-saeulen">0</span><span class="hero-stat-label">Säulen</span></div>
-      </div>
-      <p class="sr-lead">
-        <span class="lu-slot" id="sr-lead-ic" aria-hidden="true"></span>
-        Ehrlich gehalten: Ein Marker unterscheidet echte Team-Tools von illustrativen Beispiel-Projekten. Die Beispiel-Projekte sind einer Persona aus dem Team redaktionell zugeordnet, nicht von ihr gebaut — Stimmen &amp; Beispiele sind Demo-Daten. Die Mini-Demos selbst sind echt und laufen.
-      </p>
-      <div class="hero-cta">
-        <button class="c-cta -yellow-bg" onclick="document.getElementById('main-content').scrollIntoView({behavior:window.scrollBehavior(),block:'start'})">Zu den Projekten</button>
-      </div>
+  <!-- SEITENKOPF -->
+  <header class="page-head">
+    <div class="page-head-inner">
+      <h1>Showroom</h1>
+      <p class="page-sub">Projekte aus dem Team zum Anklicken — ein Marker unterscheidet echte Team-Tools von Beispiel-Projekten, jedes mit Geschichte und Nachbau-Anleitung.</p>
     </div>
-  </section>
-
-  <!-- KURZ ERKLÄRT (E10): einheitliches Erklär-Modul direkt unter dem Hero (ersetzt den alten Ein-Satz-Intro) -->
-  <section class="area-intro" aria-label="Kurz erklärt">
-    <div class="area-intro-inner">
-      <div class="area-intro-grid">
-        <div class="area-intro-part">
-          <p class="area-intro-label">Was ist das?</p>
-          <p class="area-intro-text">Eine Galerie von Projekten zum Anklicken — echte Werkzeuge, die im Team schon laufen, und illustrative Beispiel-Projekte, jeweils mit der ehrlichen Geschichte dahinter: Ausgangsproblem, erster Prompt, Stolperstein, Ergebnis.</p>
-        </div>
-        <div class="area-intro-part">
-          <p class="area-intro-label">Wofür nutze ich es?</p>
-          <p class="area-intro-text">Wenn du sehen willst, was mit eigenem Bauen realistisch drin ist, und Anregung für dein nächstes Media-, Account-, Kreations-, Strategie- oder Data-Projekt suchst. Jedes Projekt zeigt dir nicht nur das Ergebnis, sondern auch, wie du es selbst nachbaust.</p>
-        </div>
-        <div class="area-intro-part">
-          <p class="area-intro-label">So fange ich an.</p>
-          <p class="area-intro-text">Filter die Projekte nach Säule, Art und Aufwand, öffne „Details“ für die ganze Geschichte samt Nachbau-Anleitung — und folg den verlinkten Bausteinen, um selbst loszulegen. <a class="area-intro-link" href="skills.html?view=explainer">Was ist ein Skill?</a></p>
-        </div>
-      </div>
-    </div>
-  </section>
+  </header>
 
   <!-- PROJEKT DES MONATS (Spotlight) -->
   <section class="sr-spotlight" aria-labelledby="sr-spot-h">
@@ -538,15 +509,8 @@
     // ===== INIT =====
     document.addEventListener('DOMContentLoaded', () => {
       // Sektions-Icons setzen (Lucide aus der LU-Map)
-      const icons = { 'sr-lead-ic': LU.check, 'cases-ic': LU.rocket, 'rank-ic': LU.trophy };
+      const icons = { 'cases-ic': LU.rocket, 'rank-ic': LU.trophy };
       Object.entries(icons).forEach(([id, svg]) => { const el = document.getElementById(id); if (el) el.innerHTML = svg; });
-
-      // Hero-Zahlen — nur real Gezähltes aus CASE_STATS
-      [['sr-stat-total', CASE_STATS.total], ['sr-stat-echt', CASE_STATS.echt],
-       ['sr-stat-beispiel', CASE_STATS.beispiel], ['sr-stat-saeulen', CASE_STATS.saeulen]].forEach(([id, n]) => {
-        const el = document.getElementById(id);
-        if (el) animateCount(el, n, 1000);
-      });
 
       renderSpotlight();
       renderCats();

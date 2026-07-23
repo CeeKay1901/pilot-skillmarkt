@@ -25,7 +25,10 @@
 
 const { chromium } = require('/usr/lib/node_modules/playwright');
 
-const TARGET = process.argv[2] || 'http://localhost:8412/skills.html';
+// E11-Soll: Suite akzeptiert jetzt auch eine Basis-URL (Runner ruft alle Suiten
+// mit der Origin auf) und ergänzt dann selbst skills.html.
+const ARG = process.argv[2] || 'http://localhost:8412/skills.html';
+const TARGET = /\.html/.test(ARG) ? ARG : new URL('skills.html', ARG).href;
 const PROMPTS_TARGET = TARGET.replace(/skills\.html.*$/, 'prompts.html');
 const BIBLIO_TARGET = TARGET.replace(/skills\.html.*$/, 'bibliothek.html');
 

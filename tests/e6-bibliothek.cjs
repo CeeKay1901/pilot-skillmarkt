@@ -19,7 +19,10 @@
 
 const { chromium } = require('/usr/lib/node_modules/playwright');
 
-const TARGET = process.argv[2] || 'http://localhost:8412/bibliothek.html';
+// E11-Soll: Suite akzeptiert jetzt auch eine Basis-URL (Runner ruft alle Suiten
+// mit der Origin auf) und ergänzt dann selbst bibliothek.html.
+const ARG = process.argv[2] || 'http://localhost:8412/bibliothek.html';
+const TARGET = /\.html/.test(ARG) ? ARG : new URL('bibliothek.html', ARG).href;
 const INDEX_TARGET = TARGET.replace(/bibliothek\.html.*$/, 'index.html');
 
 // Soll-Werte (Stand E6, 2026-07-17), abgeleitet aus data/assets.js:
@@ -96,6 +99,9 @@ async function runViewport(browser, vp) {
     heroPalettes: parseInt((document.getElementById('stat-palettes') || {}).textContent || '-1', 10),
     heroPatterns: parseInt((document.getElementById('stat-patterns') || {}).textContent || '-1', 10),
   }));
+  // E11-Soll: die Hero-Stat-Zähler (#stat-fonts/-icons/-palettes/-patterns) sind mit
+  // dem Hero entfallen (kompakter .page-head) — Daten==DOM bleibt der volle Abgleich;
+  // zusätzlich wird abgesichert, dass die alten Stat-Zähler wirklich weg sind (-1).
   check('01_load_counts_no_js_errors',
     jsErrors.length === 0
       && counts.dataTotal === EXPECTED_TOTAL && counts.idsUnique
@@ -104,8 +110,8 @@ async function runViewport(browser, vp) {
       && counts.dataPatterns === EXPECTED_PATTERNS && counts.domPatterns === EXPECTED_PATTERNS
       && counts.dataIcons === EXPECTED_ICONS && counts.domIcons === EXPECTED_ICONS
       && counts.dataIconsets === EXPECTED_ICONSETS && counts.domIconsets === EXPECTED_ICONSETS
-      && counts.heroFonts === EXPECTED_FONTS && counts.heroIcons === EXPECTED_ICONS
-      && counts.heroPalettes === EXPECTED_PALETTES && counts.heroPatterns === EXPECTED_PATTERNS,
+      && counts.heroFonts === -1 && counts.heroIcons === -1
+      && counts.heroPalettes === -1 && counts.heroPatterns === -1,
     { jsErrors: [...jsErrors], ...counts, blockedResourceErrors: blockedResourceErrors.length });
 
   // ---------- (2) Lizenz-Hygiene (Kern E6) ----------

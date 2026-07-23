@@ -157,10 +157,13 @@ function renderNav(activePage, opts) {
       </div>`;
   linkHtml.push(moreHtml);
 
+  /* E11: Das Seiten-Filterfeld lebt nicht mehr im Header (doppelte Such-
+     Affordanz neben dem Strg-K-Trigger). opts.search wird weiter akzeptiert,
+     rendert das Feld aber in den Slot <div data-page-search> der Seite
+     (Filter-Toolbar) — Feld-ID und Bindings der Seiten bleiben unverändert. */
   const searchHtml = opts.search ? `
       <div class="search-wrap">
         <input type="search" id="${opts.search.id || 'search'}" aria-label="${opts.search.label || 'Suchen'}" placeholder="${opts.search.placeholder || 'Suchen …'}" autocomplete="off">
-        <span class="search-hint" aria-hidden="true">Drücke <kbd>/</kbd> zum Suchen</span>
       </div>` : '';
 
   const headerHtml = `
@@ -172,7 +175,6 @@ function renderNav(activePage, opts) {
       </a>
       <nav class="main-nav" aria-label="Hauptnavigation">${linkHtml.join('\n        ')}</nav>
       <button type="button" class="nav-suche-btn" id="nav-suche-btn" aria-label="Marketplace durchsuchen (Cmd/Ctrl+K)" aria-haspopup="dialog" onclick="openGlobalSearch()">${LU.search}<span class="nav-suche-kbd" aria-hidden="true"><kbd>${_gsShortcutLabel()}</kbd></span></button>
-      ${searchHtml}
     </div>
   </header>`;
 
@@ -203,6 +205,12 @@ function renderNav(activePage, opts) {
   if (skip) skip.insertAdjacentHTML('afterend', headerHtml);
   else document.body.insertAdjacentHTML('afterbegin', headerHtml);
   document.body.insertAdjacentHTML('beforeend', footerHtml);
+
+  // E11: Seiten-Filterfeld in den Toolbar-Slot der Seite rendern (falls vorhanden)
+  if (searchHtml) {
+    const searchSlot = document.querySelector('[data-page-search]');
+    if (searchSlot) searchSlot.innerHTML = searchHtml;
+  }
 
   initNavMore();
   initGlobalSearch();

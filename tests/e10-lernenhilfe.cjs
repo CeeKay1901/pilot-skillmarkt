@@ -21,7 +21,10 @@
  */
 const { chromium } = require('/usr/lib/node_modules/playwright');
 
-const TARGET = process.argv[2] || 'http://localhost:8401/lernen-hilfe.html';
+// E11-Soll: Suite akzeptiert jetzt auch eine Basis-URL (Runner ruft alle Suiten
+// mit der Origin auf) und ergänzt dann selbst lernen-hilfe.html.
+const ARG = process.argv[2] || 'http://localhost:8401/lernen-hilfe.html';
+const TARGET = /\.html/.test(ARG) ? ARG : new URL('lernen-hilfe.html', ARG).href;
 const BASE = TARGET.replace(/lernen-hilfe\.html.*$/, '');
 
 function isBlockedResourceError(t) {

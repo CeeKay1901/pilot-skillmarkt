@@ -21,7 +21,10 @@
 
 const { chromium } = require('/usr/lib/node_modules/playwright');
 
-const TARGET = process.argv[2] || 'http://localhost:8412/baukasten.html';
+// E11-Soll: Suite akzeptiert jetzt auch eine Basis-URL (Runner ruft alle Suiten
+// mit der Origin auf) und ergänzt dann selbst baukasten.html.
+const ARG = process.argv[2] || 'http://localhost:8412/baukasten.html';
+const TARGET = /\.html/.test(ARG) ? ARG : new URL('baukasten.html', ARG).href;
 const INDEX_TARGET = TARGET.replace(/baukasten\.html.*$/, 'index.html');
 
 // Soll-Werte (Stand E7, 2026-07-17), abgeleitet aus data/bausteine.js:
@@ -82,6 +85,9 @@ async function runViewport(browser, vp) {
     heroLeucht: parseInt((document.getElementById('bk-stat-leuchttuerme') || {}).textContent || '-1', 10),
     heroDateien: parseInt((document.getElementById('bk-stat-dateien') || {}).textContent || '-1', 10),
   }));
+  // E11-Soll: die Hero-Stat-Zähler (#bk-stat-*) sind mit dem Hero entfallen
+  // (kompakter .page-head) — Daten==DOM==BAUKASTEN_STATS bleibt der volle Abgleich;
+  // zusätzlich wird abgesichert, dass die alten Stat-Zähler wirklich weg sind (-1).
   check('01_load_counts_no_js_errors',
     jsErrors.length === 0
       && counts.dataTotal === EXPECTED_TOTAL && counts.statTotal === EXPECTED_TOTAL && counts.idsUnique
@@ -89,8 +95,8 @@ async function runViewport(browser, vp) {
       && counts.dataLeucht === EXPECTED_LEUCHTTUERME
       && counts.dataDateien === EXPECTED_DATEIEN && counts.statDateien === EXPECTED_DATEIEN
       && counts.domDataCards === EXPECTED_DATEIEN
-      && counts.heroBausteine === EXPECTED_TOTAL && counts.heroLeucht === EXPECTED_LEUCHTTUERME
-      && counts.heroDateien === EXPECTED_DATEIEN,
+      && counts.heroBausteine === -1 && counts.heroLeucht === -1
+      && counts.heroDateien === -1,
     { jsErrors: [...jsErrors], ...counts, blockedResourceErrors: blockedResourceErrors.length });
 
   // ---------- (2) iframe-Live-Vorschau: srcdoc gesetzt + sandbox="" + kein externer src ----------

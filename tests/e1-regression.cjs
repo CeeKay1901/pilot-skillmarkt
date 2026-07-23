@@ -21,7 +21,10 @@
 
 const { chromium } = require('/usr/lib/node_modules/playwright');
 
-const TARGET = process.argv[2] || 'http://localhost:8412/skills.html';
+// E11-Soll: Suite akzeptiert jetzt auch eine Basis-URL (Runner ruft alle Suiten
+// mit der Origin auf) und ergänzt dann selbst die Katalog-Seite skills.html.
+const ARG = process.argv[2] || 'http://localhost:8412/skills.html';
+const TARGET = /\.html/.test(ARG) ? ARG : new URL('skills.html', ARG).href;
 
 // Soll-Werte (Stand E2 Schritt 2, 2026-07-16): sichtbare Karten pro Aufgaben-Tab,
 // Merge-Karten zählen als 1 Karte. Änderung ggü. E1-Baseline (31/3/8/5/4/4/7):
@@ -112,7 +115,20 @@ async function runViewport(browser, vp) {
   await page.waitForTimeout(250);
 
   // ---------- (3) Suche filtert ('pptx' -> Treffer, Merge-Karten aufgelöst) ----------
-  const searchSel = vp.name === 'mobile' ? '#search-m' : '#search';
+  // E11-Soll: das separate Mobil-Suchfeld #search-m ist entfallen — das Feld #search
+  // sitzt jetzt im Inhalts-Slot [data-page-search] und ist auf allen Breiten sichtbar.
+  const searchSel = '#search';
+  const slotInfo = await page.evaluate(() => {
+    const slot = document.querySelector('[data-page-search]');
+    const field = document.getElementById('search');
+    return {
+      fieldInSlot: !!slot && !!field && slot.contains(field),
+      fieldVisible: !!field && field.offsetParent !== null,
+      noMobileField: !document.getElementById('search-m'),
+    };
+  });
+  check('03a_search_slot_in_toolbar',
+    slotInfo.fieldInSlot && slotInfo.fieldVisible && slotInfo.noMobileField, slotInfo);
   await page.fill(searchSel, 'pptx');
   await page.waitForTimeout(700); // Debounce
   const searchResult = await page.evaluate(() => ({
@@ -180,19 +196,35 @@ async function runViewport(browser, vp) {
     note: 'IST-Stand: hash-Deep-Link (#skill-id); ?skill= wird nicht unterstützt',
   });
 
-  // ---------- (7) Outcome-Router: Kachel-Klick öffnet Modal ----------
+  // ---------- (7) Kompakter Seitenkopf statt Hero/Outcome-Router ----------
+  // E11-Soll: der Outcome-Router („Was willst du tun?"-Kacheln) wurde mitsamt
+  // Spotlight-Band und 30-Sekunden-Erklärer entfernt. Neue Prüfung: kompakter
+  // .page-head (h1 + .page-sub), kein Hero/Router mehr, Katalog-Inhalt beginnt
+  // im ersten Viewport.
   await page.goto('about:blank');
   await page.goto(TARGET, { waitUntil: 'load' });
-  await page.waitForSelector('#outcome-router .outcome-card', { timeout: 10000 });
-  await page.locator('#outcome-router .outcome-card').first().click();
-  await page.waitForSelector('#modal-overlay.open', { timeout: 5000 });
-  const outcomeModalName = await page.evaluate(() =>
-    (document.getElementById('modal-name') || {}).textContent.trim());
-  check('07_outcome_router_tile_opens_modal', outcomeModalName.length > 0, {
-    modalName: outcomeModalName,
+  await page.waitForSelector('#skills-grid .skill-card', { timeout: 10000 });
+  const headInfo = await page.evaluate(() => {
+    const head = document.querySelector('.page-head');
+    const h1 = head ? head.querySelector('h1') : null;
+    const slot = document.querySelector('[data-page-search]');
+    const slotTop = slot ? slot.getBoundingClientRect().top : Infinity;
+    return {
+      hasPageHead: !!head,
+      h1Text: h1 ? h1.textContent.trim() : '',
+      hasSub: !!(head && head.querySelector('.page-sub')),
+      noHero: !document.querySelector('section.hero'),
+      noOutcomeRouter: !document.getElementById('outcome-router'),
+      headHeight: head ? head.getBoundingClientRect().height : -1,
+      toolbarInFirstViewport: slotTop < window.innerHeight,
+    };
   });
-  await page.keyboard.press('Escape');
-  await page.waitForTimeout(300);
+  check('07_compact_page_head',
+    headInfo.hasPageHead && headInfo.h1Text.length > 0 && headInfo.hasSub
+      && headInfo.noHero && headInfo.noOutcomeRouter
+      && headInfo.headHeight > 0 && headInfo.headHeight < 300
+      && headInfo.toolbarInFirstViewport,
+    headInfo);
 
   // ---------- (8) View-Wechsel via seiten-lokale Sub-Tabs 'Was sind Skills?' und 'Skill bauen' ----------
   // E10 Stage 1 (Nav-Verlagerung): „Was sind Skills?"/„Skill bauen" sind KEINE
@@ -290,9 +322,16 @@ async function runViewport(browser, vp) {
     favState.favorites.length > 0 && favState.activeBtn && !favState.modalAccidentallyOpened,
     favState);
 
-  // ---------- (11) Getting-Started-Fortschritt #gs-progress existiert ----------
-  const gsExists = await page.evaluate(() => !!document.getElementById('gs-progress'));
-  check('11_gs_progress_exists', gsExists, { exists: gsExists });
+  // ---------- (11) Kein horizontaler Overflow (helle Shell, Etappe 1) ----------
+  // E11-Soll: #gs-progress ist mit dem entfernten Getting-Started-/Erklärer-Block
+  // entfallen. Ersatzprüfung: die kompaktierte Seite erzeugt keinen horizontalen
+  // Overflow.
+  const overflowInfo = await page.evaluate(() => ({
+    scrollWidth: document.documentElement.scrollWidth,
+    innerWidth: window.innerWidth,
+  }));
+  check('11_no_horizontal_overflow',
+    overflowInfo.scrollWidth <= overflowInfo.innerWidth + 1, overflowInfo);
 
   // ---------- Abschluss: über den ganzen Lauf gesammelte JS-Fehler ----------
   check('12_no_js_errors_total', jsErrors.length === 0, {

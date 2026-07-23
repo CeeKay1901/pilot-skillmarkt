@@ -26,7 +26,10 @@
 
 const { chromium } = require('/usr/lib/node_modules/playwright');
 
-const TARGET = process.argv[2] || 'http://localhost:8412/showroom.html';
+// E11-Soll: Suite akzeptiert jetzt auch eine Basis-URL (Runner ruft alle Suiten
+// mit der Origin auf) und ergänzt dann selbst showroom.html.
+const ARG = process.argv[2] || 'http://localhost:8412/showroom.html';
+const TARGET = /\.html/.test(ARG) ? ARG : new URL('showroom.html', ARG).href;
 const INDEX_TARGET = TARGET.replace(/showroom\.html.*$/, 'index.html');
 
 // Soll-Werte (Stand E8, 2026-07-17), abgeleitet aus data/cases.js:
@@ -91,6 +94,9 @@ async function runViewport(browser, vp) {
     heroBeispiel: parseInt((document.getElementById('sr-stat-beispiel') || {}).textContent || '-1', 10),
     heroSaeulen: parseInt((document.getElementById('sr-stat-saeulen') || {}).textContent || '-1', 10),
   }));
+  // E11-Soll: die Hero-Stat-Zähler (#sr-stat-*) sind mit dem Hero entfallen
+  // (kompakter .page-head) — Daten==DOM==CASE_STATS bleibt der volle Abgleich;
+  // zusätzlich wird abgesichert, dass die alten Stat-Zähler wirklich weg sind (-1).
   check('01_load_counts_no_js_errors',
     jsErrors.length === 0
       && counts.dataTotal === EXPECTED_TOTAL && counts.statTotal === EXPECTED_TOTAL && counts.idsUnique
@@ -98,8 +104,8 @@ async function runViewport(browser, vp) {
       && counts.dataEcht === EXPECTED_ECHT && counts.statEcht === EXPECTED_ECHT
       && counts.dataBeispiel === EXPECTED_BEISPIEL && counts.statBeispiel === EXPECTED_BEISPIEL
       && counts.dataSaeulen === EXPECTED_SAEULEN && counts.statSaeulen === EXPECTED_SAEULEN
-      && counts.heroTotal === EXPECTED_TOTAL && counts.heroEcht === EXPECTED_ECHT
-      && counts.heroBeispiel === EXPECTED_BEISPIEL && counts.heroSaeulen === EXPECTED_SAEULEN,
+      && counts.heroTotal === -1 && counts.heroEcht === -1
+      && counts.heroBeispiel === -1 && counts.heroSaeulen === -1,
     { jsErrors: [...jsErrors], ...counts, blockedResourceErrors: blockedResourceErrors.length });
 
   // ---------- (2) Karten-iframe: src (echte Datei) + OHNE sandbox + aria-hidden + tabindex + pointer-events:none ----------

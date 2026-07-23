@@ -17,7 +17,10 @@
 
 const { chromium } = require('/usr/lib/node_modules/playwright');
 
-const TARGET = process.argv[2] || 'http://localhost:8412/prompts.html';
+// E11-Soll: Suite akzeptiert jetzt auch eine Basis-URL (Runner ruft alle Suiten
+// mit der Origin auf) und ergänzt dann selbst prompts.html.
+const ARG = process.argv[2] || 'http://localhost:8412/prompts.html';
+const TARGET = /\.html/.test(ARG) ? ARG : new URL('prompts.html', ARG).href;
 const INDEX_TARGET = TARGET.replace(/prompts\.html.*$/, 'index.html');
 
 // Soll-Werte (Stand E3, 2026-07-16), abgeleitet aus data/prompts.js:
@@ -142,7 +145,20 @@ async function runViewport(browser, vp) {
   await page.waitForTimeout(250);
 
   // ---------- (3) Suche filtert ('briefing' -> Treffer, weniger als alle) ----------
-  const searchSel = vp.name === 'mobile' ? '#search-m' : '#search';
+  // E11-Soll: das separate Mobil-Suchfeld #search-m ist entfallen — das Feld #search
+  // sitzt jetzt im Inhalts-Slot [data-page-search] und ist auf allen Breiten sichtbar.
+  const searchSel = '#search';
+  const slotInfo = await page.evaluate(() => {
+    const slot = document.querySelector('[data-page-search]');
+    const field = document.getElementById('search');
+    return {
+      fieldInSlot: !!slot && !!field && slot.contains(field),
+      fieldVisible: !!field && field.offsetParent !== null,
+      noMobileField: !document.getElementById('search-m'),
+    };
+  });
+  check('03a_search_slot_in_toolbar',
+    slotInfo.fieldInSlot && slotInfo.fieldVisible && slotInfo.noMobileField, slotInfo);
   await page.fill(searchSel, 'briefing');
   await page.waitForTimeout(700); // Debounce
   const searchResult = await page.evaluate(() => ({
@@ -446,8 +462,11 @@ async function runIndexChecks(browser) {
   check('i2_router_tile_links_prompts',
     indexInfo.routerTile && indexInfo.noPromptTeaser && /Sammlung/.test(indexInfo.routerTileDest),
     { routerTile: indexInfo.routerTile, dest: indexInfo.routerTileDest, noPromptTeaser: indexInfo.noPromptTeaser });
+  // E11-Soll: die Hero-Stat-Zeile (#stat-prompts) ist mit dem Hero der Startseite
+  // entfallen — der Daten-Abgleich läuft jetzt allein über die Bereichs-Karte
+  // (#area-prompt-count); zusätzlich wird abgesichert, dass die Stat-Zeile weg ist.
   check('i3_counts_match_data',
-    indexInfo.statPrompts === indexInfo.expected && indexInfo.areaPromptCount === indexInfo.expected
+    indexInfo.statPrompts === -1 && indexInfo.areaPromptCount === indexInfo.expected
       && indexInfo.expected === EXPECTED_TOTAL,
     { statPrompts: indexInfo.statPrompts, areaPromptCount: indexInfo.areaPromptCount, expected: indexInfo.expected });
   check('i4_area_card_clickable',

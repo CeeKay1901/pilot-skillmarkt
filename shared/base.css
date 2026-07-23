@@ -64,8 +64,8 @@
       --term-key: #6aa9e8;
       --term-dim: #6a6a60;
 
-      /* Layout */
-      --header-h: 8.5rem;
+      /* Layout (E11: Header schlank — 6.4rem statt 8.5rem) */
+      --header-h: 6.4rem;
       --max-w: 144rem;
       --pad-d: 8rem;
       --pad-m: 2rem;
@@ -142,13 +142,14 @@
       padding: 0 var(--pad-d);
       display: flex; align-items: center; gap: 4rem;
     }
-    .logo { display: flex; flex-direction: column; flex-shrink: 0; }
+    /* E11: Logo einzeilig — Marke + Bereichslabel nebeneinander im schlanken Header */
+    .logo { display: flex; align-items: baseline; gap: 1rem; flex-shrink: 0; }
     .logo-mark {
-      font-size: 2.8rem; font-weight: 700; color: var(--c-white);
+      font-size: 2.1rem; font-weight: 700; color: var(--c-white);
       letter-spacing: -.02em; line-height: 1;
     }
     .overline {
-      font-size: 1.4rem; font-weight: 500; text-transform: uppercase;
+      font-size: 1.1rem; font-weight: 500; text-transform: uppercase;
       letter-spacing: .1em; color: var(--c-yellow);
     }
     .search-wrap { flex: 1; max-width: 48rem; }
@@ -177,6 +178,21 @@
     }
     #search-m::placeholder { color: var(--c-gray-m); }
     #search-m:focus { outline: none; border-color: var(--c-black); }
+    /* E11: Das Seiten-Filterfeld sitzt in der Inhalts-Toolbar (Slot
+       [data-page-search]) auf heller Fläche — nicht mehr im dunklen Header. */
+    [data-page-search] { flex: 1; min-width: 22rem; max-width: 38rem; }
+    [data-page-search] .search-wrap { flex: none; max-width: none; }
+    [data-page-search] input[type="search"] {
+      width: 100%; padding: 1rem 1.8rem;
+      background: var(--paper);
+      border: 1px solid var(--line-strong);
+      border-radius: var(--radius-pill);
+      color: var(--c-black);
+      font-size: 1.5rem; font-family: inherit;
+      transition: var(--trans);
+    }
+    [data-page-search] input[type="search"]::placeholder { color: var(--c-gray-m); }
+    [data-page-search] input[type="search"]:focus { outline: none; border-color: var(--c-black); background: var(--c-white); }
 
     /* ===== HERO (inszeniert) ===== */
     .hero {
@@ -248,6 +264,57 @@
       .hero-stat-num { font-size: 3.4rem; }
       .hero-ticker { margin: 4rem 0 3.5rem; }
     }
+
+    /* ===== PAGE-HEAD (E11: kompakter Seitenkopf statt Hero) =====
+       Titel + ein Satz + optionale Aktionen — der Inhalt beginnt im ersten
+       Viewport. Ersetzt die .hero-Blöcke (Abriss in Etappe 5). */
+    .page-head { padding: 5.2rem 0 1rem; }
+    .page-head-inner { max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-d); }
+    .page-head h1 {
+      font-size: clamp(2.6rem, 2rem + 1.2vw, 3.4rem);
+      font-weight: var(--fw-semi); letter-spacing: -.025em; line-height: 1.05;
+      color: var(--c-black);
+    }
+    .page-sub {
+      margin-top: .9rem; font-size: 1.6rem; line-height: 1.5;
+      color: var(--c-gray-m); max-width: 64rem;
+    }
+    .page-actions { display: flex; gap: 1rem; margin-top: 1.8rem; flex-wrap: wrap; }
+    @media (max-width: 1023px) { .page-head { padding: 3.4rem 0 .6rem; } }
+
+    /* ===== CHIP (E11: EIN Chip-Primitive, Modifier statt Familien) ===== */
+    .chip {
+      display: inline-flex; align-items: center; gap: .6rem;
+      padding: .5rem 1.3rem;
+      border: 1px solid var(--line-strong); border-radius: var(--r-pill);
+      background: transparent; color: var(--c-gray-m);
+      font-size: 1.35rem; font-weight: 500; font-family: inherit;
+      cursor: pointer; transition: var(--trans); text-decoration: none;
+      white-space: nowrap;
+    }
+    .chip:hover { border-color: var(--c-black); color: var(--c-black); }
+    .chip.-active { background: var(--c-black); border-color: var(--c-black); color: var(--c-white); }
+    .chip.-yellow.-active { background: var(--c-yellow); border-color: var(--c-yellow); color: var(--c-black); }
+    .chip .chip-count { font-size: 1.15rem; opacity: .6; font-variant-numeric: tabular-nums; }
+    .chip:focus-visible { outline: 2px solid var(--c-black); outline-offset: 2px; }
+
+    /* ===== EMPTY (E11: EIN Empty-State) ===== */
+    .empty {
+      padding: 4.4rem 2.4rem; text-align: center;
+      border: 1px dashed var(--line-strong); border-radius: var(--r-lg);
+      color: var(--c-gray-m); font-size: 1.5rem; line-height: 1.6;
+    }
+
+    /* ===== CARD-MIN (E11: minimale Karte — Titel, Satz, 1–2 Meta) ===== */
+    .card-min {
+      background: var(--paper);
+      border: 1px solid var(--line); border-radius: var(--r-lg);
+      padding: 2rem 2rem 1.8rem;
+      display: flex; flex-direction: column; gap: .7rem;
+      box-shadow: var(--shadow-sm);
+      transition: transform .28s cubic-bezier(.2,.7,.2,1), box-shadow .28s ease;
+    }
+    .card-min:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
 
     /* ===== CARD (generische Katalog-Karte) ===== */
     .skill-card {
@@ -696,7 +763,7 @@
     /* ===== RESPONSIVE (Basis) ===== */
     @media (max-width: 1023px) {
       :root {
-        --header-h: 6.8rem;
+        --header-h: 5.6rem;
         --pad-d: 2rem;
       }
       .header-inner { gap: 2rem; }
@@ -705,8 +772,8 @@
       .modal-overlay { padding: 0; align-items: flex-end; }
       .modal { border-radius: var(--r-lg) var(--r-lg) 0 0; max-height: 95vh; }
       .form-row { grid-template-columns: 1fr; }
-      .logo-mark { font-size: 2.2rem; }
-      .overline { font-size: 1.1rem; }
+      .logo-mark { font-size: 1.9rem; }
+      .site-header .overline { display: none; }
     }
     @media (min-width: 768px) and (max-width: 1023px) {
       .skills-grid { grid-template-columns: repeat(2, 1fr); }
@@ -1137,7 +1204,7 @@
     @media (max-width: 400px) {
       .header-inner { gap: 1rem; }
       /* Marke bleibt über „pilot“ erkennbar; die Overline weicht für Platz. */
-      .overline { display: none; }
+      .site-header .overline { display: none; }
       .nav-link { padding: .5rem .55rem; letter-spacing: -.01em; }
     }
 

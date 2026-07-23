@@ -23,8 +23,9 @@
        Vier Bereiche unter einer Sticky-Sub-Nav, in dieser Reihenfolge:
          1) RESSOURCEN — editoriales Link-Regal (aus lernen.html):
             2-spaltige Link-Karten, Filter Typ/Niveau/Dauer/Sprache +
-            Suche, bayesScore-Sortierung, Zeit-Schnellauswahl im Hero.
-         2) BEFEHLE & KNIFFE — dunkles, terminal-nahes Upvote-Ranking.
+            Suche, bayesScore-Sortierung, Zeit-Schnellauswahl unterm Seitenkopf.
+         2) BEFEHLE & KNIFFE — heller Rahmen, das Upvote-Ranking selbst
+            bleibt als Terminal-Moment dunkel.
          3) GLOSSAR — helles Nachschlagewerk mit Suche + A-Z-Sprungleiste.
          4) FAQ — ruhiges Akkordeon.
 
@@ -69,31 +70,39 @@
     /* Glossar-Ziele brauchen mehr Luft: dort klebt zusätzlich die Such-/A-Z-Leiste. */
     .g-gruppe, .g-card { scroll-margin-top: calc(var(--header-h) + 15rem); }
 
-    /* ===== BEREICH 1: RESSOURCEN — Zeit-Schnellauswahl im Hero (Signature) ===== */
-    .zeit-quick { position: relative; z-index: 1; margin: 0; }
+    /* ===== ZEIT-SCHNELLAUSWAHL: kompakte Chip-Zeile unter dem Seitenkopf ===== */
+    .zeit-quick { background: var(--c-bg); padding: .8rem 0 0; }
+    .zeit-quick-inner {
+      max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-d);
+      display: flex; align-items: center; gap: 1rem 1.4rem; flex-wrap: wrap;
+    }
     .zeit-quick-label {
-      font-size: 1.4rem; font-weight: 700; text-transform: uppercase;
-      letter-spacing: .14em; color: rgba(252,252,252,.5); margin: 0 0 1.4rem;
+      font-family: var(--font-mono); font-size: 1.1rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: .1em; color: var(--c-gray-m); margin: 0;
     }
-    .zeit-tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1.2rem; max-width: 78rem; }
+    .zeit-tiles { display: flex; gap: .8rem; flex-wrap: wrap; }
     .zeit-tile {
-      display: flex; flex-direction: column; align-items: flex-start; gap: .2rem;
-      background: rgba(252,252,252,.05); border: 1px solid rgba(252,252,252,.18);
-      border-radius: var(--r-md); padding: 1.6rem 1.8rem 1.4rem;
-      font-family: inherit; color: var(--c-white); cursor: pointer;
-      text-align: left; transition: var(--trans);
+      display: inline-flex; align-items: baseline; gap: .7rem;
+      background: transparent; border: 1px solid var(--line-strong);
+      border-radius: var(--radius-pill); padding: .55rem 1.4rem;
+      font-family: inherit; font-size: 1.35rem; font-weight: 600;
+      color: var(--c-gray-d); cursor: pointer; transition: var(--trans);
     }
-    .zeit-tile:hover { border-color: var(--c-yellow); transform: translateY(-2px); }
+    .zeit-tile:hover { border-color: var(--c-black); color: var(--c-black); }
     .zeit-tile.active { background: var(--c-yellow); border-color: var(--c-yellow); color: var(--c-black); }
-    .zt-num {
-      font-family: var(--font-mono); font-variant-numeric: tabular-nums;
-      font-size: 2.4rem; font-weight: 700; color: var(--c-yellow); line-height: 1.1;
-    }
-    .zeit-tile.active .zt-num { color: var(--c-black); }
-    .zt-unit { font-size: 1.3rem; font-weight: 600; letter-spacing: .04em; }
-    .zt-name { font-size: 1.4rem; font-weight: 600; margin-top: .5rem; }
-    .zt-count { font-family: var(--font-mono); font-size: 1.1rem; color: rgba(252,252,252,.5); }
+    .zt-num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-weight: 700; }
+    .zt-name { font-size: 1.3rem; }
+    .zt-count { font-family: var(--font-mono); font-size: 1.05rem; color: var(--c-gray-m); }
     .zeit-tile.active .zt-count { color: rgba(38,38,38,.6); }
+
+    /* Seiten-Suchfeld im Toolbar-Slot: neutralisiert die (dunkle) #search-Basisregel
+       aus base.css — das Feld sitzt hier auf heller Fläche. */
+    [data-page-search] #search {
+      background: var(--paper); border: 1px solid var(--line-strong);
+      color: var(--c-black); padding: 1rem 1.8rem; font-size: 1.5rem;
+    }
+    [data-page-search] #search::placeholder { color: var(--c-gray-m); }
+    [data-page-search] #search:focus { outline: none; border-color: var(--c-black); background: var(--c-white); }
 
     /* Ressourcen-Bereich: Intro-Kopf + Filterleiste + Regal */
     .res-intro { background: var(--c-bg); padding: 5.2rem 0 2.4rem; }
@@ -233,43 +242,46 @@
     .res-voice figcaption { font-family: var(--font-mono); font-size: 1.1rem; color: var(--c-gray-m); }
     .res-geprueft { font-family: var(--font-mono); font-size: 1.1rem; color: var(--c-gray-m); }
 
-    /* ===== BEREICH 2: BEFEHLE & KNIFFE (dunkel, terminal-nah) ===== */
+    /* ===== BEREICH 2: BEFEHLE & KNIFFE =====
+       Heller Sektions-RAHMEN (Überschriften-Band) — nur die Ranking-Liste selbst
+       bleibt als Terminal-Moment dunkel. */
     .bef-section {
-      background: var(--c-black); color: var(--c-white);
-      padding: 6.4rem 0 8rem; position: relative; overflow: hidden;
+      background: var(--c-bg); color: var(--c-black);
+      border-top: 1px solid var(--line); padding: 6.4rem 0 8rem;
     }
-    .bef-section::before {
-      content: ''; position: absolute; inset: 0; pointer-events: none;
-      background: radial-gradient(52rem 30rem at 88% 0%, rgba(255,224,94,.09), transparent 60%);
-    }
-    .bef-inner { max-width: 108rem; margin: 0 auto; padding: 0 var(--pad-d); position: relative; z-index: 1; }
+    .bef-inner { max-width: 108rem; margin: 0 auto; padding: 0 var(--pad-d); }
     .bef-h2 {
       font-size: var(--fs-h2); font-weight: var(--fw-semi);
-      letter-spacing: -.02em; color: var(--c-white); margin: 1rem 0 1.2rem;
+      letter-spacing: -.02em; color: var(--c-black); margin: .6rem 0 1.2rem;
     }
-    .bef-sub { font-size: 1.6rem; line-height: 1.6; color: rgba(252,252,252,.7); max-width: 72ch; margin: 0; }
+    .bef-sub { font-size: 1.6rem; line-height: 1.6; color: var(--c-ink-body); max-width: 72ch; margin: 0; }
     .bef-note {
       font-family: var(--font-mono); font-size: 1.15rem; line-height: 1.6;
-      color: rgba(252,252,252,.42); margin: 1.4rem 0 0; max-width: 88ch;
+      color: var(--c-gray-m); margin: 1.4rem 0 0; max-width: 88ch;
     }
 
-    /* Kategorie-Filter (dunkle Chips) */
+    /* Kategorie-Filter (helle Chips im hellen Rahmen) */
     .bef-chips { display: flex; gap: .8rem; flex-wrap: wrap; margin: 3rem 0 2.4rem; }
     .bef-chip {
-      border: 1px solid rgba(252,252,252,.25); background: transparent;
-      color: rgba(252,252,252,.75); border-radius: var(--radius-pill);
+      border: 1px solid var(--line-strong); background: transparent;
+      color: var(--c-gray-d); border-radius: var(--radius-pill);
       padding: .6rem 1.4rem; font-family: inherit; font-size: 1.4rem;
       cursor: pointer; transition: var(--trans);
     }
-    .bef-chip:hover { border-color: var(--c-white); color: var(--c-white); }
+    .bef-chip:hover { border-color: var(--c-black); color: var(--c-black); }
     .bef-chip.active { background: var(--c-yellow); border-color: var(--c-yellow); color: var(--c-black); font-weight: 600; }
     .bef-chip-count { opacity: .6; font-family: var(--font-mono); font-size: 1.2rem; margin-left: .3rem; font-variant-numeric: tabular-nums; }
     .bef-chip.active .bef-chip-count { opacity: .75; }
 
     /* ===== RANKING-LISTE (Signature: Upvote sortiert live) =====
+       Terminal-Moment: die Liste sitzt als dunkles Panel im hellen Rahmen.
        KOMPAKT (E-Straffung): eine dichte Zeile pro Befehl — Rang, Befehl, Tags,
        Nutzen (eine Zeile, aufgeklappt voll), Vote + Details-Toggle rechts. */
-    .rank-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .8rem; }
+    .rank-list {
+      list-style: none; margin: 0; padding: 1.2rem;
+      display: flex; flex-direction: column; gap: .8rem;
+      background: var(--c-black); border-radius: var(--r-md);
+    }
     .cmd-card {
       background: rgba(252,252,252,.045);
       border: 1px solid rgba(252,252,252,.12);
@@ -535,7 +547,6 @@
     @media (max-width: 1023px) {
       .res-intro-inner, .res-inner, .glo-inner, .faq-inner, .submit-band-inner { padding: 0 var(--pad-m); }
       .res-list { grid-template-columns: 1fr; }
-      .zeit-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .g-grid { grid-template-columns: 1fr; }
       .submit-band { padding: 4.4rem 0 4.8rem; }
     }
@@ -544,6 +555,7 @@
       .rank-num { font-size: 1.4rem; padding-top: .5rem; }
       .cmd-code { font-size: 1.5rem; }
       .cmd-body { padding: 1.8rem 1.4rem 2rem; }
+      .rank-list { padding: .8rem; }
       .bef-section { padding: 4.4rem 0 5.6rem; }
       .glossar-section, .faq-section { padding: 4.4rem 0 5.6rem; }
       .res-intro { padding: 4rem 0 2rem; }
@@ -566,8 +578,6 @@
       .res-body { padding: 1.6rem 1.4rem 1.8rem; }
       .res-ico { padding-top: 1.8rem; }
       .res-ico .lu { width: 1.8rem; height: 1.8rem; }
-      .zeit-tile { padding: 1.2rem 1.4rem 1.1rem; }
-      .zt-num { font-size: 2rem; }
     }
     @media (hover: none) and (pointer: coarse) {
       .vote-btn, .cmd-toggle, .cmd-copy, .bef-chip, .term-play { min-height: 4.4rem; }
@@ -576,7 +586,6 @@
     }
     @media (prefers-reduced-motion: reduce) {
       .cmd-card, .g-card, .faq-card, .res-card, .zeit-tile { transition: none; }
-      .zeit-tile:hover { transform: none; }
     }
   </style>
 </head>
@@ -585,26 +594,21 @@
 
   <!-- HEADER & FOOTER: werden von shared/base.js injiziert (renderNav, siehe Seiten-Script unten) -->
 
-  <!-- HERO -->
-  <section class="hero">
-    <div class="hero-glow" aria-hidden="true"></div>
-    <div class="hero-inner hero-top">
-      <p class="overline" style="color:#ffe05e">pilot · Lernen &amp; Hilfe</p>
-      <h1 class="hero-h1">Wenn du weiterkommen willst —<br><span style="color:var(--c-yellow)">hier findest du den Handgriff.</span></h1>
-      <p class="subline">Ein Bereich für alles, was dich voranbringt: geprüfte Lern-Ressourcen als Kompass, das Befehle-Ranking für den Alltag, ein Glossar, das jeden Begriff in einem Satz erklärt — und Schritt-für-Schritt-Antworten auf die häufigsten Blocker.</p>
-      <div class="hero-stats" id="hero-stats">
-        <div class="hero-stat-box"><span class="hero-stat-num" id="stat-ressourcen">0</span><span class="hero-stat-label">Lern-Ressourcen</span></div>
-        <div class="hero-stat-box"><span class="hero-stat-num" id="stat-befehle">0</span><span class="hero-stat-label">Befehle &amp; Kniffe</span></div>
-        <div class="hero-stat-box"><span class="hero-stat-num" id="stat-glossar">0</span><span class="hero-stat-label">Glossar-Begriffe</span></div>
-        <div class="hero-stat-box"><span class="hero-stat-num" id="stat-faq">0</span><span class="hero-stat-label">FAQ-Lösungen</span></div>
-      </div>
-      <!-- SIGNATURE: Zeit-Schnellauswahl — Klick setzt den Dauer-Filter und springt ins Regal -->
-      <div class="zeit-quick">
-        <p class="zeit-quick-label" id="zeit-quick-label">Wie viel Zeit hast du gerade?</p>
-        <div class="zeit-tiles" id="zeit-tiles" role="group" aria-labelledby="zeit-quick-label"></div>
-      </div>
+  <!-- SEITENKOPF -->
+  <header class="page-head">
+    <div class="page-head-inner">
+      <h1>Lernen &amp; Hilfe</h1>
+      <p class="page-sub">Ressourcen, Befehle, Glossar und Antworten auf typische Blocker.</p>
     </div>
-  </section>
+  </header>
+
+  <!-- ZEIT-SCHNELLAUSWAHL: kompakte Chip-Zeile — Klick setzt den Dauer-Filter und springt ins Regal -->
+  <div class="zeit-quick">
+    <div class="zeit-quick-inner">
+      <p class="zeit-quick-label" id="zeit-quick-label">Wie viel Zeit hast du gerade?</p>
+      <div class="zeit-tiles" id="zeit-tiles" role="group" aria-labelledby="zeit-quick-label"></div>
+    </div>
+  </div>
 
   <!-- ORIENTIERUNG: kompaktes Erklär-Modul (E10 — Was ist das? / Wofür? / So fange ich an) -->
   <section class="area-intro" aria-label="Kurz erklärt">
@@ -612,15 +616,15 @@
       <div class="area-intro-grid">
         <div class="area-intro-part">
           <p class="area-intro-label">Was ist das?</p>
-          <p class="area-intro-text">Ein Bereich zum Lernen und zum Nachschlagen: redaktionell geprüfte Lern-Ressourcen, ein Ranking der nützlichsten Befehle und Kniffe, ein Glossar mit je einem Satz pro Begriff und eine FAQ gegen die häufigsten Blocker.</p>
+          <p class="area-intro-text">Geprüfte Lern-Ressourcen, ein Befehle-Ranking, ein Glossar und eine FAQ — alles an einem Ort.</p>
         </div>
         <div class="area-intro-part">
           <p class="area-intro-label">Wofür nutze ich es?</p>
-          <p class="area-intro-text">Wenn du dich einarbeiten willst, findest du hier geprüfte Links mit ehrlicher Dauer und Niveau; wenn du mitten in einer Aufgabe festhängst, schlägst du einen Befehl, einen Begriff oder eine Lösung in Sekunden nach. Gedacht für den Weg vom Langdock-Chat hin zum eigenständigen Bauen — <a class="area-intro-link" href="skills.html?view=explainer">Code oder Langdock?</a></p>
+          <p class="area-intro-text">Zum Einarbeiten mit geprüften Links — und zum schnellen Nachschlagen, wenn du festhängst (<a class="area-intro-link" href="skills.html?view=explainer">Code oder Langdock?</a>).</p>
         </div>
         <div class="area-intro-part">
           <p class="area-intro-label">So fange ich an.</p>
-          <p class="area-intro-text">Nutz die Sub-Navigation oben, um zwischen Ressourcen, Befehlen, Glossar und FAQ zu springen — für den Einstieg wähl im <a class="area-intro-link" href="#ressourcen">Lern-Regal</a>, wie viel Zeit du gerade hast.</p>
+          <p class="area-intro-text">Spring über die Sub-Navigation in den passenden Bereich — für den Einstieg wähl oben, wie viel Zeit du gerade hast.</p>
         </div>
       </div>
     </div>
@@ -645,16 +649,14 @@
         <div class="res-intro-inner">
           <p class="section-label">Bereich · Lern-Ressourcen</p>
           <h2 class="res-section-h2" id="ressourcen-h">Kein eigener Kurs — ein Kompass.</h2>
-          <p class="res-lead">Das Netz ist voll mit KI-Tutorials — vieles ist Hype, manches veraltet. Hier steht nur, was die Redaktion geprüft hat: mit ehrlicher Dauer, Niveau, Sprache und einem Satz, für wen sich jeder Link wirklich lohnt.</p>
+          <p class="res-lead">Hier steht nur, was die Redaktion geprüft hat — mit ehrlicher Dauer, Niveau, Sprache und einem Satz, für wen sich jeder Link lohnt.</p>
         </div>
       </div>
 
       <!-- FILTER BAR -->
       <div class="filter-bar" id="filter-bar">
         <div class="filter-inner">
-          <div class="search-wrap-m">
-            <input type="search" id="search-m" aria-label="Nur diese Seite: Ressourcen filtern" placeholder="Nur Ressourcen filtern …" autocomplete="off">
-          </div>
+          <div data-page-search></div>
           <div class="cat-tabs" id="cat-tabs" role="group" aria-label="Nach Typ filtern"></div>
           <button class="filter-toggle-btn" id="filter-toggle-btn" onclick="toggleMobileFilter()" aria-expanded="true">
             <span>Filter &amp; Sortierung <span class="ftb-count" id="ftb-count" hidden></span></span>
@@ -680,7 +682,7 @@
       <!-- RESSOURCEN-REGAL -->
       <div class="res-section" aria-label="Lern-Ressourcen">
         <div class="res-inner">
-          <p class="res-note">Jeder externe Link wurde am 17. Juli 2026 redaktionell geprüft (erreichbar + hält, was die Beschreibung verspricht). Die Startwerte von Bewertung und „Das hat mir geholfen“ sind redaktionelle Demo-Werte — deine Stimme kommt lokal in deinem Browser dazu. Interne pilot-Einträge sind klar gekennzeichnet und noch ohne Link.</p>
+          <p class="res-note">Externe Links am 17. Juli 2026 redaktionell geprüft; Bewertungs- und Stimmen-Startwerte sind Demo-Werte, deine Stimme kommt lokal in deinem Browser dazu.</p>
           <div class="res-list" id="res-list"></div>
         </div>
       </div>
@@ -690,7 +692,7 @@
         <div class="submit-band-inner">
           <p class="section-label">Mitmachen</p>
           <h2 id="submit-res-h">Dir hat etwas weitergeholfen, das hier fehlt?</h2>
-          <p class="submit-band-text">Dieses Regal lebt von Empfehlungen aus dem Team — nicht von Vollständigkeit. Schlag den Link vor, der dir wirklich etwas beigebracht hat: die Redaktion prüft ihn und stellt ihn dazu.</p>
+          <p class="submit-band-text">Schlag den Link vor, der dir wirklich etwas beigebracht hat — die Redaktion prüft ihn und stellt ihn dazu.</p>
           <button type="button" class="c-cta -black-bg" id="submit-res-cta" onclick="openRessourceSubmit()">Ressource vorschlagen</button>
           <p class="submit-band-note">Demo-Flow: deine Eingabe bleibt lokal in deinem Browser.</p>
         </div>
@@ -700,10 +702,10 @@
     <!-- BEREICH 2: BEFEHLE & KNIFFE -->
     <section class="bef-section" id="befehle" aria-labelledby="befehle-h">
       <div class="bef-inner">
-        <p class="overline" style="color:var(--c-yellow)">Bereich · Befehle &amp; Kniffe</p>
+        <p class="section-label">Bereich · Befehle &amp; Kniffe</p>
         <h2 class="bef-h2" id="befehle-h">Die Handgriffe, die dich wieder flottmachen.</h2>
-        <p class="bef-sub"><span id="bef-count">0</span> Befehle, Flags und Tastentricks für Claude Code und Langdock — als Rangliste. Klick <strong>„Hat mir geholfen“</strong>, wenn dich ein Eintrag weitergebracht hat: deine Stimme sortiert die Liste live neu.</p>
-        <p class="bef-note">Alle Einträge sind gegen die aktuelle Claude-Code- bzw. Langdock-Doku geprüft (Stand Juli 2026). Die Startwerte der Stimmen sind redaktionelle Demo-Werte — deine Stimme kommt lokal in deinem Browser dazu.</p>
+        <p class="bef-sub"><span id="bef-count">0</span> Befehle, Flags und Tastentricks für Claude Code und Langdock — klick <strong>„Hat mir geholfen“</strong> und deine Stimme sortiert die Rangliste live neu.</p>
+        <p class="bef-note">Gegen die aktuelle Claude-Code- bzw. Langdock-Doku geprüft (Stand Juli 2026); die Stimmen-Startwerte sind Demo-Werte, deine Stimme kommt lokal dazu.</p>
 
         <div class="bef-chips" role="group" aria-label="Nach Kategorie filtern" id="bef-chips"></div>
 
@@ -716,8 +718,8 @@
       <div class="glo-inner">
         <p class="section-label">Bereich · Glossar</p>
         <h2 class="glo-h2" id="glossar-h">Was heißt eigentlich „Token“?</h2>
-        <p class="glo-sub"><span id="glo-count">0</span> Begriffe aus der KI-Welt — jeder in einem einfachen Satz erklärt, mit einem pilot-Beispiel und optionaler Vertiefung dazu. Begriff anklicken genügt; Querverweise führen zu passenden Skills, Prompts und Befehlen.</p>
-        <p class="glo-note">Die Startwerte von „Hat mir geholfen“ sind redaktionelle Demo-Werte — deine Stimme kommt lokal in deinem Browser dazu.</p>
+        <p class="glo-sub"><span id="glo-count">0</span> Begriffe aus der KI-Welt — jeder in einem einfachen Satz erklärt, mit pilot-Beispiel, Vertiefung und Querverweisen.</p>
+        <p class="glo-note">Die Stimmen-Startwerte sind Demo-Werte — deine Stimme kommt lokal in deinem Browser dazu.</p>
 
         <div class="glo-tools">
           <div class="glo-search">
@@ -736,7 +738,7 @@
       <div class="faq-inner">
         <p class="section-label">Bereich · FAQ &amp; Troubleshooting</p>
         <h2 class="faq-h2" id="faq-h">„Kontext voll“ — was jetzt?</h2>
-        <p class="faq-sub">Die <span id="faq-count">0</span> häufigsten Blocker aus dem Agentur-Alltag — jede Karte mit einer Schritt-für-Schritt-Lösung. Aufklappen, abarbeiten, weiterarbeiten.</p>
+        <p class="faq-sub">Die <span id="faq-count">0</span> häufigsten Blocker aus dem Agentur-Alltag — jede Karte mit einer Schritt-für-Schritt-Lösung.</p>
         <div class="faq-list" id="faq-liste"></div>
       </div>
     </section>
@@ -746,7 +748,7 @@
       <div class="submit-band-inner">
         <p class="section-label">Mitmachen</p>
         <h2 id="submit-kniff-h">Du kennst einen Kniff, der hier fehlt?</h2>
-        <p class="submit-band-text">Das Befehle-Ranking lebt von den Handgriffen, die sich im Alltag bewährt haben. Reich deinen Kniff ein — so finden die Nächsten den kürzesten Weg.</p>
+        <p class="submit-band-text">Reich den Handgriff ein, der sich bei dir im Alltag bewährt hat — so finden die Nächsten den kürzesten Weg.</p>
         <button type="button" class="c-cta -black-bg" id="submit-kniff-cta" onclick="openKniffSubmit()">Kniff einreichen</button>
         <p class="submit-band-note">Demo-Flow: deine Eingabe bleibt lokal in deinem Browser.</p>
       </div>
@@ -815,7 +817,8 @@
     // Aktive Seite: 'hilfe' — die id nav-hilfe wird beim späteren Nav-Merge
     // (base.js, Verdrahtungs-Welle) zum gemergten Eintrag „Lernen & Hilfe“ →
     // lernen-hilfe.html umgewidmet; bis dahin ist der aktive Zustand provisorisch.
-    // Header-Suche filtert das Ressourcen-Regal (Muster lernen.html).
+    // Die Suche landet im Slot [data-page-search] der Filterleiste und
+    // filtert das Ressourcen-Regal (Muster lernen.html).
     renderNav('hilfe', {
       search: { id: 'search', label: 'Nur diese Seite: Ressourcen filtern', placeholder: 'Nur Ressourcen filtern …' },
       footerClaim: 'Von Piloten gebaut, von Piloten empfohlen. Wenn du weiterkommen willst, fehlt dir kein Talent — nur ein Handgriff. Hier findest du ihn.'
@@ -938,7 +941,7 @@
       renderFilterChips(); renderCatTabs(); render();
     }
 
-    // ===== SIGNATURE: ZEIT-KACHELN (Hero) =====
+    // ===== SIGNATURE: ZEIT-SCHNELLAUSWAHL (kompakte Chip-Zeile unter dem Seitenkopf) =====
     function renderZeitTiles() {
       const host = document.getElementById('zeit-tiles');
       if (!host) return;
@@ -946,9 +949,7 @@
         const n = RESSOURCEN.filter(b.test).length; // echte Zählung aus dauerMin
         const active = state.dauer === b.id;
         return `<button type="button" class="zeit-tile${active ? ' active' : ''}" data-dauer="${b.id}" aria-pressed="${active}" onclick="quickZeit('${b.id}')">
-          <span class="zt-num">${b.zahl} <span class="zt-unit">Min</span></span>
-          <span class="zt-name">${b.name}</span>
-          <span class="zt-count">${n} ${n === 1 ? 'Ressource' : 'Ressourcen'}</span>
+          <span class="zt-num">${b.zahl} Min</span><span class="zt-name">${b.name}</span><span class="zt-count">${n}</span>
         </button>`;
       }).join('');
     }
@@ -991,12 +992,12 @@
     }
     function clearSearch() {
       state.search = '';
-      ['search', 'search-m'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+      const se = document.getElementById('search'); if (se) se.value = '';
       render();
     }
     function resetFilters() {
       state.typ = null; state.niveau = null; state.dauer = null; state.sprache = null; state.search = '';
-      ['search', 'search-m'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+      const se = document.getElementById('search'); if (se) se.value = '';
       renderCatTabs(); renderFilterChips(); updateZeitTiles();
       render();
     }
@@ -1612,7 +1613,7 @@
         // Eintrag muss sichtbar sein: sperrende Filter/Suche werden gelöst
         if (!filterRessourcen().some(x => x.id === id)) {
           state.typ = null; state.niveau = null; state.dauer = null; state.sprache = null; state.search = '';
-          ['search', 'search-m'].forEach(sid => { const el = document.getElementById(sid); if (el) el.value = ''; });
+          const se = document.getElementById('search'); if (se) se.value = '';
           renderCatTabs(); renderFilterChips(); updateZeitTiles();
         }
         _resExpanded.add(id);
@@ -1701,16 +1702,6 @@
 
     // ===== INIT =====
     document.addEventListener('DOMContentLoaded', () => {
-      // Hero-Zähler: nur real Gezähltes aus den vier Bereichs-Datensätzen
-      [
-        ['stat-ressourcen', RESSOURCEN.length],
-        ['stat-befehle', BEFEHLE.length],
-        ['stat-glossar', GLOSSAR.length],
-        ['stat-faq', FAQ.length]
-      ].forEach(([id, n]) => {
-        const el = document.getElementById(id);
-        if (el) animateCount(el, n, 900);
-      });
       // Sub-Nav- und Inline-Zähler (real gezählt, nie hardcoden)
       [
         ['pn-ressourcen', RESSOURCEN.length], ['pn-befehle', BEFEHLE.length],
@@ -1744,15 +1735,11 @@
       applyDeepLink(true);
       window.addEventListener('hashchange', () => applyDeepLink(false));
 
-      // Header-Suche (Desktop) und Filterleisten-Suche (Mobil) halten sich gegenseitig aktuell
-      [['search', 'search-m'], ['search-m', 'search']].forEach(([own, other]) => {
-        document.getElementById(own)?.addEventListener('input', debounce(e => {
-          state.search = e.target.value.toLowerCase().trim();
-          const o = document.getElementById(other);
-          if (o && o.value !== e.target.value) o.value = e.target.value;
-          state._noCardAnim = true; render(); state._noCardAnim = false;
-        }, 150));
-      });
+      // Suche im Filterleisten-Slot (Feld kommt aus renderNav, ID bleibt #search)
+      document.getElementById('search')?.addEventListener('input', debounce(e => {
+        state.search = e.target.value.toLowerCase().trim();
+        state._noCardAnim = true; render(); state._noCardAnim = false;
+      }, 150));
 
       document.getElementById('sort-select').addEventListener('change', e => {
         state.sort = e.target.value;

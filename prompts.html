@@ -164,34 +164,6 @@
       padding: .35rem 1rem; border-radius: var(--radius-pill); z-index: 2;
     }
 
-    /* ===== ERKLÄR-BLOCK „WAS IST EIN GUTER PROMPT?“ (Getting-Started-Muster) ===== */
-    .getting-started { background: var(--c-white); border-bottom: 1px solid var(--line); }
-    .gs-inner { max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-d); }
-    .gs-toggle {
-      display: flex; align-items: center; gap: 1.2rem; width: 100%;
-      background: none; border: none; cursor: pointer; font-family: inherit;
-      font-size: 1.6rem; font-weight: 700; color: var(--c-black);
-      padding: 1.8rem 0; text-align: left;
-    }
-    .gs-toggle:hover { color: var(--c-gray-m); }
-    .gs-arrow { margin-left: auto; font-size: 1.8rem; transition: transform .2s; }
-    .gs-toggle[aria-expanded="true"] .gs-arrow { transform: rotate(90deg); }
-    .gs-content { padding-bottom: 2.4rem; }
-    .gs-steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2.4rem; }
-    .gs-step { display: flex; gap: 1.6rem; align-items: flex-start; }
-    .gs-num {
-      width: 3.2rem; height: 3.2rem; flex-shrink: 0; background: var(--c-yellow);
-      color: var(--c-black); border-radius: 50%; display: flex; align-items: center;
-      justify-content: center; font-size: 1.5rem; font-weight: 700; font-family: var(--font-mono);
-    }
-    .gs-step strong { font-size: 1.5rem; display: block; margin-bottom: .4rem; }
-    .gs-step p { font-size: 1.4rem; color: var(--c-gray-m); line-height: 1.5; }
-    .gs-step mark.ph { font-size: 1.25rem; }
-    @media (max-width: 1023px) {
-      .gs-inner { padding: 0 var(--pad-m); }
-      .gs-steps { grid-template-columns: 1fr; gap: 1.6rem; }
-    }
-
     /* Filtergruppen-Beschriftung in der Chip-Zeile */
     .chip-lbl {
       font-family: var(--font-mono); font-size: 1.1rem; font-weight: 600;
@@ -228,84 +200,20 @@
 
   <!-- HEADER & FOOTER: werden von shared/base.js injiziert (renderNav, siehe Seiten-Script unten) -->
 
-  <!-- HERO -->
-  <section class="hero">
-    <div class="hero-glow" aria-hidden="true"></div>
-    <div class="hero-inner hero-top">
-      <p class="overline" style="color:#ffe05e">pilot · Prompt-Sammlung</p>
-      <h1 class="hero-h1">Gute Prompts<br>sind kein <span style="color:var(--c-yellow)">Zufall.</span></h1>
-      <p class="subline">Kopierfertige Prompts aus dem Agentur-Alltag — mit gelb markierten <mark class="ph">[PLATZHALTERN]</mark>, ehrlichen Beispiel-Ergebnissen und einer Erklärung, <strong>warum</strong> jeder einzelne funktioniert.</p>
-      <div class="hero-stats" id="hero-stats">
-        <div class="hero-stat-box"><span class="hero-stat-num" id="stat-prompts">0</span><span class="hero-stat-label">Prompts</span></div>
-        <div class="hero-stat-box"><span class="hero-stat-num" id="stat-builder">0</span><span class="hero-stat-label">Mit Prompt-Builder</span></div>
-        <div class="hero-stat-box"><span class="hero-stat-num" id="stat-groups">0</span><span class="hero-stat-label">Aufgaben-Bereiche</span></div>
-        <div class="hero-stat-box"><span class="hero-stat-num" id="stat-platforms">0</span><span class="hero-stat-label">Plattformen</span></div>
-      </div>
-      <div class="hero-cta">
-        <button class="c-cta -yellow-bg" onclick="document.getElementById('main-content').scrollIntoView({behavior:scrollBehavior(),block:'start'})">Ersten Prompt finden</button>
-        <button class="c-cta -yellow-border" onclick="openGS()">Was ist ein guter Prompt?</button>
-      </div>
+  <!-- SEITENKOPF -->
+  <header class="page-head">
+    <div class="page-head-inner">
+      <h1>Prompts</h1>
+      <p class="page-sub">23 kopierfertige Prompts mit markierten Platzhaltern — aus dem Agentur-Alltag.</p>
     </div>
-  </section>
-
-  <!-- KOMPAKTES ERKLÄR-MODUL (E10): Was ist das? / Wofür? / So fange ich an. -->
-  <section class="area-intro" aria-label="Kurz erklärt">
-    <div class="area-intro-inner">
-      <div class="area-intro-grid">
-        <div class="area-intro-part">
-          <p class="area-intro-label">Was ist das?</p>
-          <p class="area-intro-text">Eine kuratierte Sammlung kopierfertiger Prompts aus dem Agentur-Alltag — jeder mit gelb markierten Platzhaltern, einem ehrlichen Beispiel-Ergebnis und einer Erklärung, warum er funktioniert.</p>
-        </div>
-        <div class="area-intro-part">
-          <p class="area-intro-label">Wofür nutze ich es?</p>
-          <p class="area-intro-text">Wenn du eine wiederkehrende Aufgabe schneller und verlässlicher lösen willst — eine Kundenpräsi zusammenfassen, einen Media-Plan gegenlesen, einen Kreativ-Text nachschärfen. Du füllst die Platzhalter mit deinen Angaben, und der Prompt läuft in Langdock genauso wie in <a class="area-intro-link" href="skills.html?view=explainer">Claude Code</a>.</p>
-        </div>
-        <div class="area-intro-part">
-          <p class="area-intro-label">So fange ich an.</p>
-          <p class="area-intro-text">Filter nach deiner Aufgabe oder tipp einen Suchbegriff, kopier den ersten passenden Prompt und ersetz die gelben Platzhalter. Wenn du wissen willst, was einen Prompt gut macht, öffne <a class="area-intro-link" href="#getting-started" onclick="openGS();return false;">„Was ist ein guter Prompt?“</a>.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ERKLÄR-BLOCK: WAS IST EIN GUTER PROMPT? -->
-  <div class="getting-started" id="getting-started">
-    <div class="gs-inner">
-      <button class="gs-toggle" onclick="toggleGS()" aria-expanded="false" id="gs-toggle-btn">
-        <span>Was ist ein guter Prompt? Die Anatomie in vier Schritten</span>
-        <span class="gs-arrow">›</span>
-      </button>
-      <div class="gs-content" id="gs-content" hidden>
-        <div class="gs-steps">
-          <div class="gs-step">
-            <span class="gs-num">1</span>
-            <div><strong>Die Anatomie kennen</strong><p>Gute Prompts haben vier Bausteine: eine <strong>Rolle</strong> („Du bist Berater:in …“), eine klare <strong>Aufgabe</strong>, ein festes <strong>Format</strong> fürs Ergebnis und <strong>Regeln</strong> wie „Erfinde nichts“. Du findest alle vier in jedem Prompt hier wieder.</p></div>
-          </div>
-          <div class="gs-step">
-            <span class="gs-num">2</span>
-            <div><strong>Platzhalter ausfüllen</strong><p>Kopiere den Prompt und ersetze die gelben <mark class="ph">[PLATZHALTER]</mark> durch deine Angaben — Kunde, Text, Ziel. Je konkreter du sie füllst, desto besser das Ergebnis.</p></div>
-          </div>
-          <div class="gs-step">
-            <span class="gs-num">3</span>
-            <div><strong>Ergebnis nachschärfen</strong><p>Die erste Antwort ist ein Entwurf, kein Endprodukt. Frag nach: „Kürzer.“ „Konkreter bei Punkt 2.“ „Was fehlt dir noch von mir?“ — so wird aus einem Schuss ein Gespräch.</p></div>
-          </div>
-          <div class="gs-step">
-            <span class="gs-num">4</span>
-            <div><strong>Verstehen, warum</strong><p>Jeder Prompt erklärt unter „Warum funktioniert das?“ seine Technik — Format-Anker, Rollen-Priming, Prüfschleifen. Wer das dreimal gelesen hat, schreibt den vierten Prompt selbst.</p></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+  </header>
 
   <!-- MAIN -->
   <main>
     <!-- FILTER BAR -->
     <div class="filter-bar" id="filter-bar">
       <div class="filter-inner">
-        <div class="search-wrap-m">
-          <input type="search" id="search-m" aria-label="Nur diese Seite: Prompts filtern" placeholder="Nur Prompts filtern …" autocomplete="off">
-        </div>
+        <div data-page-search></div>
         <div class="cat-tabs" id="cat-tabs" role="group" aria-label="Nach Aufgabe filtern"></div>
         <button class="filter-toggle-btn" id="filter-toggle-btn" onclick="toggleMobileFilter()" aria-expanded="true">
           <span>Filter &amp; Sortierung <span class="ftb-count" id="ftb-count" hidden></span></span>
@@ -655,12 +563,12 @@
 
     function clearSearch() {
       state.search = '';
-      ['search', 'search-m'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+      const el = document.getElementById('search'); if (el) el.value = '';
       render();
     }
     function resetFilters() {
       state.taskGroup = null; state.platform = null; state.difficulty = null; state.search = '';
-      ['search', 'search-m'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+      const el = document.getElementById('search'); if (el) el.value = '';
       renderCatTabs();
       renderFilterChips();
       render();
@@ -1041,23 +949,6 @@
       state.activeSkill = null;
     }
 
-    // ===== ERKLÄR-BLOCK =====
-    function toggleGS() {
-      const content = document.getElementById('gs-content');
-      const btn = document.getElementById('gs-toggle-btn');
-      const isHidden = content.hidden;
-      content.hidden = !isHidden;
-      btn.setAttribute('aria-expanded', isHidden ? 'true' : 'false');
-      try { localStorage.setItem('prompts-gs-seen', '1'); } catch (e) {}
-    }
-    function openGS() {
-      const content = document.getElementById('gs-content');
-      const btn = document.getElementById('gs-toggle-btn');
-      if (content.hidden) toggleGS();
-      document.getElementById('getting-started').scrollIntoView({ behavior: scrollBehavior(), block: 'start' });
-      if (btn) btn.focus({ preventScroll: true });
-    }
-
     // ===== MOBILE FILTER TOGGLE =====
     function toggleMobileFilter() {
       const btn = document.getElementById('filter-toggle-btn');
@@ -1070,18 +961,6 @@
 
     // ===== INIT =====
     document.addEventListener('DOMContentLoaded', () => {
-      // Hero-Zähler: nur real Gezähltes aus PROMPTS
-      const stats = [
-        ['stat-prompts', PROMPTS.length],
-        ['stat-builder', PROMPTS.filter(p => p.builder).length],
-        ['stat-groups', new Set(PROMPTS.map(p => p.taskGroup)).size],
-        ['stat-platforms', PROMPT_PLATFORMS.filter(pf => PROMPTS.some(p => p.platforms[pf.id])).length]
-      ];
-      stats.forEach(([id, n]) => {
-        const el = document.getElementById(id);
-        if (el) animateCount(el, n, 900);
-      });
-
       renderCatTabs();
       renderFilterChips();
       render();
@@ -1098,24 +977,11 @@
       window.addEventListener('hashchange', applyHash);
       window.addEventListener('popstate', applyHash);
 
-      // Erklär-Block beim allerersten Besuch offen zeigen (danach gemerkt)
-      try {
-        if (!localStorage.getItem('prompts-gs-seen')) {
-          const gsc = document.getElementById('gs-content');
-          const gsb = document.getElementById('gs-toggle-btn');
-          if (gsc && gsb) { gsc.hidden = false; gsb.setAttribute('aria-expanded', 'true'); }
-        }
-      } catch (e) {}
-
-      // Header-Suche (Desktop) und Filterleisten-Suche (Mobil) halten sich gegenseitig aktuell
-      [['search', 'search-m'], ['search-m', 'search']].forEach(([own, other]) => {
-        document.getElementById(own)?.addEventListener('input', debounce(e => {
-          state.search = e.target.value.toLowerCase().trim();
-          const o = document.getElementById(other);
-          if (o && o.value !== e.target.value) o.value = e.target.value;
-          state._noCardAnim = true; render(); state._noCardAnim = false;
-        }, 150));
-      });
+      // Suche im Filterleisten-Slot (Feld kommt aus renderNav, ID bleibt #search)
+      document.getElementById('search')?.addEventListener('input', debounce(e => {
+        state.search = e.target.value.toLowerCase().trim();
+        state._noCardAnim = true; render(); state._noCardAnim = false;
+      }, 150));
 
       document.getElementById('sort-select').addEventListener('change', e => {
         state.sort = e.target.value;

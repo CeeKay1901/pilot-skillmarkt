@@ -1,13 +1,11 @@
 <!DOCTYPE html>
 <!--
-  Startseite pilot AI Marketplace (Etappe E1).
-  Layout-These: Die Startseite ist ein Verteiler, kein zweiter Katalog — der Outcome-Router
-  („Was willst du tun?“) IST der Hero: eine dunkle Bühne mit neun Ziel-Kacheln direkt im
-  Sichtfeld; alle Ziele sind live und verlinken sofort ins passende Werkzeug. Danach wird es
-  Sektion für Sektion ruhiger: Bereichs-Landkarte als ruhiges 3×2-Raster
-  (alle sechs Bereiche live und in gleicher Dichte, Katalog dezent betont),
-  editoriale Doppelspalte aus „Gemerkt & bewertet“ und „Neu dazugekommen“, Getting-Started als
-  nummerierte Zeile — Rhythmus statt Karten-Schema F.
+  Startseite pilot AI Marketplace (Redesign Etappe 1: helle Shell).
+  Layout-These: Die Startseite ist ein Verteiler, kein zweiter Katalog — kompakter
+  Seitenkopf („Was willst du tun?") statt dunkler Hero-Bühne, die neun Ziel-Kacheln
+  rutschen direkt darunter auf helle Fläche und sind im ersten Viewport sichtbar.
+  Danach: kompakter „Neu im Marketplace"-Block, die sechs Bereiche als ruhiges
+  3×2-Raster, „Deine Sachen" (localStorage-Fortschritt) zum Schluss.
 -->
 <html lang="de">
 <head>
@@ -56,102 +54,90 @@
        Gemeinsames Design-System liegt in shared/base.css.
        ============================================================ */
 
-    /* ===== ROUTER-HERO (Signature-Element) ===== */
-    .router {
-      background: var(--c-black);
-      padding: 5.6rem 0 6.4rem;
-      position: relative; overflow: hidden;
-    }
-    .router::after {
-      content: ''; position: absolute; inset: 0; pointer-events: none; opacity: .5;
-      background-image: radial-gradient(rgba(255,255,255,.05) 1px, transparent 1px);
-      background-size: 3.2rem 3.2rem;
-      mask-image: linear-gradient(180deg, #000 0%, transparent 55%);
-      -webkit-mask-image: linear-gradient(180deg, #000 0%, transparent 55%);
-    }
-    .router-inner {
-      max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-d);
-      position: relative; z-index: 1;
-    }
-    .router h1 {
-      font-size: var(--fs-display-sm); font-weight: var(--fw-semi);
-      color: var(--c-white); letter-spacing: -.035em; line-height: 1;
-      margin: 1.2rem 0 1.4rem;
-    }
-    .router-sub {
-      font-size: 1.9rem; line-height: 1.5; color: var(--c-gray-l);
-      max-width: 62ch; margin-bottom: 3.6rem;
-    }
+    /* ===== SCHNELLZUGRIFF: Ziel-Kacheln auf heller Fläche ===== */
+    .rt-zone { padding: 2rem 0 5.6rem; border-bottom: 1px solid var(--line); }
+    .rt-inner { max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-d); }
     .rt-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.2rem; }
     .rt-card {
       display: flex; flex-direction: column; gap: .4rem;
       text-align: left; font-family: inherit; cursor: pointer; text-decoration: none;
-      background: rgba(252,252,252,.045);
-      border: 1px solid rgba(252,252,252,.14);
+      background: var(--paper);
+      border: 1px solid var(--line);
       border-radius: var(--r-lg);
-      padding: 1.8rem 1.8rem 1.6rem;
+      padding: 1.6rem 1.6rem 1.4rem;
       transition: var(--trans);
     }
     .rt-card:hover, .rt-card:focus-visible {
-      background: rgba(252,252,252,.09);
-      border-color: rgba(252,252,252,.32);
-      transform: translateY(-3px);
+      border-color: var(--c-black);
+      box-shadow: var(--shadow-sm);
+      transform: translateY(-2px);
     }
-    .rt-ic { color: var(--c-yellow); margin-bottom: .6rem; }
-    .rt-ic .lu { width: 2.4rem; height: 2.4rem; }
+    .rt-ic { color: var(--c-black); margin-bottom: .4rem; }
+    .rt-ic .lu { width: 2.2rem; height: 2.2rem; }
     .rt-label {
-      color: var(--c-white); font-size: 1.7rem; font-weight: var(--fw-semi);
+      color: var(--c-black); font-size: 1.6rem; font-weight: var(--fw-semi);
       line-height: 1.25; letter-spacing: -.01em;
     }
-    .rt-hint { color: rgba(252,252,252,.62); font-size: 1.35rem; line-height: 1.45; }
+    .rt-hint { color: var(--c-gray-m); font-size: 1.3rem; line-height: 1.45; }
     .rt-foot {
-      margin-top: auto; padding-top: 1.2rem;
+      margin-top: auto; padding-top: 1rem;
       display: flex; align-items: center; gap: .8rem;
       font-family: var(--font-mono); font-size: 1.1rem;
       letter-spacing: .1em; text-transform: uppercase;
     }
-    .rt-dest { color: var(--c-yellow); }
-    /* Guide-Kachel: der eine gelbe Anker der Bühne */
+    .rt-dest { color: var(--c-gray-m); transition: var(--trans); }
+    .rt-card:hover .rt-dest, .rt-card:focus-visible .rt-dest { color: var(--c-black); }
+    /* Guide-Kachel: der eine gelbe Anker */
     .rt-card.is-guide { background: var(--c-yellow); border-color: var(--c-yellow); }
-    .rt-card.is-guide:hover, .rt-card.is-guide:focus-visible { background: #f3d454; border-color: #f3d454; }
-    .rt-card.is-guide .rt-ic, .rt-card.is-guide .rt-label { color: var(--c-black); }
+    .rt-card.is-guide:hover, .rt-card.is-guide:focus-visible { background: #f3d454; border-color: var(--c-black); }
     .rt-card.is-guide .rt-hint { color: rgba(38,38,38,.72); }
     .rt-card.is-guide .rt-dest { color: var(--c-black); }
-    .router .hero-stats { margin: 4.4rem 0 0; }
     @media (max-width: 1023px) {
-      .router { padding: 3.6rem 0 4.4rem; }
+      .rt-zone { padding: 1.2rem 0 4rem; }
       .rt-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
-      .rt-card { padding: 1.5rem 1.5rem 1.3rem; }
-      .router-sub { font-size: 1.6rem; margin-bottom: 2.6rem; }
-      .router .hero-stats { margin-top: 3.2rem; }
+      .rt-card { padding: 1.4rem 1.4rem 1.2rem; }
     }
     @media (max-width: 480px) {
       .rt-grid { grid-template-columns: 1fr; }
       .rt-foot { padding-top: .8rem; }
     }
 
-    /* ===== BEREICHS-LANDKARTE (ruhiges 3×2-Raster: alle sechs Bereiche im gleichen Takt, Katalog nur dezent betont) ===== */
-    .areas { padding: 7.6rem 0 7.2rem; border-bottom: 1px solid var(--line); }
+    /* ===== NEU IM MARKETPLACE (kompakt) ===== */
+    .fresh { padding: 4.4rem 0 4.8rem; border-bottom: 1px solid var(--line); background: var(--paper-warm); }
+    .fresh-inner { max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-d); }
+    .fresh h2 { font-size: 2.2rem; font-weight: var(--fw-semi); letter-spacing: -.015em; margin: .4rem 0 1.2rem; }
+    .news-list { list-style: none; }
+    .news-item { display: grid; grid-template-columns: 9.6rem 1fr; gap: 2rem; padding: 1.2rem 0; border-bottom: 1px solid var(--line); }
+    .news-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .news-date { font-family: var(--font-mono); font-size: 1.2rem; color: var(--c-gray-m); padding-top: .2rem; white-space: nowrap; }
+    .news-title { font-size: 1.55rem; font-weight: var(--fw-semi); margin-bottom: .2rem; }
+    .news-text { font-size: 1.4rem; line-height: 1.5; color: var(--c-ink-body); }
+    .news-text a { color: var(--c-black); font-weight: 500; text-decoration: none; border-bottom: 1px solid var(--c-yellow); }
+    .news-text a:hover { background: var(--c-yellow); }
+    @media (max-width: 1023px) {
+      .fresh { padding: 3.6rem 0 4rem; }
+      .news-item { grid-template-columns: 1fr; gap: .2rem; }
+    }
+
+    /* ===== BEREICHS-RASTER (3×2, alle sechs live) ===== */
+    .areas { padding: 5.6rem 0 6rem; border-bottom: 1px solid var(--line); }
     .areas-inner { max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-d); }
-    .areas h2 { font-size: var(--fs-h2); font-weight: var(--fw-semi); letter-spacing: -.02em; margin: .6rem 0 1rem; }
-    .areas-sub { font-size: 1.6rem; color: var(--c-gray-d); line-height: 1.5; max-width: 68ch; }
+    .areas h2 { font-size: var(--fs-h2); font-weight: var(--fw-semi); letter-spacing: -.02em; margin: 0 0 .8rem; }
     .areas-grid {
       display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.6rem;
-      margin-top: 3.6rem; align-items: stretch;
+      margin-top: 2.8rem; align-items: stretch;
     }
-    .area-card { border-radius: var(--r-lg); padding: 2.4rem 2.4rem 2.2rem; display: flex; flex-direction: column; gap: .8rem; }
-    /* Live-Bereiche = solide Flächen mit gelber Kante, alle in gleicher Dichte */
+    .area-card { border-radius: var(--r-lg); padding: 2.2rem 2.2rem 2rem; display: flex; flex-direction: column; gap: .8rem; }
     .area-live, .area-live-sm {
       background: var(--paper); border: 1px solid var(--line);
       border-top: 3px solid var(--c-yellow);
       box-shadow: var(--shadow-sm);
     }
-    /* Katalog-Karte: gleicher Takt, nur ein Hauch mehr Gewicht über den Schatten */
     .area-live { box-shadow: var(--shadow-md); }
     .area-head { display: flex; align-items: center; gap: 1.2rem; }
     .area-ic { color: var(--c-black); display: flex; }
     .area-ic .lu { width: 2.2rem; height: 2.2rem; }
-    .area-card h3 { font-size: 1.9rem; font-weight: var(--fw-semi); letter-spacing: -.01em; }
+    .area-card h3 { font-size: 1.8rem; font-weight: var(--fw-semi); letter-spacing: -.01em; }
     .area-pill {
       margin-left: auto; flex-shrink: 0;
       font-family: var(--font-mono); font-size: 1.05rem; font-weight: 500;
@@ -160,13 +146,13 @@
     }
     .area-pill.-live { background: var(--c-yellow); color: var(--c-black); }
     .area-text { font-size: 1.45rem; line-height: 1.55; color: var(--c-ink-body); }
-    .area-count { display: flex; align-items: baseline; gap: 1rem; margin: 1rem 0 .2rem; }
-    .area-count-num { font-size: 3.6rem; font-weight: 700; letter-spacing: -.03em; line-height: 1; font-variant-numeric: tabular-nums; }
+    .area-count { display: flex; align-items: baseline; gap: 1rem; margin: .6rem 0 0; }
+    .area-count-num { font-size: 3.2rem; font-weight: 700; letter-spacing: -.03em; line-height: 1; font-variant-numeric: tabular-nums; }
     .area-count-label { font-family: var(--font-mono); font-size: 1.2rem; letter-spacing: .12em; text-transform: uppercase; color: var(--c-gray-m); }
-    .area-meta { font-size: 1.35rem; color: var(--c-gray-d); }
-    /* Highlight-Skill im Katalog-Kärtchen */
+    .area-meta { font-size: 1.3rem; color: var(--c-gray-d); }
+    /* Highlight-Eintrag im Kärtchen */
     .area-spot {
-      margin-top: 1.4rem; padding: 1.2rem 1.4rem;
+      margin-top: 1.2rem; padding: 1.2rem 1.4rem;
       background: var(--c-bg); border-radius: var(--r-md);
       text-decoration: none; display: block; color: inherit;
       border: 1px solid transparent; transition: var(--trans);
@@ -175,31 +161,28 @@
     .area-spot-label {
       font-family: var(--font-mono); font-size: 1.1rem; font-weight: 500;
       letter-spacing: .12em; text-transform: uppercase; color: var(--c-gray-m);
-      display: block; margin-bottom: .6rem;
+      display: block; margin-bottom: .5rem;
     }
-    .area-spot-name { font-size: 1.7rem; font-weight: var(--fw-semi); }
-    .area-spot-tag { font-size: 1.4rem; color: var(--c-gray-d); margin: .2rem 0 .6rem; }
+    .area-spot-name { font-size: 1.6rem; font-weight: var(--fw-semi); }
+    .area-spot-tag { font-size: 1.35rem; color: var(--c-gray-d); margin: .2rem 0 .5rem; }
     .area-spot .rating-text { font-size: 1.25rem; }
-    .area-cta-row { margin-top: auto; padding-top: 1.8rem; }
+    .area-cta-row { margin-top: auto; padding-top: 1.6rem; }
     @media (max-width: 1023px) {
-      .areas { padding: 5.2rem 0 5rem; }
+      .areas { padding: 4.4rem 0 4.8rem; }
       .areas-grid { grid-template-columns: 1fr; }
-      .area-card { padding: 2.4rem 2rem 2.2rem; }
+      .area-card { padding: 2.2rem 2rem 2rem; }
     }
     @media (min-width: 641px) and (max-width: 1023px) {
       .areas-grid { grid-template-columns: 1fr 1fr; }
     }
 
-    /* ===== DOPPELSPALTE: MEINE REISE + NEU DAZUGEKOMMEN ===== */
-    .jrow { background: var(--paper-warm); border-bottom: 1px solid var(--line); padding: 6.4rem 0 6.8rem; }
-    .jrow-inner {
-      max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-d);
-      display: grid; grid-template-columns: 1fr 1fr; gap: 6.4rem;
-    }
-    .jcol h2 { font-size: 2.6rem; font-weight: var(--fw-semi); letter-spacing: -.015em; margin: .6rem 0 1.6rem; }
-    .jr-stats { display: flex; gap: 4rem; flex-wrap: wrap; margin: 2rem 0 2.4rem; }
+    /* ===== DEINE SACHEN (localStorage-Fortschritt) ===== */
+    .jrow { padding: 5.2rem 0 6.4rem; }
+    .jrow-inner { max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-d); }
+    .jcol h2 { font-size: 2.4rem; font-weight: var(--fw-semi); letter-spacing: -.015em; margin: .4rem 0 1.4rem; }
+    .jr-stats { display: flex; gap: 4rem; flex-wrap: wrap; margin: 1.6rem 0 2rem; }
     .jr-stat { display: flex; flex-direction: column; gap: .4rem; padding-left: 1.4rem; border-left: 2px solid var(--c-yellow); }
-    .jr-num { font-size: 3.6rem; font-weight: 700; line-height: 1; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+    .jr-num { font-size: 3.2rem; font-weight: 700; line-height: 1; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
     .jr-label { font-family: var(--font-mono); font-size: 1.15rem; letter-spacing: .12em; text-transform: uppercase; color: var(--c-gray-m); }
     .jr-favs { display: flex; gap: .8rem; flex-wrap: wrap; }
     .jr-chip {
@@ -211,59 +194,12 @@
     }
     .jr-chip:hover, .jr-chip:focus-visible { border-color: var(--c-black); background: var(--c-white); }
     .jr-chip .jr-star { color: var(--c-yellow); }
-    /* Typ-Kürzel im Chip: die Favoriten kommen jetzt aus allen Bereichen */
     .jr-chip-type { font-family: var(--font-mono); font-size: 1rem; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--c-gray-m); }
     .jr-more { font-size: 1.3rem; color: var(--c-gray-m); align-self: center; }
-    /* Empty-State: einladend, nicht leer */
-    .jr-empty { max-width: 46rem; }
-    .jr-empty p { font-size: 1.55rem; line-height: 1.6; color: var(--c-ink-body); margin-bottom: 2rem; }
-    /* Neu dazugekommen: editoriale Liste statt Karten */
-    .news-list { list-style: none; }
-    .news-item { display: grid; grid-template-columns: 9.6rem 1fr; gap: 2rem; padding: 1.6rem 0; border-bottom: 1px solid var(--line); }
-    .news-item:first-child { padding-top: .4rem; }
-    .news-item:last-child { border-bottom: none; }
-    .news-date { font-family: var(--font-mono); font-size: 1.2rem; color: var(--c-gray-m); padding-top: .3rem; white-space: nowrap; }
-    .news-title { font-size: 1.6rem; font-weight: var(--fw-semi); margin-bottom: .3rem; }
-    .news-text { font-size: 1.4rem; line-height: 1.55; color: var(--c-ink-body); }
-    .news-text a { color: var(--c-black); font-weight: 500; text-decoration: none; border-bottom: 1px solid var(--c-yellow); }
-    .news-text a:hover { background: var(--c-yellow); }
+    .jr-empty { max-width: 52rem; }
+    .jr-empty p { font-size: 1.5rem; line-height: 1.6; color: var(--c-ink-body); margin-bottom: 1.8rem; }
     @media (max-width: 1023px) {
-      .jrow { padding: 4.4rem 0 4.8rem; }
-      .jrow-inner { grid-template-columns: 1fr; gap: 4.4rem; }
-      .news-item { grid-template-columns: 1fr; gap: .3rem; }
-    }
-
-    /* ===== GETTING-STARTED KOMPAKT ===== */
-    .gstart { padding: 7.2rem 0 8.4rem; }
-    .gstart-inner { max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-d); }
-    .gstart h2 { font-size: var(--fs-h2); font-weight: var(--fw-semi); letter-spacing: -.02em; margin: .6rem 0 1rem; }
-    /* Citizen Coding: die eine Definition, prominent statt versteckt */
-    .cc-def {
-      margin: 2rem 0 3.6rem; padding: 1.8rem 2.4rem;
-      background: var(--paper); border-left: 3px solid var(--c-yellow);
-      border-radius: 0 var(--r-md) var(--r-md) 0;
-      max-width: 82rem;
-    }
-    .cc-def p { font-size: 1.7rem; line-height: 1.6; color: var(--c-ink-strong); }
-    .cc-def strong { font-weight: var(--fw-semi); color: var(--c-black); }
-    .gsx-steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2.8rem; margin-bottom: 4rem; }
-    .gsx-step { display: flex; gap: 1.4rem; align-items: flex-start; }
-    .gsx-num {
-      flex-shrink: 0; width: 3.2rem; height: 3.2rem; border-radius: 50%;
-      background: var(--c-yellow); color: var(--c-black);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.5rem; font-weight: 700;
-    }
-    .gsx-step strong { display: block; font-size: 1.55rem; font-weight: var(--fw-semi); margin-bottom: .4rem; }
-    .gsx-step p { font-size: 1.4rem; line-height: 1.55; color: var(--c-gray-m); }
-    .gsx-step a { color: var(--c-black); font-weight: 500; text-decoration: none; border-bottom: 1px solid var(--c-yellow); }
-    .gsx-step a:hover { background: var(--c-yellow); }
-    @media (max-width: 1023px) {
-      .gstart { padding: 5.2rem 0 6rem; }
-      .gsx-steps { grid-template-columns: 1fr; gap: 2rem; }
-    }
-    @media (min-width: 641px) and (max-width: 1023px) {
-      .gsx-steps { grid-template-columns: 1fr 1fr; }
+      .jrow { padding: 4rem 0 5.2rem; }
     }
   </style>
 </head>
@@ -272,14 +208,17 @@
 
   <main id="main-content">
 
-    <!-- ===== ROUTER-HERO: Was willst du tun? ===== -->
-    <section class="router" aria-labelledby="router-h">
-      <div class="hero-glow" aria-hidden="true"></div>
-      <div class="router-inner">
-        <p class="overline">pilot AI Marketplace</p>
-        <h1 id="router-h" class="anim-fade-up">Was willst du tun?</h1>
-        <p class="router-sub anim-fade-up">Ein Ort für alles, was ihr mit KI baut: Wähl dein Ziel — der Marketplace bringt dich sofort zum passenden Werkzeug.</p>
+    <!-- ===== KOPF: Was willst du tun? ===== -->
+    <header class="page-head">
+      <div class="page-head-inner">
+        <h1>Was willst du tun?</h1>
+        <p class="page-sub">Wähl dein Ziel — du landest direkt im passenden Werkzeug.</p>
+      </div>
+    </header>
 
+    <!-- ===== SCHNELLZUGRIFF: Ziel-Kacheln ===== -->
+    <section class="rt-zone" aria-label="Schnellzugriff nach Ziel">
+      <div class="rt-inner">
         <div class="rt-grid anim-stagger">
           <a class="rt-card" href="skills.html?skill=pptx">
             <span class="rt-ic"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h20"/><path d="M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3"/><path d="m7 21 5-5 5 5"/></svg></span>
@@ -336,21 +275,51 @@
             <span class="rt-foot"><span class="rt-dest">Zum Katalog</span></span>
           </a>
         </div>
-
-        <!-- Schlanke Stats-Zeile: ausschließlich real Gezähltes aus den data/-Dateien -->
-        <div class="hero-stats" aria-label="Zahlen aus dem Marketplace, live gezählt">
-          <div class="hero-stat-box"><span class="hero-stat-num" id="stat-skills">0</span><span class="hero-stat-label">Skills im Katalog</span></div>
-          <div class="hero-stat-box"><span class="hero-stat-num" id="stat-prompts">0</span><span class="hero-stat-label">Prompts in der Sammlung</span></div>
-        </div>
       </div>
     </section>
 
-    <!-- ===== BEREICHS-LANDKARTE ===== -->
+    <!-- ===== NEU IM MARKETPLACE (kompakt) ===== -->
+    <section class="fresh" id="neu" aria-labelledby="fresh-h">
+      <div class="fresh-inner anim-reveal">
+        <p class="section-label">Neu dazugekommen</p>
+        <h2 id="fresh-h">Neu im Marketplace</h2>
+        <ul class="news-list">
+          <li class="news-item">
+            <span class="news-date">17. Juli</span>
+            <div>
+              <p class="news-title">Der Baukasten ist da</p>
+              <p class="news-text">Fertige Code-Bausteine mit Live-Vorschau und „Sag Claude einfach …"-Prompt. <a href="baukasten.html">Zum Baukasten</a> · passende Prompts in der <a href="prompts.html">Prompt-Sammlung</a></p>
+            </div>
+          </li>
+          <li class="news-item">
+            <span class="news-date">17. Juli</span>
+            <div>
+              <p class="news-title">Der Lern-Bereich ist da</p>
+              <p class="news-text">24 geprüfte Lern-Ressourcen, gefiltert nach deiner Zeit. <a href="lernen-hilfe.html#ressourcen">Zu Lernen &amp; Hilfe</a></p>
+            </div>
+          </li>
+          <li class="news-item">
+            <span class="news-date">17. Juli</span>
+            <div>
+              <p class="news-title">Der Showroom ist da</p>
+              <p class="news-text">Echte Team-Tools und Beispiel-Projekte zum Anklicken. <a href="showroom.html">Zum Showroom</a> · bei Blockern hilft <a href="lernen-hilfe.html">Lernen &amp; Hilfe</a></p>
+            </div>
+          </li>
+          <li class="news-item">
+            <span class="news-date">17. Juli</span>
+            <div>
+              <p class="news-title">Die Asset-Bibliothek ist da</p>
+              <p class="news-text">Schriften, Icons, Paletten und Muster — frei nutzbar, Lizenz sichtbar. <a href="bibliothek.html">Zur Asset-Bibliothek</a></p>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ===== BEREICHS-RASTER ===== -->
     <section class="areas" id="bereiche" aria-labelledby="areas-h">
       <div class="areas-inner">
-        <p class="section-label">Die Landkarte</p>
-        <h2 id="areas-h">Ein Marketplace, sechs Bereiche</h2>
-        <p class="areas-sub">Skill-Katalog, Prompt-Sammlung, Lernen &amp; Hilfe, die Asset-Bibliothek, der Baukasten und der Showroom sind alle sechs live und wachsen weiter — nichts mehr in Arbeit.</p>
+        <h2 id="areas-h">Die sechs Bereiche</h2>
 
         <div class="areas-grid">
           <article class="area-card area-live anim-reveal">
@@ -364,7 +333,7 @@
               <span class="area-count-label">Skills</span>
             </div>
             <p class="area-meta" id="area-skill-meta"></p>
-            <p class="area-text">Skills, Plugins und Frameworks für Claude Code und Langdock — mit Stimmen aus dem Team, Blick in jede Datei, Live-Demos und fertigen Startprompts zum Kopieren.</p>
+            <p class="area-text">Skills, Plugins und Frameworks für Claude Code und Langdock — mit Team-Stimmen, Live-Demos und fertigen Startprompts.</p>
             <a class="area-spot" href="skills.html?skill=erste-schritte">
               <span class="area-spot-label">Fang hier an</span>
               <span class="area-spot-name">Erste Schritte</span>
@@ -386,7 +355,7 @@
               <span class="area-count-num" id="area-prompt-count">0</span>
               <span class="area-count-label">Prompts</span>
             </div>
-            <p class="area-text">Kopierfertige Prompts mit gelben Platzhaltern, Varianten und der Erklärung, warum sie funktionieren — für Langdock und Claude Code.</p>
+            <p class="area-text">Kopierfertige Prompts mit Platzhaltern, Varianten und der Erklärung, warum sie funktionieren.</p>
             <a class="area-spot" href="prompts.html?p=briefing-zusammenfassung">
               <span class="area-spot-label">Highlight</span>
               <span class="area-spot-name">Briefing-Zusammenfassung</span>
@@ -409,7 +378,7 @@
               <span class="area-count-label">Ressourcen &amp; Hilfe-Einträge</span>
             </div>
             <p class="area-meta" id="area-lernenhilfe-meta"></p>
-            <p class="area-text">Alles zum Verstehen und Weiterkommen an einem Ort: geprüfte Lern-Ressourcen als Kompass, Befehle und Kniffe im Team-Ranking, ein Glossar in einfacher Sprache und Schritt-für-Schritt-Lösungen für die häufigsten Blocker.</p>
+            <p class="area-text">Geprüfte Lern-Ressourcen, Befehle im Team-Ranking, Glossar und Schritt-für-Schritt-Lösungen für typische Blocker.</p>
             <a class="area-spot" href="lernen-hilfe.html?befehl=clear">
               <span class="area-spot-label">Highlight</span>
               <span class="area-spot-name">/clear</span>
@@ -432,7 +401,7 @@
               <span class="area-count-label">Assets</span>
             </div>
             <p class="area-meta" id="area-bibliothek-meta"></p>
-            <p class="area-text">Frei nutzbares Material für deine Projekte: Schriften mit Live-Vorschau, ein durchsuchbarer Icon-Browser, Farbpaletten mit WCAG-Kontrast-Check, Muster und der pilot-CI-Spickzettel. Nur OFL/MIT/ISC/CC0 — Lizenz sichtbar an jedem Asset.</p>
+            <p class="area-text">Schriften, Icons, Farbpaletten und Muster — frei nutzbar, Lizenz sichtbar an jedem Asset.</p>
             <a class="area-spot" href="bibliothek.html?a=inter">
               <span class="area-spot-label">Highlight</span>
               <span class="area-spot-name">Inter — Live-Vorschau</span>
@@ -455,7 +424,7 @@
               <span class="area-count-label">Bausteine</span>
             </div>
             <p class="area-meta" id="area-baukasten-meta"></p>
-            <p class="area-text">Fertige Code-Bausteine mit Live-Vorschau und Beispieldaten zum Üben — jeder mit einem „Sag Claude einfach …“-Prompt, der ihn für dich anpasst.</p>
+            <p class="area-text">Fertige Code-Bausteine mit Live-Vorschau — jeder mit einem Prompt, der ihn für dich anpasst.</p>
             <a class="area-spot" href="baukasten.html?b=header-hero">
               <span class="area-spot-label">Highlight</span>
               <span class="area-spot-name">Header mit Hero</span>
@@ -478,7 +447,7 @@
               <span class="area-count-label">Projekte</span>
             </div>
             <p class="area-meta" id="area-showroom-meta"></p>
-            <p class="area-text">Echte Team-Tools und markierte Beispiel-Projekte zum Anklicken — mit der ehrlichen Geschichte, wie sie entstanden sind, und allem, was du zum Nachbauen brauchst.</p>
+            <p class="area-text">Echte Team-Tools und Beispiel-Projekte — mit der ehrlichen Geschichte, wie sie entstanden sind.</p>
             <a class="area-spot" href="showroom.html?case=umfrage-auswerter">
               <span class="area-spot-label">Highlight</span>
               <span class="area-spot-name">Umfrage-Auswerter</span>
@@ -493,81 +462,14 @@
       </div>
     </section>
 
-    <!-- ===== MEINE REISE + NEU DAZUGEKOMMEN ===== -->
-    <section class="jrow" id="reise" aria-label="Dein Fortschritt und Neuigkeiten">
+    <!-- ===== DEINE SACHEN ===== -->
+    <section class="jrow" id="reise" aria-label="Dein Fortschritt">
       <div class="jrow-inner">
         <div class="jcol anim-reveal">
           <p class="section-label">Gemerkt & bewertet</p>
           <h2>Deine Sachen</h2>
           <div id="journey-body"><!-- per JS: Fortschritt oder Empty-State --></div>
         </div>
-        <div class="jcol anim-reveal" id="neu">
-          <p class="section-label">Neu dazugekommen</p>
-          <h2>Frisch im Marketplace</h2>
-          <ul class="news-list">
-            <li class="news-item">
-              <span class="news-date">17. Juli</span>
-              <div>
-                <p class="news-title">Der Baukasten ist da</p>
-                <p class="news-text">Fertige Code-Bausteine mit Live-Vorschau, Beispieldaten zum Üben und einem „Sag Claude einfach …“-Prompt an jedem — der den Baustein für dich anpasst, statt dass du ihn von Hand einbaust. <a href="baukasten.html">Zum Baukasten</a>, die passenden Prompts stehen in der <a href="prompts.html">Prompt-Sammlung</a>.</p>
-              </div>
-            </li>
-            <li class="news-item">
-              <span class="news-date">17. Juli</span>
-              <div>
-                <p class="news-title">Der Lern-Bereich ist da</p>
-                <p class="news-text">Kein eigener Kurs — ein Kompass: 24 geprüfte Lern-Ressourcen (Videos, Doku, Artikel, Kurse, Podcasts) plus 3 interne Platzhalter, gefiltert nach deiner Zeit. Jede Karte sagt in einem Satz, für wen sie sich lohnt. <a href="lernen-hilfe.html#ressourcen">Zu Lernen &amp; Hilfe</a></p>
-              </div>
-            </li>
-            <li class="news-item">
-              <span class="news-date">17. Juli</span>
-              <div>
-                <p class="news-title">Der Showroom ist da</p>
-                <p class="news-text">Echte Team-Tools und markierte Beispiel-Projekte zum Anklicken — mit der ehrlichen Geschichte, wie sie entstanden sind, und allem zum Nachbauen. <a href="showroom.html">Zum Showroom</a>, wer festhängt, findet Rat unter <a href="lernen-hilfe.html">Lernen &amp; Hilfe</a>.</p>
-              </div>
-            </li>
-            <li class="news-item">
-              <span class="news-date">17. Juli</span>
-              <div>
-                <p class="news-title">Die Asset-Bibliothek ist da</p>
-                <p class="news-text">Frei nutzbares Material zum Loslegen: 9 Schriften mit Live-Vorschau, ein durchsuchbarer Icon-Browser, 7 Farbpaletten mit WCAG-Kontrast-Check, Muster und der pilot-CI-Spickzettel. Nur OFL/MIT/ISC/CC0 — Lizenz sichtbar an jedem Asset. <a href="bibliothek.html">Zur Asset-Bibliothek</a></p>
-              </div>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===== GETTING-STARTED KOMPAKT ===== -->
-    <section class="gstart" id="loslegen" aria-labelledby="gstart-h">
-      <div class="gstart-inner anim-reveal">
-        <p class="section-label">So startest du</p>
-        <h2 id="gstart-h">Vier Schritte bis zum ersten Ergebnis</h2>
-
-        <div class="cc-def">
-          <p><strong>Citizen Coding</strong> heißt: Du baust dir deine eigenen kleinen Werkzeuge, indem du der KI auf Deutsch beschreibst, was du brauchst — ohne Entwickler:in zu sein.</p>
-        </div>
-
-        <div class="gsx-steps">
-          <div class="gsx-step">
-            <span class="gsx-num">0</span>
-            <div><strong>Claude Code startklar machen</strong><p>Einmalig installieren — <a href="https://code.claude.com/docs" target="_blank" rel="noopener">die Anleitung führt dich durch</a>. Das Terminal ist nur ein Textfeld: Du tippst auf Deutsch, was du brauchst.</p></div>
-          </div>
-          <div class="gsx-step">
-            <span class="gsx-num">1</span>
-            <div><strong>Skill entdecken</strong><p>Wähl oben dein Ziel oder stöbere im <a href="skills.html">Katalog</a> — sortiert nach Aufgabe, Rolle und Thema. Was Skills überhaupt sind, erklärt dir der <a href="skills.html?view=explainer">Onepager</a>.</p></div>
-          </div>
-          <div class="gsx-step">
-            <span class="gsx-num">2</span>
-            <div><strong>Startprompt kopieren</strong><p>Jeder Skill bringt einen fertigen deutschen Satz mit — kopieren genügt, genau wie in Langdock.</p></div>
-          </div>
-          <div class="gsx-step">
-            <span class="gsx-num">3</span>
-            <div><strong>Loslegen</strong><p>In Claude Code einfügen, Enter. Das Ergebnis prüfst du wie jeden Entwurf: ansehen, nachbessern lassen, freigeben.</p></div>
-          </div>
-        </div>
-
-        <a class="c-cta -black-bg" href="skills.html">Finde deinen ersten Skill</a>
       </div>
     </section>
 
@@ -615,13 +517,6 @@
     };
 
     document.querySelectorAll('[data-live="skills-total"]').forEach(el => { el.textContent = COUNTS.skills; });
-
-    // Hero-Stats-Zeile: nur noch die zwei sprechenden Boxen (Skills + Prompts),
-    // beide real gezählt aus data/*.js. animateCount zählt von 0 hoch.
-    [['stat-skills', COUNTS.skills], ['stat-prompts', COUNTS.promptItems]].forEach(([id, n]) => {
-      const el = document.getElementById(id);
-      if (el) animateCount(el, n, 1100);
-    });
 
     // Katalog-Karte: großer Zähler + Meta-Zeile + Leuchtturm-Bewertung
     const areaCount = document.getElementById('area-skill-count');
@@ -673,7 +568,7 @@
       if (spotVotes && lh) spotVotes.innerHTML = `<span class="rating-text">${getVotes('befehl', lh.id, lh.votes)} × „Hat mir geholfen“</span>`;
     });
 
-    // Asset-Bibliothek-Karte + Hero-Zähler (E6): data/assets.js lädt per defer —
+    // Asset-Bibliothek-Karte + Zähler (E6): data/assets.js lädt per defer —
     // deshalb ebenfalls DOMContentLoaded. Nur real Gezähltes aus ASSETS/den Arrays.
     document.addEventListener('DOMContentLoaded', () => {
       if (typeof ASSETS === 'undefined') return;
