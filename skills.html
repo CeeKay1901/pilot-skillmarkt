@@ -1339,6 +1339,7 @@ Gib einen priorisierten Report aus:
     <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-name" aria-describedby="modal-body">
       <div class="modal-header">
         <div class="modal-title-wrap">
+          <p class="modal-kind" id="modal-kind" hidden></p>
           <h2 id="modal-name"></h2>
           <button class="trigger-badge" id="modal-trigger" onclick="copyTrigger()" title="Diesen Befehl in Claude Code eingeben — Klick kopiert ihn"></button>
           <span class="trigger-hint" id="trigger-hint" style="font-size:1.3rem;color:var(--c-gray-d);display:none"></span>
@@ -2079,6 +2080,13 @@ Gib einen priorisierten Report aus:
       removeTriedCta(); // Leiste des vorherigen Items nicht ins nächste Modal mitnehmen
       document.getElementById('modal-name').textContent = skill.name;
 
+      // Typ-Dachzeile: sagt im Kopf, WAS geöffnet wurde (Skill/Plugin/Framework)
+      const kindEl = document.getElementById('modal-kind');
+      if (kindEl) {
+        kindEl.textContent = _type === 'plugin' ? 'Plugin' : _type === 'framework' ? 'Framework' : 'Skill';
+        kindEl.hidden = false;
+      }
+
       // Tab-Leiste typabhängig neu rendern (läuft VOR dem Tab-Reset der Engine)
       const tabBar = document.querySelector('#modal .modal-tabs');
       if (tabBar) {
@@ -2117,7 +2125,6 @@ Gib einen priorisierten Report aus:
         ${renderStars(eff.average)}
         <span>${eff.average.toFixed(1)} (${eff.count} Bewertungen)</span>
         <span class="modal-meta-sep">·</span>
-        ${_type !== 'skill' ? `<span class="type-badge ${_type}">${typeLabel(_type)}</span><span class="modal-meta-sep">·</span>` : ''}
         <span class="diff-badge ${skill.difficulty}">${diffLabel(skill.difficulty)}</span>
         <span class="modal-meta-sep">·</span>
         <span>${escHtml(skill.timeToRun)}</span>
@@ -2960,19 +2967,9 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
       const reqChips = skill.requirements.map(r => `<span class="req-chip">${escHtml(r)}</span>`).join('');
       const useCasesHtml = skill.useCases.map(u => `<li>${escHtml(u)}</li>`).join('');
       const tagsHtml = skill.tags.map(t => `<span class="modal-tag">${escHtml(t)}</span>`).join('');
-      const eff = getEffectiveRating(skill);
 
       return `
-        <div class="rating-overview">
-          <div>
-            <div class="rating-big">${eff.average.toFixed(1)}</div>
-            <div>${renderStars(eff.average)}</div>
-            <div class="rating-sub">${eff.count} Bewertungen</div>
-          </div>
-          <div style="flex:1">
-            <p class="long-desc">${escHtml(skill.longDescription)}</p>
-          </div>
-        </div>
+        <p class="long-desc">${escHtml(skill.longDescription)}</p>
 
         ${skill.exampleOutput ? `
           <p class="section-label output-label">Das bekommst du</p>

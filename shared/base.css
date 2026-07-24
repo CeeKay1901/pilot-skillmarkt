@@ -457,7 +457,17 @@
       z-index: 10;
     }
     .modal-title-wrap { display: flex; align-items: center; gap: 1.6rem; flex-wrap: wrap; min-width: 0; }
-    .modal-header h2 { font-size: 2.8rem; font-weight: 700; margin: 0 0 1.6rem; overflow-wrap: anywhere; }
+    /* Typ-Dachzeile (Editorial-Pass): sagt in jedem Modal, WAS geöffnet wurde —
+       Skill/Plugin/Framework/Prompt/Asset/Baustein/Projekt. Befüllt je Seite. */
+    .modal-kind {
+      flex-basis: 100%; display: flex; align-items: center; gap: .8rem;
+      font-family: var(--font-mono); font-size: 1.05rem; font-weight: 600;
+      letter-spacing: .16em; text-transform: uppercase; color: var(--c-gray-d);
+      margin: 0 0 .6rem;
+    }
+    .modal-kind::before { content: ''; width: 1.4rem; height: .8rem; background: var(--c-yellow); flex-shrink: 0; }
+    .modal-kind[hidden] { display: none; }
+    .modal-header h2 { font-size: 2.8rem; font-weight: 700; letter-spacing: -.02em; margin: 0 0 1.6rem; overflow-wrap: anywhere; }
     .modal-close {
       background: none; border: none; font-size: 2.4rem; cursor: pointer;
       color: var(--c-gray-m); padding: .4rem; line-height: 1;
@@ -480,12 +490,14 @@
     .tab-btn {
       padding: 1.4rem 2rem;
       font-size: 1.5rem; font-weight: 500;
-      background: none; border: none; border-bottom: 2px solid transparent;
+      background: none; border: none; border-bottom: 3px solid transparent;
       cursor: pointer; transition: var(--trans); color: var(--c-gray-m);
       margin-bottom: -1px; white-space: nowrap; font-family: inherit;
     }
     .tab-btn:hover { color: var(--c-black); }
-    .tab-btn.active { color: var(--c-black); border-bottom-color: var(--c-black); font-weight: 700; }
+    /* EINE Tab-Sprache mit den Seiten (Skills-Subnav, Vorlagen-Tabs, Lernen-&-Hilfe-
+       Sub-Nav): aktiver Tab = gelbe Underline + 700, nicht mehr Schwarz. */
+    .tab-btn.active { color: var(--c-black); border-bottom-color: var(--c-yellow); font-weight: 700; }
     .modal-body { padding: 3rem 2.4rem; }
 
     /* ===== CTAs ===== */

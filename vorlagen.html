@@ -385,7 +385,7 @@
   <div class="modal-overlay" id="modal-overlay">
     <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-name" aria-describedby="modal-body">
       <div class="modal-header">
-        <div class="modal-title-wrap"><h2 id="modal-name"></h2></div>
+        <div class="modal-title-wrap"><p class="modal-kind" id="modal-kind" hidden></p><h2 id="modal-name"></h2></div>
         <button class="modal-close" onclick="closeModal()" aria-label="Detail schließen">✕</button>
       </div>
       <div class="modal-meta" id="modal-meta"></div>
@@ -676,8 +676,15 @@
     // ===== MODAL-ENGINE-VERDRAHTUNG: Vorschau · Code · Sag Claude · Bewertungen =====
     function renderBausteinHead(item) {
       document.getElementById('modal-name').textContent = item.name;
+      // Typ-Dachzeile: sagt im Kopf, WAS geöffnet wurde (wechselt mit dem Tab)
+      const kindEl = document.getElementById('modal-kind');
+      if (kindEl) { kindEl.textContent = 'Baustein'; kindEl.hidden = false; }
+      const bstRatingHtml = item.rating
+        ? `${renderStars(item.rating.average)}<span>${item.rating.average.toFixed(1)} (${item.rating.count} Bewertungen)</span><span class="modal-meta-sep">·</span>`
+        : '';
       document.getElementById('modal-meta').innerHTML =
-        `<span class="ff-kat">${escHtml(kategorieLabel(item))} · ${escHtml(schwierigkeitLabel(item))}</span>`
+        bstRatingHtml
+        + `<span class="ff-kat">${escHtml(kategorieLabel(item))} · ${escHtml(schwierigkeitLabel(item))}</span>`
         + `<span class="modal-meta-sep">·</span>`
         + `<span class="copy-count" data-copies="${item.id}">${LU.copy}${copyCountOf(item)}× kopiert</span>`;
       const tabBar = document.querySelector('#modal .modal-tabs');
@@ -1178,8 +1185,16 @@
     // ===== MODAL-ENGINE-VERDRAHTUNG =====
     function renderAssetHead(item) {
       document.getElementById('modal-name').textContent = item.name;
+      // Typ-Dachzeile: sagt im Kopf, WAS geöffnet wurde (wechselt mit dem Tab)
+      const kindEl = document.getElementById('modal-kind');
+      if (kindEl) { kindEl.textContent = 'Design-Asset'; kindEl.hidden = false; }
+      // Bewertungs-Seed vorn in der Meta-Zeile — gleiches Muster wie in den anderen Modalen
+      const ratingHtml = item.rating
+        ? `${renderStars(item.rating.average)}<span>${item.rating.average.toFixed(1)} (${item.rating.count} Bewertungen)</span><span class="modal-meta-sep">·</span>`
+        : '';
       document.getElementById('modal-meta').innerHTML =
-        `<span class="ff-kat">${typLabel(item)}</span><span class="modal-meta-sep">·</span>`
+        ratingHtml
+        + `<span class="ff-kat">${typLabel(item)}</span><span class="modal-meta-sep">·</span>`
         + `<span class="lib-lic">${LU.check}${escHtml(assetLicenseLabel(item))}</span>`;
       const tabBar = document.querySelector('#modal .modal-tabs');
       if (tabBar) {
