@@ -49,10 +49,10 @@
     .pillar-link {
       display: inline-flex; align-items: center; gap: .8rem;
       padding: 1.3rem 1.6rem; font-size: 1.5rem; font-weight: 600;
-      color: var(--c-black); text-decoration: none; white-space: nowrap;
+      color: var(--c-gray-d); text-decoration: none; white-space: nowrap;
       border-bottom: 3px solid transparent; transition: var(--trans);
     }
-    .pillar-link:hover { border-bottom-color: var(--c-yellow); }
+    .pillar-link:hover { border-bottom-color: var(--c-yellow); color: var(--c-black); }
     /* Scroll-Spy: der Bereich, in dem du dich befindest, ist markiert. */
     .pillar-link.active { border-bottom-color: var(--c-yellow); color: var(--c-black); }
     .pillar-link.active .pillar-count { background: var(--c-black); color: var(--c-yellow); }
@@ -101,7 +101,7 @@
     /* Ressourcen-Bereich: Intro-Kopf + Filterleiste + Regal */
     .res-intro { background: var(--c-bg); padding: 5.2rem 0 2.4rem; }
     .res-intro-inner { max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-d); }
-    .res-section-h2 { font-size: var(--fs-h2); font-weight: var(--fw-semi); letter-spacing: -.02em; margin: .6rem 0 1.2rem; }
+    .res-section-h2 { font-size: var(--fs-h2); font-weight: 700; letter-spacing: -.02em; margin: .6rem 0 1.2rem; }
     .res-lead { font-size: 1.6rem; line-height: 1.6; color: var(--c-ink-body); max-width: 74ch; margin: 0; }
 
     /* Chip-Zeile horizontal (Muster lernen.html): base.css stellt .role-chips für
@@ -127,11 +127,12 @@
       position: relative;
       display: grid; grid-template-columns: 6.2rem 1fr;
       background: var(--c-white); border: 1px solid var(--line); border-radius: var(--r-md);
-      transition: border-color .25s ease, box-shadow .25s ease;
+      transition: transform .22s cubic-bezier(.2,.7,.2,1), box-shadow .22s ease, border-color .22s ease;
     }
-    .res-card:hover { border-color: var(--line-strong); }
+    /* Editorial-Pass: Karten-Hover-Sprache der Startseite (Offset-Schatten in Gelb) */
+    .res-card:hover { transform: translate(-2px,-2px); border-color: var(--c-black); box-shadow: 6px 6px 0 var(--c-yellow); }
     .res-card.-highlight { border-color: var(--c-yellow); box-shadow: 0 0 0 3px rgba(255,224,94,.45); }
-    .res-card.start-here { border-color: var(--c-black); box-shadow: var(--shadow-md); }
+    .res-card.start-here { border-color: var(--c-black); box-shadow: 6px 6px 0 var(--c-yellow); }
     .start-here-ribbon {
       position: absolute; top: 0; right: 2rem; transform: translateY(-50%);
       background: var(--c-black); color: var(--c-yellow);
@@ -169,7 +170,7 @@
     a.res-title:hover .lu { color: var(--c-black); }
     .res-fuerdich {
       font-size: 1.45rem; line-height: 1.6; color: var(--c-ink-body);
-      border-left: 3px solid var(--c-yellow); padding: .2rem 0 .2rem 1.2rem;
+      border-left: 4px solid var(--c-yellow); padding: .2rem 0 .2rem 1.2rem;
       margin: 1.2rem 0 1.4rem;
     }
     .res-fuerdich strong { font-weight: 700; }
@@ -245,7 +246,7 @@
     }
     .bef-inner { max-width: 108rem; margin: 0 auto; padding: 0 var(--pad-d); }
     .bef-h2 {
-      font-size: var(--fs-h2); font-weight: var(--fw-semi);
+      font-size: var(--fs-h2); font-weight: 700;
       letter-spacing: -.02em; color: var(--c-black); margin: .6rem 0 1.2rem;
     }
     .bef-sub { font-size: 1.6rem; line-height: 1.6; color: var(--c-ink-body); max-width: 72ch; margin: 0; }
@@ -261,6 +262,9 @@
       list-style: none; margin: 0; padding: 1.2rem;
       display: flex; flex-direction: column; gap: .8rem;
       background: var(--c-black); border-radius: var(--r-md);
+      /* Editorial-Pass: das dunkle Panel trägt den gelben Offset-Schatten der
+         Karten-Sprache — EIN markanter dunkler Moment, keine neue dunkle Fläche. */
+      box-shadow: 6px 6px 0 var(--c-yellow);
     }
     .cmd-card {
       background: rgba(252,252,252,.045);
@@ -268,7 +272,7 @@
       border-radius: var(--r-md);
       transition: border-color .25s ease, background .25s ease;
     }
-    .cmd-card:hover { border-color: rgba(252,252,252,.28); }
+    .cmd-card:hover { border-color: rgba(255,224,94,.55); }
     .cmd-card.-moved, .cmd-card.-highlight {
       border-color: var(--c-yellow);
       background: rgba(255,224,94,.08);
@@ -280,8 +284,8 @@
     }
     .rank-num {
       font-family: var(--font-mono); font-variant-numeric: tabular-nums;
-      font-size: 1.6rem; font-weight: 700; color: rgba(252,252,252,.35);
-      text-align: right; padding-top: .4rem;
+      font-size: 1.9rem; font-weight: 700; color: rgba(252,252,252,.5);
+      text-align: right; padding-top: .3rem; letter-spacing: -.02em;
     }
     .rank-num.-top { color: var(--c-yellow); }
     .cmd-line { display: flex; align-items: center; gap: .8rem 1rem; flex-wrap: wrap; }
@@ -392,7 +396,7 @@
     /* ===== BEREICH 3: GLOSSAR (hell, Nachschlagewerk auf Papier) ===== */
     .glossar-section { background: var(--paper-warm); border-top: 1px solid var(--line); padding: 6.4rem 0 8rem; }
     .glo-inner { max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-d); }
-    .glo-h2 { font-size: var(--fs-h2); font-weight: var(--fw-semi); letter-spacing: -.02em; margin: .6rem 0 1.2rem; }
+    .glo-h2 { font-size: var(--fs-h2); font-weight: 700; letter-spacing: -.02em; margin: .6rem 0 1.2rem; }
     .glo-sub { font-size: 1.6rem; line-height: 1.6; color: var(--c-ink-body); max-width: 72ch; margin: 0; }
 
     /* Themen-Filter (base.css-.chip-Primitive): bewusst NICHT sticky — einmal
@@ -430,17 +434,21 @@
     /* KOMPAKT (E-Straffung): Begriffe als dichte aufklappbare Zeilen — der ganze
        Zeilenkopf ist der Toggle; Satz, Beispiel, Vertiefung und Vote klappen auf. */
     .g-gruppe { margin-top: 2.4rem; }
+    /* Editorial-Pass: Buchstaben-Reiter als Marker-Echo — gelber Block (Kicker-
+       Sprache) + kräftige schwarze Kante statt grauer Trennlinie. */
     .g-letter {
-      font-family: var(--font-mono); font-size: 1.4rem; font-weight: 700;
-      letter-spacing: .12em; color: var(--c-gray-m);
-      border-bottom: 1px solid var(--line-strong); padding-bottom: .5rem; margin: 0 0 1rem;
+      display: flex; align-items: center; gap: .9rem;
+      font-family: var(--font-mono); font-size: 1.7rem; font-weight: 700;
+      letter-spacing: .12em; color: var(--c-black);
+      border-bottom: 2px solid var(--c-black); padding-bottom: .6rem; margin: 0 0 1.2rem;
     }
+    .g-letter::before { content: ''; width: 1.8rem; height: .9rem; background: var(--c-yellow); flex-shrink: 0; }
     .g-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .8rem 1.6rem; align-items: start; }
     .g-card {
       background: var(--c-white); border: 1px solid var(--line); border-radius: var(--r-md);
       transition: border-color .25s ease, box-shadow .25s ease;
     }
-    .g-card:hover { border-color: var(--line-strong); }
+    .g-card:hover { border-color: var(--c-black); }
     .g-card.-highlight { border-color: var(--c-yellow); box-shadow: 0 0 0 3px rgba(255,224,94,.45); }
     .g-wort-h { margin: 0; }
     .g-head {
@@ -492,14 +500,14 @@
     /* ===== BEREICH 4: FAQ (ruhiges Akkordeon) ===== */
     .faq-section { background: var(--c-bg); border-top: 1px solid var(--line); padding: 6.4rem 0 8rem; }
     .faq-inner { max-width: 86rem; margin: 0 auto; padding: 0 var(--pad-d); }
-    .faq-h2 { font-size: var(--fs-h2); font-weight: var(--fw-semi); letter-spacing: -.02em; margin: .6rem 0 1.2rem; }
+    .faq-h2 { font-size: var(--fs-h2); font-weight: 700; letter-spacing: -.02em; margin: .6rem 0 1.2rem; }
     .faq-sub { font-size: 1.6rem; line-height: 1.6; color: var(--c-ink-body); max-width: 62ch; margin: 0; }
     .faq-list { display: flex; flex-direction: column; gap: 1.2rem; margin-top: 3.2rem; }
     .faq-card {
       background: var(--c-white); border: 1px solid var(--line); border-radius: var(--r-md);
       transition: border-color .25s ease, box-shadow .25s ease;
     }
-    .faq-card:hover { border-color: var(--line-strong); }
+    .faq-card:hover { border-color: var(--c-black); }
     .faq-card.-highlight { border-color: var(--c-yellow); box-shadow: 0 0 0 3px rgba(255,224,94,.45); }
     .faq-q {
       display: flex; width: 100%; align-items: center; gap: 1.4rem; text-align: left;
@@ -530,7 +538,7 @@
     }
     @media (max-width: 767px) {
       .cmd-row { grid-template-columns: 3.6rem 1fr; padding: 1.6rem 1.4rem 1.4rem 0; gap: 0 1rem; }
-      .rank-num { font-size: 1.4rem; padding-top: .5rem; }
+      .rank-num { font-size: 1.6rem; padding-top: .45rem; }
       .cmd-code { font-size: 1.5rem; }
       .cmd-body { padding: 1.8rem 1.4rem 2rem; }
       .rank-list { padding: .8rem; }
@@ -577,7 +585,8 @@
   <!-- SEITENKOPF -->
   <header class="page-head">
     <div class="page-head-inner">
-      <h1>Lernen &amp; Hilfe</h1>
+      <p class="kicker">Ressourcen · Befehle · Glossar · FAQ</p>
+      <h1>Lernen &amp; <span class="mk">Hilfe</span></h1>
       <p class="page-sub">Ressourcen, Befehle, Glossar und Antworten auf typische Blocker.</p>
     </div>
   </header>

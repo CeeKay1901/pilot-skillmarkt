@@ -51,6 +51,55 @@
        (flex-basis 100 %), die Pills/Selects fließen darunter wie gehabt — kein
        neues horizontales Gedränge. Optik/Feldstil kommen aus [data-page-search]. */
     .sr-search { flex-basis: 100%; }
+
+    /* ============================================================
+       Editorial-Pass (Juli 2026): markante Hover-Sprache & Akzente.
+       Nur bestehende Tokens; Ruhezustände bleiben ruhig, Logik/IDs
+       unangetastet. Der frühere weiche Karten-Hover (translateY +
+       Weichschatten aus base.css) wird hier durch den harten
+       Schwarz-Gelb-Versatz der Startseite ersetzt.
+       ============================================================ */
+
+    /* Sektions-Überschriften: kräftiger (Editorial-Skala, Punkt 4) */
+    .lib-sec-head h2 { font-weight: 700; }
+
+    /* Case-Karten: harter Versatz-Hover statt Weichschatten */
+    .sr-card {
+      transition: transform .22s cubic-bezier(.2,.7,.2,1), box-shadow .22s ease, border-color .22s ease;
+    }
+    .sr-card:hover {
+      transform: translate(-2px, -2px);
+      border-color: var(--c-black);
+      box-shadow: 6px 6px 0 var(--c-yellow);
+    }
+
+    /* Ehrlichkeits-Marker geschärft: Stempel statt Pille. Der „echt“-Marker
+       bekommt den gelben Versatz als Auszeichnung — Texte, Icons und die
+       Unterscheidbarkeit echt/beispiel bleiben exakt wie gehabt. */
+    .sr-badge { border-radius: .3rem; }
+    .sr-badge.-echt { box-shadow: .3rem .3rem 0 var(--c-yellow); }
+
+    /* „Meistgewollt im Team“: große Mono-Rangnummern, gleiche Hover-Sprache.
+       Reihenfolge/Vote-Logik bleiben unberührt — reine Optik. */
+    .sr-rank-item {
+      transition: transform .22s cubic-bezier(.2,.7,.2,1), box-shadow .22s ease, border-color .22s ease;
+    }
+    .sr-rank-item:hover {
+      transform: translate(-2px, -2px);
+      border-color: var(--c-black);
+      box-shadow: 6px 6px 0 var(--c-yellow);
+    }
+    .sr-rank-pos {
+      font-size: 2.8rem; line-height: 1; min-width: 4.2rem;
+      color: var(--c-black); letter-spacing: -.04em;
+    }
+
+    /* Reduzierte Bewegung: die lokalen Hover-Overrides würden sonst die
+       Basis-Regeln (base.css) per Kaskade überschreiben — hier neutralisieren. */
+    @media (prefers-reduced-motion: reduce) {
+      .sr-card, .sr-rank-item { transition: none; }
+      .sr-card:hover, .sr-rank-item:hover { transform: none; box-shadow: none; }
+    }
   </style>
 </head>
 <body>
@@ -61,8 +110,9 @@
   <!-- SEITENKOPF -->
   <header class="page-head">
     <div class="page-head-inner">
+      <p class="kicker">Echte Team-Tools · Beispiel-Projekte</p>
       <h1>Showroom</h1>
-      <p class="page-sub">Projekte aus dem Team zum Anklicken — ein Marker unterscheidet echte Team-Tools von Beispiel-Projekten, jedes mit Geschichte und Nachbau-Anleitung.</p>
+      <p class="page-sub">Projekte aus dem Team zum Anklicken — ein Marker unterscheidet <span class="mk">echte Team-Tools</span> von Beispiel-Projekten, jedes mit Geschichte und Nachbau-Anleitung.</p>
     </div>
   </header>
 

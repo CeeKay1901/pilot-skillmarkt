@@ -57,7 +57,7 @@
     /* ===== NEU IM MARKETPLACE (kompakt) ===== */
     .fresh { padding: 4.4rem 0 4.8rem; border-bottom: 1px solid var(--line); background: var(--paper-warm); }
     .fresh-inner { max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-d); }
-    .fresh h2 { font-size: 2.2rem; font-weight: var(--fw-semi); letter-spacing: -.015em; margin: .4rem 0 1.2rem; }
+    .fresh h2 { font-size: 2.4rem; font-weight: 700; letter-spacing: -.02em; margin: .4rem 0 1.2rem; }
     .news-list { list-style: none; }
     .news-item { display: grid; grid-template-columns: 9.6rem 1fr; gap: 2rem; padding: 1.2rem 0; border-bottom: 1px solid var(--line); }
     .news-item:last-child { border-bottom: none; padding-bottom: 0; }
@@ -72,20 +72,42 @@
     }
 
     /* ===== BEREICHS-RASTER (3×2, alle sechs live) ===== */
-    .areas { padding: 5.6rem 0 6rem; border-bottom: 1px solid var(--line); }
+    /* ===== AUFTAKT (Editorial-Pass Juli 2026): kompakter markanter Kopf —
+       Statement mit Marker + echte Zahlen; die Bereiche bleiben im 1. Viewport. */
+    .idx-head { padding: 6.8rem 0 0; }
+    .idx-head-inner { max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-d); }
+    .idx-head h1 {
+      font-size: clamp(3.8rem, 2.4rem + 3.4vw, 6.6rem);
+      font-weight: 700; letter-spacing: -.035em; line-height: 1.05; text-wrap: balance;
+    }
+    .idx-stats {
+      display: flex; flex-wrap: wrap; gap: .6rem 2.4rem;
+      margin-top: 2.4rem; font-family: var(--font-mono);
+      font-size: 1.25rem; letter-spacing: .05em; color: var(--c-gray-d);
+    }
+    .idx-stats b { color: var(--c-black); font-weight: 700; font-size: 1.45rem; margin-right: .55rem; font-variant-numeric: tabular-nums; }
+    @media (max-width: 1023px) { .idx-head { padding: 4.6rem 0 0; } }
+
+    .areas { padding: 4.8rem 0 6rem; border-bottom: 1px solid var(--line); }
     .areas-inner { max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-d); }
-    .areas h2 { font-size: var(--fs-h2); font-weight: var(--fw-semi); letter-spacing: -.02em; margin: 0 0 .8rem; }
+    .areas h2 { font-size: var(--fs-h2); font-weight: 700; letter-spacing: -.02em; margin: 0 0 .8rem; }
     .areas-grid {
       display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.6rem;
       margin-top: 2.8rem; align-items: stretch;
     }
-    .area-card { border-radius: var(--r-lg); padding: 2.2rem 2.2rem 2rem; display: flex; flex-direction: column; gap: .8rem; }
+    .area-card {
+      border-radius: var(--r-lg); padding: 2.2rem 2.2rem 2rem;
+      display: flex; flex-direction: column; gap: .8rem;
+      transition: transform .22s cubic-bezier(.2,.7,.2,1), box-shadow .22s ease, border-color .22s ease;
+    }
     .area-live, .area-live-sm {
       background: var(--paper); border: 1px solid var(--line);
       border-top: 3px solid var(--c-yellow);
       box-shadow: var(--shadow-sm);
     }
     .area-live { box-shadow: var(--shadow-md); }
+    /* Editorial-Hover (Karten-Sprache des Passes): schwarzer Rand + gelber Offset */
+    .area-card:hover { transform: translate(-2px, -2px); border-color: var(--c-black); box-shadow: 6px 6px 0 var(--c-yellow); }
     .area-head { display: flex; align-items: center; gap: 1.2rem; }
     .area-ic { color: var(--c-black); display: flex; }
     .area-ic .lu { width: 2.2rem; height: 2.2rem; }
@@ -134,7 +156,7 @@
     /* E12 N2: „Deine Sachen“ füllte nur die linke Hälfte (~50% Void). Spalte
        moderat auf Lesebreite begrenzen und zentrieren — kein Redesign. */
     .jcol { max-width: 76rem; margin-left: auto; margin-right: auto; }
-    .jcol h2 { font-size: 2.4rem; font-weight: var(--fw-semi); letter-spacing: -.015em; margin: .4rem 0 1.4rem; }
+    .jcol h2 { font-size: 2.6rem; font-weight: 700; letter-spacing: -.02em; margin: .4rem 0 1.4rem; }
     .jr-stats { display: flex; gap: 4rem; flex-wrap: wrap; margin: 1.6rem 0 2rem; }
     .jr-stat { display: flex; flex-direction: column; gap: .4rem; padding-left: 1.4rem; border-left: 2px solid var(--c-yellow); }
     .jr-num { font-size: 3.2rem; font-weight: 700; line-height: 1; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
@@ -159,6 +181,15 @@
 
   <main id="main-content">
 
+    <!-- ===== AUFTAKT (kompakter markanter Kopf, Editorial-Pass Juli 2026) ===== -->
+    <header class="idx-head">
+      <div class="idx-head-inner">
+        <p class="kicker">pilot Agenturgruppe · intern</p>
+        <h1>Ein Ort für alles,<br>was ihr <span class="mk">mit KI baut</span>.</h1>
+        <p class="idx-stats" id="idx-stats"></p>
+      </div>
+    </header>
+
     <!-- ===== BEREICHS-RASTER ===== -->
     <section class="areas" id="bereiche" aria-labelledby="areas-h">
       <div class="areas-inner">
@@ -176,7 +207,7 @@
               <span class="area-count-label">Skills</span>
             </div>
             <p class="area-meta" id="area-skill-meta"></p>
-            <p class="area-text">Skills, Plugins und Frameworks für Claude Code und Langdock — mit Team-Stimmen, Live-Demos und fertigen Startprompts.</p>
+            <p class="area-text">Skills, Plugins und Frameworks für Claude Code und Langdock — mit Live-Demos, Datei-Einblick und fertigen Startprompts.</p>
             <a class="area-spot" href="skills.html?skill=erste-schritte">
               <span class="area-spot-label">Fang hier an</span>
               <span class="area-spot-name">Erste Schritte</span>
@@ -308,7 +339,7 @@
     <!-- ===== NEU IM MARKETPLACE (kompakt) ===== -->
     <section class="fresh" id="neu" aria-labelledby="fresh-h">
       <div class="fresh-inner anim-reveal">
-        <p class="section-label">Neu dazugekommen</p>
+        <p class="kicker">Neu dazugekommen</p>
         <h2 id="fresh-h">Neu im Marketplace</h2>
         <ul class="news-list">
           <li class="news-item">
@@ -347,7 +378,7 @@
     <section class="jrow" id="reise" aria-label="Dein Fortschritt">
       <div class="jrow-inner">
         <div class="jcol anim-reveal">
-          <p class="section-label">Gemerkt & bewertet</p>
+          <p class="kicker">Gemerkt & bewertet</p>
           <h2>Deine Sachen</h2>
           <div id="journey-body"><!-- per JS: Fortschritt oder Empty-State --></div>
         </div>
@@ -429,6 +460,22 @@
       const avg = cnt > 0 ? sum / cnt : 0;
       el.innerHTML = renderStars(avg) + ` <span class="rating-text">${avg.toFixed(1)} · ${cnt} Bewertungen</span>`;
     })();
+
+    // Auftakt-Zahlen (Editorial-Pass): nur real Gezähltes aus den geladenen
+    // Daten-Arrays — Teile, deren Daten fehlen, werden schlicht weggelassen.
+    document.addEventListener('DOMContentLoaded', () => {
+      const host = document.getElementById('idx-stats');
+      if (!host) return;
+      const parts = [];
+      if (typeof VISIBLE_SKILL_COUNT !== 'undefined') parts.push([VISIBLE_SKILL_COUNT, 'Skills']);
+      if (typeof PROMPTS !== 'undefined') parts.push([PROMPTS.length, 'Prompts']);
+      if (typeof ASSETS !== 'undefined' && typeof BAUSTEINE !== 'undefined') parts.push([ASSETS.length + BAUSTEINE.length, 'Vorlagen']);
+      if (typeof CASES !== 'undefined') parts.push([CASES.length, 'Projekte']);
+      if (typeof RESSOURCEN !== 'undefined' && typeof BEFEHLE !== 'undefined'
+          && typeof GLOSSAR !== 'undefined' && typeof FAQ !== 'undefined')
+        parts.push([RESSOURCEN.length + BEFEHLE.length + GLOSSAR.length + FAQ.length, 'Hilfe-Einträge']);
+      host.innerHTML = parts.map(([n, l]) => `<span><b>${n}</b>${l}</span>`).join('');
+    });
 
     // Lernen-&-Hilfe-Karte + Zähler (E10-Merge aus Lernen + Hilfe): data/ressourcen.js
     // + data/befehle.js + data/glossar.js laden per defer und sind erst NACH diesem

@@ -167,6 +167,38 @@
     }
 
     /* Mitmachen-Band am Seitenende: .submit-band-Primitive aus base.css */
+
+    /* ===== EDITORIAL-PASS: Karten-Hover in der „Sticker“-Sprache =====
+       Ruhezustand bleibt die ruhige weiße Karte (1px var(--line), base.css) —
+       erst der Hover wird markant: aufrücken, schwarzer Rand, gelber
+       Offset-Schatten. Die weiche translateY/Soft-Shadow-Geste und die gelbe
+       Top-Leiste (.skill-card::after) weichen dieser einen Geste. */
+    .prompt-card {
+      transition: transform .22s cubic-bezier(.2,.7,.2,1), box-shadow .22s ease, border-color .22s ease;
+    }
+    .prompt-card:hover {
+      transform: translate(-2px, -2px);
+      border-color: var(--c-black);
+      box-shadow: 6px 6px 0 var(--c-yellow);
+    }
+    .prompt-card::after { content: none; }
+
+    /* Modal-Titel folgt der Editorial-H2-Sprache: 700 + leicht negatives Tracking */
+    #modal-name { letter-spacing: -.02em; }
+
+    /* Kategorie-Eyebrow (mono, uppercase) minimal geschärft: etwas mehr
+       Gewicht und Tracking als das base.css-Soll — Editorial-Anker der Karte. */
+    .prompt-card .card-sub { font-weight: 600; letter-spacing: .14em; }
+
+    /* Highlight-Karten (PROMPT_SPOTLIGHT): Mono-Eyebrow „Highlight“ in
+       Schwarz auf Gelb + eine Spur kräftigerer Ruhe-Rand. Bewusst dezent. */
+    .prompt-card.-spot { border-color: var(--line-strong); }
+    .card-spot-flag {
+      font-family: var(--font-mono); font-size: 1rem; font-weight: 600;
+      letter-spacing: .14em; text-transform: uppercase;
+      background: var(--c-yellow); color: var(--c-black);
+      padding: .3em .7em .25em; white-space: nowrap; flex-shrink: 0;
+    }
   </style>
 </head>
 <body>
@@ -177,8 +209,9 @@
   <!-- SEITENKOPF -->
   <header class="page-head">
     <div class="page-head-inner">
+      <p class="kicker">Kopieren · Anpassen · Loslegen</p>
       <h1>Prompts</h1>
-      <p class="page-sub">23 kopierfertige Prompts mit markierten Platzhaltern — aus dem Agentur-Alltag.</p>
+      <p class="page-sub">23 <span class="mk">kopierfertige</span> Prompts mit markierten Platzhaltern — aus dem Agentur-Alltag.</p>
     </div>
   </header>
 
@@ -555,10 +588,14 @@
     function renderCard(p, idx = 0, isStart = false) {
       const eff = getEffectiveRating(p);
       const delay = Math.min(idx, 11) * 35;
+      // Rein visuell (Editorial-Pass): Leuchttürme tragen ein „Highlight“-Flag —
+      // Sortierung/Filter bleiben unberührt.
+      const isSpot = PROMPT_SPOTLIGHT.has(p.id);
       return `
-        <article class="skill-card prompt-card${state._noCardAnim ? '' : ' card-in'}" style="animation-delay:${state._noCardAnim ? 0 : delay}ms" onclick="openModal('${p.id}')" tabindex="0" role="button" aria-label="${escHtml(p.name)} öffnen" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openModal('${p.id}')}">
+        <article class="skill-card prompt-card${isSpot ? ' -spot' : ''}${state._noCardAnim ? '' : ' card-in'}" style="animation-delay:${state._noCardAnim ? 0 : delay}ms" onclick="openModal('${p.id}')" tabindex="0" role="button" aria-label="${escHtml(p.name)} öffnen" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openModal('${p.id}')}">
           <div class="card-top">
             <span class="card-sub">${escHtml(groupLabel(p.taskGroup))}</span>
+            ${isSpot ? '<span class="card-spot-flag" aria-label="Highlight-Prompt">Highlight</span>' : ''}
           </div>
           <h3 class="skill-name">${escHtml(p.name)}</h3>
           <p class="skill-tagline">${escHtml(p.tagline)}</p>

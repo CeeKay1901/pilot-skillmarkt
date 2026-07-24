@@ -180,22 +180,40 @@
        Der inszenierte Hero (mit Ticker/Rotator/Stats) ist dem kompakten
        .page-head gewichen; keine Seite nutzt mehr .hero*. ===== */
 
-    /* ===== PAGE-HEAD (E11: kompakter Seitenkopf statt Hero) =====
+    /* ===== PAGE-HEAD (E11: kompakter Seitenkopf; Editorial-Pass Juli 2026) =====
        Titel + ein Satz + optionale Aktionen — der Inhalt beginnt im ersten
-       Viewport. Ersetzt die .hero-Blöcke (Abriss in Etappe 5). */
-    .page-head { padding: 5.2rem 0 1rem; }
+       Viewport. Editorial-Sprache: Mono-Kicker mit gelbem Marker-Block als
+       Dachzeile, kräftige H1-Skala (700, eng), Subline eine Stufe dunkler. */
+    .page-head { padding: 5.6rem 0 1.2rem; }
     .page-head-inner { max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-d); }
+    .kicker {
+      display: flex; align-items: center; gap: 1.1rem;
+      font-family: var(--font-mono); font-size: 1.15rem; font-weight: 600;
+      letter-spacing: .18em; text-transform: uppercase; color: var(--c-gray-d);
+      margin: 0 0 1.4rem;
+    }
+    .kicker::before { content: ''; width: 2rem; height: 1rem; background: var(--c-yellow); flex-shrink: 0; }
+    /* Mobil enger, damit auch lange Dachzeilen (Lernen & Hilfe) einzeilig bleiben */
+    @media (max-width: 480px) { .kicker { font-size: 1.02rem; letter-spacing: .13em; gap: .9rem; } }
     .page-head h1 {
-      font-size: clamp(2.6rem, 2rem + 1.2vw, 3.4rem);
-      font-weight: var(--fw-semi); letter-spacing: -.025em; line-height: 1.05;
-      color: var(--c-black);
+      font-size: clamp(3.2rem, 2.2rem + 2.2vw, 5rem);
+      font-weight: 700; letter-spacing: -.032em; line-height: 1.04;
+      color: var(--c-black); text-wrap: balance;
     }
     .page-sub {
-      margin-top: .9rem; font-size: 1.6rem; line-height: 1.5;
-      color: var(--c-gray-m); max-width: 64rem;
+      margin-top: 1.2rem; font-size: 1.65rem; line-height: 1.55;
+      color: var(--c-gray-d); max-width: 64rem;
     }
     .page-actions { display: flex; gap: 1rem; margin-top: 1.8rem; flex-wrap: wrap; }
-    @media (max-width: 1023px) { .page-head { padding: 3.4rem 0 .6rem; } }
+    @media (max-width: 1023px) { .page-head { padding: 3.6rem 0 .8rem; } }
+
+    /* ===== MARKER (Signatur des Editorial-Passes) =====
+       Gelber Textmarker-Zug für einzelne Worte in Headlines und starke
+       Begriffe — sparsam einsetzen: ein Marker-Moment pro Sichtbereich. */
+    .mk {
+      background: linear-gradient(transparent 56%, var(--c-yellow) 56%, var(--c-yellow) 93%, transparent 93%);
+      padding: 0 .08em; margin: 0 -.02em;
+    }
 
     /* ===== CHIP (E11: EIN Chip-Primitive, Modifier statt Familien) ===== */
     .chip {
@@ -220,16 +238,18 @@
       color: var(--c-gray-m); font-size: 1.5rem; line-height: 1.6;
     }
 
-    /* ===== CARD-MIN (E11: minimale Karte — Titel, Satz, 1–2 Meta) ===== */
+    /* ===== CARD-MIN (E11: minimale Karte — Titel, Satz, 1–2 Meta) =====
+       Editorial-Hover: Karte rückt leicht auf, schwarzer Rand + gelber
+       Offset-Schatten („Sticker“-Geste) — die Hover-Sprache aller Karten. */
     .card-min {
       background: var(--paper);
       border: 1px solid var(--line); border-radius: var(--r-lg);
       padding: 2rem 2rem 1.8rem;
       display: flex; flex-direction: column; gap: .7rem;
       box-shadow: var(--shadow-sm);
-      transition: transform .28s cubic-bezier(.2,.7,.2,1), box-shadow .28s ease;
+      transition: transform .22s cubic-bezier(.2,.7,.2,1), box-shadow .22s ease, border-color .22s ease;
     }
-    .card-min:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+    .card-min:hover { transform: translate(-2px, -2px); border-color: var(--c-black); box-shadow: 6px 6px 0 var(--c-yellow); }
 
     /* ===== CARD (generische Katalog-Karte) ===== */
     .skill-card {
@@ -238,23 +258,20 @@
       border-radius: var(--r-lg);
       padding: 2.6rem 2.6rem 2.2rem;
       cursor: pointer;
-      transition: transform .28s cubic-bezier(.2,.7,.2,1), box-shadow .28s ease, border-color .2s ease;
+      transition: transform .22s cubic-bezier(.2,.7,.2,1), box-shadow .22s ease, border-color .22s ease;
       display: flex; flex-direction: column;
       gap: 1rem;
       position: relative; overflow: hidden;
       box-shadow: var(--shadow-sm);
     }
+    /* Editorial-Hover (Karten-Sprache des Passes): schwarzer Rand + gelber
+       Offset-Schatten. Der frühere gelbe 3px-Top-Balken (::after-Reveal) entfällt —
+       eine gelbe Geste pro Hover, nicht zwei. */
     .skill-card:hover {
-      transform: translateY(-6px);
-      box-shadow: var(--shadow-lg);
-      border-color: var(--line);
+      transform: translate(-2px, -2px);
+      box-shadow: 6px 6px 0 var(--c-yellow);
+      border-color: var(--c-black);
     }
-    .skill-card::after {
-      content: ''; position: absolute; left: 0; top: 0; width: 100%; height: 3px;
-      background: var(--c-yellow); transform: scaleX(0); transform-origin: left;
-      transition: transform .25s ease;
-    }
-    .skill-card:hover::after, .skill-card:focus-visible::after { transform: scaleX(1); }
     .skill-card:focus-visible { outline: 2px solid var(--c-black); outline-offset: 2px; }
 
     .skill-name {
@@ -420,6 +437,7 @@
     .modal {
       background: var(--c-white);
       border-radius: var(--r-xl);
+      border-top: 4px solid var(--c-yellow); /* Marker-Echo des Editorial-Passes */
       width: 100%; max-width: 72rem;
       max-height: 90vh;
       overflow-y: auto;
@@ -474,7 +492,7 @@
     .c-cta {
       display: inline-block;
       border: .3rem solid; border-radius: var(--r-pill);
-      font-size: 1.6rem; font-weight: 500; font-family: inherit;
+      font-size: 1.6rem; font-weight: var(--fw-semi); font-family: inherit;
       padding: 1rem 2.7rem; cursor: pointer;
       text-align: center; text-decoration: none;
       transition: transform .18s ease, background .2s, border-color .2s, color .2s, box-shadow .2s;
@@ -673,6 +691,8 @@
     .filter-toggle-arrow { transition: transform .2s; }
     .filter-toggle-btn[aria-expanded="false"] .filter-toggle-arrow { transform: rotate(-90deg); }
     .ftb-count { display: inline-block; min-width: 2rem; text-align: center; background: var(--c-yellow); color: var(--c-black); border-radius: var(--r-pill); font-size: 1.2rem; font-weight: 700; padding: .1rem .6rem; margin-left: .4rem; }
+    /* display:inline-block schlägt sonst das hidden-Attribut (UA-Stylesheet) — Badge „0" blitzte bei null aktiven Filtern auf */
+    .ftb-count[hidden] { display: none; }
     @media (max-width: 1023px) {
       .filter-toggle-btn { display: flex; }
       .filter-collapsible[hidden] { display: none; }
@@ -1257,13 +1277,20 @@
     /* ----- E11: Kanonisches Einreichen-Band (ersetzt seitenlokale .submit-band-Kopien
              und die .lib-submit-Familie; Markup: section.submit-band > .submit-band-inner
              > h2 + p.submit-band-text + button.c-cta + p.submit-band-note) ----- */
-    .submit-band { background: var(--paper-warm); border-top: 1px solid var(--line); padding: 6.4rem 0 6.8rem; }
+    /* Editorial-Pass Juli 2026: das Band ist der dunkle Anker jeder Seite —
+       Schwarz, gelbes Label, gelber CTA. (Farbklima-Entscheidung: 1–2 dunkle
+       Momente pro Seite; Kontraste AA: Weiß .72/.55 auf #262626.) */
+    .submit-band { background: var(--c-black); padding: 6.8rem 0 7.2rem; }
     /* E12 N2: Inhalt zentriert statt linksbündig — vorher füllte das Band nur die
        linke Hälfte (~50% Void). Moderat, kein Redesign: Textspalte begrenzt & mittig. */
-    .submit-band-inner { max-width: 68ch; margin: 0 auto; padding: 0 var(--pad-d); text-align: center; }
-    .submit-band h2 { font-size: var(--fs-h2); font-weight: var(--fw-semi); letter-spacing: -.02em; margin: .6rem 0 1rem; color: var(--c-black); }
-    .submit-band-text { font-size: 1.6rem; line-height: 1.6; color: var(--c-ink-body, var(--c-gray-d)); max-width: 62ch; margin: 0 auto 2.4rem; }
-    .submit-band-note { font-family: var(--font-mono); font-size: 1.15rem; color: var(--c-gray-m); margin: 1.4rem 0 0; }
+    /* max-width in rem, nicht ch: die Sektion erbt die 10px-Root-Schrift, wodurch
+       68ch nur ~408px ergab — die Bänder wirkten auf allen Seiten gequetscht. */
+    .submit-band-inner { max-width: 72rem; margin: 0 auto; padding: 0 var(--pad-d); text-align: center; }
+    .submit-band .section-label { color: var(--c-yellow); }
+    .submit-band h2 { font-size: clamp(2.6rem, 2.2rem + 1vw, 3.4rem); font-weight: 700; letter-spacing: -.025em; margin: .6rem 0 1rem; color: var(--c-white); }
+    .submit-band-text { font-size: 1.6rem; line-height: 1.6; color: rgba(252,252,252,.72); max-width: 62ch; margin: 0 auto 2.4rem; }
+    .submit-band-note { font-family: var(--font-mono); font-size: 1.15rem; color: rgba(252,252,252,.55); margin: 1.4rem 0 0; }
+    .submit-band .c-cta.-yellow-bg:hover { background: var(--c-yellow); border-color: var(--c-yellow); box-shadow: .5rem .5rem 0 rgba(252,252,252,.18); transform: translate(-2px, -2px); }
 
     /* ----- Responsive ----- */
     @media (max-width: 1023px) {

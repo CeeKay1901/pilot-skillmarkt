@@ -17,8 +17,8 @@
   <style>
   /* ===== Tab-Leiste (E11: Vorlagen = Bausteine + Design-Assets) =====
      E12: eine Tab-Sprache — .vl-subnav ist optisch identisch zu .pillar-nav
-     (lernen-hilfe) und .skills-subnav: sticky unter der Nav, gelber 3px-Underline,
-     Count-Badges. */
+     (lernen-hilfe) und .skills-subnav: sticky unter der Nav, gelber Underline
+     (Editorial-Pass: 4px, aktiv zusätzlich 700), Count-Badges. */
   .vl-subnav {
     position: sticky; top: var(--header-h); z-index: 60;
     background: var(--paper);
@@ -34,10 +34,11 @@
     display: inline-flex; align-items: center; gap: .8rem;
     font-family: inherit; font-size: 1.5rem; font-weight: 600; white-space: nowrap;
     color: var(--c-black); padding: 1.3rem 1.6rem;
-    border-bottom: 3px solid transparent; transition: var(--trans);
+    border-bottom: 4px solid transparent; transition: var(--trans);
   }
   .vl-tab:hover { border-bottom-color: var(--c-yellow); }
-  .vl-tab.active { color: var(--c-black); border-bottom-color: var(--c-yellow); }
+  /* Editorial-Pass: aktiver Tab kontrastreicher — dicke Underline + 700 */
+  .vl-tab.active { color: var(--c-black); border-bottom-color: var(--c-yellow); font-weight: 700; }
   .vl-tab:focus-visible { outline: 2px solid var(--c-black); outline-offset: 2px; }
   .vl-count {
     display: inline-flex; align-items: center; justify-content: center;
@@ -172,6 +173,27 @@
     .brand-hinweis { font-family: var(--font-sans); font-size: 1.4rem; line-height: 1.6; }
     /* .am-comment-*-Formularstyles stehen bereits im Baukasten-Block oben
        (identisch) — hier nicht erneut duplizieren (E11-Konsolidierung). */
+
+    /* ===== Editorial-Pass (Juli 2026): markante Karten-Hover =====
+       Ersetzt die weichen Hovers aus base.css für die großen Karten dieser
+       Seite durch die Schwarz-Gelb-Offset-Sprache der Startseite. Kleine
+       Kacheln (Icon-Zellen, Hex-Swatches) behalten bewusst ihre dezenten
+       Hovers — kein Offset-Schatten auf Miniatur-Elementen. */
+    .font-card, .pal-card, .pat-card, .baustein-card, .bk-data-card {
+      transition: transform .22s cubic-bezier(.2,.7,.2,1), box-shadow .22s ease, border-color .22s ease;
+    }
+    .font-card:hover, .pal-card:hover, .pat-card:hover, .baustein-card:hover, .bk-data-card:hover {
+      transform: translate(-2px, -2px);
+      border-color: var(--c-black);
+      box-shadow: 6px 6px 0 var(--c-yellow);
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .font-card, .pal-card, .pat-card, .baustein-card, .bk-data-card { transition: none; }
+      .font-card:hover, .pal-card:hover, .pat-card:hover, .baustein-card:hover, .bk-data-card:hover { transform: none; }
+    }
+
+    /* Editorial-Pass: Sektions-Überschriften kräftiger (Startseiten-Sprache) */
+    .lib-sec-head h2 { font-weight: 700; }
   </style>
 </head>
 <body>
@@ -182,7 +204,8 @@
   <!-- SEITENKOPF + TAB-LEISTE -->
   <header class="page-head">
     <div class="page-head-inner">
-      <h1>Vorlagen</h1>
+      <p class="kicker">Asset-Bibliothek · Baukasten</p>
+      <h1><span class="mk">Vorlagen</span></h1>
       <p class="page-sub">Fertige Code-Bausteine mit Live-Vorschau und frei nutzbare Design-Assets — kopieren und von Claude anpassen lassen.</p>
     </div>
   </header>

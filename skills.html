@@ -178,7 +178,7 @@
       max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-d);
     }
     .pilots-section h2 {
-      font-size: 3.6rem; font-weight: 500; color: var(--c-black);
+      font-size: 3.6rem; font-weight: 700; letter-spacing: -.025em; color: var(--c-black);
       margin: 1rem 0 4rem;
     }
     .pilots-grid {
@@ -191,12 +191,12 @@
       padding: 3rem;
       cursor: pointer;
       box-shadow: var(--shadow-sm);
-      transition: transform .28s cubic-bezier(.2,.7,.2,1), background .2s, border-color .2s, box-shadow .28s ease;
+      transition: transform .22s cubic-bezier(.2,.7,.2,1), box-shadow .22s ease, border-color .22s ease;
     }
     .pilot-card:hover {
       border-color: var(--c-black);
-      box-shadow: var(--shadow-md);
-      transform: translateY(-5px);
+      box-shadow: 6px 6px 0 var(--c-yellow);
+      transform: translate(-2px, -2px);
     }
     .pilot-avatar-lg {
       width: 5.6rem; height: 5.6rem;
@@ -379,12 +379,12 @@
       letter-spacing: .18em; color: var(--c-gray-m); margin-bottom: 1.6rem;
     }
     .ex-h1 {
-      font-size: var(--fs-display); font-weight: var(--fw-semi); line-height: .98; letter-spacing: -.042em;
+      font-size: var(--fs-display); font-weight: 700; line-height: .98; letter-spacing: -.042em;
       color: var(--c-black); margin-bottom: 3rem;
       font-feature-settings: "kern" 1, "liga" 1;
     }
     .ex-h2 {
-      font-size: var(--fs-h2); font-weight: var(--fw-semi); letter-spacing: -.032em; line-height: 1.05;
+      font-size: var(--fs-h2); font-weight: 700; letter-spacing: -.032em; line-height: 1.05;
       color: var(--c-black); margin-bottom: 2rem;
       font-feature-settings: "kern" 1, "liga" 1;
     }
@@ -422,7 +422,7 @@
       flex: 1; min-width: 24rem; background: var(--c-white); border: 1px solid var(--c-gray-l);
       border-radius: var(--r-lg); padding: 3.2rem; text-align: center;
     }
-    .ex-analogy-card:last-child { border-color: var(--c-black); box-shadow: 0 12px 40px rgba(38,38,38,.1); }
+    .ex-analogy-card:last-child { border-color: var(--c-black); box-shadow: 6px 6px 0 var(--c-yellow); }
     .ex-analogy-icon { font-size: 4rem; margin-bottom: 1.6rem; }
     .ex-analogy-title { font-size: 2.4rem; font-weight: 700; margin-bottom: .8rem; }
     .ex-analogy-sub { font-size: 1.6rem; color: var(--c-gray-m); line-height: 1.5; }
@@ -497,8 +497,8 @@
     .ex-cta-strip-btns { display: flex; gap: 1.2rem; flex-wrap: wrap; }
     .ex-starter { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.6rem; text-align: left; }
     @media (max-width: 767px) { .ex-starter { grid-template-columns: 1fr; } }
-    .ex-starter-card { background: var(--c-white); border: 1px solid var(--c-gray-l); border-radius: 1.4rem; padding: 2.4rem; cursor: pointer; transition: var(--trans); }
-    .ex-starter-card:hover { transform: translateY(-4px); border-color: var(--c-black); box-shadow: 0 12px 32px rgba(38,38,38,.1); }
+    .ex-starter-card { background: var(--c-white); border: 1px solid var(--c-gray-l); border-radius: 1.4rem; padding: 2.4rem; cursor: pointer; transition: transform .22s cubic-bezier(.2,.7,.2,1), box-shadow .22s ease, border-color .22s ease; }
+    .ex-starter-card:hover { transform: translate(-2px, -2px); border-color: var(--c-black); box-shadow: 6px 6px 0 var(--c-yellow); }
     .ex-starter-step { font-size: 1.2rem; font-weight: 700; color: var(--c-gray-m); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 1rem; }
     .ex-starter-name { font-size: 2rem; font-weight: 700; margin-bottom: .6rem; }
     .ex-starter-desc { font-size: 1.5rem; color: var(--c-gray-m); line-height: 1.5; margin-bottom: 1.6rem; }
@@ -746,7 +746,7 @@
     /* ===================== SKILL-BUILDER ===================== */
     /* E11: heller Seitenkopf statt dunklem Band */
     .bld-hero { background: var(--c-bg); border-bottom: 1px solid var(--line); padding: 6rem 0 4rem; }
-    .bld-h1 { font-size: var(--fs-display-sm); font-weight: var(--fw-semi); line-height: 1; letter-spacing: -.042em; color: var(--c-black); margin: 1.2rem 0 2.4rem; }
+    .bld-h1 { font-size: var(--fs-display-sm); font-weight: 700; line-height: 1; letter-spacing: -.042em; color: var(--c-black); margin: 1.2rem 0 2.4rem; }
     .bld-lead { font-size: 1.9rem; line-height: 1.55; color: var(--c-gray-d); max-width: 68rem; font-weight: 400; }
     .bld-lead code { font-family: var(--font-mono); font-size: .9em; background: var(--c-white); border: 1px solid var(--c-gray-l); color: var(--c-black); padding: .1rem .6rem; border-radius: var(--r-xs); }
     .bld-section { padding: 5rem 0 8rem; }
@@ -779,6 +779,20 @@
     .bld-actions-hint { font-size: 1.35rem; color: var(--c-gray-m); line-height: 1.6; margin-top: 1.4rem; }
     .bld-actions-hint code { font-family: var(--font-mono); background: var(--c-bg); border: 1px solid var(--c-gray-l); border-radius: var(--r-xs); padding: 0 .5rem; color: var(--c-black); }
     @media (max-width: 1023px) { .bld-preview { position: static; } }
+
+    /* ===== KARTEN-HOVER (Editorial-Pass Juli 2026) =====
+       Sticker-Geste statt weichem Lift: Karte rückt auf, schwarzer Rand,
+       gelber Offset-Schatten — gleiche Hover-Sprache wie .card-min (base.css).
+       Ruhezustand bleibt unverändert (weiß, 1px var(--line)). Gilt für alle
+       Katalog-Karten inkl. Merge-/Gruppen- und „Fang hier an"-Karte. */
+    .skill-card {
+      transition: transform .22s cubic-bezier(.2,.7,.2,1), box-shadow .22s ease, border-color .22s ease;
+    }
+    .skill-card:hover {
+      transform: translate(-2px, -2px);
+      border-color: var(--c-black);
+      box-shadow: 6px 6px 0 var(--c-yellow);
+    }
 
     /* ===== GRUPPENKARTE (Office / Media-QA) ===== */
     .skill-card.group-card { border-style: dashed; border-color: var(--c-gray-l); }
@@ -833,9 +847,9 @@
       flex-shrink: 0; border: none; cursor: pointer;
       background: var(--c-yellow); color: var(--c-black);
       font-family: inherit; font-size: 1.35rem; font-weight: 600;
-      padding: 0 1.8rem; transition: background .15s ease-out;
+      padding: 0 1.8rem; transition: background .15s ease-out, color .15s ease-out;
     }
-    .startprompt-copy:hover { background: #ffd400; }
+    .startprompt-copy:hover { background: var(--c-black-soft, #3a3a36); color: var(--c-yellow); }
     .runway-alt { font-size: 1.35rem; color: var(--c-gray-d); margin: 1rem 0 0; }
     .mini-trigger {
       font-family: var(--font-mono); font-size: 1.25rem; font-weight: 600;
@@ -876,6 +890,7 @@
        den Erklär-/Builder-Views aus (diese bringen eigene Hero-H1 mit). -->
   <header class="page-head" id="skills-page-head">
     <div class="page-head-inner">
+      <p class="kicker">Skills · Plugins · Frameworks</p>
       <h1>Skills</h1>
       <p class="page-sub"><span id="page-sub-count">35</span> Skills aus dem Agentur-Alltag — von Piloten gebaut und empfohlen.</p>
     </div>
@@ -1212,7 +1227,7 @@ Gib einen priorisierten Report aus:
     <!-- CTA -->
     <section class="ex-section ex-cta-section reveal">
       <div class="ex-wrap ex-narrow" style="text-align:center">
-        <h2 class="ex-h2">Bereit für deinen ersten Skill?</h2>
+        <h2 class="ex-h2">Bereit für deinen <span class="mk">ersten Skill</span>?</h2>
         <p class="ex-body" style="margin-bottom:3.2rem">Starte mit diesen drei — und lade dir darunter das Starter-Paket mit fünf Einsteiger-Skills.</p>
         <div class="ex-starter" id="ex-starter"></div>
         <div style="display:flex;gap:1.2rem;justify-content:center;flex-wrap:wrap;margin-top:3.2rem">
