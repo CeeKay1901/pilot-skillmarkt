@@ -1,6 +1,6 @@
 // pilot AI Marketplace — Lernen & Hilfe: GLOSSAR & FAQ (ausgelagerte Daten, E4; Glossar-Ausbau Juli 2026).
 // Klassisches Script, definiert globale Konstanten:
-//   GLOSSAR — 48 Begriffe. Je Eintrag:
+//   GLOSSAR — 49 Begriffe. Je Eintrag:
 //     id         URL-tauglich, eindeutig (Deep-Link lernen-hilfe.html?begriff=<id>)
 //     wort       Anzeigename; buchstabe = A-Z-Sprungleiste (explizit, nicht abgeleitet)
 //     thema      Themen-Gruppe für den Filter über der Liste:
@@ -27,6 +27,10 @@
 // Juli 2026: alle Begriffe um analogie/tiefe erweitert, thema-Gruppen + 7 neue
 // Einsteiger-Begriffe (cloud, code, datenbank, framework, programmiersprache,
 // responsive, url); skill:/prompt:-ids gegen data/skills.js und data/prompts.js geprüft.
+// Nachtrag 2026-07-24: +svg (thema web). Grund: SVG war das EINZIGE Dateiformat, das
+// im Nutzertext der Asset-Bibliothek vorkommt (5×: Icon-Klick kopiert SVG, Logo-Download,
+// Beispieldaten-Zähler) und trotzdem keinen Eintrag hatte — CSV, JSON, HTML, CSS und
+// Markdown haben alle einen. Themen-Verteilung damit ki 13/web 15/daten 7/handwerk 14.
 
 const GLOSSAR = [
   {
@@ -641,6 +645,22 @@ const GLOSSAR = [
     verweise: [
       { t: 'skill', id: 'skill-creator', name: 'skill-creator' },
       { t: 'skill', id: 'erste-schritte', name: 'Erste Schritte' }
+    ]
+  },
+  {
+    id: 'svg',
+    wort: 'SVG',
+    buchstabe: 'S',
+    thema: 'web',
+    votes: 9,
+    satz: 'SVG ist ein Bildformat, das ein Bild nicht aus Bildpunkten aufbaut, sondern als Bauanleitung beschreibt — deshalb bleibt es in jeder Größe gestochen scharf.',
+    analogie: 'Ein normales Foto ist ein Mosaik aus festen Steinchen: Vergrößerst du es, siehst du die Steinchen. Ein SVG ist stattdessen der Bauplan — „Kreis hier, Linie dort“. Den kann man auf Plakatgröße ziehen, ohne dass etwas ausfranst, weil das Bild jedes Mal neu gezeichnet wird.',
+    beispiel: 'Die Icons in der Asset-Bibliothek sind SVGs: Du klickst eines an, der Code landet in der Zwischenablage, und du fügst ihn direkt in deine Seite ein — ganz ohne Bilddatei.',
+    tiefe: 'SVG steht für „Scalable Vector Graphics“, also skalierbare Vektorgrafik. Eine SVG-Datei ist in Wahrheit Text: Darin steht, aus welchen Formen, Pfaden und Farben das Bild besteht. Das hat drei praktische Folgen. Erstens bleibt es bei jeder Größe scharf — vom 16-Pixel-Icon bis zum Messeplakat. Zweitens sind die Dateien meist winzig, was Seiten schnell macht. Drittens kannst du ein SVG direkt in den HTML-Code schreiben („inline“) und es dann per CSS umfärben — genau davon lebt die Icon-Sammlung hier: Ein Icon nimmt automatisch die Textfarbe an, statt dass du es in fünf Farben abspeicherst. Gut geeignet ist SVG für Logos, Icons, Diagramme und Muster; für Fotos bleibt es bei JPG oder PNG, denn eine Bauanleitung für ein Foto wäre riesig.',
+    stolper: 'Weil ein SVG echter Code ist, sollte man nur Dateien aus vertrauenswürdigen Quellen ungeprüft einbinden — eine SVG kann theoretisch Skripte enthalten. Bei den Bibliotheken hier (Lucide, Heroicons, Phosphor, Simple Icons) ist das kein Thema; bei einem SVG aus einer beliebigen Google-Suche schaust du besser einmal in die Datei oder lässt Claude draufsehen.',
+    verweise: [
+      { t: 'begriff', id: 'html' },
+      { t: 'begriff', id: 'css' }
     ]
   },
   {

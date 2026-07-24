@@ -12,6 +12,15 @@
   <meta property="og:description" content="Ressourcen, Befehle, Glossar und FAQ auf einer Seite. Wenn du festhängst, fehlt dir kein Talent — nur ein Handgriff. Hier findest du ihn.">
   <meta property="og:url" content="https://ceekay1901.github.io/pilot-skillmarkt/lernen-hilfe.html">
   <meta property="og:image" content="https://ceekay1901.github.io/pilot-skillmarkt/og-image.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="pilot AI Marketplace — Lernen &amp; Hilfe">
+  <meta name="twitter:description" content="Ressourcen, Befehle, Glossar und FAQ auf einer Seite. Wenn du festhängst, fehlt dir kein Talent — nur ein Handgriff.">
+  <meta name="twitter:image" content="https://ceekay1901.github.io/pilot-skillmarkt/og-image.png">
+  <!-- canonical fehlte auf allen Seiten (gemessen: null), og:url war dagegen korrekt.
+       Absolut und deckungsgleich mit og:url — sonst widersprechen sich beide Signale. -->
+  <link rel="canonical" href="https://ceekay1901.github.io/pilot-skillmarkt/lernen-hilfe.html">
+  <!-- Favicon: relativer Pfad, damit die Seite auch per file:// funktioniert. -->
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="preload" href="assets/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="shared/base.css">
   <style>
@@ -880,18 +889,27 @@
       if (state.sprache && r.sprache !== state.sprache) return false;
       return true;
     }
+    // Suchbegriffe und Trefferbewertung als eigene Helfer, damit die Typ-Tabs mit
+    // exakt derselben Logik zählen, mit der das Regal filtert (siehe typCount).
+    // Muster übernommen aus prompts.html (searchTerms/promptSearchScore).
+    function resSearchTerms() {
+      return state.search ? state.search.toLowerCase().split(/\s+/).filter(t => t.length > 1) : [];
+    }
+    function resSearchScore(r, terms) {
+      return searchScore(r, terms, [
+        [r.titel, 5], [r.fuerDich, 3], [(r.tags || []).join(' '), 3],
+        [r.quelle, 2], [r.beschreibung || '', 1]
+      ]);
+    }
     function filterRessourcen() {
       let result = RESSOURCEN.filter(matchesChips);
       if (state.typ) result = result.filter(r => r.typ === state.typ);
       if (state.search) {
-        const terms = state.search.toLowerCase().split(/\s+/).filter(t => t.length > 1);
+        const terms = resSearchTerms();
         state._searchScore = {};
         if (terms.length) {
           result = result.filter(r => {
-            const sc = searchScore(r, terms, [
-              [r.titel, 5], [r.fuerDich, 3], [(r.tags || []).join(' '), 3],
-              [r.quelle, 2], [r.beschreibung || '', 1]
-            ]);
+            const sc = resSearchScore(r, terms);
             if (sc > 0) state._searchScore[r.id] = sc;
             return sc > 0;
           });
@@ -917,10 +935,21 @@
     }
 
     // ===== TYP-TABS =====
-    function typCount(t) { return RESSOURCEN.filter(r => r.typ === t && matchesChips(r)).length; }
+    // Zähler folgen Chip- UND Suchfilter, damit die Zahlen zur Regalfläche passen.
+    // (Gemessen 24.07.2026, Suche „video“: „Doku 10“ versprach zehn Ressourcen und
+    // lieferte eine, „Artikel 4“ versprach vier und lieferte null — der Zähler
+    // ignorierte die Suche. Gleicher Fund wie E13 in prompts.html, dort schon gefixt.)
+    function typMatches(r, terms) {
+      return matchesChips(r) && (!terms.length || resSearchScore(r, terms) > 0);
+    }
+    function typCount(t) {
+      const terms = resSearchTerms();
+      return RESSOURCEN.filter(r => r.typ === t && typMatches(r, terms)).length;
+    }
     function renderCatTabs() {
       const subs = [{ id: 'all', label: 'Alle' }].concat(RESSOURCE_TYPEN);
-      const total = RESSOURCEN.filter(matchesChips).length;
+      const _terms = resSearchTerms();
+      const total = RESSOURCEN.filter(r => typMatches(r, _terms)).length;
       document.getElementById('cat-tabs').innerHTML = subs.map(s => {
         const count = s.id === 'all' ? total : typCount(s.id);
         const isActive = state.typ === (s.id === 'all' ? null : s.id);
@@ -1044,6 +1073,7 @@
     function clearSearch() {
       state.search = '';
       const se = document.getElementById('search'); if (se) se.value = '';
+      renderCatTabs(); // Typ-Zähler zählen suchabhängig -> nach dem Leeren nachziehen
       render();
     }
     function resetFilters() {
@@ -1837,6 +1867,10 @@
       // Suche im Filterleisten-Slot (Feld kommt aus renderNav, ID bleibt #search)
       document.getElementById('search')?.addEventListener('input', debounce(e => {
         state.search = e.target.value.toLowerCase().trim();
+        // Die Typ-Tabs zählen jetzt suchabhängig — ohne dieses renderCatTabs()
+        // blieben sie beim ungefilterten Stand stehen und würden wieder Treffer
+        // versprechen, die die Suche nicht liefert.
+        renderCatTabs();
         state._noCardAnim = true; render(); state._noCardAnim = false;
       }, 150));
 

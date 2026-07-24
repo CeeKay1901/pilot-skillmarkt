@@ -16,6 +16,11 @@
   <meta name="twitter:title" content="pilot AI Marketplace">
   <meta name="twitter:description" content="35 echte Skills für Claude Code &amp; Langdock entdecken, verstehen und selbst nutzen.">
   <meta name="twitter:image" content="https://ceekay1901.github.io/pilot-skillmarkt/og-image.png">
+  <!-- canonical fehlte auf allen Seiten (gemessen: null), og:url war dagegen korrekt.
+       Absolut und deckungsgleich mit og:url — sonst widersprechen sich beide Signale. -->
+  <link rel="canonical" href="https://ceekay1901.github.io/pilot-skillmarkt/skills.html">
+  <!-- Favicon: relativer Pfad, damit die Seite auch per file:// funktioniert. -->
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="preload" href="assets/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="shared/base.css">
   <style>
@@ -134,6 +139,9 @@
     .skills-subtab.active, .skills-subtab[aria-selected="true"] { color: var(--c-black); border-bottom-color: var(--c-yellow); }
     /* Anthropic-Skills: eingebaut vs. nachinstallieren */
     .install-badge { font-family: var(--font-mono); font-size: 1.15rem; font-weight: 600; padding: .3rem 1rem; border-radius: var(--r-pill); white-space: nowrap; }
+    /* BEWUSST NICHT auf --c-ok umgestellt: auf dem gemessenen Badge-Grund
+       rgb(231,241,235) fällt der Kontrast von 5.63:1 auf 4.59:1. Bei 11.5px blieben
+       nur 0.09 über der AA-Schwelle — zu wenig Luft für einen reinen Token-Tausch. */
     .install-badge.builtin { background: rgba(45,138,78,.1); color: #1e6b3a; border: 1px solid rgba(45,138,78,.35); }
     .install-badge.plugin { background: transparent; color: var(--c-black); border: 1px solid var(--c-gray-l); }
     /* E2: Plugin-Installation & Framework-Ablauf im Modal */
@@ -178,7 +186,10 @@
       max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-d);
     }
     .pilots-section h2 {
-      font-size: 3.6rem; font-weight: 700; letter-spacing: -.025em; color: var(--c-black);
+      /* Fiel als einziges Sektions-H2 aus der Skala: hart 3.6rem → gemessen 36px,
+         alle übrigen (.areas h2, .lib-sec-head h2, .res-section-h2, .glo-h2,
+         .faq-h2) nutzen --fs-h2 → 44px. Jetzt am Token. */
+      font-size: var(--fs-h2); font-weight: 700; letter-spacing: -.025em; color: var(--c-black);
       margin: 1rem 0 4rem;
     }
     .pilots-grid {
@@ -259,11 +270,15 @@
     .info-grid {
       display: grid; grid-template-columns: 1fr 1fr; gap: 1.6rem; margin-bottom: 2rem;
     }
-    .info-item label {
+    /* Waren <label>/<span>: ein <label> ohne for und ohne inneres Formularfeld ist
+       ungültig — das hier sind Beschriftungen, keine Feldlabels. Jetzt dt/dd in
+       einer <dl>, was das Name-Wert-Verhältnis auch an Screenreader weitergibt.
+       dd braucht die Margin-Null, sonst rückt der Browser um 40px ein. */
+    .info-item dt {
       font-size: 1.2rem; font-weight: 600; text-transform: uppercase;
       letter-spacing: .06em; color: var(--c-gray-d); display: block; margin-bottom: .4rem;
     }
-    .info-item span { font-size: 1.5rem; color: var(--c-black); }
+    .info-item dd { font-size: 1.5rem; color: var(--c-black); margin: 0; }
 
     .pilot-tab-card {
       display: flex; gap: 1.6rem; padding: 2rem; background: var(--c-bg);
@@ -390,7 +405,9 @@
     }
     .ex-hl { color: var(--c-black); background: linear-gradient(transparent 62%, var(--c-yellow) 62%); padding: 0 .2rem; }
     .ex-dark .ex-hl { color: var(--c-yellow); background: none; }
-    .ex-body { font-size: 1.9rem; line-height: 1.6; color: #4a4a46; max-width: 68rem; }
+    /* Harte #4a4a46 → Token. Kontrast auf --c-bg (gemessen rgb(241,241,236)):
+       7.86:1 → 8.60:1, also besser. */
+    .ex-body { font-size: 1.9rem; line-height: 1.6; color: var(--c-ink-strong); max-width: 68rem; }
     .ex-body-light { color: rgba(252,252,252,.75); }
 
     /* Explainer Hero (E11: helle Fläche statt dunklem Band) */
@@ -570,7 +587,13 @@
     .skill-dl-btn:disabled { opacity: .7; cursor: progress; }
     .skill-dl-hint { font-size: 1.35rem; color: var(--c-gray-m); }
     .skill-dl-hint code { font-family: var(--font-mono); background: var(--c-bg); border: 1px solid var(--c-gray-l); border-radius: var(--r-xs); padding: 0 .5rem; font-size: 1.2rem; color: var(--c-black); }
-    .files-real-badge { color: #2d8a4e; font-family: var(--font-mono); font-weight: 700; letter-spacing: 0; text-transform: none; font-size: 1.3rem; }
+    /* Hartes #2d8a4e → --c-ok. Auf dem gemessenen Grund rgb(252,252,252) hob das
+       den Kontrast von 4.21:1 (AA verfehlt) auf 5.18:1 — der Tausch repariert hier
+       also nebenbei einen echten Kontrast-Verstoß. */
+    .files-real-badge { color: var(--c-ok); font-family: var(--font-mono); font-weight: 700; letter-spacing: 0; text-transform: none; font-size: 1.3rem; }
+    /* BEWUSST NICHT auf --c-warn umgestellt: auf dem gemessenen Grund
+       rgb(252,252,252) fällt der Kontrast von 4.77:1 auf 4.61:1. Beide bestehen AA,
+       aber der Tausch verschlechtert — bei 13px Warntext bleibt der bessere Wert. */
     .files-warn-badge { color: #a5601a; font-family: var(--font-mono); font-weight: 700; letter-spacing: 0; text-transform: none; font-size: 1.3rem; }
     .files-retry { background: var(--c-black); color: var(--c-white); border: none; border-radius: var(--r-pill); font-family: inherit; font-size: 1.3rem; padding: .5rem 1.4rem; cursor: pointer; margin-left: .6rem; }
     .files-retry:hover { background: var(--c-yellow); color: var(--c-black); }
@@ -605,7 +628,10 @@
     .pv-block code { font-family: var(--font-mono); font-size: .88em; background: var(--c-bg); border: 1px solid var(--c-gray-l); border-radius: var(--r-xs); padding: .05rem .5rem; }
     .pv-block pre { background: var(--term-bg); color: var(--term-ink-soft); border-radius: var(--r-sm); padding: 1.2rem 1.6rem; overflow-x: auto; margin: .6rem 0; }
     .pv-block pre code { background: none; border: none; padding: 0; color: inherit; font-size: 1.3rem; line-height: 1.7; }
-    .pv-block blockquote { border-left: 3px solid var(--c-yellow); background: #fff; padding: .8rem 1.4rem; margin: .6rem 0; border-radius: 0 .6rem .6rem 0; }
+    /* Hartes #fff → --c-white. Der Zitattext (#262626, 15.5px) steht danach auf
+       14.75:1 statt 15.13:1 — beides weit über AA, der Block fügt sich aber ins
+       Papier-Register der Vorschau ein. */
+    .pv-block blockquote { border-left: 3px solid var(--c-yellow); background: var(--c-white); padding: .8rem 1.4rem; margin: .6rem 0; border-radius: 0 .6rem .6rem 0; }
     .pv-block table { border-collapse: collapse; margin: .6rem 0; font-size: 1.4rem; }
     .pv-block th, .pv-block td, .files-preview th, .files-preview td { border: 1px solid var(--c-gray-l); padding: .6rem 1rem; text-align: left; }
     .pv-block th, .files-preview th { background: var(--c-bg); font-weight: 700; }
@@ -620,7 +646,10 @@
     .files-preview tr.has-ann td { background: rgba(255,224,94,.25); }
     .files-preview tr.ann-selecting td { background: rgba(255,224,94,.4); }
     .files-preview .csv-meta { font-family: var(--font-mono); font-size: 1.25rem; color: var(--c-gray-m); margin-bottom: .8rem; }
-    .files-preview .csv-empty { color: #b3701e; font-style: italic; font-size: .9em; }
+    /* Hartes #b3701e → --c-warn. Auf dem gemessenen Vorschau-Grund rgb(251,251,247)
+       steigt der Kontrast von 3.85:1 (AA verfehlt) auf 4.56:1 — Tausch repariert
+       hier ebenfalls einen echten Verstoß. */
+    .files-preview .csv-empty { color: var(--c-warn); font-style: italic; font-size: .9em; }
     .files-preview .ann-il-wrap { padding: .6rem 0; max-width: none; }
     @media (max-width: 640px) { .files-preview { padding: 1.4rem 1.2rem; font-size: 1.45rem; } }
 
@@ -650,7 +679,8 @@
     .ann-il-head b { color: var(--c-black); font-size: 1.35rem; }
     .ann-il-text { font-size: 1.45rem; line-height: 1.5; color: var(--c-black); white-space: normal; }
     .ann-il-del { margin-left: auto; background: none; border: none; color: var(--c-gray-m); cursor: pointer; font-family: inherit; font-size: 1.2rem; text-decoration: underline; }
-    .ann-il-del:hover { color: #c0392b; }
+    /* Hartes #c0392b → --c-err. Auf rgb(251,251,247) gemessen: 5.24:1 → 5.82:1. */
+    .ann-il-del:hover { color: var(--c-err); }
 
     /* Datei-Knoten mit Kommentar-Button */
     .file-node-row { display: flex; align-items: center; gap: .2rem; }
@@ -696,7 +726,8 @@
     .ann-text { font-size: 1.55rem; line-height: 1.5; color: var(--c-black); margin: .5rem 0; }
     .ann-meta { font-size: 1.25rem; color: var(--c-gray-m); }
     .ann-del { background: none; border: none; color: var(--c-gray-m); cursor: pointer; font-family: inherit; font-size: 1.25rem; text-decoration: underline; }
-    .ann-del:hover { color: #c0392b; }
+    /* Hartes #c0392b → --c-err. Auf rgb(241,241,236) gemessen: 4.80:1 → 5.32:1. */
+    .ann-del:hover { color: var(--c-err); }
 
     @media (max-width: 640px) {
       .files-browser { grid-template-columns: 1fr; }
@@ -762,6 +793,10 @@
     @media (max-width: 600px) { .bld-row { grid-template-columns: 1fr; } }
     .bld-field { display: flex; flex-direction: column; gap: .6rem; }
     .bld-label { font-size: 1.45rem; font-weight: 700; color: var(--c-black); }
+    /* BEWUSST NICHT auf --c-warn umgestellt: auf dem gemessenen Feldgrund
+       rgb(238,237,229) fällt der Kontrast von 4.25:1 auf 4.03:1 — beide verfehlen
+       AA schon heute, der Tausch würde es verschlimmern. Der Pflichtfeld-Stern
+       braucht eine eigene, dunklere Farbe; das ist ein separater Befund. */
     .bld-label em { color: #b3541e; font-style: normal; }
     .bld-field input, .bld-field textarea { width: 100%; font-family: inherit; font-size: 1.5rem; line-height: 1.5; border: 1px solid var(--c-gray-l); border-radius: var(--r-sm); padding: 1rem 1.2rem; background: var(--c-white); resize: vertical; }
     .bld-field input:focus, .bld-field textarea:focus { outline: none; border-color: var(--c-black); }
@@ -804,7 +839,9 @@
     .facet-list { display: flex; flex-direction: column; gap: .6rem; margin: .4rem 0 auto; }
     .facet-chip {
       display: flex; align-items: baseline; gap: .8rem; text-align: left; width: 100%;
-      background: var(--c-bg); border: 1px solid var(--line); border-radius: .7rem;
+      /* Radius lag mit .7rem (gemessen 7px) neben der Skala 4/8/12/16/20/30 —
+         jetzt --r-sm (8px), der nächste echte Stufenwert. */
+      background: var(--c-bg); border: 1px solid var(--line); border-radius: var(--r-sm);
       padding: .7rem 1rem; font-family: inherit; cursor: pointer; transition: var(--trans);
     }
     .facet-chip:hover { border-color: var(--c-black); background: var(--c-white); }
@@ -853,7 +890,10 @@
       font-family: inherit; font-size: 1.35rem; font-weight: 600;
       padding: 0 1.8rem; transition: background .15s ease-out, color .15s ease-out;
     }
-    .startprompt-copy:hover { background: var(--c-black-soft, #3a3a36); color: var(--c-yellow); }
+    /* Fallback #3a3a36 war schlicht falsch (--c-black-soft ist #3d3d3d) und hätte
+       im Fehlerfall eine andere Farbe gezeigt als überall sonst. Ersatzlos raus —
+       so nutzt die Regel das Token wie .c-cta.-black-bg:hover auch. */
+    .startprompt-copy:hover { background: var(--c-black-soft); color: var(--c-yellow); }
     .runway-alt { font-size: 1.35rem; color: var(--c-gray-d); margin: 1rem 0 0; }
     .mini-trigger {
       font-family: var(--font-mono); font-size: 1.25rem; font-weight: 600;
@@ -895,7 +935,11 @@
   <header class="page-head" id="skills-page-head">
     <div class="page-head-inner">
       <p class="kicker">Skills · Plugins · Frameworks</p>
-      <h1>Skills</h1>
+      <!-- Marker-Signatur des Editorial-Passes: fehlte hier als einziger Seitenkopf
+           neben prompts.html. Wie vorlagen.html („Vorlagen") trägt das Ein-Wort-H1
+           den Marker komplett — die .page-sub bleibt marker-frei, base.css sagt
+           „ein Marker-Moment pro Sichtbereich". -->
+      <h1><span class="mk">Skills</span></h1>
       <p class="page-sub"><span id="page-sub-count">35</span> Skills aus dem Agentur-Alltag — von Piloten gebaut und empfohlen.</p>
     </div>
   </header>
@@ -1237,11 +1281,18 @@ Gib einen priorisierten Report aus:
     <section class="ex-section ex-cta-section reveal">
       <div class="ex-wrap ex-narrow" style="text-align:center">
         <h2 class="ex-h2">Bereit für deinen <span class="mk">ersten Skill</span>?</h2>
-        <p class="ex-body" style="margin-bottom:3.2rem">Starte mit diesen drei — und lade dir darunter das Starter-Paket mit fünf Einsteiger-Skills.</p>
+        <!-- „mit fünf Einsteiger-Skills" ist raus: ein ausgeschriebenes Zahlwort
+             lässt sich nicht ohne Zahl→Wort-Tabelle aus BUNDLES.starter.ids.length
+             speisen. Statt eine Zahl zu pflegen, die driften kann, behauptet der
+             Satz jetzt keine mehr — die belastbare Zahl steht im Button darunter. -->
+        <p class="ex-body" style="margin-bottom:3.2rem">Starte mit diesen drei — und lade dir darunter das Starter-Paket für Einsteiger:innen.</p>
         <div class="ex-starter" id="ex-starter"></div>
         <div style="display:flex;gap:1.2rem;justify-content:center;flex-wrap:wrap;margin-top:3.2rem">
-          <button class="c-cta -yellow-bg" onclick="downloadStarterPack(this)">⬇ Starter-Paket (5 Skills, .zip)</button>
-          <button class="c-cta -black-border" onclick="downloadPowerPack(this)">⬇ Power-Paket (5 beliebte Skills, .zip)</button>
+          <!-- Paketgrößen kommen aus BUNDLES (siehe setBundleCounts weiter unten);
+               die Ziffern hier sind nur Fallback für deaktiviertes JS. Vorher standen
+               beide 5 hart im Markup, ohne Abgleich mit BUNDLES.<x>.ids.length. -->
+          <button class="c-cta -yellow-bg" onclick="downloadStarterPack(this)">⬇ Starter-Paket (<span id="starter-pack-count">5</span> Skills, .zip)</button>
+          <button class="c-cta -black-border" onclick="downloadPowerPack(this)">⬇ Power-Paket (<span id="power-pack-count">5</span> beliebte Skills, .zip)</button>
           <button class="c-cta -black-bg" onclick="showView('catalog')">Alle Skills im Katalog entdecken</button>
         </div>
         <p class="ex-body" style="font-size:1.4rem;color:var(--c-gray-m);margin-top:1.2rem">Beide Pakete enthalten die echten Skill-Dateien — entpacken nach <code>.claude/skills/</code>, Anleitung liegt bei. Das Power-Paket bündelt beliebte Skills aus <code>anthropics/skills</code>, <code>obra/superpowers</code> und von pilot.</p>
@@ -1526,6 +1577,19 @@ Gib einen priorisierten Report aus:
       if (el && typeof VISIBLE_SKILL_COUNT === 'number') el.textContent = VISIBLE_SKILL_COUNT;
     })();
 
+    // Gleiche Klasse: die Paketgrößen in den beiden Download-Buttons standen hart
+    // im Markup (je 5) und wurden nie gegen BUNDLES abgeglichen. Jetzt aus derselben
+    // Quelle, aus der downloadBundle() die Dateien zieht — eine Zahl, eine Wahrheit.
+    (function setBundleCounts() {
+      if (typeof BUNDLES !== 'object' || !BUNDLES) return;
+      const map = { starter: 'starter-pack-count', power: 'power-pack-count' };
+      Object.keys(map).forEach(key => {
+        const el = document.getElementById(map[key]);
+        const ids = BUNDLES[key] && BUNDLES[key].ids;
+        if (el && Array.isArray(ids)) el.textContent = ids.length;
+      });
+    })();
+
 
     const MEMBER_OF = {};
     GROUPS.forEach(g => g.members.forEach(id => { MEMBER_OF[id] = g; }));
@@ -1549,7 +1613,25 @@ Gib einen priorisierten Report aus:
     // ===== FILTER & SORT =====
     // Suchhelfer dist1 + searchScore: shared/base.js
 
-    function filterSkills() {
+    /* ===== SUCH-NORMALISIERUNG =====
+       Terme mit nur einem Zeichen fliegen raus — für die Tippfehler-Toleranz sind
+       sie zu unspezifisch. Bleibt danach NICHTS übrig, ist die Suche faktisch leer
+       und muss überall auch so behandelt werden, nicht nur im Filter.
+       Gemessen vorher: „x" (ebenso q, a, ä, ", ', \) ließ state.search truthy
+       werden, filterte aber nichts weg — und schaltete zugleich die
+       Merge-Gruppierung ab. Ergebnis: der Zähler stieg von 37 auf 42 Einträge,
+       weil die 2 Gruppenkarten in ihre 7 Einzel-Skills zerfielen, und die Pille
+       „Suche: „x"" behauptete einen Filter, den es nicht gab. */
+    function searchTerms() {
+      return state.search ? state.search.toLowerCase().split(/\s+/).filter(t => t.length > 1) : [];
+    }
+    function hasSearch() { return searchTerms().length > 0; }
+
+    // Reine Filterkette ohne Sortierung. Die Zähler (countFor) brauchen nur die
+    // Trefferzahl — die Sortierung kostete dort messbar Zeit. Gemessen für
+    // renderCounters()+render() mit 117 Tag-Chips: ohne Suche 31.7 → 9.4 ms,
+    // mit Suche „design" 39.7 → 23.5 ms pro Durchlauf.
+    function applyFilters() {
       let result = SKILLS.filter(s => !HIDDEN.has(s.id));
       if (state.itemType !== 'all') {
         result = result.filter(s => itemType(s) === state.itemType);
@@ -1581,22 +1663,29 @@ Gib einen priorisierten Report aus:
         const favs = getFavorites();
         result = result.filter(s => favs.includes(s.id));
       }
-      if (state.search) {
-        // Mehrwort-Suche: jeder Begriff muss treffen (UND), mit Tippfehler-Toleranz
-        // und Feld-Gewichtung — Score fürs Relevanz-Ranking merken
-        const terms = state.search.toLowerCase().split(/\s+/).filter(t => t.length > 1);
+      // Mehrwort-Suche: jeder Begriff muss treffen (UND), mit Tippfehler-Toleranz
+      // und Feld-Gewichtung — Score fürs Relevanz-Ranking merken. Ohne brauchbare
+      // Terme wird _searchScore aktiv geleert, sonst gälte unten weiter das
+      // Relevanz-Ranking einer Suche, die gar nicht filtert.
+      const terms = searchTerms();
+      if (terms.length) {
         state._searchScore = {};
-        if (terms.length) {
-          result = result.filter(s => {
-            const sc = searchScore(s, terms);
-            if (sc > 0) state._searchScore[s.id] = sc;
-            return sc > 0;
-          });
-        }
+        result = result.filter(s => {
+          const sc = searchScore(s, terms);
+          if (sc > 0) state._searchScore[s.id] = sc;
+          return sc > 0;
+        });
+      } else {
+        state._searchScore = null;
       }
+      return result;
+    }
+
+    function filterSkills() {
+      const result = applyFilters();
       result.sort((a, b) => {
         // Bei aktiver Suche gewinnt Relevanz, gewählte Sortierung bricht Gleichstand
-        if (state.search && state._searchScore) {
+        if (state._searchScore) {
           const d = (state._searchScore[b.id] || 0) - (state._searchScore[a.id] || 0);
           if (d) return d;
         }
@@ -1613,6 +1702,75 @@ Gib einen priorisierten Report aus:
         return 0;
       });
       return result;
+    }
+
+    /* ===== ZÄHLER-WAHRHEIT =====
+       Alle Filter-Zähler (Aufgaben-Reiter, Typ-Reiter, Tag-/Quellen-/Rollen-Chips)
+       zählten bisher direkt über SKILLS und kannten nur den Typ-Filter. Sie gingen
+       damit an Suche, Tags, Favoriten & Co. vorbei und versprachen Treffer, die ein
+       Klick nicht einlöste. Gemessen bei Suche „design": Reiter „Texten 5" → 0
+       Einträge, „Media 6" → 0, „Bauen 13" → 4, Typ „Skills 30" → 8,
+       Tag-Chip „bauen 15" → 5.
+
+       Statt die Filterkette ein zweites Mal nachzubauen (und sie erneut
+       auseinanderlaufen zu lassen), fährt countFor() dieselbe filterSkills()-Kette
+       wie das Grid — mit genau EINER ausgetauschten Dimension. Damit kann die Zahl
+       im Reiter per Konstruktion nicht mehr von der Zahl nach dem Klick abweichen. */
+
+    // Mitglieder, die überhaupt im Katalog stehen (HIDDEN zählt nicht mit).
+    function groupSize(g) {
+      return g.members.filter(id => !HIDDEN.has(id) && SKILLS.some(s => s.id === id)).length;
+    }
+
+    /* Welche Merge-Gruppen dürfen als EINE Gruppenkarte erscheinen?
+       Nur die, von denen WIRKLICH alle Mitglieder durch den Filter gekommen sind.
+       Gemessen vorher: mit „Nur Favoriten" und einzig pptx als Favorit stand die
+       Karte „Office-Dokumente aus Claude · 4 Skills" samt Word/Excel/PDF im Grid —
+       drei davon gar keine Favoriten. Der Zähler sagte korrekt „1 Eintrag", die
+       Karte behauptete visuell 4. Bei aktiver Suche bleibt die Gruppierung wie
+       bisher komplett aus, damit Merge-Mitglieder einzeln auffindbar sind. */
+    function mergeableGroups(filtered) {
+      if (hasSearch()) return new Set();
+      const have = new Map();
+      filtered.forEach(s => { const g = MEMBER_OF[s.id]; if (g) have.set(g, (have.get(g) || 0) + 1); });
+      const out = new Set();
+      have.forEach((n, g) => { if (n >= groupSize(g)) out.add(g); });
+      return out;
+    }
+
+    // Wie viele KARTEN zeigt das Grid für diese Trefferliste? Gebündelte Gruppen
+    // zählen als 1 — aufgelöste Gruppen dagegen mit jedem Mitglied einzeln.
+    function displayCountOf(filtered) {
+      let n = filtered.length;
+      mergeableGroups(filtered).forEach(g => {
+        const inF = filtered.filter(s => MEMBER_OF[s.id] === g).length;
+        if (inF > 0) n -= (inF - 1);
+      });
+      return n;
+    }
+
+    // Was liefert ein Klick auf diesen Filter wirklich? state wird nur für die
+    // Dauer der Zählung getauscht und in finally garantiert zurückgesetzt —
+    // inklusive _searchScore, das filterSkills() als Seiteneffekt schreibt.
+    function countFor(overrides) {
+      const save = {};
+      Object.keys(overrides).forEach(k => { save[k] = state[k]; state[k] = overrides[k]; });
+      const savedScore = state._searchScore;
+      try { return displayCountOf(applyFilters()); }
+      finally {
+        Object.keys(save).forEach(k => { state[k] = save[k]; });
+        state._searchScore = savedScore;
+      }
+    }
+
+    // Alle Zähler-Leisten hängen jetzt an derselben Filterkette wie das Grid —
+    // also müssen sie bei JEDER Filteränderung mitlaufen, nicht nur bei „ihrer".
+    function renderCounters() {
+      renderTypeTabs();
+      renderCatTabs();
+      renderTagChips();
+      renderSourceChips();
+      renderRoleChips();
     }
 
     // ===== RENDER CARD =====
@@ -1738,29 +1896,22 @@ Gib einen priorisierten Report aus:
       state.pilotFilter = pilotName;
       // Subcategory zurücksetzen um alle Skills des Piloten zu zeigen
       state.subcategory = null;
-      renderCatTabs();
-      renderRoleChips();
+      renderCounters();
       render();
       showToast(`Nur Skills, die ${pilotName.split(' ')[0]} empfiehlt ★`);
     }
     function clearPilotFilter() {
       state.pilotFilter = null;
+      renderCounters();
       render();
       updateURL();
     }
 
     // ===== RENDER CAT TABS =====
-    // Sichtbare Kartenzahl je Aufgaben-Gruppe (Merge-Gruppen zählen als 1 Karte, ausgeblendete gar nicht).
-    // Berücksichtigt den aktiven Typ-Filter, damit die Tab-Zahlen zur Kartenfläche passen.
+    // Sichtbare Kartenzahl je Aufgaben-Gruppe — über countFor, also inklusive aller
+    // übrigen aktiven Filter (Suche, Tags, Favoriten, Rolle, Quelle …).
     function visibleCardCount(subId) {
-      const match = sk => !HIDDEN.has(sk.id) && sk.subcategory === subId
-        && (state.itemType === 'all' || itemType(sk) === state.itemType);
-      let n = SKILLS.filter(match).length;
-      GROUPS.filter(g => g.group === subId).forEach(g => {
-        const m = g.members.filter(id => { const s = SKILLS.find(x => x.id === id); return s && match(s); }).length;
-        if (m > 0) n -= (m - 1);
-      });
-      return n;
+      return countFor({ subcategory: subId === 'all' ? null : subId });
     }
     function renderCatTabs() {
       const subs = [
@@ -1773,7 +1924,9 @@ Gib einen priorisierten Report aus:
         {id:'praesentieren', label:'Präsentieren'},
         {id:'media',      label:'Media'}
       ];
-      const total = subs.slice(1).reduce((a, s) => a + visibleCardCount(s.id), 0);
+      // „Alle Aufgaben" ist nicht die Summe der Gruppen, sondern das, was ohne
+      // Aufgaben-Filter übrig bleibt — sonst weicht die Zahl vom Ergebniszähler ab.
+      const total = countFor({ subcategory: null });
       const html = subs.map(s => {
         const count = s.id === 'all' ? total : visibleCardCount(s.id);
         const isActive = state.subcategory === (s.id === 'all' ? null : s.id);
@@ -1787,22 +1940,14 @@ Gib einen priorisierten Report aus:
 
     function setSubCat(sub) {
       state.subcategory = sub === 'all' ? null : sub;
-      renderCatTabs();
+      renderCounters();
       render();
       updateURL();
     }
 
     // ===== TYP-TABS (E2): zweite Filterdimension Skill / Plugin / Framework =====
-    // Zählt merge-bewusst wie visibleCardCount — Gruppenkarten zählen als 1.
-    function visibleTypeCount(typeId) {
-      const match = sk => !HIDDEN.has(sk.id) && itemType(sk) === typeId;
-      let n = SKILLS.filter(match).length;
-      GROUPS.forEach(g => {
-        const m = g.members.filter(id => { const s = SKILLS.find(x => x.id === id); return s && match(s); }).length;
-        if (m > 0) n -= (m - 1);
-      });
-      return n;
-    }
+    // Zählt über countFor — merge-bewusst und inklusive aller übrigen Filter.
+    function visibleTypeCount(typeId) { return countFor({ itemType: typeId }); }
     function renderTypeTabs() {
       const el = document.getElementById('type-tabs');
       if (!el) return;
@@ -1816,7 +1961,8 @@ Gib einen priorisierten Report aus:
         { id: 'plugin',    label: 'Plugins' },
         { id: 'framework', label: 'Frameworks' }
       ];
-      const total = types.slice(1).reduce((a, t) => a + visibleTypeCount(t.id), 0);
+      // wie bei den Aufgaben-Reitern: „Alle Typen" ist der Stand ohne Typ-Filter
+      const total = countFor({ itemType: 'all' });
       el.innerHTML = types.map(t => {
         const count = t.id === 'all' ? total : visibleTypeCount(t.id);
         const active = state.itemType === t.id;
@@ -1826,9 +1972,7 @@ Gib einen priorisierten Report aus:
     function setItemType(t) {
       state.itemType = t;
       state._noCardAnim = true; setTimeout(() => { state._noCardAnim = false; }, 0);
-      renderTypeTabs();
-      renderCatTabs(); // Aufgaben-Zähler folgen dem aktiven Typ
-      renderSourceChips(); // Quellen-Zähler ebenfalls
+      renderCounters();
       render();
     }
     function toggleTypeInfo() {
@@ -1843,7 +1987,9 @@ Gib einen priorisierten Report aus:
 
     // ===== RENDER TAG CHIPS =====
     function renderTagChips() {
-      // Zähle Tag-Häufigkeit
+      // Tag-Häufigkeit über den GESAMTEN Katalog — nur für Reihenfolge und die
+      // Auswahl der Top-12. Die Chips sollen bei jeder Sucheingabe an ihrem Platz
+      // bleiben; die angezeigte Zahl kommt darunter aus countFor.
       const tagCount = {};
       SKILLS.forEach(s => s.tags.forEach(t => { tagCount[t] = (tagCount[t] || 0) + 1; }));
       const sorted = Object.entries(tagCount).sort((a,b) => b[1]-a[1] || a[0].localeCompare(b[0]));
@@ -1853,7 +1999,14 @@ Gib einen priorisierten Report aus:
       const container = document.getElementById('tag-chips');
       if (!container) return;
 
-      const makeChip = (t) => `<button class="filter-tag-chip ${state.tags.includes(t) ? 'active' : ''}" onclick="toggleTag(event,'${t}')">${t} <span style="opacity:.5">${tagCount[t]}</span></button>`;
+      // Zahl = was ein Klick auf DIESEN Chip liefert. Aktive Chips zeigen den
+      // Stand mit sich selbst (sie sind bereits angewandt), inaktive den Stand,
+      // der beim Zuschalten entstünde — toggleTagFilter hängt Tags an, ersetzt sie nicht.
+      const makeChip = (t) => {
+        const on = state.tags.includes(t);
+        const n = countFor({ tags: on ? state.tags : state.tags.concat(t) });
+        return `<button class="filter-tag-chip ${on ? 'active' : ''}" onclick="toggleTag(event,'${t}')">${t} <span style="opacity:.5">${n}</span></button>`;
+      };
 
       let html = top.map(makeChip).join('');
 
@@ -1895,7 +2048,7 @@ Gib einen priorisierten Report aus:
       const idx = state.tags.indexOf(tag);
       if (idx === -1) state.tags.push(tag);
       else state.tags.splice(idx, 1);
-      renderTagChips();
+      renderCounters();
       render();
       updateURL();
     }
@@ -1924,14 +2077,10 @@ Gib einen priorisierten Report aus:
 
       if (!grid) return;
 
-      // Angezeigte Kartenzahl (Merge-Gruppen zählen als 1), außer bei aktiver Suche
-      let displayCount = filtered.length;
-      if (!state.search) {
-        GROUPS.forEach(g => {
-          const inF = filtered.filter(s => MEMBER_OF[s.id] === g).length;
-          if (inF > 0) displayCount -= (inF - 1);
-        });
-      }
+      // Angezeigte Kartenzahl — dieselbe Rechnung, die auch alle Filter-Zähler
+      // benutzen (displayCountOf), damit Ergebniszähler und Reiter nie auseinanderlaufen.
+      const mergeable = mergeableGroups(filtered);
+      const displayCount = displayCountOf(filtered);
       if (count) count.innerHTML = `<strong>${displayCount}</strong> ${resultNoun(displayCount)}`;
 
       renderActiveFilters();
@@ -1956,20 +2105,19 @@ Gib einen priorisierten Report aus:
         const rest = start ? filtered.filter(s => s.id !== start.id) : filtered;
         let html = start ? renderCard(start, false, 0, true) : '';
         let idx = start ? 1 : 0;
-        if (state.search) {
-          // Bei Suche: Einzel-Skills normal listen, damit Merge-Mitglieder auffindbar bleiben
-          html += rest.map(s => renderCard(s, false, idx++)).join('');
-        } else {
-          // Sonst: Merge-Mitglieder an der Position ihres bestplatzierten Mitglieds zu EINER Gruppenkarte bündeln
-          const seen = new Set();
-          for (const s of rest) {
-            const g = MEMBER_OF[s.id];
-            if (g) {
-              if (!seen.has(g.id)) { seen.add(g.id); html += renderGroupCard(g, idx++); }
-              continue;
-            }
-            html += renderCard(s, false, idx++);
+        // Merge-Mitglieder werden an der Position ihres bestplatzierten Mitglieds zu
+        // EINER Gruppenkarte gebündelt — aber nur, wenn die Gruppe vollständig durch
+        // den Filter gekommen ist (siehe mergeableGroups). Teilweise gefilterte
+        // Gruppen und jede aktive Suche listen die Mitglieder einzeln, damit die
+        // Karte keine Mitgliederzahl behauptet, die der Filter widerlegt.
+        const seen = new Set();
+        for (const s of rest) {
+          const g = MEMBER_OF[s.id];
+          if (g && mergeable.has(g)) {
+            if (!seen.has(g.id)) { seen.add(g.id); html += renderGroupCard(g, idx++); }
+            continue;
           }
+          html += renderCard(s, false, idx++);
         }
         grid.innerHTML = html;
       }
@@ -2023,7 +2171,10 @@ Gib einen priorisierten Report aus:
       if (state.pilotFilter) pills.push({label: 'Empfohlen von ' + escHtml(state.pilotFilter), clear: `clearPilotFilter()`});
       if (state.favoritesOnly) pills.push({label: 'Nur Favoriten', clear: `toggleFavoritesOnly()`});
       state.tags.forEach(t => pills.push({label: '#' + t, clear: `toggleTagFilter('${t}')`}));
-      if (state.search) pills.push({label: `Suche: „${escHtml(state.search)}“`, clear: `clearSearch()`});
+      // hasSearch statt state.search: eine Eingabe, aus der kein brauchbarer Term
+      // übrig bleibt („x"), filtert nichts — dann darf auch keine Filter-Pille
+      // behaupten, sie täte es.
+      if (hasSearch()) pills.push({label: `Suche: „${escHtml(state.search)}“`, clear: `clearSearch()`});
 
       // Zähler am mobilen Filter-Toggle: aktive Filter bleiben auch eingeklappt sichtbar
       const ftb = document.getElementById('ftb-count');
@@ -2038,12 +2189,12 @@ Gib einen priorisierten Report aus:
     function clearEndorsed() {
       state.endorsedOnly = false;
       const cb = document.getElementById('endorsed-only'); if (cb) cb.checked = false;
-      render(); updateURL();
+      renderCounters(); render(); updateURL();
     }
     function clearSearch() {
       state.search = '';
       const s = document.getElementById('search'); if (s) s.value = '';
-      render();
+      renderCounters(); render();
     }
 
     // ===== RENDER RECENTLY VIEWED =====
@@ -3085,13 +3236,13 @@ Mehr Skills und alle Details: pilot AI Marketplace.
         <p class="section-label">Tags</p>
         <div class="modal-tag-list">${tagsHtml}</div>
 
-        <div class="info-grid info-grid-foot">
-          <div class="info-item"><label>Autor</label><span>${escHtml(skill.author)}</span></div>
-          ${skill.version ? `<div class="info-item"><label>Version</label><span>${escHtml(skill.version)}</span></div>` : ''}
-          <div class="info-item"><label>Hinzugefügt</label><span>${formatDate(skill.addedAt)}</span></div>
-          <div class="info-item"><label>Zuletzt aktualisiert</label><span>${formatDate(skill.updatedAt)}</span></div>
-          ${itemType(skill) !== 'skill' && skill.source ? `<div class="info-item"><label>Quelle</label><span><a class="src-link" href="${escHtml(skill.source)}" target="_blank" rel="noopener">${escHtml(skill.source.replace('https://github.com/', 'github.com/').split('/tree/')[0])} ↗</a></span></div>` : ''}
-        </div>
+        <dl class="info-grid info-grid-foot">
+          <div class="info-item"><dt>Autor</dt><dd>${escHtml(skill.author)}</dd></div>
+          ${skill.version ? `<div class="info-item"><dt>Version</dt><dd>${escHtml(skill.version)}</dd></div>` : ''}
+          <div class="info-item"><dt>Hinzugefügt</dt><dd>${formatDate(skill.addedAt)}</dd></div>
+          <div class="info-item"><dt>Zuletzt aktualisiert</dt><dd>${formatDate(skill.updatedAt)}</dd></div>
+          ${itemType(skill) !== 'skill' && skill.source ? `<div class="info-item"><dt>Quelle</dt><dd><a class="src-link" href="${escHtml(skill.source)}" target="_blank" rel="noopener">${escHtml(skill.source.replace('https://github.com/', 'github.com/').split('/tree/')[0])} ↗</a></dd></div>` : ''}
+        </dl>
 
         ${itemType(skill) === 'skill' ? `
         <div class="builder-nudge">
@@ -3397,11 +3548,7 @@ Mehr Skills und alle Details: pilot AI Marketplace.
       const endEl = document.getElementById('endorsed-only'); if (endEl) endEl.checked = false;
       const sortEl = document.getElementById('sort-select'); if (sortEl) sortEl.value = 'recommended';
       const favBtn = document.getElementById('fav-filter-btn'); if (favBtn) { favBtn.classList.remove('active'); favBtn.setAttribute('aria-pressed','false'); }
-      renderTypeTabs();
-      renderCatTabs();
-      renderRoleChips();
-      renderTagChips();
-      renderSourceChips();
+      renderCounters();
       render();
       updateFavCount();
       updateURL();
@@ -3456,7 +3603,24 @@ Mehr Skills und alle Details: pilot AI Marketplace.
       const skillId = parts[0];
       const fileRel = parts.slice(2).join('/');
       const skill = SKILLS.find(s => s.id === skillId);
-      if (!skill) { updateURL(); return; } // unbekannter Skill: URL nicht vom UI abweichen lassen
+      if (!skill) {
+        // Kaputter Deep-Link: die ID gibt es nicht (mehr). Vorher blieb der Hash
+        // stumm stehen — gemessen wurde aus „skills.html?skill=gibtsnicht" die URL
+        // „skills.html?skill=gibtsnicht#gibtsnicht", ohne jede Rückmeldung. Ein
+        // weitergeleiteter kaputter Link sah dadurch aus, als hätte er funktioniert.
+        // Jetzt fliegen Hash UND der auslösende ?skill=/?s=-Parameter raus (übrige
+        // Query-Parameter wie utm bleiben erhalten), dazu ein kurzer Hinweis.
+        try {
+          const q = new URLSearchParams(location.search);
+          q.delete('skill'); q.delete('s');
+          const qs = q.toString();
+          _hashLock = true;
+          history.replaceState(null, '', location.pathname + (qs ? '?' + qs : ''));
+          setTimeout(() => { _hashLock = false; }, 0);
+        } catch (e) { /* History blockiert — dann bleibt nur der Toast */ }
+        showToast('Diesen Eintrag gibt es nicht mehr.');
+        return;
+      }
       // Tab muss es für DIESEN Typ geben (z.B. hat ein Plugin ohne gespiegelte Dateien
       // keinen files-Tab — sonst würde eine generierte Vorschau-SKILL.md erscheinen)
       const allowedTabs = modalTabsFor(skill).map(t => t[0]);
@@ -3540,7 +3704,7 @@ Mehr Skills und alle Details: pilot AI Marketplace.
     function skillPlatforms(s) { return s.platforms || { code: true, langdock: false }; }
     function setPlatform(id) {
       state.platform = state.platform === id ? null : id;
-      renderRoleChips();
+      renderCounters();
       render();
       updateURL();
     }
@@ -3552,7 +3716,8 @@ Mehr Skills und alle Details: pilot AI Marketplace.
     function renderRoleChips() {
       const container = document.getElementById('role-chips');
       if (!container) return;
-      const ldCount = SKILLS.filter(sk => !!skillPlatforms(sk).langdock).length;
+      // ebenfalls über countFor — sonst zählte der Chip quer durch alle aktiven Filter
+      const ldCount = countFor({ platform: 'langdock' });
       const active = state.platform === 'langdock';
       container.innerHTML = `<div class="chip-row"><button class="role-chip lang-toggle${active ? ' active' : ''}" onclick="setPlatform('langdock')" aria-pressed="${active}">Läuft auch in Langdock <span class="rc-count">${ldCount}</span></button></div>`;
     }
@@ -3560,7 +3725,7 @@ Mehr Skills und alle Details: pilot AI Marketplace.
     function setSource(id) {
       // zweiter Klick auf die aktive Quelle hebt die Auswahl auf; setSource('all') setzt zurück
       state.category = (id !== 'all' && state.category === id) ? 'all' : id;
-      renderSourceChips();
+      renderCounters();
       render();
       updateURL();
     }
@@ -3569,16 +3734,9 @@ Mehr Skills und alle Details: pilot AI Marketplace.
     // als Karten-Badge weiter, bleibt hier aber als Filter erreichbar.
     // Zählt merge-bewusst wie visibleCardCount (Gruppen = 1 Karte) und
     // berücksichtigt den aktiven Typ-Filter, damit Chip-Zahl und Ergebnisfläche passen.
-    function visibleSourceCount(catId) {
-      const match = sk => !HIDDEN.has(sk.id) && sk.category === catId
-        && (state.itemType === 'all' || itemType(sk) === state.itemType);
-      let n = SKILLS.filter(match).length;
-      GROUPS.forEach(g => {
-        const m = g.members.filter(id => { const s = SKILLS.find(x => x.id === id); return s && match(s); }).length;
-        if (m > 0) n -= (m - 1);
-      });
-      return n;
-    }
+    // Wie die übrigen Zähler über countFor: die Quellen-Chips versprachen sonst
+    // dieselben Treffer-Lügen unter aktiver Suche/Tag-Auswahl wie die Reiter.
+    function visibleSourceCount(catId) { return countFor({ category: catId }); }
     function renderSourceChips() {
       const container = document.getElementById('source-chips');
       if (!container) return;
@@ -3602,7 +3760,7 @@ Mehr Skills und alle Details: pilot AI Marketplace.
 
     function setRole(id) {
       state.role = state.role === id ? null : id; // zweiter Klick hebt die Auswahl auf
-      renderRoleChips();
+      renderCounters();
       render();
       updateURL();
     }
@@ -3612,6 +3770,7 @@ Mehr Skills und alle Details: pilot AI Marketplace.
       state._noCardAnim = true; setTimeout(() => { state._noCardAnim = false; }, 0);
       const btn = document.getElementById('fav-filter-btn');
       if (btn) { btn.classList.toggle('active', state.favoritesOnly); btn.setAttribute('aria-pressed', state.favoritesOnly); }
+      renderCounters();
       render();
     }
 
@@ -3847,11 +4006,7 @@ Mehr Skills und alle Details: pilot AI Marketplace.
     // ===== INIT =====
     document.addEventListener('DOMContentLoaded', () => {
       renderRecentlyViewed();
-      renderTypeTabs();
-      renderCatTabs();
-      renderRoleChips();
-      renderTagChips();
-      renderSourceChips();
+      renderCounters();
       renderPilots();
       render();
       // Deep-Link-Schema skills.html?skill=<id>: auf die kanonische Hash-Form
@@ -3883,11 +4038,13 @@ Mehr Skills und alle Details: pilot AI Marketplace.
       // Katalog-Suche (Slot [data-page-search] in der Filterleiste, alle Breiten)
       document.getElementById('search')?.addEventListener('input', debounce(e => {
         state.search = e.target.value.toLowerCase().trim();
+        renderCounters(); // Reiter-/Chip-Zähler folgen der Suche (sonst versprechen sie Treffer, die es nicht gibt)
         state._noCardAnim = true; render(); state._noCardAnim = false;
       }, 150));
 
       document.getElementById('endorsed-only').addEventListener('change', e => {
         state.endorsedOnly = e.target.checked;
+        renderCounters();
         render();
         updateURL();
       });

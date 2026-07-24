@@ -88,8 +88,8 @@ async function run() {
     // Reale Sub-Nav-Zähler = Array-Längen der Daten (RESSOURCEN/BEFEHLE/GLOSSAR/FAQ).
     // Regressions-Wache gegen still verlorene Einträge oder zerbrochene Zähl-Logik.
     check('03b_sub_nav_sollwerte',
-      sub.counts.r === 28 && sub.counts.b === 28 && sub.counts.g === 48 && sub.counts.f === 10,
-      { got: sub.counts, want: { r: 28, b: 28, g: 48, f: 10 } });
+      sub.counts.r === 28 && sub.counts.b === 28 && sub.counts.g === 49 && sub.counts.f === 10,
+      { got: sub.counts, want: { r: 28, b: 28, g: 49, f: 10 } });
     // Sub-Nav-Zähler müssen mit den tatsächlich gerenderten Karten übereinstimmen (kein Hardcode-Drift).
     const rendered = await page.evaluate(() => ({
       r: document.querySelectorAll('#ressourcen .res-card').length,

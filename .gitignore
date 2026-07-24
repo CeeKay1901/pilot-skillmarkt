@@ -1,0 +1,21 @@
+# Dieses Projekt hat bewusst KEINEN Build-Step — es gibt nichts zu ignorieren,
+# was zum Betrieb gehört. Die Liste hält nur fern, was beim Arbeiten anfällt.
+
+# Werkzeug-Beiwerk
+node_modules/
+*.log
+nohup.out
+
+# Betriebssystem
+.DS_Store
+Thumbs.db
+
+# Editor
+*.swp
+*~
+.vscode/
+.idea/
+
+# Achtung, NICHT ignorieren: .nojekyll (wird von GitHub Pages gebraucht),
+# skills/manifest.json und skills/files-all.json (erzeugt build-skills.mjs,
+# aber sie werden ausgeliefert und müssen im Repo liegen).

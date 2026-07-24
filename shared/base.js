@@ -204,14 +204,6 @@ function renderNav(activePage, opts) {
   //       die passende Maske drüber. Rect-basiert (positions-agnostisch).
   const nav = document.querySelector('.main-nav');
   if (nav) {
-    // Fade-Zustand aus Scroll-Position ableiten: none | start | mid | end.
-    const setFade = () => {
-      const overflow = nav.scrollWidth - nav.clientWidth;
-      if (overflow <= 1) { nav.setAttribute('data-scroll', 'none'); return; }
-      const atStart = nav.scrollLeft <= 1;
-      const atEnd = nav.scrollLeft >= overflow - 1;
-      nav.setAttribute('data-scroll', atStart ? 'start' : atEnd ? 'end' : 'mid');
-    };
     // Nur mobil (≤1023px) auto-zentrieren; die Fade-Kante lebt ebenfalls dort,
     // schadet aber auf Desktop nicht (data-scroll="none" → keine Maske).
     if (window.matchMedia && window.matchMedia('(max-width: 1023px)').matches) {
@@ -223,10 +215,49 @@ function renderNav(activePage, opts) {
         nav.scrollLeft += (aRect.left - navRect.left) - (nav.clientWidth - aRect.width) / 2;
       }
     }
-    setFade();
-    nav.addEventListener('scroll', setFade, { passive: true });
-    window.addEventListener('resize', setFade, { passive: true });
+    initScrollRail(nav);
   }
+
+  // Dieselbe Affordanz für die übrigen Scroll-Rails der Seite. Ohne sie waren
+  // .cat-tabs stumme Sackgassen: gemessen @360px scrollWidth/clientWidth 872/320
+  // (skills), 792/320 (prompts), 754/320 (lernen-hilfe) — 2 von 7 Kategorien
+  // sichtbar, ohne jeden Hinweis, dass es weitergeht. .modal-tabs @360px 570/360.
+  document.querySelectorAll('.cat-tabs, .modal-tabs').forEach(initScrollRail);
+}
+
+/* ===== SCROLL-RAILS (Fade-Affordanz) =====
+   Eine horizontal scrollende Leiste muss zeigen, dass sie weitergeht. Der
+   Zustand steckt in data-scroll (none|start|mid|end), die passende Maske legt
+   shared/base.css darüber: am Anfang faded nur rechts, in der Mitte beidseitig,
+   am Ende nur links. Ursprünglich nur für .main-nav gebaut (E12), jetzt für
+   .cat-tabs und .modal-tabs mitbenutzt — eine Mechanik, kein zweiter Weg. */
+function _railState(el) {
+  const overflow = el.scrollWidth - el.clientWidth;
+  if (overflow <= 1) { el.setAttribute('data-scroll', 'none'); return; }
+  const atStart = el.scrollLeft <= 1;
+  const atEnd = el.scrollLeft >= overflow - 1;
+  el.setAttribute('data-scroll', atStart ? 'start' : atEnd ? 'end' : 'mid');
+}
+
+function initScrollRail(el) {
+  if (!el || el._railBound) return;
+  el._railBound = true;
+  const upd = () => _railState(el);
+  el.addEventListener('scroll', upd, { passive: true });
+  window.addEventListener('resize', upd, { passive: true });
+  // Die Rails selbst bleiben bestehen, die Seiten tauschen nur ihren innerHTML
+  // aus (skills.html:1849, prompts.html:590, lernen-hilfe.html:953; die Modal-
+  // Tableiste wird beim Öffnen befüllt). Ein auf genau dieses eine Element
+  // begrenzter MutationObserver ist deshalb der günstigste Weg, den Zustand
+  // nach jedem Neuaufbau nachzuziehen — kein Polling, kein globaler Observer.
+  if (window.MutationObserver) new MutationObserver(upd).observe(el, { childList: true });
+  upd();
+}
+
+// Nach dem Sichtbarwerden neu messen: solange das Modal display:none ist, sind
+// scrollWidth und clientWidth beide 0 und die Rail meldet fälschlich „passt“.
+function _railsRefreshVisible() {
+  document.querySelectorAll('.cat-tabs, .modal-tabs').forEach(el => { initScrollRail(el); _railState(el); });
 }
 
 /* ===== SHARED HELPER (Kontrakt — von allen Seiten nutzbar) =====
@@ -536,7 +567,15 @@ function getComments(skillId, type) {
   try {
     let data = lsGet(`comments:${type}:${skillId}`);
     if (data === null && type === 'skill') data = lsGet(`skill-comments-${skillId}`);
-    return data ? JSON.parse(data) : [];
+    const parsed = data ? JSON.parse(data) : [];
+    // Array.isArray statt blindem Durchreichen: try/catch fing nur KAPUTTES JSON.
+    // Gültiges JSON vom falschen Typ kam ungeprüft durch und riss über
+    // getEffectiveRating() den kompletten Render-Lauf mit — reproduziert auf
+    // skills.html mit comments:skill:pptx = null / 999 / "text": jeweils
+    // 0 statt 37 Karten, leeres Grid und ein JS-Fehler („userComments.forEach
+    // is not a function“ bzw. „…of null“). Ausgerechnet ungültiges JSON war
+    // harmlos (37 Karten). Betraf skills.html und prompts.html gleichermaßen.
+    return Array.isArray(parsed) ? parsed : [];
   } catch(e) { return []; }
 }
 
@@ -554,7 +593,12 @@ function getEffectiveRating(item) {
   const seed = item.rating || { average: 0, count: 0 };
   let totalSum = seed.average * seed.count;
   let totalCount = seed.count;
-  userComments.forEach(c => { if (c.rating) { totalSum += c.rating; totalCount++; } });
+  // Zweite Sicherung neben getComments(): diese Funktion steckt in jeder Karte,
+  // jedem Sort-Vergleich und in bayesScore() — ein Nicht-Array hier legt die
+  // ganze Seite lahm. Der Katalog muss auch mit verunreinigtem localStorage stehen.
+  if (Array.isArray(userComments)) {
+    userComments.forEach(c => { if (c && c.rating) { totalSum += c.rating; totalCount++; } });
+  }
   if (userRating > 0) { totalSum += userRating; totalCount++; }
   return { average: totalCount > 0 ? totalSum / totalCount : 0, count: totalCount };
 }
@@ -574,13 +618,21 @@ function itemBadge(item) {
   if (e.average >= 4.6 && e.count >= 12 && endorsers >= 2) return { cls: 'empfohlen', label: 'Team-Favorit' };
   return null;
 }
-function skillBadge(skill) { return itemBadge(skill); } // Alt-Name (Bestandsaufrufe)
+// (Der Alt-Name skillBadge() ist entfernt — Grep über alle HTML, JS und JSON
+//  außerhalb von skills/ ergab 0 Aufrufstellen, auch keine inline-onclick.)
 
 function submitComment(skillId) {
   const author = document.getElementById(`comment-author-${skillId}`)?.value?.trim();
   const role = document.getElementById(`comment-role-${skillId}`)?.value?.trim();
   const text = document.getElementById(`comment-text-${skillId}`)?.value?.trim();
-  const ratingVal = state.pendingRating[`comment-${skillId}`] || 0;
+  // Fallback auf den PERSISTIERTEN Stern: state.pendingRating kennt nur eine
+  // Abgabe aus derselben Sitzung. Nach einem Reload war es leer, während das
+  // Widget aus rate:<typ>:<id> korrekt 5 gefüllte Sterne zeigte — der Kommentar
+  // wurde dann mit rating:null gespeichert und erschien sternenlos.
+  // Doppelzählung entsteht dadurch nicht: der Block unten löscht rate:<typ>:<id>,
+  // sobald der Wert in den Kommentar gewandert ist. Nachgemessen an einem Item
+  // mit Seed {4.7, 9}: Stern → {4.73, 10}, danach Kommentar → weiterhin {4.73, 10}.
+  const ratingVal = state.pendingRating[`comment-${skillId}`] || getRating(skillId) || 0;
 
   if (!author || !text) {
     showToast('Bitte Name und Kommentar ausfüllen.');
@@ -708,20 +760,41 @@ function dist1(a, b) {
   return true;
 }
 
+// Umlaut-Faltung für die Suche: „ä→ae, ö→oe, ü→ue, ß→ss“ plus NFD-Akzent-Strip.
+// Die Zielgruppe kommt vom Langdock-Chat und tippt häufig ohne Umlaute; ohne
+// Faltung fand die Suche diese Schreibweise gar nicht — gemessen auf skills.html:
+// „präsentation“ 3 Treffer vs. „praesentation“ 0, „qualität“ 10 vs. „qualitaet“ 0,
+// „prüfen“ 11 vs. „pruefen“ 0, „größe“ 5 vs. „groesse“ 0, „für“ 34 vs. „fuer“ 0.
+// Die Tippfehler-Toleranz dist1() konnte das nicht auffangen: sie erlaubt EINE
+// Editieroperation, „ä→ae“ sind zwei. Reihenfolge ist wichtig — erst die Umlaute
+// ersetzen, dann NFD strippen, sonst würde aus „ä“ ein „a“ statt „ae“.
+// Gefaltet werden Suchbegriff UND Feld, deshalb wirkt es in beide Richtungen:
+// wer „präsentation“ tippt, findet unverändert alles.
+function foldDe(s) {
+  // NFC zuerst: liegt ein „ä“ zerlegt vor (a + U+0308), greift die ä-Ersetzung
+  // sonst nicht und der NFD-Strip machte daraus ein bloßes „a“.
+  return String(s == null ? '' : s).normalize('NFC').toLowerCase()
+    .replace(/ä/g, 'ae').replace(/ö/g, 'oe').replace(/ü/g, 'ue').replace(/ß/g, 'ss')
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
+
 // Trefferstärke eines Items für die Suchbegriffe (0 = kein Treffer).
 // Exakter Substring zählt doppelt, Tippfehler-Treffer (ab 4 Zeichen) einfach.
 // fieldsOpt: eigene [[text, gewicht], …]-Liste (sonst Skill-Felder als Default).
 function searchScore(item, terms, fieldsOpt) {
-  const fields = fieldsOpt || [
+  const rawFields = fieldsOpt || [
     [item.name, 5], [item.trigger || '', 4], [(item.tags || []).join(' '), 3],
     [item.tagline || '', 2], [(item.useCases || []).join(' '), 2],
     [item.description || '', 1], [item.longDescription || '', 1]
   ];
+  // Einmal je Feld falten statt einmal je Feld UND Begriff — ersetzt zugleich
+  // das frühere toLowerCase() in der inneren Schleife.
+  const fields = rawFields.map(([txt, w]) => [foldDe(txt), w]);
   let total = 0;
-  for (const t of terms) {
+  for (const t0 of terms) {
+    const t = foldDe(t0);
     let best = 0;
-    for (const [txt, w] of fields) {
-      const lower = txt.toLowerCase();
+    for (const [lower, w] of fields) {
       if (lower.includes(t)) { best = Math.max(best, w * 2); continue; }
       if (t.length >= 4 && w > best) {
         for (const word of lower.split(/[^a-zäöüß0-9-]+/)) {
@@ -758,6 +831,10 @@ function openModal(id, opts) {
   renderModalBody();
   document.getElementById('modal-overlay').classList.add('open');
   document.body.style.overflow = 'hidden';
+  // Erst jetzt hat die Tab-Rail überhaupt Maße (vorher display:none → 0/0);
+  // ohne diesen Nachschlag bliebe sie auf data-scroll="none" und ihre
+  // Scroll-Affordanz fehlte genau dort, wo sie gebraucht wird (@360px 570/360).
+  _railsRefreshVisible();
   if (_openOpts.fromHash) { if (conf.updateURL) conf.updateURL(); }
   else if (conf.pushURL) conf.pushURL();
   setTimeout(() => { const closeBtn = document.querySelector('.modal-close'); if (closeBtn) closeBtn.focus(); }, 50);

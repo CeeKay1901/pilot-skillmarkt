@@ -300,7 +300,10 @@ const RESSOURCEN = [
   {
     id: 'lr-langdock-prompt-tricks',
     titel: 'Prompting-Tipps & Tricks (Langdock-Doku)',
-    url: 'https://docs.langdock.com/de/using-langdock/prompt-engineering/advanced-techniques/tricks',
+    // Link-Rot-Vorsorge (Prüflauf 2026-07-24): Die alte Adresse ohne /guides/ war
+    // nur noch per Weiterleitung erreichbar. Weiterleitungen werden irgendwann
+    // abgeschaltet — hier steht deshalb das aufgelöste Ziel, kein 301-Hop mehr.
+    url: 'https://docs.langdock.com/de/using-langdock/guides/prompt-engineering/advanced-techniques/tricks',
     typ: 'doku', niveau: 'fortgeschritten', dauerMin: 8, dauerCa: true, sprache: 'de', plattform: 'langdock',
     quelle: 'Langdock-Doku',
     fuerDich: 'deine Prompts schon okay sind, aber die KI bei Dokument-Fragen manchmal plausibel klingende Dinge behauptet, die nicht drinstehen.',

@@ -12,6 +12,15 @@
   <meta property="og:description" content="Echte Team-Tools und Beispiel-Projekte zum Anklicken — mit Story, Live-Vorschau und allem zum Nachbauen. Stimmen & Beispiele sind redaktionelle Demo-Daten.">
   <meta property="og:url" content="https://ceekay1901.github.io/pilot-skillmarkt/showroom.html">
   <meta property="og:image" content="https://ceekay1901.github.io/pilot-skillmarkt/og-image.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="pilot AI Marketplace — Showroom">
+  <meta name="twitter:description" content="Echte Team-Tools und Beispiel-Projekte zum Anklicken — mit Story, Live-Vorschau und allem zum Nachbauen.">
+  <meta name="twitter:image" content="https://ceekay1901.github.io/pilot-skillmarkt/og-image.png">
+  <!-- canonical fehlte auf allen Seiten (gemessen: null), og:url war dagegen korrekt.
+       Absolut und deckungsgleich mit og:url — sonst widersprechen sich beide Signale. -->
+  <link rel="canonical" href="https://ceekay1901.github.io/pilot-skillmarkt/showroom.html">
+  <!-- Favicon: relativer Pfad, damit die Seite auch per file:// funktioniert. -->
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="preload" href="assets/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="shared/base.css">
   <style>
@@ -81,7 +90,14 @@
        bekommt den gelben Versatz als Auszeichnung — Texte, Icons und die
        Unterscheidbarkeit echt/beispiel bleiben exakt wie gehabt. */
     .sr-badge { border-radius: .3rem; }
-    .sr-badge.-echt { box-shadow: .3rem .3rem 0 var(--c-yellow); }
+    /* Gemessen 24.07.2026: -beispiel war 22px hoch, -echt nur 20px — gleiches
+       Padding, gleiche Schriftgröße, aber nur -beispiel hat in base.css eine
+       1px-Border. Die beiden Ehrlichkeits-Marker sitzen nebeneinander im Grid
+       und lagen dadurch sichtbar versetzt. Transparente Border gleicht die
+       2px aus, ohne die Optik von -echt zu verändern.
+       Gehört perspektivisch nach shared/base.css (dort steht das .sr-badge-
+       Primitive) — hier seitenlokal, weil base.css fremdes Eigentum ist. */
+    .sr-badge.-echt { border: 1px solid transparent; box-shadow: .3rem .3rem 0 var(--c-yellow); }
 
     /* „Meistgewollt im Team“: große Mono-Rangnummern, gleiche Hover-Sprache.
        Reihenfolge/Vote-Logik bleiben unberührt — reine Optik. */
@@ -154,8 +170,16 @@
   <header class="page-head">
     <div class="page-head-inner">
       <p class="kicker">Echte Team-Tools · Beispiel-Projekte</p>
-      <h1>Showroom</h1>
-      <p class="page-sub">Projekte aus dem Team zum Anklicken — ein Marker unterscheidet <span class="mk">echte Team-Tools</span> von Beispiel-Projekten, jedes mit Geschichte und Nachbau-Anleitung.</p>
+      <!-- Marker-Signatur des Editorial-Passes: sie fehlte hier als einziger
+           Seitenkopf. Markiert ist der H1 selbst — genau wie „Skills“,
+           „Prompts“ und „Vorlagen“ auf den Schwesterseiten, wo der einwortige
+           Bereichsname der Marker-Moment ist. Keine Zahl: Zahlen stehen in der
+           page-sub, weil sie dort aus dem Datensatz kommen.
+           Der frühere Marker auf „echte Team-Tools“ in der page-sub ist dafür
+           gewichen — base.css sagt zum Primitive: „ein Marker-Moment pro
+           Sichtbereich“, und der Seitenkopf ist einer. Der Text bleibt wörtlich. -->
+      <h1><span class="mk">Showroom</span></h1>
+      <p class="page-sub">Projekte aus dem Team zum Anklicken — ein Marker unterscheidet echte Team-Tools von Beispiel-Projekten, jedes mit Geschichte und Nachbau-Anleitung.</p>
     </div>
   </header>
 
@@ -338,9 +362,16 @@
       if (!host) return;
       const cats = [{ id: 'all', label: 'Alle', ic: LU.rocket }]
         .concat(SAEULE_ORDER.filter(s => CASES.some(c => c.saeule === s)).map(s => ({ id: s, label: SAEULE_LABEL[s], ic: saeuleIcon(s) })));
+      // Zähler folgen der aktiven Suche, damit die Pillen zur Gridfläche passen.
+      // (Gemessen 24.07.2026, Suche „excel“: „Media 2“ versprach zwei Projekte und
+      // lieferte null. Muster aus prompts.html/groupCount, dort schon gefixt.)
+      // art/aufwand bleiben bewusst außen vor: die stehen als Selects daneben und
+      // sind — anders als die Suche — an den Pillen selbst ablesbar.
       host.innerHTML = cats.map(c => {
         const active = state.saeule === (c.id === 'all' ? null : c.id);
-        const count = c.id === 'all' ? CASES.length : CASES.filter(x => x.saeule === c.id).length;
+        const count = c.id === 'all'
+          ? CASES.filter(caseMatchesSearch).length
+          : CASES.filter(x => x.saeule === c.id && caseMatchesSearch(x)).length;
         return `<button class="sr-cat${active ? ' active' : ''}" data-cat="${c.id}" aria-pressed="${active}" onclick="setSaeule('${c.id}')">${c.ic}${escHtml(c.label)} <span class="tab-count">${count}</span></button>`;
       }).join('');
     }
@@ -677,13 +708,16 @@
       // (die hat ein eigenes Overlay-Input, dieser Handler hängt nur am Feld selbst).
       const searchField = document.getElementById('search');
       if (searchField) {
+        // renderCats() muss mitlaufen: die Säulen-Zähler zählen seit dem
+        // Zähler-Fix suchabhängig und blieben sonst beim ungefilterten Stand.
+        // Fokus liegt beim Tippen im Feld, nicht auf den Pillen — kein Fokusverlust.
         searchField.addEventListener('input', debounce(e => {
           state.search = e.target.value.toLowerCase().trim();
-          renderCases();
+          renderCats(); renderCases();
         }, 150));
         searchField.addEventListener('keydown', e => {
           if (e.key === 'Escape' && searchField.value) {
-            searchField.value = ''; state.search = ''; renderCases();
+            searchField.value = ''; state.search = ''; renderCats(); renderCases();
           }
         });
       }

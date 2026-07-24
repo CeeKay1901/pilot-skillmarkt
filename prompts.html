@@ -12,6 +12,18 @@
   <meta property="og:description" content="Kopierfertige Prompts aus dem Agentur-Alltag: Platzhalter ausfüllen, einfügen, loslegen — mit Erklärung, warum jeder Prompt funktioniert.">
   <meta property="og:url" content="https://ceekay1901.github.io/pilot-skillmarkt/prompts.html">
   <meta property="og:image" content="https://ceekay1901.github.io/pilot-skillmarkt/og-image.png">
+  <!-- twitter:* fehlten hier als einziger der drei Seiten (index/skills hatten sie) —
+       ohne sie fällt der Twitter/X-Prefetch auf eine kleine Karte zurück. Werte
+       seitenspezifisch, gespiegelt an den og:-Feldern oben. -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="pilot AI Marketplace — Prompt-Sammlung">
+  <meta name="twitter:description" content="Kopierfertige Prompts aus dem Agentur-Alltag: Platzhalter ausfüllen, einfügen, loslegen — mit Erklärung, warum jeder Prompt funktioniert.">
+  <meta name="twitter:image" content="https://ceekay1901.github.io/pilot-skillmarkt/og-image.png">
+  <!-- canonical fehlte auf allen Seiten (gemessen: null), og:url war dagegen korrekt.
+       Absolut und deckungsgleich mit og:url — sonst widersprechen sich beide Signale. -->
+  <link rel="canonical" href="https://ceekay1901.github.io/pilot-skillmarkt/prompts.html">
+  <!-- Favicon: relativer Pfad, damit die Seite auch per file:// funktioniert. -->
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="preload" href="assets/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="shared/base.css">
   <style>
@@ -246,8 +258,16 @@
   <header class="page-head">
     <div class="page-head-inner">
       <p class="kicker">Kopieren · Anpassen · Loslegen</p>
-      <h1>Prompts</h1>
-      <p class="page-sub">23 <span class="mk">kopierfertige</span> Prompts mit markierten Platzhaltern — aus dem Agentur-Alltag.</p>
+      <!-- Marker-Signatur sitzt wie auf index/vorlagen/lernen-hilfe in der H1
+           (vorlagen.html markiert ihr Ein-Wort-H1 genauso komplett). Der Marker
+           in der .page-sub ist dafür entfallen — base.css sagt „ein
+           Marker-Moment pro Sichtbereich", zwei im selben Kopf wären einer zu viel. -->
+      <h1><span class="mk">Prompts</span></h1>
+      <!-- Zahlen-Ehrlichkeit: die 23 stand hart im Markup und konnte gegen
+           PROMPTS.length driften. Statischer Wert ist nur noch Fallback für
+           deaktiviertes JS; gesetzt wird er zur Laufzeit aus der Datenquelle
+           (Muster aus skills.html: #page-sub-count ← VISIBLE_SKILL_COUNT). -->
+      <p class="page-sub"><span id="page-sub-count">23</span> kopierfertige Prompts mit markierten Platzhaltern — aus dem Agentur-Alltag.</p>
     </div>
   </header>
 
@@ -332,6 +352,14 @@
     // Rating-/Favoriten-/Tried-Engine dieser Seite arbeitet im prompt-Namespace
     // (rate:prompt:<id>, comments:prompt:<id>, …) — MUSS vor jedem Engine-Aufruf stehen.
     window.RatingConfig = { type: 'prompt' };
+
+    // Zahlen-Ehrlichkeit: die Prompt-Zahl im Seitenkopf ist eine ITEM-Zahl und
+    // kommt aus der Datenquelle, nicht aus dem Markup (gemessen: PROMPTS.length = 23,
+    // exakt der Wert, der vorher hart im HTML stand und jederzeit hätte driften können).
+    (function setPageSubCount() {
+      const el = document.getElementById('page-sub-count');
+      if (el && Array.isArray(PROMPTS)) el.textContent = PROMPTS.length;
+    })();
 
     // ===== STATE ===== (dokumentierte Global — wird auch von der Engine in base.js gelesen)
     const state = {

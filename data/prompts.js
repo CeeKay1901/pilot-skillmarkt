@@ -59,7 +59,7 @@ Hier das Briefing:
 [BRIEFING-TEXT]`,
     variants: [
       {
-        id: 'kurz', label: 'Kurz',
+        id: 'kurz', label: 'Kurz', hint: 'Wenn es schnell gehen muss — vier Punkte plus die offenen Fragen.',
         promptText: `Fasse das folgende Kunden-Briefing von [KUNDE] zusammen:
 1. Kernaufgabe in einem Satz.
 2. Ziele als Liste (messbare zuerst).
@@ -70,7 +70,7 @@ Erfinde nichts, übernimm Zahlen wörtlich.
 [BRIEFING-TEXT]`
       },
       {
-        id: 'ausfuehrlich', label: 'Ausführlich',
+        id: 'ausfuehrlich', label: 'Ausführlich', hint: 'Zwei Durchgänge mit Originalzitaten — für Briefings, die du weitergibst.',
         promptText: `Du bist erfahrene:r Berater:in in einer Mediaagentur und bereitest Kunden-Briefings
 für dein Team auf. Du liest genau, unterscheidest Fakten von Vermutungen und
 benennst offene Punkte, statt sie zu überspielen.
@@ -213,7 +213,7 @@ Claim | Merkfähigkeit (1–5) | Passung zur Tonalität (1–5) | Risiko/Missver
 Sprich zum Schluss eine Empfehlung für die Top 2 aus und begründe jede in einem Satz.`,
     variants: [
       {
-        id: 'kurz', label: 'Kurz',
+        id: 'kurz', label: 'Kurz', hint: 'Fünf Claims statt zehn, mit Favorit — für die schnelle Runde.',
         promptText: `Entwickle 5 Claim-Varianten für [MARKE] ([PRODUKT]). Zielgruppe: [ZIELGRUPPE].
 Tonalität: [TONALITÄT]. Kernbotschaft: [KERNBOTSCHAFT].
 Maximal 6 Wörter pro Claim, keine Werbefloskeln, mindestens einer ganz wörtlich
@@ -221,7 +221,7 @@ und einer mit überraschendem Bild. Nenne am Ende deinen Favoriten mit einem Sat
 Begründung.`
       },
       {
-        id: 'ausfuehrlich', label: 'Ausführlich',
+        id: 'ausfuehrlich', label: 'Ausführlich', hint: 'Erst Tonwörter, dann Claims in drei Richtungen — für den Workshop.',
         promptText: `Du bist Senior-Texter:in mit fünfzehn Jahren Erfahrung in Markenkampagnen. Du
 entwickelst Claims, die man sich merkt — kurz, konkret, ohne Werbefloskeln.
 
@@ -350,7 +350,7 @@ Gehe so vor:
 Wichtig: Ich arbeite mit [EXCEL-VERSION]. Schlage nur Funktionen vor, die es dort gibt.`,
     variants: [
       {
-        id: 'kurz', label: 'Kurz',
+        id: 'kurz', label: 'Kurz', hint: 'Nur verstehen, was die Formel tut — ohne Testtabelle.',
         promptText: `Erkläre diese Excel-Formel ([EXCEL-VERSION]) in Alltagssprache: erst in einem Satz,
 dann Schritt für Schritt von innen nach außen. Nenne zum Schluss die eine wichtigste
 Stolperfalle.
@@ -358,7 +358,7 @@ Stolperfalle.
 [FORMEL]`
       },
       {
-        id: 'ausfuehrlich', label: 'Ausführlich',
+        id: 'ausfuehrlich', label: 'Ausführlich', hint: 'Mit Testtabelle — wenn du die Datei künftig selbst pflegst.',
         promptText: `Du bist Excel-Expert:in und erklärst Formeln für Kolleg:innen ohne Excel-Tiefenwissen —
 geduldig, präzise, und ohne Fachbegriffe unerklärt stehen zu lassen.
 
@@ -612,7 +612,7 @@ Gib mir danach in zwei Sätzen zurück: Welchen Punkt aus meinem Rohfeedback has
 am stärksten umformuliert? So kann ich prüfen, ob die Schärfe noch stimmt.`,
     variants: [
       {
-        id: 'kurz', label: 'Kurz',
+        id: 'kurz', label: 'Kurz', hint: 'Ein knapper Durchgang: Beobachtung, Beispiel, was stattdessen hilft.',
         promptText: `Formuliere mein ungeschöntes Feedback zu [ARBEITSERGEBNIS] wertschätzend, aber ohne
 die Substanz abzuschwächen. Jeder Kritikpunkt als: Beobachtung + Beispiel + was
 stattdessen hilft. Keine Floskeln, kein Pflicht-Lob. Übermittlung: [KANAL].
@@ -1207,7 +1207,7 @@ Wohlwollendsten. Abmilderung: neutrale Nutzungsfragen vor Bewertungsfragen.
 Kampagne: [KAMPAGNE-KUNDE]
 Kernbotschaft: [KERNBOTSCHAFT]
 Zielgruppe: [ZIELGRUPPE]
-Kanäle/Formate: [KANAELE-FORMATE]
+Kanäle/Formate: [KANÄLE-FORMATE]
 
 Erstelle den Bildbrief mit diesen Abschnitten:
 1) Bildidee in einem Satz

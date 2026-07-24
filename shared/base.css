@@ -36,7 +36,9 @@
       --c-bg-deep: #eeede5;     /* Body-Grund (Design-Aufwertung) */
       --paper: #fbfbf7;         /* helle Karten-/Panel-Fläche */
       --paper-warm: #f4f1ea;    /* warme Zwischenfläche */
-      --paper-deep: #edeadf;    /* abgesetzte Sektionen */
+      /* --paper-deep entfernt: 0 Treffer für var(--paper-deep) im ganzen Projekt
+         inkl. demo/ und tools/. Der Wert #edeadf lebt nur noch als Rechenbeispiel
+         im Kontrast-Kommentar unten weiter. */
 
       /* Grau- & Ink-Skala (AA-geprüft — gegen ALLE Papierflächen, nicht nur Weiß).
          Maßgeblich ist der schlechteste Grund, auf dem die Farbe real steht:
@@ -52,23 +54,27 @@
       --c-gray-d: #68675f;      /* WCAG AA: 4.94:1 auf Weiß, 4.72:1 im schlechtesten Fall */
       --c-ink-strong: #444;     /* Fließtext dunkel (long-desc, Info-Modal) */
       --c-ink-body: #555;       /* Karten-/Zitattext */
-      --c-ink-faded: #8d8b80;   /* zurückgenommene Meta-Texte */
+      /* --c-ink-faded entfernt: 0 Treffer für var(--c-ink-faded) im ganzen Projekt.
+         Die letzten Verwendungen (.chat-meta, .rating-text) wurden beim Kontrast-
+         Pass auf --c-gray-m gehoben, das Token blieb als Rest zurück. */
       --c-black-soft: #3d3d3d;  /* Hover-Abdunklung schwarzer Flächen */
       --line: #e4e2d6;          /* Hairline-Border */
       --line-strong: #d8d3c4;
 
-      /* Status */
-      --c-ok:   #1f7a4d;
+      /* Status — nur die real benutzten Rollen. --c-ok und --c-info entfernt:
+         0 Treffer im ganzen Projekt (--c-warn 2, --c-err 3). Achtung für später:
+         demo/showroom/utm-link-baukasten.html benutzt zwar var(--c-ok), definiert
+         es aber selbst (dort Zeile 13) und lädt base.css gar nicht — das ist
+         KEINE Abhängigkeit auf dieses Token. */
       --c-warn: #9a6a00;
       --c-err:  #b3362c;
-      --c-info: #5c8fbf;
 
       /* Terminal-/Code-Palette */
       --term-bg: #14140f;
       --term-ink: #d4d4d4;
       --term-ink-soft: #cfcfc7;
       --term-ok: #7ac59a;
-      --term-err: #e8888e;
+      /* --term-err entfernt: 0 Treffer (--term-ok/-key/-dim/-ink-soft sind in Gebrauch). */
       --term-key: #6aa9e8;
       --term-dim: #6a6a60;
 
@@ -85,9 +91,10 @@
       --r-lg: 1.6rem;
       --r-xl: 2rem;
       --r-pill: 3rem;
-      /* E11: --radius-sharp/--radius-card entfernt (nirgends genutzt).
-         --radius-pill bleibt als Alias, weil Seiten es noch verwenden (Wave 2). */
-      --radius-pill: var(--r-pill);
+      /* E11 entfernte hier --radius-sharp/--radius-card. --radius-pill folgt jetzt:
+         der Kommentar „Seiten verwenden es noch (Wave 2)“ war überholt, Grep über
+         das ganze Projekt inkl. demo/ und tools/ ergibt 0 Treffer für
+         var(--radius-pill). Die Skala ist damit lückenlos --r-xs…--r-pill. */
 
       /* Typo: Inter variable, Nuancen 450/640 + clamp()-Skala (10px-Basis) */
       --font-sans: 'Inter', 'Helvetica Neue', Arial, sans-serif;
@@ -97,7 +104,10 @@
       --fs-display: clamp(4.8rem, 1.6rem + 5.4vw, 8.4rem);    /* Hero-/Onepager-H1 */
       --fs-display-sm: clamp(4.4rem, 2.4rem + 3.2vw, 6.4rem); /* kleinere Display-H1 (z.B. Builder) */
       --fs-h2: clamp(3.2rem, 1.84rem + 2vw, 4.4rem);          /* Sektions-H2 */
-      --fs-h3: clamp(2rem, 1.7rem + .6vw, 2.4rem);
+      /* --fs-h3 entfernt: 0 Treffer für var(--fs-h3) im ganzen Projekt. Bewusst
+         gestrichen statt „nachträglich benutzt“ — H3-Größen stehen im Bestand
+         durchweg als feste Werte an der jeweiligen Komponente (.sr-name 1.8rem,
+         .skill-name 2.1rem); ein Token einzuziehen wäre ein Umbau, kein Aufräumen. */
 
       /* Bewegung */
       --trans: all .2s cubic-bezier(.17,.67,.83,.67);         /* UI/Hover (Bestand) */
@@ -212,7 +222,8 @@
       margin-top: 1.2rem; font-size: 1.65rem; line-height: 1.55;
       color: var(--c-gray-d); max-width: 64rem;
     }
-    .page-actions { display: flex; gap: 1rem; margin-top: 1.8rem; flex-wrap: wrap; }
+    /* .page-actions entfernt — Volltext-Grep über alle HTML, shared/base.js und
+       data/*.js: der Klassenname existiert nirgends als String. */
     @media (max-width: 1023px) { .page-head { padding: 3.6rem 0 .8rem; } }
 
     /* ===== MARKER (Signatur des Editorial-Passes) =====
@@ -282,9 +293,14 @@
     }
     .skill-card:focus-visible { outline: 2px solid var(--c-black); outline-offset: 2px; }
 
+    /* overflow-wrap:anywhere — mit dem Default „normal“ brach ein langes Kompositum
+       gar nicht: Stresstest mit 68 Zeichen ergab scrollWidth 755 bei clientWidth 357,
+       der Titel wurde am Kartenrand hart abgeschnitten. .modal-header h2 hat für
+       denselben Inhalt längst „anywhere“ — das hier war Inkonsistenz, keine Absicht. */
     .skill-name {
       font-size: 2.1rem; font-weight: 700; color: var(--c-black);
       margin: 0; line-height: 1.2; letter-spacing: -.02em;
+      overflow-wrap: anywhere;
     }
     .skill-tagline {
       font-size: 1.5rem; font-weight: 500; color: var(--c-gray-d);
@@ -353,6 +369,36 @@
       display: flex; flex-direction: column; gap: 1.2rem;
     }
     .cat-tabs { display: flex; gap: 0; border-bottom: 1px solid var(--c-gray-l); overflow-x: auto; }
+
+    /* ----- Scroll-Affordanz für die Tab-Rails (E12-Nachtrag) -----
+       .cat-tabs und .modal-tabs sind horizontale Scroll-Rails, gaben das aber mit
+       nichts zu erkennen: gemessen @360px scrollWidth/clientWidth = 872/320
+       (skills), 792/320 (prompts), 754/320 (lernen-hilfe) — von 7 Kategorien waren
+       2 sichtbar, bei maskImage:none und ::before/::after content:none. .modal-tabs
+       @360px skills 570/360. Wer die weiteren Kategorien nicht sieht, findet sie
+       nicht — direkter Schaden an der Auffindbarkeit.
+       Übernommen wird exakt die Mechanik von .main-nav (siehe unten, „E5-Nachtrag“):
+       shared/base.js setzt data-scroll="start|mid|end|none" aus scrollLeft, das CSS
+       legt die richtungsabhängige Maske drüber — am Anfang faded nur rechts, in der
+       Mitte beidseitig, am Ende nur links.
+       mask-image statt Overlay-Gradient, weil die Rails auf UNTERSCHIEDLICHEN
+       Flächen sitzen (.cat-tabs auf --c-bg, .modal-tabs auf der Modal-Fläche):
+       die Maske blendet die Rail selbst aus und braucht deshalb gar keine
+       Flächenfarbe zu kennen. Kein Media-Query nötig — passt alles hinein,
+       setzt base.js data-scroll="none" und es liegt keine Maske an. */
+    .cat-tabs, .modal-tabs { --fade: 2.4rem; }
+    .cat-tabs[data-scroll="start"], .modal-tabs[data-scroll="start"] {
+      -webkit-mask-image: linear-gradient(to right, #000 calc(100% - var(--fade)), transparent);
+              mask-image: linear-gradient(to right, #000 calc(100% - var(--fade)), transparent);
+    }
+    .cat-tabs[data-scroll="mid"], .modal-tabs[data-scroll="mid"] {
+      -webkit-mask-image: linear-gradient(to right, transparent, #000 var(--fade), #000 calc(100% - var(--fade)), transparent);
+              mask-image: linear-gradient(to right, transparent, #000 var(--fade), #000 calc(100% - var(--fade)), transparent);
+    }
+    .cat-tabs[data-scroll="end"], .modal-tabs[data-scroll="end"] {
+      -webkit-mask-image: linear-gradient(to right, transparent, #000 var(--fade));
+              mask-image: linear-gradient(to right, transparent, #000 var(--fade));
+    }
     .cat-tab {
       padding: 1rem 1.4rem 1.2rem;
       font-size: 1.5rem; font-weight: 500; letter-spacing: -.01em;
@@ -602,10 +648,21 @@
 
     /* ===== EMPTY STATE ===== */
     .empty-state { grid-column: 1/-1; text-align: center; padding: 8rem 2rem; }
-    .empty-state p { font-size: 2.4rem; color: var(--c-gray-m); margin-bottom: 2rem; }
+    /* :not(.empty-text) ist der Kern der Regel: ohne sie schlug .empty-state p
+       (Spezifität 0,1,1) die Klassenregel .empty-text (0,1,0) — der Erklärsatz
+       rendete auf allen 5 filterbaren Seiten mit 24px statt 16px, also exakt so
+       groß wie die Überschrift darüber, und lief bei max-width:none über 1240px
+       (~110 Zeichen je Zeile). Zeile für Zeile war .empty-text damit toter Code.
+       Der klassenlose <p> bleibt als Alt-Muster (skills.html:1006) bedient. */
+    .empty-state p:not(.empty-text) { font-size: 2.4rem; color: var(--c-gray-m); margin-bottom: 2rem; }
     .empty-icon { font-size: 5rem; margin-bottom: 2rem; }
     .empty-title { font-size: 2.4rem; font-weight: 700; color: var(--c-black); margin-bottom: 1rem; }
-    .empty-text { font-size: 1.6rem; color: var(--c-gray-m); }
+    /* 52ch ≈ 60–70 Zeichen je Zeile statt 1240px/110 Zeichen. Das ist der Moment,
+       in dem jemand nichts gefunden hat — der Satz muss ohne Mühe lesbar sein. */
+    .empty-text {
+      font-size: 1.6rem; line-height: 1.55; color: var(--c-gray-m);
+      max-width: 52ch; margin-inline: auto;
+    }
 
     /* ===== ENDORSEMENTS (nur der Leer-Zustand wird noch genutzt) ===== */
     .no-endorsements { font-size: 1.5rem; color: var(--c-gray-m); font-style: italic; }
@@ -845,7 +902,19 @@
     .nav-link.active { color: var(--c-black); background: var(--c-yellow); font-weight: 600; }
     /* Injizierte Nav (shared/base.js): Anker-Varianten wie Buttons behandeln */
     a.nav-link { text-decoration: none; display: inline-flex; align-items: center; }
-    a.logo { text-decoration: none; color: inherit; }
+    /* min-height: die Marke ist ein Link auf die Startseite, war als Trefffläche
+       aber zu flach: gemessen 153.7×19px bei 768×1024 und 198.7×22px bei 1024×768
+       (bei 360/390px steht das Lockup zweizeilig und ist mit 30px in Ordnung).
+       2.4rem = 24px hebt beide Fälle über die 24px-Grenze; das Element ist Flex,
+       der Zuwachs geht in die Trefffläche, nicht ins Layout. */
+    a.logo { text-decoration: none; color: inherit; min-height: 2.4rem; }
+    /* Einziges interaktives Element der Seite ganz ohne Hover-Zustand (gemessen:
+       0 geänderte Property-Werte auf allen 6 Seiten, Fokus war vorhanden).
+       Dieselbe Geste wie bei den übrigen Text-Links: gelbe Unterstreichung. */
+    a.logo:hover .logo-mark {
+      text-decoration: underline; text-decoration-color: var(--c-yellow);
+      text-decoration-thickness: 2px; text-underline-offset: 3px;
+    }
     @media (max-width: 1023px) {
       .main-nav { gap: .2rem; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
       .main-nav::-webkit-scrollbar { display: none; }
@@ -914,9 +983,14 @@
     /* ===== UTILITIES (E1-Einkaufsliste aus der Design-Bibliothek) ===== */
 
     /* Globaler Fokus-Ring; auf dunklen Flächen gelb */
+    /* Gelb NUR auf den dunklen Flächen (Header, Footer). .pilots-section stand hier
+       aus der Zeit, als sie dunkel war — seit E11 ist sie hell (--c-bg #f1f1ec),
+       Gelb darauf ergibt 1,15:1, WCAG 1.4.11 verlangt 3:1. Live kaputt war es
+       nicht, weil skills.html:368 die betroffenen Elemente auf Schwarz zurücksetzt
+       (verifiziert: 0 von 36 Fokussierbaren bekamen Gelb) — aber jedes neu
+       ergänzte Element wäre in die Falle gelaufen. */
     :focus-visible { outline: 2px solid var(--c-black); outline-offset: 2px; }
-    .site-header :focus-visible, footer :focus-visible,
-    .pilots-section :focus-visible { outline-color: var(--c-yellow); }
+    .site-header :focus-visible, footer :focus-visible { outline-color: var(--c-yellow); }
 
     /* Display-Headline (clamp-Skala) */
     .display {
@@ -927,18 +1001,12 @@
       text-wrap: balance;
     }
 
-    /* Entrance-Animationen */
-    @keyframes a-fade-up { from { opacity: 0; translate: 0 24px; } }
-
-    /* Stagger: Kinder nacheinander (auf Container legen) */
-    .anim-stagger > * { animation: a-fade-up var(--ad) var(--ae) both; }
-    .anim-stagger > :nth-child(1) { animation-delay: .05s; }
-    .anim-stagger > :nth-child(2) { animation-delay: .12s; }
-    .anim-stagger > :nth-child(3) { animation-delay: .19s; }
-    .anim-stagger > :nth-child(4) { animation-delay: .26s; }
-    .anim-stagger > :nth-child(5) { animation-delay: .33s; }
-    .anim-stagger > :nth-child(6) { animation-delay: .40s; }
-    .anim-stagger > :nth-child(n+7) { animation-delay: .47s; }
+    /* .anim-stagger (Container-Staffel inkl. nth-child-Kette und der
+       reduced-motion-Abschaltung) entfernt — Volltext-Grep über alle HTML,
+       shared/base.js und data/*.js: nirgends als String vorhanden, auch nicht
+       laufzeit-erzeugt. Mit ihr fällt @keyframes a-fade-up weg: es war ihre
+       einzige Verwendungsstelle (Grep über das ganze Projekt: 0 Treffer).
+       .anim-reveal arbeitet mit transitions, nicht mit diesem Keyframe. */
 
     /* Scroll-Reveal (Klasse .in-view via IntersectionObserver, kommt mit base.js) */
     .anim-reveal {
@@ -949,7 +1017,6 @@
     .anim-reveal.in-view { opacity: 1; translate: 0 0; }
 
     @media (prefers-reduced-motion: reduce) {
-      .anim-stagger > * { animation: none; }
       .anim-reveal { transition: none; opacity: 1; translate: 0 0; }
     }
 
@@ -1117,7 +1184,11 @@
          fürs Nav-Fenster, bleibt aber lesbar sichtbar (RAHMEN: Lockup bleibt). */
       .site-header .logo { flex-direction: column; align-items: flex-start; gap: .3rem; }
       .site-header .logo-mark { font-size: 1.7rem; }
-      .site-header .overline { font-size: .8rem; letter-spacing: .08em; }
+      /* Vorher .8rem = 8px — versal gesetzt und mit positivem letter-spacing der
+         einzige Ausreißer der Seite unter jeder Lesbarkeitsgrenze. 1.05rem hält
+         die Overline auf dem Wert, den sie bereits ≤1023px hat; das Sperren wird
+         gegengerechnet, damit das Lockup nicht breiter wird als vorher. */
+      .site-header .overline { font-size: 1.05rem; letter-spacing: .06em; }
     }
     @media (max-width: 480px) {
       /* E12-M6: „Lernen & Hilfe“ ist mobil das längste Label und drängt die
@@ -1133,7 +1204,9 @@
     @media (max-width: 400px) {
       .header-inner { gap: .5rem; padding-left: 1.2rem; padding-right: 1.2rem; }
       .nav-link { padding: .5rem .55rem; letter-spacing: -.01em; }
-      .site-header .overline { font-size: .75rem; letter-spacing: .06em; }
+      /* Vorher .75rem = 7.5px (html{font-size:10px}) — unlesbar klein. 1rem = 10px
+         ist die untere Grenze, die im Bestand sonst nirgends unterschritten wird. */
+      .site-header .overline { font-size: 1rem; letter-spacing: .04em; }
     }
 
     /* =====================================================================
@@ -1563,9 +1636,13 @@
 
     /* ----- Case-Grid & -Karten ----- */
     .sr-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2rem; }
+    /* border-radius: --r-lg (16px), nicht --r-md (12px). Die Inhaltskarte im Raster
+       ist EIN Primitiv: .skill-card/.area-card/.pilot-card standen bereits auf
+       16px + --paper, .sr-card als einzige auf 12px — drei Kombinationen für
+       dieselbe Rolle, ohne erkennbaren Grund. */
     .sr-card {
       display: flex; flex-direction: column;
-      background: var(--paper); border: 1px solid var(--line); border-radius: var(--r-md);
+      background: var(--paper); border: 1px solid var(--line); border-radius: var(--r-lg);
       overflow: hidden; transition: border-color .25s ease, box-shadow .25s ease, transform .2s ease;
       scroll-margin-top: calc(var(--header-h) + 2.4rem);
     }
@@ -1588,12 +1665,20 @@
       letter-spacing: .05em; text-transform: uppercase;
       border-radius: var(--r-pill); padding: .3rem .9rem;
     }
-    .sr-badge.-echt { background: var(--c-black); color: var(--c-white); }
+    /* Der transparente 1px-Rand ist kein Zierrat, sondern Höhenausgleich: mit
+       border:0 stand -echt auf 20px, -beispiel (border 1px) auf 22px — bei
+       gleichem Padding und gleicher font-size lagen die beiden Marker im Raster
+       sichtbar versetzt nebeneinander. Sie tragen die Ehrlichkeits-Kennzeichnung
+       („Echtes Team-Tool“ vs. „Beispiel-Projekt“), die soll sauber sitzen. */
+    .sr-badge.-echt { background: var(--c-black); color: var(--c-white); border: 1px solid transparent; }
     .sr-badge.-beispiel { background: var(--paper-warm); color: var(--c-black); border: 1px solid var(--line-strong); }
     .sr-badge .lu { width: 1.2rem; height: 1.2rem; }
     .sr-body { display: flex; flex-direction: column; gap: .8rem; padding: 1.6rem 1.8rem 1.8rem; }
     .sr-kopf { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
-    .sr-name { font-size: 1.8rem; font-weight: 700; letter-spacing: -.01em; }
+    /* overflow-wrap wie .skill-name/.modal-header h2 — sonst schneidet ein langes
+       Kompositum am Kartenrand ab statt umzubrechen (Stresstest: scrollWidth 755
+       bei clientWidth 357). */
+    .sr-name { font-size: 1.8rem; font-weight: 700; letter-spacing: -.01em; overflow-wrap: anywhere; }
     .sr-sub {
       font-family: var(--font-mono); font-size: 1.05rem; font-weight: 600;
       letter-spacing: .05em; text-transform: uppercase; color: var(--c-gray-m);
@@ -1601,10 +1686,9 @@
     .sr-persona { font-size: 1.3rem; color: var(--c-gray-d); }
     .sr-persona strong { font-weight: 600; color: var(--c-ink-strong); }
     .sr-desc { font-size: 1.4rem; line-height: 1.55; color: var(--c-ink-body); margin: 0; }
-    .sr-tag {
-      font-family: var(--font-mono); font-size: 1.1rem; color: var(--c-gray-d);
-      background: rgba(38,38,38,.05); border-radius: var(--r-sm); padding: .2rem .7rem;
-    }
+    /* .sr-tag entfernt — Volltext-Grep über alle HTML, shared/base.js und data/*.js:
+       der Klassenname existiert nirgends als String (showroom.html rendert die
+       Karten ohne ihn). */
     .sr-actions { display: flex; align-items: center; gap: .8rem; flex-wrap: wrap; margin-top: .6rem; }
 
     /* ----- Reaktions-Button „Will ich auch“ (vote:reaktion:<id>) ----- */
@@ -1694,7 +1778,14 @@
       background: rgba(252,252,252,.12); border: 1px solid rgba(252,252,252,.2);
       border-radius: .4rem; padding: .1rem .5rem; color: inherit;
     }
-    @media (max-width: 1023px) { .nav-suche-kbd { display: none; } }
+    /* Breakpoint bewusst 1099px, NICHT 1023px: bei genau 1024px (iPad quer) kam
+       das „Strg K“-Kbd (54px + .8rem Gap) zurück, während .main-nav gleichzeitig
+       das mobile overflow-x:auto verliert. .nav-suche-btn hat flex-shrink:0 —
+       Ergebnis war ein abgeschnittener Such-Button. Gemessen bei innerWidth 1024:
+       getBoundingClientRect().right = 1052.7, also 28.7px außerhalb und damit
+       unklickbar; ab 1056px wieder heil. Breiten-Sweep 320–1600px in 8px-Schritten
+       zeigt mit 1099px durchgehend right <= innerWidth auf allen 6 Seiten. */
+    @media (max-width: 1099px) { .nav-suche-kbd { display: none; } }
 
     .gsearch-overlay {
       position: fixed; inset: 0; z-index: 260;

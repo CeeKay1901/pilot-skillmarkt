@@ -46,6 +46,12 @@
   <meta name="twitter:title" content="pilot AI Marketplace">
   <meta name="twitter:description" content="Skills, Prompts, Hilfe, echte Team-Tools und Beispiel-Projekte — entdecken, verstehen, selbst nutzen.">
   <meta name="twitter:image" content="https://ceekay1901.github.io/pilot-skillmarkt/og-image.png">
+  <!-- canonical fehlte auf allen Seiten (gemessen: null), og:url war dagegen korrekt.
+       Deckungsgleich mit og:url — für die Startseite ist das Verzeichnis kanonisch,
+       nicht /index.html, sonst konkurrieren zwei URLs für dieselbe Seite. -->
+  <link rel="canonical" href="https://ceekay1901.github.io/pilot-skillmarkt/">
+  <!-- Favicon: relativer Pfad, damit die Seite auch per file:// funktioniert. -->
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="preload" href="assets/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="shared/base.css">
   <style>

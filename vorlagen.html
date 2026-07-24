@@ -12,6 +12,15 @@
   <meta property="og:description" content="Fertige Code-Bausteine und frei nutzbare Design-Assets — startklar fürs nächste Projekt.">
   <meta property="og:url" content="https://ceekay1901.github.io/pilot-skillmarkt/vorlagen.html">
   <meta property="og:image" content="https://ceekay1901.github.io/pilot-skillmarkt/og-image.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="pilot AI Marketplace — Vorlagen">
+  <meta name="twitter:description" content="Fertige Code-Bausteine und frei nutzbare Design-Assets — startklar fürs nächste Projekt.">
+  <meta name="twitter:image" content="https://ceekay1901.github.io/pilot-skillmarkt/og-image.png">
+  <!-- canonical fehlte auf allen Seiten (gemessen: null), og:url war dagegen korrekt.
+       Absolut und deckungsgleich mit og:url — sonst widersprechen sich beide Signale. -->
+  <link rel="canonical" href="https://ceekay1901.github.io/pilot-skillmarkt/vorlagen.html">
+  <!-- Favicon: relativer Pfad, damit die Seite auch per file:// funktioniert. -->
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="preload" href="assets/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="shared/base.css">
   <style>
@@ -96,14 +105,15 @@
            sie nicht mitschleppen), (b) ein paar seitenlokale Feinheiten.
        ============================================================ */
 
-    /* --- @font-face der Bibliotheks-Fonts (nur OFL, lokal, kein CDN) --- */
-    @font-face {
-      font-family: 'Inter';
-      src: url('assets/fonts/inter-variable.woff2') format('woff2-variations');
-      font-weight: 100 900;
-      font-style: normal;
-      font-display: swap;
-    }
+    /* --- @font-face der Bibliotheks-Fonts (nur OFL, lokal, kein CDN) ---
+       Nur die Fonts, die AUSSCHLIESSLICH diese Seite braucht. Inter und
+       JetBrains Mono standen hier bis 24.07.2026 ein zweites Mal, obwohl der
+       Kommentar oben genau das verbietet — beide sind die Systemschriften und
+       stehen bereits in shared/base.css. Gemessen: document.fonts enthielt
+       „Inter|normal|100 900“ und „JetBrains Mono|normal|100 800“ doppelt.
+       Kein Extra-Download (gleiche Datei), aber Code und Kommentar widersprachen
+       sich, und die lokale Inter-Deklaration hatte keinen Italic-Schnitt — wer
+       sie für die maßgebliche gehalten hätte, hätte falsch geschlossen. */
     @font-face {
       font-family: 'Manrope';
       src: url('assets/fonts/manrope-variable.woff2') format('woff2-variations');
@@ -146,13 +156,8 @@
       font-style: normal;
       font-display: swap;
     }
-    @font-face {
-      font-family: 'JetBrains Mono';
-      src: url('assets/fonts/jetbrains-mono-variable.woff2') format('woff2-variations');
-      font-weight: 100 800;
-      font-style: normal;
-      font-display: swap;
-    }
+    /* IBM Plex Mono bleibt: der einzige Mono-Font der Bibliothek, der NICHT in
+       base.css steht — ohne diesen Block liefe seine Vorschaukarte im Fallback. */
     @font-face {
       font-family: 'IBM Plex Mono';
       src: url('assets/fonts/ibm-plex-mono-400.woff2') format('woff2');
@@ -678,10 +683,19 @@
       const host = document.getElementById('bk-cats');
       if (!host) return;
       const cats = [{ id: 'all', label: 'Alle' }].concat(KAT_ORDER.map(k => ({ id: k, label: KAT_LABEL[k] })));
+      // Zähler folgen der aktiven Suche, damit die Pillen zur Gridfläche passen.
+      // (Gemessen 24.07.2026, Suche „tabelle“: „Layout 3“ versprach drei Bausteine
+      // und lieferte null. Muster aus prompts.html/groupCount, dort schon gefixt.)
+      // bausteinMatchesSearch ist exakt der Filter, den renderBausteine anwendet —
+      // Versprechen und Lieferung kommen damit aus derselben Funktion.
       host.innerHTML = cats.map(c => {
         const active = state.kat === (c.id === 'all' ? null : c.id);
-        const count = c.id === 'all' ? BAUSTEINE.length : BAUSTEINE.filter(b => b.kategorie === c.id).length;
-        if (!count && c.id !== 'all') return '';
+        const count = c.id === 'all'
+          ? BAUSTEINE.filter(bausteinMatchesSearch).length
+          : BAUSTEINE.filter(b => b.kategorie === c.id && bausteinMatchesSearch(b)).length;
+        // Kategorien ohne Treffer fallen weg — außer der gerade aktiven, sonst
+        // verschwände die Pille, über die man den Filter wieder loswird.
+        if (!count && c.id !== 'all' && !active) return '';
         const ic = c.id === 'all' ? LU.blocks : katIcon(c.id);
         return `<button class="bk-cat${active ? ' active' : ''}" aria-pressed="${active}" onclick="setKat('${c.id}')">${ic}${c.label} <span class="tab-count">${count}</span></button>`;
       }).join('');
@@ -1049,7 +1063,9 @@
     window.setKat = setKat;
     window._vlCfg.bausteine = window.ModalConfig;
     // E12: Renderer des aktiven Tabs für das gemeinsame Suchfeld registrieren.
-    window._vlSearch.bausteine = renderBausteine;
+    // renderCats() muss mitlaufen: die Kategorie-Zähler zählen seit dem Zähler-Fix
+    // suchabhängig und blieben sonst beim ungefilterten Stand stehen.
+    window._vlSearch.bausteine = function () { renderCats(); renderBausteine(); };
     })();
 
     /* ===== MODUL: DESIGN-ASSETS (aus bibliothek.html) ===== */
@@ -1318,9 +1334,14 @@
           <span class="token-var">${escHtml(c.token)}</span>
           <span class="token-use">${escHtml(c.wofuer)}</span>
         </div>`).join('');
+      // width/height am <img>: beide Logo-SVGs haben viewBox „0 0 91 45“ (aus der
+      // Datei gelesen, nicht geschätzt). Die Kachelgröße kommt weiter aus
+      // .logo-thumb in base.css (8rem × 4rem) — die Attribute sind die Rückfall-
+      // ebene, damit der Platz auch ohne geladenes Stylesheet reserviert ist und
+      // loading="lazy" keinen Sprung verursachen kann.
       const logos = BRAND.logos.map(l => `
         <div class="logo-card">
-          <img class="logo-thumb${l.id === 'pilot-logo-dark' ? ' -dark' : ''}" src="${l.datei}" alt="${escHtml(l.name)}" loading="lazy">
+          <img class="logo-thumb${l.id === 'pilot-logo-dark' ? ' -dark' : ''}" src="${l.datei}" alt="${escHtml(l.name)}" width="91" height="45" loading="lazy">
           <div class="logo-meta">
             <strong>${escHtml(l.name)}</strong>
             <span>${escHtml(l.wofuer)}</span>
@@ -1566,9 +1587,15 @@
       renderPatterns();
       renderBrand();
 
-      // E12: Count-Badge am Design-Assets-Tab (Schriften + übrige Assets)
+      // E12: Count-Badge am Design-Assets-Tab.
+      // Gemessen 24.07.2026: zeigte 39 statt 30. ASSETS ENTHÄLT die Schriften
+      // bereits (data/assets.js: [...FONTS.map(…), ...PALETTES, ...PATTERNS,
+      // ...ICONSETS]) — „FONTS.length + ASSETS.length“ zählte die 9 Schriften
+      // doppelt. ASSETS.length allein = 30 und deckt sich mit den Abschnitts-
+      // zählern (9 Schriften + 4 Icon-Sets + 7 Paletten + 10 Hintergründe)
+      // und mit der Zahl auf der Startseite.
       const _ac = document.getElementById('vl-count-assets');
-      if (_ac) { _ac.textContent = FONTS.length + ASSETS.length; _ac.hidden = false; }
+      if (_ac) { _ac.textContent = ASSETS.length; _ac.hidden = false; }
 
       initModalEngine();
       initModalSwipe();

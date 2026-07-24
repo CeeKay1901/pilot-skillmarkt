@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="pilot AI Marketplace">
+  <!-- pilot-CI: schwarzes Feld, gelber Akzent. Bewusst kein Buchstabe „p“ in
+       Schriftschnitt — bei 16 px wäre der nicht lesbar. Stattdessen das Motiv
+       des Marketplace: vier Kacheln (die Bereiche), eine davon gelb markiert
+       (das, was du gerade suchst). Dasselbe Raster wie das Katalog-Icon. -->
+  <rect width="64" height="64" rx="12" fill="#262626"/>
+  <rect x="14" y="14" width="15" height="15" rx="3" fill="#fcfcfc"/>
+  <rect x="35" y="14" width="15" height="15" rx="3" fill="#fcfcfc"/>
+  <rect x="14" y="35" width="15" height="15" rx="3" fill="#fcfcfc"/>
+  <rect x="35" y="35" width="15" height="15" rx="3" fill="#ffe05e"/>
+</svg>
