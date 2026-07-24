@@ -38,10 +38,17 @@
       --paper-warm: #f4f1ea;    /* warme Zwischenfläche */
       --paper-deep: #edeadf;    /* abgesetzte Sektionen */
 
-      /* Grau- & Ink-Skala (AA-geprüfte Bestandswerte) */
+      /* Grau- & Ink-Skala (AA-geprüft — gegen ALLE Papierflächen, nicht nur Weiß).
+         Maßgeblich ist der schlechteste Grund, auf dem die Farbe real steht:
+         --c-bg-deep (#eeede5, Body-Grund) und --paper-deep (#edeadf).
+         Vorher stand hier „--c-gray-d: #6f6e66, ~5.4:1 auf Weiß“ — beides falsch:
+         real 4.99:1 auf Weiß und nur 4.36:1 auf --c-bg-deep bzw. 4.25:1 auf
+         --paper-deep. Damit verfehlten .kicker (auf JEDER Seite), .page-sub und
+         .lib-note die AA-Schwelle von 4.5:1. #68675f hält 4.72:1 im schlechtesten
+         Fall und bleibt optisch praktisch identisch. */
       --c-gray-l: #bab8ab;
-      --c-gray-m: #66655d;      /* WCAG AA: ~5.9:1 auf Weiß */
-      --c-gray-d: #6f6e66;      /* WCAG AA: ~5.4:1 auf Weiß */
+      --c-gray-m: #66655d;      /* WCAG AA: 5.71:1 auf Weiß, 4.86:1 im schlechtesten Fall */
+      --c-gray-d: #68675f;      /* WCAG AA: 4.94:1 auf Weiß, 4.72:1 im schlechtesten Fall */
       --c-ink-strong: #444;     /* Fließtext dunkel (long-desc, Info-Modal) */
       --c-ink-body: #555;       /* Karten-/Zitattext */
       --c-ink-faded: #8d8b80;   /* zurückgenommene Meta-Texte */
@@ -397,7 +404,12 @@
 
     /* ===== FOOTER ===== */
     footer {
-      background: var(--c-black); color: var(--c-gray-d);
+      /* Erbfarbe muss auf SCHWARZ lesbar sein. Vorher --c-gray-d (#68675f):
+         nur 2.9:1 auf --c-black — aktuell überschreibt jedes Kind die Farbe,
+         d. h. nichts war sichtbar kaputt, aber jeder neu ergänzte Text im
+         Footer wäre unlesbar gestartet. rgba(252,252,252,.72) entspricht der
+         Farbe, die .footer-nav ohnehin schon setzt (9.5:1). */
+      background: var(--c-black); color: rgba(252, 252, 252, .72);
       padding: 5rem 0 3rem;
       font-size: 1.4rem;
       border-top: 1px solid rgba(255,255,255,.1);
@@ -872,6 +884,10 @@
       /* E12 Mobil-Sweep: Filter-Pills + Karten-Buttons auf vorlagen/showroom */
       .bk-cat, .sr-cat, .lib-btn { min-height: 4.4rem; }
       .nav-link { min-height: 4.4rem; display: inline-flex; align-items: center; }
+      /* Footer-Navigation: eigenständige Ziele (kein Fließtext), lagen bei 26px —
+         die Inline-Link-Ausnahme von WCAG 2.5.8 greift hier NICHT. Auf allen
+         Seiten wirksam, weil der Footer aus renderNav kommt. */
+      .footer-nav a, .footer-nav button { min-height: 4.4rem; }
       /* kleine Bedienelemente: unsichtbare Hit-Area auf ~44px aufblasen */
       .fav-btn, .star-btn { position: relative; }
       .fav-btn::after, .star-btn::after { content: ''; position: absolute; inset: -12px; }

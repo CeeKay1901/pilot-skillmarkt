@@ -176,12 +176,16 @@ async function run() {
       hasOldHilfe: !!document.getElementById('area-hilfe-count'),
       hasOldLernen: !!document.getElementById('area-lernen-count'),
       areasH: (document.getElementById('areas-h') || {}).textContent || '',
-      livePills: document.querySelectorAll('.area-card .area-pill.-live').length,
+      // Ehrlichkeits-Anker: jede Bereichs-Karte MUSS zu etwas Fertigem führen.
+      // Früher zählte hier das gelbe „Live"-Label — das saß auf allen sechs Karten
+      // und unterschied damit nichts mehr; es wurde entfernt. Der echte CTA-Link ist
+      // der härtere Beleg: kein Bereich wird beworben, den es nicht gibt.
+      areaCtaCount: document.querySelectorAll('.area-card .area-cta-row a[href]').length,
       spotHref: (document.querySelector('a.area-spot[href^="lernen-hilfe.html"]') || { getAttribute: () => '' }).getAttribute('href') || '',
     }));
     check('07_index_merge',
       idx.mergedCount > 0 && !idx.hasOldHilfe && !idx.hasOldLernen
-        && /sechs/.test(idx.areasH) && idx.livePills === 6
+        && /sechs/.test(idx.areasH) && idx.areaCtaCount === 6
         && /lernen-hilfe\.html/.test(idx.spotHref),
       idx);
     await page.close();

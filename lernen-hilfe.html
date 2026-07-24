@@ -22,8 +22,10 @@
 
        Vier Bereiche unter einer Sticky-Sub-Nav, in dieser Reihenfolge:
          1) RESSOURCEN — editoriales Link-Regal (aus lernen.html):
-            2-spaltige Link-Karten, Filter Typ/Niveau/Dauer/Sprache +
-            Suche, bayesScore-Sortierung, Zeit-Schnellauswahl unterm Seitenkopf.
+            2-spaltige Link-Karten, Filter Typ/Niveau/Sprache + Suche,
+            bayesScore-Sortierung. Die DAUER hängt allein an der
+            Zeit-Schnellauswahl unterm Seitenkopf (Signature-Element) —
+            bewusst kein zweiter Dauer-Regler in der Filterleiste.
          2) BEFEHLE & KNIFFE — heller Rahmen, das Upvote-Ranking selbst
             bleibt als Terminal-Moment dunkel.
          3) GLOSSAR — helles Nachschlagewerk mit Suche + A-Z-Sprungleiste.
@@ -88,15 +90,16 @@
     .zt-name { font-size: 1.3rem; }
     .zt-count { font-family: var(--font-mono); font-size: 1.05rem; color: var(--c-gray-m); }
     #zeit-tiles .chip.-active .zt-count { color: rgba(38,38,38,.6); }
+    /* Bucket, in dem nach den übrigen Filtern nichts mehr liegt: sichtbar, aber
+       erkennbar nicht anwählbar (statt die Kachel wegzunehmen — die Zeile ist
+       das Signature-Element und soll nicht springen). */
+    #zeit-tiles .chip.-leer { opacity: .4; cursor: default; }
 
-    /* Seiten-Suchfeld im Toolbar-Slot: neutralisiert die (dunkle) #search-Basisregel
-       aus base.css — das Feld sitzt hier auf heller Fläche. */
-    [data-page-search] #search {
-      background: var(--paper); border: 1px solid var(--line-strong);
-      color: var(--c-black); padding: 1rem 1.8rem; font-size: 1.5rem;
-    }
-    [data-page-search] #search::placeholder { color: var(--c-gray-m); }
-    [data-page-search] #search:focus { outline: none; border-color: var(--c-black); background: var(--c-white); }
+    /* (Der frühere seitenlokale [data-page-search] #search-Block stand hier bis
+       zum Aufräum-Pass. Er war wirkungslos: base.css setzt dieselben Werte über
+       [data-page-search] input#search — höhere Spezifität (1,1,1) als (1,1,0) —
+       und sein Kommentar berief sich auf eine dunkle #search-Basisregel, die im
+       E11-CSS-Abriss längst entfernt wurde.) */
 
     /* Ressourcen-Bereich: Intro-Kopf + Filterleiste + Regal */
     .res-intro { background: var(--c-bg); padding: 5.2rem 0 2.4rem; }
@@ -105,8 +108,8 @@
     .res-lead { font-size: 1.6rem; line-height: 1.6; color: var(--c-ink-body); max-width: 74ch; margin: 0; }
 
     /* Chip-Zeile horizontal (Muster lernen.html): base.css stellt .role-chips für
-       den Katalog auf column — hier tragen 3 Gruppen (Niveau/Dauer/Sprache) sonst
-       viele Zeilen Höhe. Seitenlokal. */
+       den Katalog auf column — hier tragen die Gruppen (Niveau/Sprache) sonst
+       unnötig Zeilen Höhe. Seitenlokal. */
     #filter-chips { flex-direction: row; flex-wrap: wrap; align-items: center; }
     .chip-lbl {
       font-family: var(--font-mono); font-size: 1.1rem; font-weight: 600;
@@ -572,6 +575,23 @@
         background: linear-gradient(to right, rgba(244,241,234,0), var(--paper-warm) 75%);
         pointer-events: none;
       }
+      /* Zeit-Schnellauswahl: die vier Kacheln stapelten mobil untereinander und
+         fraßen ~250px, bevor überhaupt eine Ressource zu sehen war. Als Rail
+         (gleiches Muster wie Sub-Nav und A-Z-Leiste, inkl. Fade-Kante) bleibt der
+         Signature-Regler erhalten und kostet eine Zeile. */
+      .zeit-tiles {
+        flex: 1 1 100%; min-width: 0;
+        flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none;
+        padding-bottom: .2rem;
+      }
+      .zeit-tiles::-webkit-scrollbar { display: none; }
+      #zeit-tiles .chip { flex: 0 0 auto; }
+      .zeit-tiles::after {
+        content: ''; flex: 0 0 2.8rem;
+        position: sticky; right: 0;
+        background: linear-gradient(to right, rgba(241,241,236,0), var(--c-bg) 75%);
+        pointer-events: none;
+      }
       .faq-q { font-size: 1.5rem; padding: 1.6rem 1.6rem; }
       .faq-body { padding: 0 1.6rem 2rem; }
     }
@@ -586,6 +606,19 @@
       .vote-btn, .cmd-toggle, .cmd-copy, .chip, .term-play { min-height: 4.4rem; }
       .pillar-link, .g-head, .az-btn, .xref, .res-toggle { min-height: 4.4rem; }
       .az-btn { min-width: 4rem; }
+      /* Ressourcen-Titel ist ein Inline-Link: die Trefferfläche einer Zeile ist
+         nur die Schriftgröße (~21px). min-height greift bei display:inline nicht,
+         darum die unsichtbare Hit-Area — Muster .fav-btn::after aus base.css.
+         Ober-/unterhalb liegen nur nicht-klickbare Textzeilen, es wird also
+         keine fremde Bedienfläche verdeckt. */
+      a.res-title { position: relative; }
+      a.res-title::after { content: ''; position: absolute; inset: -1.2rem 0; }
+      /* Glossar-Suchfeld: das <input> selbst war nur ~19px hoch (Pill-Padding
+         zählt nicht zur Trefferfläche des Feldes). Padding wandert nach innen. */
+      .glo-search { padding-top: 0; padding-bottom: 0; }
+      .glo-search input { min-height: 4.4rem; }
+      /* Ressourcen-Suchfeld im Toolbar-Slot: 41px → 44px. */
+      [data-page-search] input#search { min-height: 4.4rem; }
     }
     @media (prefers-reduced-motion: reduce) {
       .cmd-card, .g-card, .faq-card, .res-card, .chip { transition: none; }
@@ -633,7 +666,9 @@
         </div>
       </div>
 
-      <!-- ZEIT-SCHNELLAUSWAHL: Klick setzt den Dauer-Filter im Regal -->
+      <!-- ZEIT-SCHNELLAUSWAHL: der EINZIGE Dauer-Regler der Seite. Früher lag
+           dieselbe Dimension zusätzlich als „Dauer“-Chipreihe in der Filterleiste —
+           zwei Regler für eine Sache; die Chipreihe ist entfallen. -->
       <div class="zeit-quick">
         <div class="zeit-quick-inner">
           <p class="zeit-quick-label" id="zeit-quick-label">Wie viel Zeit hast du gerade?</p>
@@ -907,25 +942,25 @@
         const active = state.niveau === n;
         return `<button class="role-chip${active ? ' active' : ''}" aria-pressed="${active}" onclick="setNiveau('${n}')">${NIVEAU_LABEL[n]}</button>`;
       }).join('');
-      const dauerChips = DAUER_BUCKETS.map(b => {
-        const active = state.dauer === b.id;
-        return `<button class="role-chip${active ? ' active' : ''}" aria-pressed="${active}" onclick="setDauer('${b.id}')">${b.label}</button>`;
-      }).join('');
+      // Dauer bewusst NICHT hier: die Zeit-Schnellauswahl über der Filterleiste
+      // ist der einzige Dauer-Regler (siehe renderZeitTiles).
       const langChips = ['de', 'en'].map(s => {
         const active = state.sprache === s;
         return `<button class="role-chip${active ? ' active' : ''}" aria-pressed="${active}" onclick="setSprache('${s}')">${SPRACHE_LABEL[s]}</button>`;
       }).join('');
       host.innerHTML = `<span class="chip-lbl">Niveau</span>${nivChips}`
-        + `<span class="chip-gap" aria-hidden="true"></span><span class="chip-lbl">Dauer</span>${dauerChips}`
         + `<span class="chip-gap" aria-hidden="true"></span><span class="chip-lbl">Sprache</span>${langChips}`;
     }
     function setNiveau(n) {
       state.niveau = state.niveau === n ? null : n;
       renderFilterChips(); renderCatTabs(); render();
     }
+    // Dauer hängt seit dem Redundanz-Abbau nur noch an den Zeit-Kacheln — die
+    // Niveau-/Sprache-Chips ändern sich dadurch nicht, also kein renderFilterChips().
+    // Den Kachel-Zustand frischt render() → updateZeitTiles() auf.
     function setDauer(id) {
       state.dauer = state.dauer === id ? null : id;
-      renderFilterChips(); renderCatTabs(); updateZeitTiles(); render();
+      renderCatTabs(); render();
     }
     function setSprache(s) {
       state.sprache = state.sprache === s ? null : s;
@@ -933,23 +968,48 @@
     }
 
     // ===== SIGNATURE: ZEIT-SCHNELLAUSWAHL (kompakte Chip-Zeile unter dem Seitenkopf) =====
+    // Seit dem Redundanz-Abbau der EINZIGE Dauer-Regler der Seite.
+    // Zähler wie bei den Typ-Tabs: sie zeigen, was nach den ÜBRIGEN aktiven Filtern
+    // (Typ/Niveau/Sprache) in diesem Zeit-Bucket noch übrig ist — eine „7“, die auf
+    // ein leeres Regal führt, wäre gelogen. Die Freitext-Suche bleibt außen vor
+    // (gleiche Konvention wie typCount).
+    function zeitCount(b) {
+      return RESSOURCEN.filter(r =>
+        (!state.typ || r.typ === state.typ)
+        && (!state.niveau || r.niveau === state.niveau)
+        && (!state.sprache || r.sprache === state.sprache)
+        && b.test(r)
+      ).length;
+    }
     function renderZeitTiles() {
       const host = document.getElementById('zeit-tiles');
       if (!host) return;
       host.innerHTML = DAUER_BUCKETS.map(b => {
-        const n = RESSOURCEN.filter(b.test).length; // echte Zählung aus dauerMin
         const active = state.dauer === b.id;
-        return `<button type="button" class="chip -yellow${active ? ' -active' : ''}" data-dauer="${b.id}" aria-pressed="${active}" onclick="quickZeit('${b.id}')">
+        const n = zeitCount(b);
+        return `<button type="button" class="chip -yellow${active ? ' -active' : ''}${!n && !active ? ' -leer' : ''}" data-dauer="${b.id}" aria-pressed="${active}"${!n && !active ? ' disabled' : ''} onclick="quickZeit('${b.id}')">
           <span class="zt-num">${b.zahl} Min</span><span class="zt-name">${b.name}</span><span class="zt-count">${n}</span>
         </button>`;
       }).join('');
     }
-    // Kein innerHTML-Tausch beim Klick (Fokus bleibt auf der Kachel) — nur Klassen.
+    // Kein innerHTML-Tausch beim Klick (Fokus bleibt auf der Kachel) — nur Klassen
+    // und Zähler-Text. Wird von render() bei JEDER Filteränderung aufgerufen.
     function updateZeitTiles() {
       document.querySelectorAll('#zeit-tiles .chip').forEach(el => {
         const active = state.dauer === el.dataset.dauer;
         el.classList.toggle('-active', active);
         el.setAttribute('aria-pressed', active ? 'true' : 'false');
+        const b = bucketById(el.dataset.dauer);
+        const c = el.querySelector('.zt-count');
+        if (!b || !c) return;
+        const n = zeitCount(b);
+        c.textContent = n;
+        // Leere Buckets führen ins Nichts — abblenden und sperren. Die AKTIVE
+        // Kachel bleibt immer klickbar, sonst käme man aus einer 0-Treffer-
+        // Kombination nicht mehr heraus.
+        const leer = !n && !active;
+        el.classList.toggle('-leer', leer);
+        el.disabled = leer;
       });
     }
     function scrollToRessourcen() {
@@ -989,8 +1049,8 @@
     function resetFilters() {
       state.typ = null; state.niveau = null; state.dauer = null; state.sprache = null; state.search = '';
       const se = document.getElementById('search'); if (se) se.value = '';
-      renderCatTabs(); renderFilterChips(); updateZeitTiles();
-      render();
+      renderCatTabs(); renderFilterChips();
+      render(); // setzt via updateZeitTiles auch die Zeit-Kacheln zurück
     }
 
     // ===== KARTE (LINK-Karte: Klick-Ziel ist der externe Link, Details klappen auf) =====
@@ -1070,6 +1130,9 @@
       const count = document.getElementById('results-count');
       if (count) count.innerHTML = `<strong>${filtered.length}</strong> ${resultNoun(filtered.length)}`;
 
+      // Zeit-Kacheln sind der einzige Dauer-Regler und stehen außerhalb der
+      // Filterleiste — Zustand und Zähler hier zentral nachziehen.
+      updateZeitTiles();
       renderActiveFilters();
 
       if (filtered.length === 0) {
@@ -1643,7 +1706,7 @@
         if (!filterRessourcen().some(x => x.id === id)) {
           state.typ = null; state.niveau = null; state.dauer = null; state.sprache = null; state.search = '';
           const se = document.getElementById('search'); if (se) se.value = '';
-          renderCatTabs(); renderFilterChips(); updateZeitTiles();
+          renderCatTabs(); renderFilterChips(); // Zeit-Kacheln zieht render() unten nach
         }
         _resExpanded.add(id);
         state._noCardAnim = true; render(); state._noCardAnim = false;

@@ -189,6 +189,57 @@
 
     /* Editorial-Pass: Sektions-Überschriften kräftiger (Startseiten-Sprache) */
     .lib-sec-head h2 { font-weight: 700; }
+
+    /* ===== Baustein-Vorschau: ganze Miniatur statt Anschnitt (Juli 2026) =====
+       Vorher rendert der iframe in Kartenbreite — sichtbar war nur der obere
+       linke Ausschnitt (bei Footer, CTA-Band & Co. sogar nur weiße Fläche).
+       Jetzt rendert er IMMER intern in Desktop-Breite (--pv-w) und wird per
+       transform auf die verfügbare Breite heruntergerechnet (--pv-s). Alle
+       Variablen setzt pvSync() zur Laufzeit:
+         --pv-h     = Eigenhöhe des Bausteins bei --pv-w (einmalig gemessen)
+         --pv-s     = Skalierungsfaktor (Breite, notfalls Höhe begrenzt)
+         --pv-x/--pv-y = Zentrierung auf der Karo-Fläche (nur Karte)
+       sandbox="" und das srcdoc-Escaping bleiben unangetastet. */
+    .baustein-thumb, .preview-frame-wrap {
+      --pv-w: 1200px; --pv-h: 675px; --pv-s: .4; --pv-x: 0px; --pv-y: 0px;
+    }
+    /* Einheitliche Kachel-Geometrie 16:9: die höchsten Bausteine (Preis-Karten
+       und Kontaktformular, Verhältnis 0,54) passen vollständig in voller Breite
+       hinein, flache Bänder liegen zentriert auf der Karo-Fläche. Gleiche
+       Kartenhöhen im Grid — und dank Höhen-Begrenzung in pvSync() wird auch ein
+       künftig noch höherer Baustein verkleinert statt angeschnitten. */
+    .baustein-thumb { aspect-ratio: 16 / 9; }
+    /* Einspaltig (≤1023px, dort bricht .bk-grid um) steht keine Karte neben einer
+       anderen — dann darf die Kachel genau so hoch sein wie die Miniatur. Spart
+       auf dem Handy bei flachen Bändern über 100px Karo-Leerraum pro Karte.
+       Ohne gesetztes --pv-boxh (JS aus) greift weiter das 16:9-Verhältnis. */
+    @media (max-width: 1023px) {
+      .baustein-thumb { height: var(--pv-boxh, auto); }
+    }
+    /* Modal: Box exakt so hoch wie die skalierte Miniatur — kein Leerraum. */
+    .preview-frame-wrap { height: var(--pv-boxh, 32rem); }
+    .baustein-thumb .preview-frame,
+    .preview-frame-wrap .preview-frame {
+      position: absolute; top: 0; left: 0;
+      width: var(--pv-w); height: var(--pv-h);
+      transform: translate(var(--pv-x), var(--pv-y)) scale(var(--pv-s));
+      transform-origin: top left;
+      pointer-events: none;   /* reine Optik: kein Scrollen/Klicken im Rahmen */
+    }
+    /* Der unsichtbare Mess-Rahmen (pvMessen) darf nie Layout beeinflussen.
+       Seine Breite setzt das Skript aus PV_W — hier bewusst nicht doppelt. */
+    .pv-measure { position: fixed; left: -10000px; top: 0; height: 10px; border: 0; opacity: 0; pointer-events: none; }
+
+    /* Touch: Trefferflächen ≥44px (WCAG 2.5.5). Die base.css-Blöcke decken
+       .lib-btn/.bk-cat ab — diese drei Elemente dieser Seite nicht:
+       .bk-rank-item lag bei 43px, das Sortier-Select bei 35px, der
+       Schriftgrößen-Regler bei 22px (dort wächst nur die Trefferfläche,
+       die Spur bleibt optisch schlank). */
+    @media (hover: none) and (pointer: coarse) {
+      .bk-rank-item { min-height: 4.4rem; }
+      .bk-sort select { min-height: 4.4rem; }
+      .ff-slider { height: 4.4rem; }
+    }
   </style>
 </head>
 <body>
@@ -527,6 +578,101 @@
       copyToClipboard(b.claudePrompt, 'Prompt kopiert — in Claude einfügen');
     }
 
+    // ===== VORSCHAU-MINIATUR: Skalierung + Höhenmessung =====
+    // Die iframe-Vorschau rendert intern immer in Desktop-Breite (PV_W) und wird
+    // per CSS-transform auf die Boxbreite heruntergerechnet. Damit die Miniatur
+    // ohne Anschnitt und ohne Leerraum sitzt, braucht es die Eigenhöhe jedes
+    // Bausteins bei PV_W — die misst pvMeasureAll() einmalig beim Start.
+    const PV_W = 1200;          // interne Render-Breite = Desktop-Layout
+    const PV_RATIO = 9 / 16;    // 16:9 — Kachelverhältnis und Fallback-Höhe
+    const pvH = new Map();      // baustein-id -> Eigenhöhe bei PV_W (px)
+
+    function pvSync() {
+      document.querySelectorAll('.baustein-thumb, .preview-frame-wrap').forEach(box => {
+        const w = box.clientWidth;
+        if (!w) return;                       // versteckter Tab/geschlossenes Modal
+        const h = pvH.get(box.dataset.pvId) || Math.round(PV_W * PV_RATIO);
+        // Höhe folgt dem Inhalt: im Modal immer, im Grid sobald es einspaltig ist
+        const inhaltsHoehe = box.classList.contains('preview-frame-wrap')
+          || window.matchMedia('(max-width: 1023px)').matches;
+        // nichts geändert -> nichts tun (schützt vor ResizeObserver-Schleifen)
+        if (box._pvW === w && box._pvH === h && box._pvMode === inhaltsHoehe) return;
+        box._pvW = w; box._pvH = h; box._pvMode = inhaltsHoehe;
+        box.style.setProperty('--pv-h', h + 'px');
+        if (inhaltsHoehe) {
+          const s = w / PV_W;
+          box.style.setProperty('--pv-s', s.toFixed(4));
+          box.style.setProperty('--pv-boxh', Math.round(h * s) + 'px');
+          box.style.setProperty('--pv-x', '0px');
+          box.style.setProperty('--pv-y', '0px');
+        } else {
+          // Karte: feste 16:9-Kachel. Normalfall = Breite bestimmt den Faktor;
+          // wäre ein Baustein höher als die Kachel, begrenzt ihn die Höhe (statt
+          // ihn anzuschneiden). Rest der Kachel bleibt Karo-Fläche, Miniatur mittig.
+          const kachelH = box.clientHeight || w * PV_RATIO;
+          const s = Math.min(w / PV_W, kachelH / h);
+          box.style.setProperty('--pv-s', s.toFixed(4));
+          box.style.setProperty('--pv-x', Math.max(0, Math.round((w - PV_W * s) / 2)) + 'px');
+          box.style.setProperty('--pv-y', Math.max(0, Math.round((kachelH - h * s) / 2)) + 'px');
+        }
+      });
+    }
+
+    // Ein ResizeObserver für alle Vorschau-Boxen: greift bei Fensterbreite,
+    // Tab-Wechsel (hidden -> sichtbar) und beim Öffnen des Modals gleichermaßen.
+    const pvRO = typeof ResizeObserver === 'function' ? new ResizeObserver(() => pvSync()) : null;
+    function pvRefresh() {
+      if (pvRO) {
+        pvRO.disconnect();     // alte, weggerenderte Boxen nicht weiter beobachten
+        document.querySelectorAll('.baustein-thumb, .preview-frame-wrap').forEach(b => pvRO.observe(b));
+      }
+      pvSync();
+    }
+
+    // Eigenhöhen einmalig messen: pro Baustein ein unsichtbarer Messrahmen mit
+    // PV_W Breite. srcdoc wird VOR dem Einhängen gesetzt — so gibt es kein
+    // about:blank-Zwischenladen, dessen load-Event sonst eine leere Höhe liefert.
+    // sandbox="allow-same-origin" OHNE allow-scripts: im Messrahmen läuft kein
+    // Skript, nur das Layout ist auslesbar. Die sichtbaren Vorschauen bleiben
+    // strikt sandbox="" (contentDocument dort bewusst gesperrt).
+    function pvMessen(b) {
+      return new Promise(done => {
+        const f = document.createElement('iframe');
+        f.className = 'pv-measure';
+        f.setAttribute('sandbox', 'allow-same-origin');
+        f.setAttribute('aria-hidden', 'true');
+        f.setAttribute('title', 'Messrahmen (unsichtbar)');
+        f.tabIndex = -1;
+        f.style.width = PV_W + 'px';             // messen bei genau der Render-Breite
+        f.srcdoc = b.srcdoc;
+        let fertig = false;
+        const schliessen = () => { if (fertig) return; fertig = true; f.remove(); done(); };
+        const lies = (versuch) => {
+          if (fertig) return;
+          let h = 0;
+          try {
+            const d = f.contentDocument;
+            // erst zählen, wenn der srcdoc-Inhalt wirklich im Dokument steht
+            if (d && d.body && d.body.firstElementChild) {
+              h = Math.ceil(Math.max(d.documentElement.scrollHeight, d.body.scrollHeight));
+            }
+          } catch (e) { h = 0; }                 // kein Zugriff -> Fallback-Verhältnis
+          if (h > 20) { pvH.set(b.id, h); schliessen(); return; }
+          if (versuch > 12) { schliessen(); return; }   // ~600 ms, dann aufgeben
+          setTimeout(() => lies(versuch + 1), 50);
+        };
+        let laeuft = false;                      // nur EINE Poll-Kette starten
+        const start = () => { if (laeuft) return; laeuft = true; lies(0); };
+        f.addEventListener('load', start, { once: true });
+        setTimeout(start, 60);                   // falls kein load-Event kommt
+        document.body.appendChild(f);
+      });
+    }
+    function pvMeasureAll() {
+      if (!Array.isArray(BAUSTEINE) || !BAUSTEINE.length) return Promise.resolve();
+      return BAUSTEINE.reduce((kette, b) => kette.then(() => pvMessen(b)), Promise.resolve());
+    }
+
     // ===== (a) BAUSTEINE: Kategorie-Filter, Sortierung, Karten-Grid =====
     function renderCats() {
       const host = document.getElementById('bk-cats');
@@ -563,7 +709,7 @@
     function bausteinCardHtml(b) {
       return `
         <article class="baustein-card" id="baustein-${b.id}" data-id="${b.id}" data-kat="${b.kategorie}">
-          <div class="baustein-thumb">
+          <div class="baustein-thumb" data-pv-id="${b.id}">
             <iframe class="preview-frame" title="Live-Vorschau: ${escHtml(b.name)}" loading="lazy" sandbox="" srcdoc="${escHtml(b.srcdoc)}"></iframe>
           </div>
           <div class="baustein-body">
@@ -610,6 +756,7 @@
       } else {
         host.innerHTML = sortedBausteine(list).map(bausteinCardHtml).join('');
       }
+      pvRefresh();   // neue Karten -> Vorschau-Skalierung neu setzen und beobachten
       const c = document.getElementById('bausteine-count');
       if (c) {
         const q = (state.search || '').trim();
@@ -701,10 +848,10 @@
       return `
         <div class="am-preview">
           <p class="baustein-desc" style="margin-bottom:1rem">${escHtml(item.beschreibung)}</p>
-          <div class="preview-frame-wrap">
+          <div class="preview-frame-wrap" data-pv-id="${item.id}">
             <iframe class="preview-frame" title="Live-Vorschau: ${escHtml(item.name)}" sandbox="" srcdoc="${escHtml(item.srcdoc)}"></iframe>
           </div>
-          <p class="preview-note">Die Vorschau läuft in einem isolierten Rahmen und zeigt das Layout mit System-Schrift. Der kopierbare Code im Tab „Code“ ist die Wahrheit — inklusive pilot-Look und Kommentaren an den Anpass-Stellen.</p>
+          <p class="preview-note">Die Vorschau läuft in einem isolierten Rahmen: in Desktop-Breite gerendert und komplett verkleinert — du siehst den Baustein also ganz, nur kleiner, in der System-Schrift. Der kopierbare Code im Tab „Code“ ist die Wahrheit — inklusive pilot-Look und Kommentaren an den Anpass-Stellen.</p>
           <p class="am-source"><strong>Typischer Einsatz:</strong> ${escHtml(item.einsatz)}</p>
         </div>`;
     }
@@ -875,6 +1022,15 @@
 
       initModalEngine();
       initModalSwipe();
+
+      // Der Modal-Body wird bei jedem Öffnen/Tab-Wechsel neu geschrieben — die
+      // Vorschau darin muss danach neu skaliert werden (base.js bietet keinen Hook).
+      const mBody = document.getElementById('modal-body');
+      if (mBody && typeof MutationObserver === 'function') {
+        new MutationObserver(() => pvRefresh()).observe(mBody, { childList: true });
+      }
+      // Eigenhöhen im Hintergrund messen; bis dahin greift das 16:9-Fallback.
+      pvMeasureAll().then(pvRefresh);
 
       applyDeepLink(true);
       window.addEventListener('hashchange', () => applyDeepLink(false));

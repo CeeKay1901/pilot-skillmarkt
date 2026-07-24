@@ -251,6 +251,10 @@
     <!-- PROMPTS GRID -->
     <div class="skills-section" id="main-content">
       <div class="skills-inner">
+        <!-- A11y: Karten-Titel sind h3 — ohne diese Zwischenüberschrift springt die
+             Gliederung von der Seiten-H1 direkt auf h3 (WCAG 1.3.1 / 2.4.10).
+             Visuell überflüssig, deshalb nur für Screenreader. -->
+        <h2 class="sr-only">Alle Prompts</h2>
         <div class="skills-grid" id="prompts-grid"></div>
       </div>
     </div>

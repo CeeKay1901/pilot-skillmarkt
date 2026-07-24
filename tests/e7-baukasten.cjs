@@ -406,7 +406,11 @@ async function runIndexChecks(browser) {
     areaCta: !!document.querySelector('.area-card a.c-cta[href="vorlagen.html"]'),
     areaSpotHref: (document.querySelector('a.area-spot[href^="vorlagen.html?b="]') || { getAttribute: () => '' }).getAttribute('href') || '',
     areaSpotRating: (document.getElementById('area-baukasten-spot-rating') || {}).textContent || '',
-    livePills: document.querySelectorAll('.area-card .area-pill.-live').length,
+    // Ehrlichkeits-Anker: jede Bereichs-Karte MUSS zu etwas Fertigem führen.
+    // Früher zählte hier das gelbe „Live"-Label — das saß auf allen sechs Karten
+    // und unterschied damit nichts mehr; es wurde entfernt. Der echte CTA-Link ist
+    // der härtere Beleg: kein Bereich wird beworben, den es nicht gibt.
+    areaCtaCount: document.querySelectorAll('.area-card .area-cta-row a[href]').length,
     soonPills: document.querySelectorAll('.area-card .area-pill.-soon').length,
     navVorlagen: !!document.getElementById('nav-vorlagen'),
     newsHasBaukasten: [...document.querySelectorAll('.news-item .news-text a')].some(a => a.getAttribute('href') === 'vorlagen.html'),
@@ -427,10 +431,10 @@ async function runIndexChecks(browser) {
   check('i4_area_card_clickable',
     indexInfo.areaCta && indexInfo.areaSpotHref === 'vorlagen.html?b=' + LEUCHTTURM
       && indexInfo.areaSpotRating.trim().length > 0 && indexInfo.navVorlagen
-      && indexInfo.livePills === 6 && indexInfo.soonPills === 0,
+      && indexInfo.areaCtaCount === 6 && indexInfo.soonPills === 0,
     { areaCta: indexInfo.areaCta, areaSpotHref: indexInfo.areaSpotHref,
       areaSpotRating: indexInfo.areaSpotRating, navVorlagen: indexInfo.navVorlagen,
-      livePills: indexInfo.livePills, soonPills: indexInfo.soonPills });
+      areaCtaCount: indexInfo.areaCtaCount, soonPills: indexInfo.soonPills });
   check('i5_news_mentions_baukasten',
     indexInfo.newsHasBaukasten && indexInfo.newsCount >= 3 && indexInfo.newsCount <= 4,
     { newsHasBaukasten: indexInfo.newsHasBaukasten, newsCount: indexInfo.newsCount });

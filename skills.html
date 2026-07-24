@@ -725,6 +725,10 @@
       .type-tab { min-height: 4.4rem; display: inline-flex; align-items: center; }
       .facet-chip { min-height: 4.4rem; align-items: center; }
       .type-info-toggle { min-height: 4.4rem; }
+      /* Piloten-Karten: die Skill-Chips sind echte Buttons (öffnen das Modal),
+         lagen aber bei 25px — als eigenständige Ziele greift die Fließtext-
+         Ausnahme von WCAG 2.5.8 nicht. 30 Stück auf der Seite. */
+      .pilot-skill-chip { min-height: 4.4rem; display: inline-flex; align-items: center; }
     }
 
     /* Explainer responsive */
@@ -978,6 +982,11 @@
     <!-- SKILLS GRID -->
     <div class="skills-section" id="catalog-top">
       <div class="skills-inner">
+        <!-- A11y: Die Karten-Titel sind h3. Ohne diese Zwischenüberschrift springt
+             die Gliederung von der Seiten-H1 direkt auf h3 (WCAG 1.3.1 / 2.4.10).
+             Visuell überflüssig — die Filterleiste darüber sagt bereits, was folgt —
+             deshalb nur für Screenreader. -->
+        <h2 class="sr-only">Alle Einträge im Katalog</h2>
         <div class="skills-grid" id="skills-grid"></div>
         <div class="empty-state" id="empty-state" style="display:none">
           <p>Keine Skills gefunden.</p>

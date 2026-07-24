@@ -532,7 +532,11 @@ async function runIndexChecks(browser) {
     areaCta: !!document.querySelector('.area-card a.c-cta[href="showroom.html"]'),
     areaSpotHref: (document.querySelector('a.area-spot[href^="showroom.html?case="]') || { getAttribute: () => '' }).getAttribute('href') || '',
     areaSpotReact: (document.getElementById('area-showroom-spot-react') || {}).textContent || '',
-    livePills: document.querySelectorAll('.area-card .area-pill.-live').length,
+    // Ehrlichkeits-Anker: jede Bereichs-Karte MUSS zu etwas Fertigem führen.
+    // Früher zählte hier das gelbe „Live"-Label — das saß auf allen sechs Karten
+    // und unterschied damit nichts mehr; es wurde entfernt. Der echte CTA-Link ist
+    // der härtere Beleg: kein Bereich wird beworben, den es nicht gibt.
+    areaCtaCount: document.querySelectorAll('.area-card .area-cta-row a[href]').length,
     soonPills: document.querySelectorAll('.area-card .area-pill.-soon').length,
     navShowroom: !!document.getElementById('nav-showroom'),
     newsHasShowroom: [...document.querySelectorAll('.news-item .news-text a')].some(a => a.getAttribute('href') === 'showroom.html'),
@@ -561,10 +565,10 @@ async function runIndexChecks(browser) {
   check('i4_area_card_clickable',
     indexInfo.areaCta && indexInfo.areaSpotHref === 'showroom.html?case=' + SPOTLIGHT_ID
       && indexInfo.areaSpotReact.trim().length > 0 && indexInfo.navShowroom
-      && indexInfo.livePills === 6 && indexInfo.soonPills === 0,
+      && indexInfo.areaCtaCount === 6 && indexInfo.soonPills === 0,
     { areaCta: indexInfo.areaCta, areaSpotHref: indexInfo.areaSpotHref,
       areaSpotReact: indexInfo.areaSpotReact, navShowroom: indexInfo.navShowroom,
-      livePills: indexInfo.livePills, soonPills: indexInfo.soonPills });
+      areaCtaCount: indexInfo.areaCtaCount, soonPills: indexInfo.soonPills });
   check('i5_news_mentions_showroom_and_interlinks',
     indexInfo.newsHasShowroom && indexInfo.newsCount >= 3 && indexInfo.newsCount <= 4
       && indexInfo.newsHasPrompts && indexInfo.newsHasLernen && indexInfo.newsHasBibliothek && indexInfo.newsHasBaukasten,

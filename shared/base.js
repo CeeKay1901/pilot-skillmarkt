@@ -882,12 +882,25 @@ function initModalSwipe() {
 }
 
 /* ===== MARKDOWN-/CSV-RENDERER (Datei-Vorschau) ===== */
+/* Code-Spans (`…`) sind wörtlich und dürfen NICHT weiter ausgezeichnet werden.
+   Vorher liefen Fett-/Kursiv-/Link-Regel über den schon erzeugten <code>-Inhalt
+   mit — aus dem Glossar-Beispiel `[Text](Adresse)` (erklärt die Markdown-Link-
+   Syntax) wurde ein echter <a href="Adresse">Text</a>. Die Syntax war damit
+   unsichtbar und der Link tot; im SKILL.md-Viewer traf es jeden Code-Schnipsel
+   mit eckigen Klammern oder Sternchen. Lösung: Code-Spans vor den übrigen Regeln
+   herausnehmen, durch einen Platzhalter ersetzen und erst am Ende wieder
+   einsetzen. Der Platzhalter nutzt U+0000, das in escHtml-Ausgabe nie vorkommt. */
 function mdInline(s) {
-  return escHtml(s)
-    .replace(/`([^`]+)`/g, '<code>$1</code>')
+  const codes = [];
+  let out = escHtml(s).replace(/`([^`]+)`/g, (m, code) => {
+    codes.push(code);
+    return '\u0000C' + (codes.length - 1) + '\u0000';
+  });
+  out = out
     .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
     .replace(/(^|[^*])\*([^*\n]+)\*/g, '$1<em>$2</em>')
     .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+  return out.replace(/\u0000C(\d+)\u0000/g, (m, i) => '<code>' + codes[+i] + '</code>');
 }
 function mdBlocks(md) {
   const out = [];
