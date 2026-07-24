@@ -147,6 +147,11 @@
       .prompt-copy-chip { min-height: 4.4rem; }
     }
 
+    /* Chip-Zeile horizontal (Muster lernen-hilfe.html): base.css stellt .role-chips
+       für den Katalog auf column — hier stünden die Plattform-/Niveau-Chips sonst
+       einzeln untereinander. Beide Gruppen laufen als EINE umbrechende Reihe. */
+    #filter-chips { flex-direction: row; flex-wrap: wrap; align-items: center; }
+
     /* Filtergruppen-Beschriftung in der Chip-Zeile */
     .chip-lbl {
       font-family: var(--font-mono); font-size: 1.1rem; font-weight: 600;
@@ -677,7 +682,6 @@
         <span>${escHtml(groupLabel(p.taskGroup))}</span>
         <span class="modal-meta-sep">·</span>
         <span class="card-platforms" role="group" aria-label="Einsetzbar in">${promptPlatformChips(p)}</span>
-        <span class="modal-meta-sep">·</span>
         <span class="copy-count" data-copies="${p.id}">${copyCountOf(p)}× kopiert</span>
       `;
     }

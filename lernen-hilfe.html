@@ -240,11 +240,15 @@
     /* ===== BEREICH 2: BEFEHLE & KNIFFE =====
        Heller Sektions-RAHMEN (Überschriften-Band) — nur die Ranking-Liste selbst
        bleibt als Terminal-Moment dunkel. */
+    /* Polish-Pass: Bottom-Padding liegt auf .bef-inner statt auf der Sektion —
+       das Mitmachen-Band ist das letzte Kind des Panels, ein Sektions-Padding
+       schob sonst einen hellen Streifen zwischen dunkles Band und dunklen Footer
+       (der Ressourcen-Tab schließt bündig — gleiches Muster jetzt hier). */
     .bef-section {
       background: var(--c-bg); color: var(--c-black);
-      border-top: 1px solid var(--line); padding: 6.4rem 0 8rem;
+      border-top: 1px solid var(--line); padding: 6.4rem 0 0;
     }
-    .bef-inner { max-width: 108rem; margin: 0 auto; padding: 0 var(--pad-d); }
+    .bef-inner { max-width: 108rem; margin: 0 auto; padding: 0 var(--pad-d) 8rem; }
     .bef-h2 {
       font-size: var(--fs-h2); font-weight: 700;
       letter-spacing: -.02em; color: var(--c-black); margin: .6rem 0 1.2rem;
@@ -460,7 +464,10 @@
     .g-head .ct-arrow { margin-left: auto; transition: transform .2s; font-size: 1.6rem; line-height: 1; color: var(--c-gray-m); }
     .g-head[aria-expanded="true"] .ct-arrow { transform: rotate(90deg); }
     .g-wort { font-size: 1.5rem; font-weight: 700; letter-spacing: -.01em; color: var(--c-black); line-height: 1.35; }
-    .g-satz { font-size: 1.45rem; line-height: 1.6; color: var(--c-ink-body); margin: 0 0 1.4rem; }
+    /* Polish-Pass: .g-body p.g-satz statt .g-satz — die spätere Regel „.g-body p
+       { margin: 0 }“ (0-1-1) überstimmte sonst den Abstand (0-1-0) und der erste
+       Label-Block klebte direkt am Ein-Satz-Erklärtext. 1.6rem = Block-Raster. */
+    .g-body p.g-satz { font-size: 1.45rem; line-height: 1.6; color: var(--c-ink-body); margin: 0 0 1.6rem; }
     .g-satz code, .g-body code, .faq-body code {
       font-family: var(--font-mono); font-size: .92em;
       background: rgba(38,38,38,.07); border-radius: .4rem; padding: .05em .4em;
@@ -542,11 +549,21 @@
       .cmd-code { font-size: 1.5rem; }
       .cmd-body { padding: 1.8rem 1.4rem 2rem; }
       .rank-list { padding: .8rem; }
-      .bef-section { padding: 4.4rem 0 5.6rem; }
+      .bef-section { padding: 4.4rem 0 0; }
+      .bef-inner { padding-bottom: 5.6rem; }
       .glossar-section, .faq-section { padding: 4.4rem 0 5.6rem; }
       .res-intro { padding: 4rem 0 2rem; }
       .glo-tools { gap: 1.2rem; }
       .glo-search { flex: 1 1 100%; }
+      /* Sub-Nav: mobil ist der Scrollbalken versteckt — Fade-Kante am rechten
+         Rand signalisiert, dass hinter „Befehle & Kniffe“ noch Tabs kommen
+         (gleiches Muster wie die A-Z-Leiste darunter). */
+      .pillar-inner::after {
+        content: ''; flex: 0 0 2.8rem;
+        position: sticky; right: 0;
+        background: linear-gradient(to right, rgba(251,251,247,0), var(--paper) 75%);
+        pointer-events: none;
+      }
       /* A-Z-Leiste: mobil ist der Scrollbalken versteckt — eine Fade-Kante am
          rechten Rand signalisiert, dass die Leiste bis Z weitergeht. */
       .az-rail::after {
@@ -610,6 +627,7 @@
     <section id="ressourcen" aria-labelledby="ressourcen-h" role="tabpanel">
       <div class="res-intro">
         <div class="res-intro-inner">
+          <p class="kicker">Lern-Regal</p>
           <h2 class="res-section-h2" id="ressourcen-h">Ressourcen</h2>
           <p class="res-lead">Redaktionell geprüfte Links — mit ehrlicher Dauer, Niveau und Sprache.</p>
         </div>
@@ -672,6 +690,7 @@
     <!-- BEREICH 2: BEFEHLE & KNIFFE -->
     <section class="bef-section" id="befehle" aria-labelledby="befehle-h" role="tabpanel" hidden>
       <div class="bef-inner">
+        <p class="kicker">Ranking</p>
         <h2 class="bef-h2" id="befehle-h">Befehle &amp; Kniffe</h2>
         <p class="bef-sub"><span id="bef-count">0</span> Befehle, Flags und Tastentricks für Claude Code und Langdock — „Hat mir geholfen“ sortiert die Rangliste live neu.</p>
 
@@ -695,6 +714,7 @@
     <!-- BEREICH 3: GLOSSAR (Nachschlagewerk mit Suche und A-Z-Sprungleiste) -->
     <section class="glossar-section" id="glossar" aria-labelledby="glossar-h" role="tabpanel" hidden>
       <div class="glo-inner">
+        <p class="kicker">Nachschlagewerk</p>
         <h2 class="glo-h2" id="glossar-h">Glossar</h2>
         <p class="glo-sub"><span id="glo-count">0</span> Begriffe aus der KI-Welt — jeder in einem einfachen Satz erklärt, mit Alltagsvergleich, pilot-Beispiel und Vertiefung zum Aufklappen. Zum Nachschlagen gibt es Suche und A–Z, zum Durchlesen die Themen-Filter.</p>
 
@@ -717,6 +737,7 @@
     <!-- BEREICH 4: FAQ & TROUBLESHOOTING (ruhiges Akkordeon, nur eine Karte offen) -->
     <section class="faq-section" id="faq" aria-labelledby="faq-h" role="tabpanel" hidden>
       <div class="faq-inner">
+        <p class="kicker">Erste Hilfe</p>
         <h2 class="faq-h2" id="faq-h">FAQ &amp; Troubleshooting</h2>
         <p class="faq-sub">Die <span id="faq-count">0</span> häufigsten Blocker aus dem Agentur-Alltag — jede Karte mit einer Schritt-für-Schritt-Lösung.</p>
         <div class="faq-list" id="faq-liste"></div>
@@ -1686,6 +1707,18 @@
         a.classList.toggle('active', on);
         a.setAttribute('aria-selected', on ? 'true' : 'false');
         if (on) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current');
+        // Polish-Pass (mobil): der aktive Tab lag bei Glossar/FAQ rechts außerhalb
+        // der scrollbaren Leiste — nur den Leisten-Scroll anfassen (nie die Seite),
+        // aktiven Tab mittig einrücken.
+        if (on) {
+          const inner = a.closest('.pillar-inner');
+          if (inner && inner.scrollWidth > inner.clientWidth + 1) {
+            const left = Math.max(0, Math.min(
+              a.offsetLeft - (inner.clientWidth - a.offsetWidth) / 2,
+              inner.scrollWidth - inner.clientWidth));
+            inner.scrollTo({ left, behavior: window.scrollBehavior ? window.scrollBehavior() : 'auto' });
+          }
+        }
       });
       return which;
     }

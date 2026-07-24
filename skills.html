@@ -3,17 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>pilot Skill Marketplace — Citizen Coding mit Claude Code</title>
+  <title>pilot AI Marketplace — Katalog</title>
   <meta name="description" content="Der interne Skill-Marktplatz der pilot Agenturgruppe: 35 echte Skills für Claude Code &amp; Langdock entdecken, verstehen und selbst nutzen — von Briefings über Mediaplan-Checks bis zum eigenen Tool.">
   <meta name="theme-color" content="#262626">
   <meta property="og:type" content="website">
-  <meta property="og:site_name" content="pilot Skill Marketplace">
-  <meta property="og:title" content="pilot Skill Marketplace — Citizen Coding mit Claude Code">
+  <meta property="og:site_name" content="pilot AI Marketplace">
+  <meta property="og:title" content="pilot AI Marketplace — Katalog">
   <meta property="og:description" content="35 echte Skills für Claude Code &amp; Langdock entdecken, verstehen und selbst nutzen. Von Piloten gebaut, von Piloten empfohlen.">
   <meta property="og:url" content="https://ceekay1901.github.io/pilot-skillmarkt/skills.html">
   <meta property="og:image" content="https://ceekay1901.github.io/pilot-skillmarkt/og-image.png">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="pilot Skill Marketplace">
+  <meta name="twitter:title" content="pilot AI Marketplace">
   <meta name="twitter:description" content="35 echte Skills für Claude Code &amp; Langdock entdecken, verstehen und selbst nutzen.">
   <meta name="twitter:image" content="https://ceekay1901.github.io/pilot-skillmarkt/og-image.png">
   <link rel="preload" href="assets/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
@@ -2132,7 +2132,6 @@ Gib einen priorisierten Report aus:
         <span class="modal-meta-sep">·</span>
         <span class="cat-badge ${skill.category}" style="margin:0">${catLabel(skill.category)}</span>
         ${_type === 'skill' && skill.install ? `<span class="modal-meta-sep">·</span><span class="install-badge ${skill.install}" title="${skill.install === 'builtin' ? 'Steckt schon in Claude Code — nichts zu installieren' : 'Aus dem offiziellen anthropics/skills-Repo — einmalig installieren'}">${skill.install === 'builtin' ? '⚙ in Claude Code eingebaut' : '⬇ zum Nachinstallieren'}</span>` : ''}
-        <span class="modal-meta-sep">·</span>
         <span title="Rollen, in deren Filter dieser Eintrag auftaucht">Für: ${
           (ROLE_MAP[skill.id] || ALL_ROLES).length === ALL_ROLES.length
             ? 'alle Rollen'
@@ -2338,7 +2337,7 @@ ${names}
 3. Claude Code im Projektordner starten und lostippen, z. B.: \`${cfg.beispiel}\`
 
 Jeder Skill ist nur ein Ordner mit einer \`SKILL.md\` — schau ruhig rein.
-Mehr Skills und alle Details: pilot Skill Marketplace.
+Mehr Skills und alle Details: pilot AI Marketplace.
 `;
       entries.unshift({ name: 'START-HIER.md', data: new TextEncoder().encode(readme) });
       triggerDownload(makeZip(entries), cfg.zip);
@@ -2361,7 +2360,7 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
       const short = p => p.split('/').slice(1).join('/') || p;
       const today = new Date().toISOString().slice(0, 10);
       let md = `# Anmerkungen zu \`${skillId}\`\n\n`;
-      md += `Exportiert am ${today} · ${anns.length} Anmerkung${anns.length === 1 ? '' : 'en'} · Quelle: pilot Skill Marketplace\n\n`;
+      md += `Exportiert am ${today} · ${anns.length} Anmerkung${anns.length === 1 ? '' : 'en'} · Quelle: pilot AI Marketplace\n\n`;
       md += `> Review-Anmerkungen zum Skill \`${skillId}\`. Jede Anmerkung referenziert eine konkrete Stelle\n`;
       md += `> (Datei + Zeile) mit Code-Kontext. Die referenzierten Zeilen sind mit \`>\` markiert.\n`;
       md += `> Nutze diese Datei, um den Skill gezielt weiterzuentwickeln.\n\n`;
@@ -3228,7 +3227,7 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
         entries.push({
           version: `${major}.${prevMinor}.${prevPatch}`,
           date: skill.addedAt,
-          changes: ['Erste Veröffentlichung im pilot Skill Marketplace', 'Basierend auf internem Pilot-Feedback entwickelt']
+          changes: ['Erste Veröffentlichung im pilot AI Marketplace', 'Basierend auf internem Pilot-Feedback entwickelt']
         });
       }
 

@@ -162,13 +162,8 @@
     }
 
     /* --- Seitenlokale Feinheiten --- */
-    /* Lesbarkeit: Fließtext-Absätze in Inter — Mono bleibt Labels, Zählern
-       und Code-Schnipseln vorbehalten (.lib-lic, .am-label, .am-code, …).
-       Überschreibt die Mono-Defaults aus shared/base.css nur für diese Seite. */
-    .lib-note {
-      font-family: var(--font-sans); font-size: 1.45rem; line-height: 1.65;
-      max-width: 78ch;
-    }
+    /* .lib-note kommt zentral aus shared/base.css (Inter, 1.5rem) —
+       hier nur noch der Mono-Look für Code-Schnipsel darin. */
     .lib-note code { font-family: var(--font-mono); font-size: .92em; }
     .brand-hinweis { font-family: var(--font-sans); font-size: 1.4rem; line-height: 1.6; }
     /* .am-comment-*-Formularstyles stehen bereits im Baukasten-Block oben
@@ -233,12 +228,13 @@
     <!-- (a) BAUSTEINE -->
     <section class="lib-section" id="main-content" aria-labelledby="bausteine-h">
       <div class="lib-inner">
+        <p class="kicker">Fertigteile</p>
         <div class="lib-sec-head">
           <span class="lib-sec-ic lu-slot" id="bausteine-ic"></span>
           <h2 id="bausteine-h">Bausteine mit Live-Vorschau</h2>
           <span class="lib-sec-count" id="bausteine-count"></span>
         </div>
-        <p class="lib-note">Jede Karte zeigt den Baustein live in einem isolierten Rahmen. Öffne die Details für den vollständigen Code zum Kopieren und den „Sag Claude einfach …“-Prompt. Filter nach Kategorie, sortier nach „Meistkopiert“ — der Zähler zählt lokal in deinem Browser hoch, sobald du Code kopierst.</p>
+        <p class="lib-note">Jede Karte zeigt den Baustein live in einem isolierten Rahmen. Öffne die Details für den vollständigen Code zum Kopieren und den „Sag Claude einfach …“-Prompt.</p>
         <div class="bk-toolbar">
           <div class="bk-cats" id="bk-cats" role="group" aria-label="Bausteine nach Kategorie filtern"></div>
           <div class="bk-sort">
@@ -257,11 +253,12 @@
     <!-- (b) MEISTKOPIERT -->
     <section class="lib-section -alt" aria-labelledby="rank-h">
       <div class="lib-inner">
+        <p class="kicker">Ranking</p>
         <div class="lib-sec-head">
           <span class="lib-sec-ic lu-slot" id="rank-ic"></span>
           <h2 id="rank-h">Meistkopiert im Team</h2>
         </div>
-        <p class="lib-note">Ein kleines Ranking nach Kopien. Die Startwerte sind ehrliche Demo-Seeds; jede Kopie, die du hier auslöst, zählt lokal dazu. Klick einen Eintrag an, um den Baustein zu öffnen.</p>
+        <p class="lib-note">Ein kleines Ranking nach Kopien — die Startwerte sind ehrliche Demo-Seeds, jede Kopie zählt lokal dazu. Klick einen Eintrag an, um den Baustein zu öffnen.</p>
         <div class="bk-rank-wrap"><div class="bk-rank" id="bk-rank"></div></div>
       </div>
     </section>
@@ -269,12 +266,13 @@
     <!-- (c) BEISPIELDATEN -->
     <section class="lib-section" aria-labelledby="data-h">
       <div class="lib-inner">
+        <p class="kicker">Rohmaterial</p>
         <div class="lib-sec-head">
           <span class="lib-sec-ic lu-slot" id="data-ic"></span>
           <h2 id="data-h">Beispieldaten zum Üben</h2>
           <span class="lib-sec-count" id="data-count"></span>
         </div>
-        <p class="lib-note">Erfundene, anonymisierte Übungsdaten — kein echtes Kundenmaterial. Lad dir eine Datei herunter, gib sie Claude und probier die Übungsidee aus. Jede Karte verweist auf den passenden Baustein oder Prompt.</p>
+        <p class="lib-note">Erfundene, anonymisierte Übungsdaten — kein echtes Kundenmaterial. Lad dir eine Datei herunter, gib sie Claude und probier die Übungsidee aus.</p>
         <div class="bk-data-grid" id="bk-data-grid"></div>
         <p class="bk-data-hinweis" id="bk-data-hinweis"></p>
       </div>
@@ -299,12 +297,13 @@
     <!-- (a) FONTS -->
     <section class="lib-section" id="assets-start" aria-labelledby="fonts-h">
       <div class="lib-inner">
+        <p class="kicker">Typografie</p>
         <div class="lib-sec-head">
           <span class="lib-sec-ic lu-slot" id="fonts-ic"></span>
           <h2 id="fonts-h">Schriften mit Live-Vorschau</h2>
           <span class="lib-sec-count" id="fonts-count"></span>
         </div>
-        <p class="lib-note">Tipp den Beispieltext direkt an und schreib rein, was du sehen willst — der Regler ändert die Größe live. Alle Schriften stehen unter der SIL Open Font License und sind lokal eingebunden (kein Google-Fonts-Request). Fontshare-Schriften wie Satoshi oder Clash Display fehlen bewusst: ihre ITF Free Font License ist nicht OFL.</p>
+        <p class="lib-note">Tipp den Beispieltext direkt an und schreib rein, was du sehen willst — der Regler ändert die Größe live. Alle Schriften stehen unter der SIL Open Font License und sind lokal eingebunden (kein Google-Fonts-Request).</p>
         <div class="cat-tabs" id="font-cats" role="group" aria-label="Schriften nach Kategorie filtern"></div>
         <div class="font-grid" id="font-grid"></div>
       </div>
@@ -313,6 +312,7 @@
     <!-- (b) ICONS -->
     <section class="lib-section -alt" aria-labelledby="icons-h">
       <div class="lib-inner">
+        <p class="kicker">Symbole</p>
         <div class="lib-sec-head">
           <span class="lib-sec-ic lu-slot" id="icons-ic"></span>
           <h2 id="icons-h">Icon-Browser</h2>
@@ -331,12 +331,13 @@
     <!-- (c) FARBPALETTEN -->
     <section class="lib-section" aria-labelledby="pal-h">
       <div class="lib-inner">
+        <p class="kicker">Farbe</p>
         <div class="lib-sec-head">
           <span class="lib-sec-ic lu-slot" id="pal-ic"></span>
           <h2 id="pal-h">Farbpaletten mit Kontrast-Check</h2>
           <span class="lib-sec-count" id="pal-count"></span>
         </div>
-        <p class="lib-note">Klick einen Farbwert an, um den Hex-Code zu kopieren. Der Kontrast jeder Vordergrund-/Hintergrund-Kombination ist nach der echten WCAG-Relativluminanz-Formel berechnet — die Badge sagt dir, ob sie AA erfüllt (ja), nur für große Schrift reicht (AA groß) oder nicht ausreicht.</p>
+        <p class="lib-note">Klick einen Farbwert an, um den Hex-Code zu kopieren. Jede Kombination trägt eine Kontrast-Badge nach der echten WCAG-Formel — sie sagt dir, ob die Farbpaarung AA erfüllt.</p>
         <div class="pal-grid" id="pal-grid"></div>
       </div>
     </section>
@@ -344,6 +345,7 @@
     <!-- (d) MUSTER & VERLÄUFE -->
     <section class="lib-section -alt" aria-labelledby="pat-h">
       <div class="lib-inner">
+        <p class="kicker">Textur</p>
         <div class="lib-sec-head">
           <span class="lib-sec-ic lu-slot" id="pat-ic"></span>
           <h2 id="pat-h">Muster &amp; Verläufe</h2>
@@ -357,6 +359,7 @@
     <!-- (e) pilot-BRAND -->
     <section class="lib-section" aria-labelledby="brand-h">
       <div class="lib-inner">
+        <p class="kicker">pilot-CI</p>
         <div class="lib-sec-head">
           <span class="lib-sec-ic lu-slot" id="brand-ic"></span>
           <h2 id="brand-h">pilot-Brand-Spickzettel</h2>

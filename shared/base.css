@@ -482,6 +482,8 @@
     }
     .modal-meta .diff-badge { font-size: 1.3rem; }
     .modal-meta-sep { color: var(--c-gray-l); }
+    /* Kein verwaister Trennpunkt am Zeilenende, wenn ein Template nach dem letzten Element noch einen Separator rendert */
+    .modal-meta .modal-meta-sep:last-child { display: none; }
     .modal-tabs {
       display: flex; padding: 0 2.4rem;
       border-bottom: 1px solid var(--c-gray-l);
@@ -1111,11 +1113,12 @@
     .lib-inner { max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-d); }
     .lib-sec-head { display: flex; align-items: baseline; gap: 1.2rem; flex-wrap: wrap; margin: 0 0 .8rem; }
     .lib-sec-head h2 { font-size: var(--fs-h2); font-weight: var(--fw-semi); letter-spacing: -.02em; }
-    .lib-sec-head .lib-sec-ic { color: var(--c-gray-m); font-size: 2.4rem; }
+    /* Icon-Präfixe vor Sektions-H2s abgeschafft — die Kicker-Dachzeile ist die Sektions-Sprache */
+    .lib-sec-head .lib-sec-ic { display: none; }
     .lib-sec-count { font-family: var(--font-mono); font-size: 1.3rem; color: var(--c-gray-m); }
     .lib-note {
-      font-family: var(--font-mono); font-size: 1.2rem; line-height: 1.6;
-      color: var(--c-gray-m); margin: 0 0 2.4rem; max-width: 90ch;
+      font-size: 1.5rem; line-height: 1.65;
+      color: var(--c-gray-d); margin: 0 0 2.4rem; max-width: 72ch;
     }
     .lib-lic {
       display: inline-flex; align-items: center; gap: .4rem;
