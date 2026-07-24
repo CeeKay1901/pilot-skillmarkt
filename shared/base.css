@@ -47,6 +47,7 @@
          .lib-note die AA-Schwelle von 4.5:1. #68675f hält 4.72:1 im schlechtesten
          Fall und bleibt optisch praktisch identisch. */
       --c-gray-l: #bab8ab;
+      --c-star-empty: #86847a;  /* leerer KLICK-Stern: 3,20:1 (WCAG 1.4.11) */
       --c-gray-m: #66655d;      /* WCAG AA: 5.71:1 auf Weiß, 4.86:1 im schlechtesten Fall */
       --c-gray-d: #68675f;      /* WCAG AA: 4.94:1 auf Weiß, 4.72:1 im schlechtesten Fall */
       --c-ink-strong: #444;     /* Fließtext dunkel (long-desc, Info-Modal) */
@@ -314,8 +315,9 @@
     /* UX5-Fix (WCAG AA): informative Rating-Meta-Zahlen (Ø + Anzahl) müssen lesbar sein.
        Vorher --c-ink-faded (#8d8b80): nur 3.02–3.34:1 auf hellen Karten (< AA 4.5:1).
        Jetzt --c-gray-m (#66655d): 5.71:1 auf --c-white, 5.65:1 auf --paper, 5.17:1 auf --c-bg,
-       4.86:1 auf --paper-deep — überall ≥4.5:1. --c-ink-faded bleibt für dekorative
-       Nicht-Text-Labels (z.B. .chat-meta) unangetastet. */
+       4.86:1 auf --paper-deep — überall ≥4.5:1. (Das frühere Beispiel „.chat-meta“
+       für ein dekoratives Label war falsch eingeordnet — „Du“/„KI-Antwort“ ist
+       informativer Text und steht jetzt ebenfalls auf --c-gray-m.) */
     .rating-text { font-size: 1.3rem; color: var(--c-gray-m); }
     .avatar {
       width: 2.8rem; height: 2.8rem;
@@ -535,14 +537,23 @@
 
     /* ===== STAR RATING INPUT ===== */
     .star-input { display: flex; gap: .4rem; margin: 1rem 0; }
+    /* WCAG 1.4.11 (Nicht-Text-Kontrast, 3:1): Die Sterne im Bewertungsformular
+       sind ein BEDIENELEMENT — man muss sehen, wohin man klickt. Mit
+       --c-gray-l (#bab8ab) lagen sie bei 1,76:1 und verschwanden auf der hellen
+       Fläche fast. --c-star-empty (#86847a) hält 3,20:1 auf allen Papierflächen
+       und trennt gleichzeitig den leeren vom gelben Stern deutlicher (1,53 → 2,8).
+       Die reinen ANZEIGE-Sterne (.star.empty) bleiben bewusst heller: sie sind
+       Teil einer role="img"-Grafik, deren aria-label den Wert im Klartext nennt
+       ("4.8 von 5 Sternen"), und eine Abdunklung würde den Karten-Look aller
+       Seiten verschieben, ohne Information hinzuzufügen. */
     .star-input .star-btn {
       font-size: 2.8rem; background: none; border: none; cursor: pointer;
-      color: var(--c-gray-l); transition: color .15s ease; line-height: 1;
+      color: var(--c-star-empty); transition: color .15s ease; line-height: 1;
       /* Trefffläche ≥44px je Stern */
       padding: .8rem .8rem; margin: -.8rem -.35rem;
     }
     .star-input .star-btn.filled { color: var(--c-yellow); }
-    .star-input:hover .star-btn { color: var(--c-gray-l); }
+    .star-input:hover .star-btn { color: var(--c-star-empty); }
     .star-input .star-btn:hover { color: var(--c-yellow); }
 
     /* ===== COMMENT FORM ===== */
@@ -812,9 +823,16 @@
     .ff-count { background: rgba(0,0,0,.08); border-radius: var(--r-xl); padding: .1rem .7rem; font-size: 1.1rem; font-weight: 700; }
     .fav-filter-btn.active .ff-count { background: rgba(255,255,255,.2); }
 
-    /* Quellen-Zähler */
-    .rc-count { opacity: .5; font-size: 1.2rem; }
-    .role-chip.active .rc-count { opacity: .7; }
+    /* Quellen-/Typ-Zähler.
+       Vorher `opacity: .5` — das drückte die Zahlen auf 2,07:1 (AA verlangt 4,5:1)
+       und war nicht prüfbar: Deckkraft wirkt multiplikativ auf JEDEN Untergrund,
+       ein Kontrast-Check, der nur color gegen background rechnet, sieht es nicht.
+       Jetzt eine echte Farbe (--c-gray-m: ≥4,86:1 auf allen Papierflächen). Auf
+       aktiven, dunklen Chips erbt der Zähler die Chip-Textfarbe, die dort ohnehin
+       zum Hintergrund passt. */
+    .rc-count { color: var(--c-gray-m); font-size: 1.2rem; }
+    .role-chip.active .rc-count,
+    .type-tab.active .rc-count { color: inherit; }
 
     /* ===================== NAVIGATION ===================== */
     .main-nav { display: flex; gap: .4rem; flex: 1; }
@@ -946,7 +964,11 @@
     .chat-msg { display: flex; flex-direction: column; gap: .5rem; max-width: 88%; }
     .chat-msg.-user { align-self: flex-end; align-items: flex-end; }
     .chat-msg.-ai { align-self: flex-start; align-items: flex-start; }
-    .chat-meta { font-family: var(--font-mono); font-size: 1.1rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--c-ink-faded); }
+    /* „Du“ / „KI-Antwort“ — das ist informativer Text (er sagt, WER spricht),
+       kein dekoratives Label. Die frühere Einstufung als dekorativ (siehe den
+       korrigierten Kommentar bei .rating-text) hielt es auf --c-ink-faded und
+       damit bei 3,3:1. Jetzt --c-gray-m (5,65:1 auf --paper). */
+    .chat-meta { font-family: var(--font-mono); font-size: 1.1rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--c-gray-m); }
     .chat-bubble { padding: 1.4rem 1.8rem; font-size: 1.4rem; line-height: 1.65; white-space: pre-wrap; word-break: break-word; text-align: left; }
     .chat-msg.-user .chat-bubble { background: var(--c-black); color: rgba(252,252,252,.92); font-family: var(--font-mono); font-size: 1.3rem; line-height: 1.7; border-radius: var(--r-md) var(--r-md) var(--r-xs) var(--r-md); }
     .chat-msg.-user .chat-bubble strong { color: var(--c-yellow); font-weight: 600; }
@@ -1366,7 +1388,11 @@
     .bk-cat:hover { border-color: var(--c-black); color: var(--c-black); }
     .bk-cat.active { background: var(--c-black); border-color: var(--c-black); color: var(--c-white); }
     .bk-cat .lu { width: 1.4rem; height: 1.4rem; }
-    .bk-cat .tab-count { font-family: var(--font-mono); font-size: 1.05rem; opacity: .75; }
+    /* Kontrast wie bei .rc-count: `opacity: .75` drückte die Zahl auf 3,07:1
+       (AA verlangt 4,5:1). Echte Farbe statt Deckkraft; auf der aktiven,
+       dunklen Pille erbt sie deren Textfarbe. */
+    .bk-cat .tab-count { font-family: var(--font-mono); font-size: 1.05rem; color: var(--c-gray-m); }
+    .bk-cat.active .tab-count { color: inherit; }
     .bk-sort { display: flex; align-items: center; gap: .8rem; margin-left: auto; }
     .bk-sort label { font-size: 1.3rem; color: var(--c-gray-m); font-weight: 600; }
     .bk-sort select {
@@ -1520,7 +1546,11 @@
     .sr-cat:hover { border-color: var(--c-black); color: var(--c-black); }
     .sr-cat.active { background: var(--c-black); border-color: var(--c-black); color: var(--c-white); }
     .sr-cat .lu { width: 1.4rem; height: 1.4rem; }
-    .sr-cat .tab-count { font-family: var(--font-mono); font-size: 1.05rem; opacity: .75; }
+    /* Gleiche Korrektur wie bei .bk-cat .tab-count — showroom.html überschreibt
+       das zusätzlich seitenlokal; hier steht der Basiswert richtig, damit die
+       Regel auch ohne Override AA hält. */
+    .sr-cat .tab-count { font-family: var(--font-mono); font-size: 1.05rem; color: var(--c-gray-m); }
+    .sr-cat.active .tab-count { color: inherit; }
     .sr-selects { display: flex; align-items: center; gap: 1.2rem 1.6rem; margin-left: auto; flex-wrap: wrap; }
     .sr-select { display: flex; align-items: center; gap: .8rem; }
     .sr-select label { font-size: 1.3rem; color: var(--c-gray-m); font-weight: 600; }

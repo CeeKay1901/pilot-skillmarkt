@@ -45,6 +45,10 @@
        min-height statt größerem Padding, damit das Karten-Layout nicht springt. */
     @media (hover: none) and (pointer: coarse) {
       .sr-react { min-height: 4.4rem; padding-top: .9rem; padding-bottom: .9rem; }
+      /* Gegencheck 2026-07-24: die drei Filter-Selects lagen bei 35 px gemessen
+         (hasTouch/isMobile, pointer:coarse) — eigenständige Bedienelemente, für
+         die die Fließtext-Ausnahme aus WCAG 2.5.8 nicht gilt. */
+      .sr-select select { min-height: 4.4rem; }
     }
 
     /* E12: Seiten-Suchfeld belegt in der Filter-Toolbar eine eigene Zeile
@@ -100,6 +104,45 @@
       .sr-card, .sr-rank-item { transition: none; }
       .sr-card:hover, .sr-rank-item:hover { transform: none; box-shadow: none; }
     }
+
+    /* ============================================================
+       Qualitäts-Gegencheck (24.07.2026) — gemessene Befunde, seiten-
+       lokal korrigiert (shared/base.css bleibt unberührt).
+       ============================================================ */
+
+    /* KONTRAST: Die Zähler in den Filter-Pillen waren faktisch unlesbar.
+       --c-gray-m auf dem .tab-count-Chip ergibt zusammen mit dessen
+       opacity:.75 nur ~2,7:1 — AA verlangt 4,5:1. Deckkraft raus, im
+       Ruhezustand dunklere Zahl (~6,5:1). Die aktive schwarze Pille
+       vererbt weiter Weiß und bleibt unangetastet. */
+    .sr-cat .tab-count { opacity: 1; }
+    .sr-cat:not(.active) .tab-count { color: var(--c-ink-strong); }
+
+    /* KARTEN-FUSS: Aktionsreihe sitzt bündig am Kartenende, damit die
+       Karten einer Grid-Zeile unten gemeinsam abschließen. Der breitere
+       Editorial-Innenabstand von .sr-react ließ „Will ich auch / Ansehen /
+       Details“ exakt auf Kantenbreite laufen — je nach Zählerstand brach
+       „Details“ mal um, mal nicht. In der Karte darum etwas schmaler. */
+    .sr-card .sr-body { flex: 1 1 auto; }
+    .sr-card .sr-actions { margin-top: auto; }
+    .sr-card .sr-react { padding-left: 1.1rem; padding-right: 1.1rem; }
+
+    /* Karten-Titel sind jetzt <h3> (h1→h2→h3, Sprungmarken für Screenreader).
+       Optik identisch zur bisherigen <span>-Auszeichnung. */
+    h3.sr-name { line-height: 1.25; }
+
+    @media (max-width: 640px) {
+      /* Mobil standen Label und Select der drei Filter je nach Wortlänge
+         auf unterschiedlichen x-Positionen — gemeinsames Raster stellt sie
+         bündig untereinander. */
+      .sr-selects { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1rem; width: 100%; }
+      .sr-select { display: grid; grid-template-columns: 9.5rem minmax(0, 1fr); align-items: center; gap: .8rem; }
+      .sr-select select { width: 100%; }
+      /* Modal-Kopf: bei umbrechender Meta-Zeile blieb ein verwaister
+         Trennpunkt am Zeilenende stehen. Schmal stehen die Angaben ohnehin
+         untereinander — dort braucht es keine Trenner. */
+      #modal-meta .modal-meta-sep { display: none; }
+    }
   </style>
 </head>
 <body>
@@ -124,7 +167,9 @@
         <div class="lib-sec-head">
           <span class="lib-sec-ic lu-slot" id="cases-ic"></span>
           <h2 id="cases-h">Alle Projekte</h2>
-          <span class="lib-sec-count" id="cases-count"></span>
+          <!-- aria-live: das Grid tauscht beim Filtern lautlos aus — der Zähler
+               ist die einzige Rückmeldung, die auch am Screenreader ankommt. -->
+          <span class="lib-sec-count" id="cases-count" aria-live="polite"></span>
         </div>
         <p class="lib-note">Jede Vorschau ist die echte Demo, skaliert und nicht klickbar. „Ansehen“ öffnet sie im neuen Tab, „Details“ die ganze Geschichte samt Nachbau-Anleitung.</p>
         <div class="sr-toolbar">
@@ -147,7 +192,9 @@
             </div>
             <div class="sr-select">
               <label for="sr-sort">Sortierung</label>
-              <select id="sr-sort" aria-label="Projekte sortieren">
+              <!-- A11y: der barrierefreie Name muss das sichtbare Label „Sortierung“
+                   enthalten (WCAG 2.5.3 Label in Name) — „Projekte sortieren“ tat das nicht. -->
+              <select id="sr-sort" aria-label="Sortierung der Projekte">
                 <option value="recommended">Empfohlen zuerst</option>
                 <option value="meistgewollt">Meistgewollt</option>
                 <option value="alpha">Name A–Z</option>
@@ -263,12 +310,15 @@
     function reactVotes(c) { return getVotes('reaktion', c.id, c.reaktionSeed); }
 
     // ===== REAKTION „Will ich auch“ (vote:reaktion:<id>, KEINE Sterne) =====
-    function reactionBtnHtml(c) {
+    // mitTitel=true hängt den Projektnamen unsichtbar an den Button-Namen — im Grid
+    // heißen sonst zehn Buttons identisch „Will ich auch“. Der Zusatz steht bewusst
+    // AUSSERHALB von [data-react-count], damit dessen Textinhalt die reine Zahl bleibt.
+    function reactionBtnHtml(c, mitTitel) {
       const voted = hasVoted('reaktion', c.id);
       return `<button type="button" class="sr-react${voted ? ' -on' : ''}" aria-pressed="${voted}"
         data-react="${c.id}" onclick="toggleReaction(event,'${c.id}')">
         ${LU.vote}<span class="sr-react-label">Will ich auch</span>
-        <span class="sr-react-count" data-react-count="${c.id}">${reactVotes(c)}</span></button>`;
+        <span class="sr-react-count" data-react-count="${c.id}">${reactVotes(c)}</span>${mitTitel ? `<span class="sr-only"> — ${escHtml(c.titel)}</span>` : ''}</button>`;
     }
     function toggleReaction(evt, id) {
       if (evt) evt.stopPropagation();
@@ -291,7 +341,7 @@
       host.innerHTML = cats.map(c => {
         const active = state.saeule === (c.id === 'all' ? null : c.id);
         const count = c.id === 'all' ? CASES.length : CASES.filter(x => x.saeule === c.id).length;
-        return `<button class="sr-cat${active ? ' active' : ''}" aria-pressed="${active}" onclick="setSaeule('${c.id}')">${c.ic}${escHtml(c.label)} <span class="tab-count">${count}</span></button>`;
+        return `<button class="sr-cat${active ? ' active' : ''}" data-cat="${c.id}" aria-pressed="${active}" onclick="setSaeule('${c.id}')">${c.ic}${escHtml(c.label)} <span class="tab-count">${count}</span></button>`;
       }).join('');
     }
     function fillSelect(id, order, labels, allLabel) {
@@ -301,7 +351,16 @@
       sel.innerHTML = `<option value="all">${allLabel}</option>`
         + present.map(v => `<option value="${v}">${escHtml(labels[v])}</option>`).join('');
     }
-    function setSaeule(k) { state.saeule = k === 'all' ? null : k; renderCats(); renderCases(); }
+    // renderCats() ersetzt die Pillen komplett — ohne das Zurückholen des Fokus
+    // landet die Tastatur nach jedem Filterklick wieder auf <body>.
+    function setSaeule(k) {
+      state.saeule = k === 'all' ? null : k;
+      const keepFocus = document.activeElement && document.activeElement.classList
+        && document.activeElement.classList.contains('sr-cat');
+      renderCats();
+      if (keepFocus) { const b = document.querySelector(`#sr-cats [data-cat="${k}"]`); if (b) b.focus(); }
+      renderCases();
+    }
 
     // E12: Freitext-Suche über Titel, Kurzbeschreibung, Persona, Säule und Art.
     // Mehrere Begriffe = UND; kombiniert sich mit den Filter-Pills ebenfalls per UND.
@@ -344,15 +403,21 @@
           <div class="sr-body">
             <div class="sr-marker-row">${markerHtml(c)}</div>
             <div class="sr-kopf">
-              <span class="sr-name">${escHtml(c.titel)}</span>
+              <!-- h3: Karten-Titel als Überschrift unter der Sektions-h2 — ergibt
+                   h1→h2→h3 ohne Sprung und macht das Grid per Überschriften-
+                   Navigation durchlaufbar. .sr-name bleibt der Hook für Tests/CSS,
+                   der Textinhalt bleibt exakt der Projekttitel. -->
+              <h3 class="sr-name">${escHtml(c.titel)}</h3>
               <span class="sr-sub">${escHtml(ART_LABEL[c.art] || c.art)}</span>
             </div>
             <p class="sr-persona"><strong>${escHtml(c.persona)}</strong> · ${escHtml(SAEULE_LABEL[c.saeule] || c.saeule)}</p>
             <p class="sr-desc">${escHtml(c.kurz)}</p>
             <div class="sr-actions">
-              ${reactionBtnHtml(c)}
-              <a class="lib-btn -primary" href="${c.liveUrl}" target="_blank" rel="noopener">${LU.eye}Ansehen</a>
-              <button class="lib-btn" onclick="openModal('${c.id}')">${LU['layout-dashboard']}Details</button>
+              ${reactionBtnHtml(c, true)}
+              <!-- „Ansehen“/„Details“ hießen im Grid zehnmal gleich — unsichtbarer
+                   Zusatz nennt Projekt und (beim Link) den neuen Tab. -->
+              <a class="lib-btn -primary" href="${c.liveUrl}" target="_blank" rel="noopener">${LU.eye}Ansehen<span class="sr-only"> — ${escHtml(c.titel)}, öffnet neuen Tab</span></a>
+              <button class="lib-btn" onclick="openModal('${c.id}')">${LU['layout-dashboard']}Details<span class="sr-only"> — ${escHtml(c.titel)}</span></button>
             </div>
           </div>
         </article>`;
@@ -376,8 +441,14 @@
       const c = document.getElementById('cases-count');
       if (c) {
         const q = (state.search || '').trim();
-        c.textContent = q
-          ? `${list.length} von ${CASE_STATS.total} Projekten passen zu „${q}“`
+        // Bisher zählte nur die Suche mit: mit Säule-, Art- oder Aufwand-Filter stand
+        // über einem Ein-Treffer-Grid weiter „10 Projekte“. Jetzt sagt der Zähler bei
+        // JEDEM aktiven Filter das Ergebnis — ohne Filter bleibt die Bestandsangabe
+        // mit der echt/Beispiel-Aufteilung stehen.
+        const gefiltert = !!q || !!state.saeule || state.art !== 'all' || state.aufwand !== 'all';
+        const passt = list.length === 1 ? 'passt' : 'passen';
+        c.textContent = gefiltert
+          ? `${list.length} von ${CASE_STATS.total} Projekten ${passt} ${q ? `zu „${q}“` : 'zu deinen Filtern'}`
           : `${CASE_STATS.total} Projekte · ${CASE_STATS.echt} echte Team-Tools · ${CASE_STATS.beispiel} Beispiel-Projekte`;
       }
     }
@@ -388,6 +459,10 @@
       const artSel = document.getElementById('sr-art'); if (artSel) artSel.value = 'all';
       const aufSel = document.getElementById('sr-aufwand'); if (aufSel) aufSel.value = 'all';
       renderCats(); renderCases();
+      // Der auslösende Button steckte im Empty-State und ist gerade mit-ersetzt
+      // worden — sonst fällt der Fokus auf <body> zurück.
+      const alle = document.querySelector('#sr-cats [data-cat="all"]');
+      if (alle && (!document.activeElement || document.activeElement === document.body)) alle.focus();
     }
     window.resetShowroomFilters = resetShowroomFilters;
 
@@ -405,13 +480,26 @@
     }
 
     // ===== MODAL-ENGINE: Überblick · So entstanden · Nachbauen · Vorschau =====
+    // Der „Nachbauen“-Knopf im Überblick löscht sich beim Tabwechsel selbst mit —
+    // ohne Fokusübergabe landet die Tastatur auf <body> und die nächste Tab-Taste
+    // führt aus dem Modal heraus. Fokus wandert auf den zugehörigen Reiter
+    // (IDs tab-btn-<id> vergibt _syncTabPanelAria in shared/base.js).
+    function gotoTab(t) {
+      switchTab(t);
+      const btn = document.getElementById('tab-btn-' + t);
+      if (btn) btn.focus();
+    }
+    window.gotoTab = gotoTab;
     function renderCaseHead(item) {
       document.getElementById('modal-name').textContent = item.titel;
       const rolle = personaRolle(item.persona);
+      // aria-hidden auf den Trennpunkten: rein optische Gliederung, Screenreader
+      // sollen zwischen den Angaben kein „Mittelpunkt“ vorlesen.
+      const sep = '<span class="modal-meta-sep" aria-hidden="true">·</span>';
       document.getElementById('modal-meta').innerHTML =
         markerHtml(item)
-        + `<span class="modal-meta-sep">·</span><span>${escHtml(item.persona)}${rolle ? ' · ' + escHtml(rolle) : ''}</span>`
-        + `<span class="modal-meta-sep">·</span><span>${escHtml(item.aufwand)}</span>`;
+        + sep + `<span>${escHtml(item.persona)}${rolle ? ' · ' + escHtml(rolle) : ''}</span>`
+        + sep + `<span>${escHtml(item.aufwand)}</span>`;
       const tabBar = document.querySelector('#modal .modal-tabs');
       if (tabBar) {
         tabBar.innerHTML = [['overview', 'Überblick'], ['story', 'So ist es entstanden'], ['nachbauen', 'Nachbauen'], ['vorschau', 'Vorschau']]
@@ -433,7 +521,7 @@
         <div class="sr-actions" style="margin-top:1.6rem">
           ${reactionBtnHtml(item)}
           <a class="lib-btn -primary" href="${item.liveUrl}" target="_blank" rel="noopener">${LU.eye}Ansehen (neuer Tab)</a>
-          <button class="lib-btn" onclick="switchTab('nachbauen')">${LU['layout-dashboard']}Nachbauen</button>
+          <button class="lib-btn" onclick="gotoTab('nachbauen')">${LU['layout-dashboard']}Nachbauen</button>
         </div>`;
     }
     function renderCaseStory(item) {
@@ -534,11 +622,15 @@
       try { id = decodeURIComponent(m[1]); } catch (e) { return; }
       const item = caseById(id);
       if (!item) return;
-      // Case liegt evtl. hinter einem Filter — für den Deep-Link lösen
-      if ((state.saeule && item.saeule !== state.saeule) || (state.art !== 'all' && item.art !== state.art) || (state.aufwand !== 'all' && item.aufwandStufe !== state.aufwand)) {
-        state.saeule = null; state.art = 'all'; state.aufwand = 'all';
+      // Case liegt evtl. hinter einem Filter — für den Deep-Link lösen.
+      // Auch die Freitext-Suche zählt dazu: sonst springt highlightCard() auf eine
+      // Karte, die gar nicht im Grid steht (z. B. Sprung aus der globalen Suche).
+      if ((state.saeule && item.saeule !== state.saeule) || (state.art !== 'all' && item.art !== state.art)
+        || (state.aufwand !== 'all' && item.aufwandStufe !== state.aufwand) || !caseMatchesSearch(item)) {
+        state.saeule = null; state.art = 'all'; state.aufwand = 'all'; state.search = '';
         const artSel = document.getElementById('sr-art'); if (artSel) artSel.value = 'all';
         const aufSel = document.getElementById('sr-aufwand'); if (aufSel) aufSel.value = 'all';
+        const sf = document.getElementById('search'); if (sf) sf.value = '';
         renderCats(); renderCases();
       }
       openModal(id, { fromHash: true });

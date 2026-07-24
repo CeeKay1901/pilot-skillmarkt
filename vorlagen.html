@@ -710,7 +710,12 @@
       return `
         <article class="baustein-card" id="baustein-${b.id}" data-id="${b.id}" data-kat="${b.kategorie}">
           <div class="baustein-thumb" data-pv-id="${b.id}">
-            <iframe class="preview-frame" title="Live-Vorschau: ${escHtml(b.name)}" loading="lazy" sandbox="" srcdoc="${escHtml(b.srcdoc)}"></iframe>
+            <!-- tabindex="-1": Die Vorschau ist reine Optik (auch pointer-events:none).
+                 Ohne das landen alle 12 Rahmen in der Tab-Reihenfolge und man muss
+                 sich mit der Tastatur durch sie hindurcharbeiten, um zu den Buttons
+                 der nächsten Karte zu kommen. Der Baustein-Inhalt selbst ist über
+                 „Ansehen & anpassen"/„Code" erreichbar. -->
+            <iframe class="preview-frame" tabindex="-1" title="Live-Vorschau: ${escHtml(b.name)}" loading="lazy" sandbox="" srcdoc="${escHtml(b.srcdoc)}"></iframe>
           </div>
           <div class="baustein-body">
             <div class="baustein-kopf">
@@ -849,7 +854,9 @@
         <div class="am-preview">
           <p class="baustein-desc" style="margin-bottom:1rem">${escHtml(item.beschreibung)}</p>
           <div class="preview-frame-wrap" data-pv-id="${item.id}">
-            <iframe class="preview-frame" title="Live-Vorschau: ${escHtml(item.name)}" sandbox="" srcdoc="${escHtml(item.srcdoc)}"></iframe>
+            <!-- tabindex="-1" wie auf den Karten: rein optische Vorschau, kein
+                 Tab-Stopp. Der Code steht im Nachbar-Tab und ist dort erreichbar. -->
+            <iframe class="preview-frame" tabindex="-1" title="Live-Vorschau: ${escHtml(item.name)}" sandbox="" srcdoc="${escHtml(item.srcdoc)}"></iframe>
           </div>
           <p class="preview-note">Die Vorschau läuft in einem isolierten Rahmen: in Desktop-Breite gerendert und komplett verkleinert — du siehst den Baustein also ganz, nur kleiner, in der System-Schrift. Der kopierbare Code im Tab „Code“ ist die Wahrheit — inklusive pilot-Look und Kommentaren an den Anpass-Stellen.</p>
           <p class="am-source"><strong>Typischer Einsatz:</strong> ${escHtml(item.einsatz)}</p>

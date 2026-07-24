@@ -1764,7 +1764,8 @@ Gib einen priorisierten Report aus:
     }
     function renderCatTabs() {
       const subs = [
-        {id:'all',        label:'Alle'},
+        // Gegenstück zu „Alle Typen“ in der Leiste darüber — siehe renderTypeTabs().
+        {id:'all',        label:'Alle Aufgaben'},
         {id:'loslegen',   label:'Loslegen'},
         {id:'bauen',      label:'Bauen'},
         {id:'texten',     label:'Texten'},
@@ -1806,7 +1807,11 @@ Gib einen priorisierten Report aus:
       const el = document.getElementById('type-tabs');
       if (!el) return;
       const types = [
-        { id: 'all',       label: 'Alle' },
+        // „Alle Typen" statt „Alle": Direkt darunter steht die Aufgaben-Leiste mit
+        // einem zweiten „Alle“-Eintrag und derselben Gesamtzahl. Zwei gleich
+        // beschriftete Zurücksetzen-Knöpfe übereinander machten nicht erkennbar,
+        // welche Filterebene man gerade aufhebt.
+        { id: 'all',       label: 'Alle Typen' },
         { id: 'skill',     label: 'Skills' },
         { id: 'plugin',    label: 'Plugins' },
         { id: 'framework', label: 'Frameworks' }

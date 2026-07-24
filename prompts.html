@@ -41,8 +41,18 @@
       color: var(--c-ink-strong, var(--c-black)); margin: 0;
     }
     /* E12 M5: Beispiel-Ergebnis (ASCII-/Tabellen-Blöcke) NICHT umbrechen — sonst
-       verlieren die Spalten die Ausrichtung. Non-wrap + horizontal scrollen. */
+       verlieren die Spalten die Ausrichtung. Non-wrap + horizontal scrollen.
+       E13: Der Block scrollt real, das war aber weder sichtbar noch per Tastatur
+       erreichbar — Tastaturzugang liefert jetzt tabindex im Markup. */
     .prompt-code.-scroll { white-space: pre; word-break: normal; overflow-x: auto; }
+    /* Scrollleisten-Optik für Browser mit klassischen Leisten. Kein
+       scrollbar-width: thin — das schaltet in Chromium auf die ausblendende
+       Overlay-Leiste um und die ::-webkit-Regeln greifen dann gar nicht.
+       Wo der Browser die Leiste trotzdem ausblendet, trägt der Satz in
+       .example-note den Hinweis (gemessen: 1102px Inhalt in 670px Fläche). */
+    .prompt-code.-scroll::-webkit-scrollbar { height: 8px; }
+    .prompt-code.-scroll::-webkit-scrollbar-track { background: transparent; }
+    .prompt-code.-scroll::-webkit-scrollbar-thumb { background: var(--c-gray-l); border-radius: 4px; }
 
     /* Kopier-Zeile im Modal */
     .prompt-copy-row { display: flex; align-items: center; gap: 1.6rem; flex-wrap: wrap; margin-bottom: 1.4rem; }
@@ -77,7 +87,7 @@
     .pb-field { display: flex; flex-direction: column; gap: .5rem; min-width: 0; }
     .pb-field.-wide { grid-column: 1 / -1; }
     .pb-label { font-size: 1.35rem; font-weight: 700; color: var(--c-black); }
-    .pb-label mark.ph { font-size: 1.05rem; font-family: var(--font-mono); font-weight: 600; margin-left: .4rem; vertical-align: .1em; }
+    .pb-label mark.ph { font-size: 1.15rem; font-family: var(--font-mono); font-weight: 600; margin-left: .4rem; vertical-align: .1em; }
     .pb-field input, .pb-field textarea, .pb-field select {
       width: 100%; font-family: inherit; font-size: 1.5rem; line-height: 1.5;
       border: 1px solid var(--c-gray-l); border-radius: var(--r-sm);
@@ -85,6 +95,11 @@
       resize: vertical; min-height: 4.2rem;
     }
     .pb-field input:focus, .pb-field textarea:focus, .pb-field select:focus { outline: none; border-color: var(--c-black); }
+    /* E13: Nicht jede Variante enthält jeden Platzhalter (z. B. „Kurz“ kennt bei
+       der Briefing-Zusammenfassung kein [EMPFÄNGER]). Vorher tippte man dort ins
+       Leere — jetzt verliert der Marker sein Gelb und ein Satz sagt, warum. */
+    .pb-field.-off mark.ph { background: transparent; border: 1px solid var(--c-gray-l); color: var(--c-gray-d); font-weight: 600; }
+    .pb-off-note { font-size: 1.2rem; line-height: 1.4; color: var(--c-gray-d); margin: 0; }
     @media (max-width: 700px) {
       .pb-form { grid-template-columns: 1fr; }
       .pb-wrap { padding: 1.4rem 1.6rem; }
@@ -99,6 +114,10 @@
     .modal-term { margin: 0; max-width: none; box-shadow: none; }
     .modal-term .ex-terminal-body { min-height: 22rem; max-height: 34rem; overflow-y: auto; font-size: 1.35rem; padding: 1.8rem 2rem; }
     .ex-terminal-bar { position: relative; }
+    /* Kontrast: base.css setzt den Fenstertitel auf rgba(252,252,252,.4) — auf der
+       Terminalleiste sind das gemessen 3,5:1 (AA verlangt 4,5:1 bei 13px). Nur im
+       Modal aufhellen, die Showroom-Optik bleibt unberührt. Neu: 7,9:1. */
+    .modal-term .ex-terminal-title { color: rgba(252,252,252,.72); }
     .demo-replay {
       position: absolute; right: 1.4rem; top: 50%; transform: translateY(-50%);
       background: rgba(255,255,255,.1); border: none; color: rgba(252,252,252,.8);
@@ -142,9 +161,17 @@
     .prompt-copy-chip:hover { background: var(--c-yellow); border-color: var(--c-yellow); color: var(--c-black); }
     .prompt-copy-chip .lu { width: 1.4rem; height: 1.4rem; }
     /* E12-Mobil: der „Kopieren"-Chip ist die primäre Aktion je Prompt-Karte —
-       auf Touch auf WCAG-Trefferfläche (≥44px) heben. Desktop unverändert. */
+       auf Touch auf WCAG-Trefferfläche (≥44px) heben. Desktop unverändert.
+       E13 ergänzt die restlichen eigenständigen Bedienelemente dieser Seite,
+       die auf Touch gemessen darunter lagen: Varianten-Umschalter (36px),
+       „Zurücksetzen“ im Builder (23px), Demo-Replay im Terminal (26×28px). */
     @media (hover: none) and (pointer: coarse) {
       .prompt-copy-chip { min-height: 4.4rem; }
+      .variant-seg button { min-height: 4.4rem; }
+      .pb-reset { min-height: 4.4rem; display: inline-flex; align-items: center; }
+      /* flex-shrink: 0 — in der Terminalleiste (flex) drückte der lange Fenstertitel
+         den runden Knopf sonst auf 38,8px zusammen. */
+      .demo-replay { width: 4.4rem; height: 4.4rem; font-size: 1.8rem; flex-shrink: 0; }
     }
 
     /* Chip-Zeile horizontal (Muster lernen-hilfe.html): base.css stellt .role-chips
@@ -162,6 +189,10 @@
 
     /* Beispiel-Ergebnis: ehrlicher Hinweis */
     .example-note { font-size: 1.3rem; color: var(--c-gray-d); line-height: 1.5; margin: 0 0 1.2rem; }
+
+    /* (Der seitenlokale #modal .chat-meta-Override ist entfallen: die Farbe ist
+       jetzt in base.css korrigiert, weil „Du“/„KI-Antwort“ informativer Text ist
+       und nicht — wie dort früher eingeordnet — ein dekoratives Label.) */
 
     /* „Variante einreichen“ im Modal (Flow-Baustein .sf-* liegt in base.css) */
     .modal-submit-row {
@@ -339,11 +370,6 @@
         .map(pf => `<span class="pf-chip pf-${pf.id}">${pf.short}</span>`).join('');
     }
 
-    // Platzhalter [SO-GESCHRIEBEN] gelb markieren — NUR fürs Rendern; kopiert wird immer der Rohtext.
-    function markPh(text) {
-      return escHtml(text).replace(/\[([A-ZÄÖÜ][^\]]*)\]/g, '<mark class="ph">[$1]</mark>');
-    }
-
     // ===== MEISTKOPIERT (Seed + lokaler Zähler copies:prompt:<id>) =====
     function localCopies(id) {
       const n = parseInt(lsGet('copies:prompt:' + id) || '0', 10);
@@ -417,6 +443,9 @@
     function resetBuilder(id) {
       lsRemove(builderStoreKey(id));
       renderModalBody();
+      // renderModalBody baut den Body komplett neu — ohne das hier verliert die
+      // Tastatur nach dem Klick ihren Platz und landet wieder ganz oben.
+      document.querySelector('#modal .pb-reset')?.focus({ preventScroll: true });
       showToast('Eingaben zurückgesetzt');
     }
 
@@ -456,23 +485,35 @@
     function setVariant(vid) {
       state.activeVariant = vid;
       renderModalBody();
+      // Gleiche Falle wie in resetBuilder: der neu gebaute Knopf bekommt den
+      // Fokus zurück, damit man mit der Tastatur direkt weiterschalten kann.
+      document.querySelector(`#modal .variant-seg button[data-variant="${vid}"]`)?.focus({ preventScroll: true });
     }
 
     // ===== FILTER & SORT =====
+    // Suchbegriffe und Trefferbewertung liegen als eigene Helfer vor, damit die
+    // Aufgaben-Tabs mit derselben Logik zählen wie das Grid filtert (siehe groupCount).
+    function searchTerms() {
+      return state.search ? state.search.toLowerCase().split(/\s+/).filter(t => t.length > 1) : [];
+    }
+    function promptSearchScore(p, terms) {
+      return searchScore(p, terms, [
+        [p.name, 5], [p.promptText, 4], [(p.tags || []).join(' '), 3],
+        [p.tagline, 2], [p.warum || '', 1]
+      ]);
+    }
+
     function filterPrompts() {
       let result = PROMPTS.slice();
       if (state.taskGroup) result = result.filter(p => p.taskGroup === state.taskGroup);
       if (state.platform) result = result.filter(p => !!p.platforms[state.platform]);
       if (state.difficulty) result = result.filter(p => p.difficulty === state.difficulty);
       if (state.search) {
-        const terms = state.search.toLowerCase().split(/\s+/).filter(t => t.length > 1);
+        const terms = searchTerms();
         state._searchScore = {};
         if (terms.length) {
           result = result.filter(p => {
-            const sc = searchScore(p, terms, [
-              [p.name, 5], [p.promptText, 4], [(p.tags || []).join(' '), 3],
-              [p.tagline, 2], [p.warum || '', 1]
-            ]);
+            const sc = promptSearchScore(p, terms);
             if (sc > 0) state._searchScore[p.id] = sc;
             return sc > 0;
           });
@@ -497,11 +538,15 @@
     }
 
     // ===== AUFGABEN-TABS =====
-    // Zähler folgen Plattform- & Niveau-Filter, damit die Zahlen zur Kartenfläche passen.
+    // Zähler folgen Plattform-, Niveau- UND Suchfilter, damit die Zahlen zur
+    // Kartenfläche passen. (E13-Fund: bei Suche „briefing“ versprach „Loslegen 3“
+    // drei Prompts und lieferte null — der Zähler ignorierte die Suche.)
     function groupCount(gId) {
+      const terms = searchTerms();
       return PROMPTS.filter(p => p.taskGroup === gId
         && (!state.platform || !!p.platforms[state.platform])
-        && (!state.difficulty || p.difficulty === state.difficulty)).length;
+        && (!state.difficulty || p.difficulty === state.difficulty)
+        && (!terms.length || promptSearchScore(p, terms) > 0)).length;
     }
     function renderCatTabs() {
       const subs = [
@@ -532,14 +577,17 @@
     function renderFilterChips() {
       const host = document.getElementById('filter-chips');
       if (!host) return;
+      // Die Gruppen-Beschriftungen „Plattform“/„Niveau“ sind reine Optik (.chip-lbl).
+      // Ohne aria-label hört ein Screenreader nur „Einfach, Umschaltfläche“ — der
+      // Bezug zur Gruppe fehlte. Wortlaut wie in den Aktiv-Filter-Pillen.
       const pfChips = PROMPT_PLATFORMS.map(pf => {
         const active = state.platform === pf.id;
-        return `<button class="role-chip${active ? ' active' : ''}" aria-pressed="${active}" onclick="setPlatform('${pf.id}')">${escHtml(pf.label)}</button>`;
+        return `<button class="role-chip${active ? ' active' : ''}" aria-pressed="${active}" aria-label="Plattform: ${escHtml(pf.label)}" onclick="setPlatform('${pf.id}')">${escHtml(pf.label)}</button>`;
       }).join('');
       const diffs = [['easy', 'Einfach'], ['medium', 'Mittel'], ['advanced', 'Fortgeschritten']];
       const diffChips = diffs.map(([id, label]) => {
         const active = state.difficulty === id;
-        return `<button class="role-chip${active ? ' active' : ''}" aria-pressed="${active}" onclick="setDifficulty('${id}')">${label}</button>`;
+        return `<button class="role-chip${active ? ' active' : ''}" aria-pressed="${active}" aria-label="Niveau: ${label}" onclick="setDifficulty('${id}')">${label}</button>`;
       }).join('');
       host.innerHTML = `<span class="chip-lbl">Plattform</span>${pfChips}<span class="chip-gap" aria-hidden="true"></span><span class="chip-lbl">Niveau</span>${diffChips}`;
     }
@@ -581,6 +629,7 @@
     function clearSearch() {
       state.search = '';
       const el = document.getElementById('search'); if (el) el.value = '';
+      renderCatTabs(); // Tab-Zähler folgen der Suche
       render();
     }
     function resetFilters() {
@@ -594,15 +643,18 @@
     // ===== RENDER CARD =====
     /* E11 Karten-Diät: Titel + ein Satz + Aufgaben-Gruppe + kompakte Bewertung +
        Kopierchip. Prompt-Vorschau, Schwierigkeit, Plattformen und Kopier-Zähler
-       leben im Detail-Modal. */
-    function renderCard(p, idx = 0, isStart = false) {
+       leben im Detail-Modal.
+       E13-Tastatur: Das onkeydown der Karte reagiert nur, wenn die Karte SELBST
+       das Ziel ist. Vorher blubberte Enter vom „Kopieren“-Chip hoch und riss
+       zusätzlich das Modal auf (copyPrompt stoppt nur den Klick, nicht die Taste). */
+    function renderCard(p, idx = 0) {
       const eff = getEffectiveRating(p);
       const delay = Math.min(idx, 11) * 35;
       // Rein visuell (Editorial-Pass): Leuchttürme tragen ein „Highlight“-Flag —
       // Sortierung/Filter bleiben unberührt.
       const isSpot = PROMPT_SPOTLIGHT.has(p.id);
       return `
-        <article class="skill-card prompt-card${isSpot ? ' -spot' : ''}${state._noCardAnim ? '' : ' card-in'}" style="animation-delay:${state._noCardAnim ? 0 : delay}ms" onclick="openModal('${p.id}')" tabindex="0" role="button" aria-label="${escHtml(p.name)} öffnen" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openModal('${p.id}')}">
+        <article class="skill-card prompt-card${isSpot ? ' -spot' : ''}${state._noCardAnim ? '' : ' card-in'}" style="animation-delay:${state._noCardAnim ? 0 : delay}ms" onclick="openModal('${p.id}')" tabindex="0" role="button" aria-label="${escHtml(p.name)} öffnen" onkeydown="if((event.key==='Enter'||event.key===' ')&&event.target===this){event.preventDefault();openModal('${p.id}')}">
           <div class="card-top">
             <span class="card-sub">${escHtml(groupLabel(p.taskGroup))}</span>
             ${isSpot ? '<span class="card-spot-flag" aria-label="Highlight-Prompt">Highlight</span>' : ''}
@@ -614,7 +666,7 @@
               ${renderStars(eff.average)}
               <span class="rating-text">${eff.average.toFixed(1)} (${eff.count})</span>
             </div>
-            <button class="chip prompt-copy-chip" onclick="copyPrompt(event,'${p.id}')" title="Prompt-Text kopieren">${LU.copy} Kopieren</button>
+            <button class="chip prompt-copy-chip" onclick="copyPrompt(event,'${p.id}')" title="Kompletten Prompt-Text mit allen [PLATZHALTERN] kopieren" aria-label="${escHtml(p.name)} kopieren">${LU.copy} Kopieren</button>
           </div>
         </article>
       `;
@@ -650,7 +702,7 @@
         && state.sort === 'recommended';
       const start = noFilter ? filtered.find(p => p.id === PROMPT_START) : null;
       const rest = start ? filtered.filter(p => p.id !== start.id) : filtered;
-      let html = start ? renderCard(start, 0, true) : '';
+      let html = start ? renderCard(start, 0) : '';
       let idx = start ? 1 : 0;
       html += rest.map(p => renderCard(p, idx++)).join('');
       grid.innerHTML = html;
@@ -691,8 +743,11 @@
     }
 
     // Ein Builder-Feld (Text, Auswahl oder Textfläche) — Tippen füllt den Prompt live.
+    // Kommt der Platzhalter in der GERADE gewählten Variante nicht vor, sagt das Feld
+    // das offen („-off“), statt den Eindruck zu erwecken, die Eingabe hätte Wirkung.
     function builderFieldHtml(p, f) {
       const v = String(getBuilderValues(p.id)[f.key] || '');
+      const off = !currentPromptText(p).includes(f.ph);
       const inputId = `pb-${p.id}-${f.key}`;
       const on = `oninput="onBuilderInput('${p.id}','${f.key}',this.value)"`;
       let control;
@@ -707,9 +762,10 @@
         control = `<input type="text" id="${inputId}" value="${escHtml(v)}" placeholder="${escHtml(f.placeholder || '')}" ${on}>`;
       }
       return `
-        <div class="pb-field${f.type === 'textarea' ? ' -wide' : ''}">
+        <div class="pb-field${f.type === 'textarea' ? ' -wide' : ''}${off ? ' -off' : ''}">
           <label class="pb-label" for="${inputId}">${escHtml(f.label)}<mark class="ph">${escHtml(f.ph)}</mark></label>
           ${control}
+          ${off ? `<p class="pb-off-note">Diese Variante enthält <strong>${escHtml(f.ph)}</strong> nicht — deine Eingabe wirkt erst wieder in einer anderen Variante.</p>` : ''}
         </div>`;
     }
 
@@ -722,7 +778,7 @@
       if (hasVariants) {
         const segs = [{ id: 'standard', label: 'Standard' }].concat(p.variants);
         segHtml = `<div class="variant-seg" role="group" aria-label="Prompt-Variante wählen">${
-          segs.map(s => `<button type="button" class="${state.activeVariant === s.id ? 'active' : ''}" aria-pressed="${state.activeVariant === s.id}" onclick="setVariant('${s.id}')">${escHtml(s.label)}</button>`).join('')
+          segs.map(s => `<button type="button" class="${state.activeVariant === s.id ? 'active' : ''}" data-variant="${s.id}" aria-pressed="${state.activeVariant === s.id}" onclick="setVariant('${s.id}')">${escHtml(s.label)}</button>`).join('')
         }</div>`;
         const av = activeVariantOf(p);
         if (av && av.hint) segHtml += `<p class="variant-hint">${escHtml(av.hint)}</p>`;
@@ -766,10 +822,13 @@
       `;
     }
 
+    // Der Beispiel-Block scrollt seitlich (Tabellen behalten ihre Spalten).
+    // role="region" + tabindex machen ihn per Tastatur erreichbar und scrollbar —
+    // ohne tabindex kommt man mit der Tastatur nicht an den abgeschnittenen Teil.
     function renderModalBeispiel(p) {
       return `
-        <p class="example-note">So kann ein Ergebnis aussehen — nachgestelltes Beispiel mit fiktiven Marken. Dein Ergebnis hängt davon ab, wie du die Platzhalter füllst.</p>
-        <pre class="prompt-code -scroll">${escHtml(p.exampleOutput || '')}</pre>
+        <p class="example-note">So kann ein Ergebnis aussehen — nachgestelltes Beispiel mit fiktiven Marken. Dein Ergebnis hängt davon ab, wie du die Platzhalter füllst. Breite Tabellen lassen sich seitlich scrollen.</p>
+        <pre class="prompt-code -scroll" tabindex="0" role="region" aria-label="Beispiel-Ergebnis — seitlich scrollbar">${escHtml(p.exampleOutput || '')}</pre>
       `;
     }
 
@@ -796,7 +855,9 @@
               <span class="ex-terminal-title">claude code — dein erstes Tool</span>
               <button class="demo-replay" onclick="startPromptPreview()" title="Demo neu abspielen" aria-label="Demo neu abspielen">↻</button>
             </div>
-            <div class="ex-terminal-body" id="prompt-term-body"></div>
+            <!-- Der Verlauf ist länger als das Fenster (gemessen 522px in 340px) und
+                 scrollt vertikal — tabindex macht ihn auch per Tastatur erreichbar. -->
+            <div class="ex-terminal-body" id="prompt-term-body" tabindex="0" role="region" aria-label="Nachgestellter Claude-Code-Verlauf — scrollbar"></div>
           </div>`;
       }
       if (pv && pv.mode === 'chat' && pv.chat) {
@@ -981,6 +1042,7 @@
       // Suche im Filterleisten-Slot (Feld kommt aus renderNav, ID bleibt #search)
       document.getElementById('search')?.addEventListener('input', debounce(e => {
         state.search = e.target.value.toLowerCase().trim();
+        renderCatTabs(); // Tab-Zähler folgen der Suche (sonst versprechen sie Treffer, die es nicht gibt)
         state._noCardAnim = true; render(); state._noCardAnim = false;
       }, 150));
 
