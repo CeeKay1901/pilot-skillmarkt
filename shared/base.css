@@ -1532,28 +1532,6 @@
     .sr-react.-on .lu { fill: var(--c-black); }
     .sr-react-count { font-family: var(--font-mono); font-weight: 700; }
 
-    /* ----- Projekt-des-Monats-Spotlight ----- */
-    .sr-spotlight { background: var(--c-black); color: var(--c-white); padding: 4.8rem 0 5.2rem; }
-    .sr-spot-inner {
-      max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-d);
-      display: grid; grid-template-columns: 1.05fr .95fr; gap: 3.2rem; align-items: center;
-    }
-    .sr-spot-label { color: var(--c-yellow); }
-    .sr-spot-inner h2 { font-size: var(--fs-h2); font-weight: var(--fw-semi); letter-spacing: -.02em; margin: .6rem 0 1rem; color: var(--c-white); }
-    .sr-spot-inner p.sr-spot-text { font-size: 1.55rem; line-height: 1.6; color: rgba(252,252,252,.8); max-width: 60ch; margin: 0 0 1.6rem; }
-    .sr-spot-meta { display: flex; align-items: center; gap: .8rem 1.6rem; flex-wrap: wrap; margin-bottom: 2rem; }
-    .sr-spot-actions { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
-    .sr-spot-frame-wrap {
-      position: relative; border-radius: var(--r-md); overflow: hidden;
-      border: 1px solid rgba(252,252,252,.16); height: 26rem;
-      background: repeating-conic-gradient(#3a3a38 0% 25%, #2f2f2d 0% 50%) 50% / 1.6rem 1.6rem;
-    }
-    .sr-spot-frame {
-      position: absolute; top: 0; left: 0; width: 200%; height: 52rem; border: 0;
-      background: #fff; transform: scale(.5); transform-origin: top left; pointer-events: none;
-    }
-    .sr-spot .sr-badge.-beispiel { background: rgba(252,252,252,.08); color: var(--c-white); border-color: rgba(252,252,252,.28); }
-
     /* ----- Story-Tab-Inhalte („So ist es entstanden“) ----- */
     .sr-story-block { margin: 0 0 1.6rem; }
     .sr-story-block p { font-size: 1.45rem; line-height: 1.6; color: var(--c-ink-body); margin: .4rem 0 0; }
@@ -1599,8 +1577,6 @@
     @media (max-width: 1023px) {
       .sr-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .sr-selects { margin-left: 0; }
-      .sr-spot-inner { grid-template-columns: minmax(0, 1fr); gap: 2.4rem; }
-      .sr-spot-frame-wrap { order: -1; }
     }
     @media (max-width: 640px) {
       .sr-grid { grid-template-columns: minmax(0, 1fr); }

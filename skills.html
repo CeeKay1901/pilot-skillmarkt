@@ -279,57 +279,6 @@
     .pilot-tab-role { font-size: 1.3rem; color: var(--c-gray-m); margin-bottom: .8rem; }
     .pilot-tab-quote { font-size: 1.5rem; line-height: 1.6; color: var(--c-ink-body); font-style: italic; }
 
-    /* ===== STIMMEN AUS DEM TEAM (E2) ===== */
-    .team-voices { border-top: 1px solid var(--line); }
-    .tv-inner {
-      max-width: var(--max-w); margin: 0 auto; padding: 2.8rem var(--pad-d) 3.4rem;
-      display: flex; gap: 6rem; align-items: flex-start;
-    }
-    .tv-label { flex-shrink: 0; max-width: 24rem; padding-top: .3rem; }
-    /* .overline ist global gelb (für dunkle Flächen) — auf Beige unlesbar, daher Schwarz + gelber Marker */
-    .team-voices .overline {
-      color: var(--c-black);
-      display: inline-block;
-      box-shadow: inset 0 -0.6em 0 var(--c-yellow);
-    }
-    .tv-hint { font-size: 1.3rem; color: var(--c-gray-m); line-height: 1.5; margin-top: .6rem; }
-    .tv-stage { flex: 1; min-width: 0; min-height: 11rem; transition: opacity .38s ease; }
-    .tv-stage.tv-fading { opacity: 0; }
-    .tv-card {
-      display: block; width: 100%; text-align: left; cursor: pointer;
-      background: none; border: none; padding: 0; font-family: inherit;
-    }
-    .tv-quote {
-      display: block; font-size: 1.8rem; line-height: 1.55; font-style: italic;
-      color: var(--c-ink-body); max-width: 88rem; margin-bottom: 1.4rem;
-    }
-    .tv-card:hover .tv-quote, .tv-card:focus-visible .tv-quote { color: var(--c-black); }
-    .tv-meta { display: flex; align-items: center; gap: 1.2rem; flex-wrap: wrap; }
-    .tv-avatar {
-      width: 3.4rem; height: 3.4rem; flex-shrink: 0; border-radius: 50%;
-      background: var(--c-yellow); color: var(--c-black);
-      display: inline-flex; align-items: center; justify-content: center;
-      font-size: 1.25rem; font-weight: 700;
-    }
-    .tv-who { display: flex; flex-direction: column; min-width: 0; }
-    .tv-who strong { font-size: 1.4rem; color: var(--c-black); }
-    .tv-who span { font-size: 1.25rem; color: var(--c-gray-m); }
-    .tv-ref {
-      margin-left: auto; display: inline-flex; align-items: center; gap: .6rem;
-      font-size: 1.35rem; font-weight: 600; color: var(--c-black);
-      border-bottom: 1px solid var(--c-yellow); padding-bottom: .1rem;
-      white-space: nowrap; max-width: 100%; overflow: hidden;
-    }
-    .tv-card:hover .tv-ref { background: var(--c-yellow); }
-    .tv-ref .lu { width: 1.4rem; height: 1.4rem; flex-shrink: 0; }
-    @media (prefers-reduced-motion: reduce) { .tv-stage { transition: none; } }
-    @media (max-width: 1023px) {
-      .tv-inner { flex-direction: column; gap: 1.4rem; padding: 2rem var(--pad-m) 2.4rem; }
-      .tv-stage { min-height: 13rem; }
-      .tv-quote { font-size: 1.6rem; margin-bottom: 1.2rem; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
-      .tv-ref { margin-left: 0; flex-basis: 100%; justify-content: flex-start; }
-    }
-
     /* Sanfter Kommentar-CTA nach „ausprobiert“ (E2): sticky Leiste am Modal-Fuß */
     .tried-cta {
       position: sticky; bottom: 0; z-index: 5;
@@ -954,17 +903,6 @@
 
   <!-- RECENTLY VIEWED -->
   <div id="recently-viewed" class="recently-viewed" hidden></div>
-
-  <!-- STIMMEN AUS DEM TEAM (E2): rotiert echte seeded Kommentare aus den Item-Daten -->
-  <section class="team-voices cat-reveal" id="team-voices" aria-label="Stimmen aus dem Team">
-    <div class="tv-inner">
-      <div class="tv-label">
-        <p class="overline">Stimmen aus dem Team</p>
-        <p class="tv-hint">Aus den Bewertungen im Katalog — klick dich zum Eintrag. Die Startwerte von Bewertungen, Stimmen und dem „Team-Favorit“-Siegel sind redaktionelle Demo-Werte — deine Bewertung kommt lokal in deinem Browser dazu.</p>
-      </div>
-      <div class="tv-stage" id="tv-stage" aria-live="off"></div>
-    </div>
-  </section>
 
   <!-- KATALOG-INHALT (Filter + Grid + Piloten); der <main>-Landmark umschließt weiter oben alle Views -->
   <div class="catalog-main">
@@ -3652,67 +3590,6 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
       render();
     }
 
-
-    // ===== STIMMEN AUS DEM TEAM (E2) =====
-    // Rotiert echte seeded Kommentare aus den Item-Daten (data/skills.js) — nichts erfunden,
-    // jede Stimme verlinkt auf ihr Item. Pausiert bei Hover/Fokus, respektiert reduced-motion.
-    function buildVoicePool() {
-      const pool = [];
-      SKILLS.forEach(s => {
-        if (HIDDEN.has(s.id)) return;
-        (s.comments || []).forEach(c => {
-          if (c && c.text && c.author) pool.push({ item: s, c });
-        });
-      });
-      // Fisher-Yates: jede Sitzung eine andere Reihenfolge, kein Zitat bevorzugt
-      for (let i = pool.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [pool[i], pool[j]] = [pool[j], pool[i]];
-      }
-      return pool;
-    }
-
-    function voiceHtml(v) {
-      const p = PILOTS.find(pl => pl.name === v.c.author);
-      const who = [v.c.role, p && p.department].filter(Boolean).join(' · ');
-      const arrow = '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>';
-      return `
-        <button type="button" class="tv-card" data-skill-id="${escHtml(v.item.id)}" onclick="openModal('${escHtml(v.item.id)}')"
-          aria-label="Kommentar von ${escHtml(v.c.author)} zu ${escHtml(v.item.name)} — Details öffnen">
-          <span class="tv-quote">„${escHtml(v.c.text)}“</span>
-          <span class="tv-meta">
-            <span class="tv-avatar" aria-hidden="true">${escHtml(v.c.initials || getInitials(v.c.author))}</span>
-            <span class="tv-who"><strong>${escHtml(v.c.author)}</strong><span>${escHtml(who)}</span></span>
-            <span class="tv-ref">zu ${escHtml(v.item.name)} ${arrow}</span>
-          </span>
-        </button>`;
-    }
-
-    function initVoices() {
-      const section = document.getElementById('team-voices');
-      const stage = document.getElementById('tv-stage');
-      if (!section || !stage) return;
-      const pool = buildVoicePool();
-      if (!pool.length) { section.hidden = true; return; }
-      let vi = 0;
-      const show = () => { stage.innerHTML = voiceHtml(pool[vi]); };
-      show();
-      const reduce = window.prefersReduce ? prefersReduce() : (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
-      if (reduce || pool.length < 2) return;
-      let paused = false;
-      ['mouseenter', 'focusin'].forEach(ev => section.addEventListener(ev, () => { paused = true; }));
-      ['mouseleave', 'focusout'].forEach(ev => section.addEventListener(ev, () => { paused = false; }));
-      setInterval(() => {
-        if (paused || document.hidden) return;
-        stage.classList.add('tv-fading');
-        setTimeout(() => {
-          vi = (vi + 1) % pool.length;
-          show();
-          stage.classList.remove('tv-fading');
-        }, 380);
-      }, 6000);
-    }
-
     // ===================== EXPLAINER: WAS SIND SKILLS =====================
     // Tastatur-Navigation der Sub-Tab-Leiste (WAI-ARIA Tabs): Links/Rechts +
     // Hoch/Runter bewegen zwischen den Tabs und aktivieren sie; Home/End springen
@@ -4008,9 +3885,6 @@ Mehr Skills und alle Details: pilot Skill Marketplace.
           if (search) { search.focus(); search.select(); }
         }
       });
-
-      initVoices();
-
       // Filterleiste: beim Scrollen fixieren + verdichten. Platzhalter hält die
       // Flow-Höhe konstant, damit der Katalog beim Umschalten nicht springt.
       (function(){

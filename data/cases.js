@@ -58,8 +58,7 @@ const CASES = [
          darum hier bewusst kein Beispieldaten-Verweis. */
     },
     liveUrl: 'umfrage-auswertung.html',
-    reaktionSeed: 23,
-    spotlight: true
+    reaktionSeed: 23
   },
 
   {
@@ -102,8 +101,7 @@ const CASES = [
       ]
     },
     liveUrl: 'tkp-rechner.html',
-    reaktionSeed: 14,
-    spotlight: false
+    reaktionSeed: 14
   },
 
   {
@@ -144,8 +142,7 @@ const CASES = [
       beispieldaten: []
     },
     liveUrl: 'demo/webaudit/report.html',
-    reaktionSeed: 9,
-    spotlight: false
+    reaktionSeed: 9
   },
 
   {
@@ -188,8 +185,7 @@ const CASES = [
       ]
     },
     liveUrl: 'demo/viewer.html?f=campaign-check/report.md',
-    reaktionSeed: 11,
-    spotlight: false
+    reaktionSeed: 11
   },
 
   /* ==================== INSZENIERTE BEISPIEL-CASES (Demo, klickbar) ==================== */
@@ -236,8 +232,7 @@ const CASES = [
       ]
     },
     liveUrl: 'demo/showroom/flighting-visualisierer.html',
-    reaktionSeed: 8,
-    spotlight: false
+    reaktionSeed: 8
   },
 
   {
@@ -283,8 +278,7 @@ const CASES = [
       ]
     },
     liveUrl: 'demo/showroom/umfrage-dashboard.html',
-    reaktionSeed: 17,
-    spotlight: false
+    reaktionSeed: 17
   },
 
   {
@@ -328,8 +322,7 @@ const CASES = [
       ]
     },
     liveUrl: 'demo/showroom/moodboard-generator.html',
-    reaktionSeed: 21,
-    spotlight: false
+    reaktionSeed: 21
   },
 
   {
@@ -372,8 +365,7 @@ const CASES = [
       beispieldaten: []
     },
     liveUrl: 'demo/showroom/urlaubsuebergabe-helfer.html',
-    reaktionSeed: 6,
-    spotlight: false
+    reaktionSeed: 6
   },
 
   {
@@ -417,8 +409,7 @@ const CASES = [
       ]
     },
     liveUrl: 'demo/showroom/utm-link-baukasten.html',
-    reaktionSeed: 13,
-    spotlight: false
+    reaktionSeed: 13
   },
 
   {
@@ -459,8 +450,7 @@ const CASES = [
       beispieldaten: []
     },
     liveUrl: 'demo/showroom/wettbewerbs-radar.html',
-    reaktionSeed: 12,
-    spotlight: false
+    reaktionSeed: 12
   }
 
 ];

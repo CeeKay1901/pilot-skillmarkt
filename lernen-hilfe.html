@@ -395,10 +395,14 @@
     .glo-h2 { font-size: var(--fs-h2); font-weight: var(--fw-semi); letter-spacing: -.02em; margin: .6rem 0 1.2rem; }
     .glo-sub { font-size: 1.6rem; line-height: 1.6; color: var(--c-ink-body); max-width: 72ch; margin: 0; }
 
+    /* Themen-Filter (base.css-.chip-Primitive): bewusst NICHT sticky — einmal
+       Thema wählen, dann lesen; nur Suche + A-Z kleben beim Blättern. */
+    .glo-themen { display: flex; gap: .8rem; flex-wrap: wrap; margin: 2.6rem 0 0; }
+
     /* Werkzeugleiste: Suche + A-Z — klebt beim Blättern unter der Sub-Nav */
     .glo-tools {
       position: sticky; top: calc(var(--header-h) + 4.6rem); z-index: 40;
-      background: var(--paper-warm); margin: 3rem 0 0; padding: 1.2rem 0 1.4rem;
+      background: var(--paper-warm); margin: 1.4rem 0 0; padding: 1.2rem 0 1.4rem;
       display: flex; align-items: center; gap: 2rem; flex-wrap: wrap;
       border-bottom: 1px solid var(--line);
     }
@@ -467,6 +471,7 @@
       letter-spacing: .1em; text-transform: uppercase; color: var(--c-gray-m); margin: 0 0 .5rem;
     }
     .g-body p { font-size: 1.4rem; line-height: 1.65; color: var(--c-ink-body); margin: 0; }
+    .g-body p.g-analogie { font-style: italic; }
     .glo-empty { text-align: center; padding: 6rem 2rem; }
     .glo-empty p { font-size: 2rem; color: var(--c-gray-m); margin: 0 0 2rem; }
 
@@ -682,7 +687,11 @@
     <section class="glossar-section" id="glossar" aria-labelledby="glossar-h" role="tabpanel" hidden>
       <div class="glo-inner">
         <h2 class="glo-h2" id="glossar-h">Glossar</h2>
-        <p class="glo-sub"><span id="glo-count">0</span> Begriffe aus der KI-Welt — jeder in einem einfachen Satz erklärt, mit pilot-Beispiel und Querverweisen.</p>
+        <p class="glo-sub"><span id="glo-count">0</span> Begriffe aus der KI-Welt — jeder in einem einfachen Satz erklärt, mit Alltagsvergleich, pilot-Beispiel und Vertiefung zum Aufklappen. Zum Nachschlagen gibt es Suche und A–Z, zum Durchlesen die Themen-Filter.</p>
+
+        <!-- Themen-Filter (bewusst über der Sticky-Leiste: einmal wählen, dann lesen;
+             Suche + A-Z bleiben beim Blättern kleben) -->
+        <div class="glo-themen" id="glo-themen" role="group" aria-label="Glossar nach Thema filtern"></div>
 
         <div class="glo-tools">
           <div class="glo-search">
@@ -753,6 +762,7 @@
     let _playingDemo = null;         // ID der gerade tippenden Leuchtturm-Demo
     const _gExpanded = new Set();    // aufgeklappte Glossar-Begriffe (überlebt Such-Re-Render)
     let _gQuery = '';                // aktive Glossar-Suche
+    let _gThema = null;              // aktiver Glossar-Themen-Filter (ki|web|daten|handwerk|null)
     let _faqOpen = null;             // offene FAQ-Karte (Akkordeon: höchstens eine)
     const _resExpanded = new Set();  // aufgeklappte Ressourcen-IDs (überlebt Re-Render)
 
@@ -1331,12 +1341,22 @@
        ============================================================ */
     function begriffById(id) { return GLOSSAR.find(g => g.id === id); }
 
+    // Themen-Gruppen für den Filter über der Liste (Feld `thema` in data/glossar.js).
+    // Reihenfolge = Anzeige-Reihenfolge der Chips; Labels bewusst ohne Fachjargon.
+    const GLO_THEMEN = [
+      { id: 'ki', label: 'KI & Claude Code' },
+      { id: 'web', label: 'Webseiten & Apps' },
+      { id: 'daten', label: 'Daten & Dateien' },
+      { id: 'handwerk', label: 'Handwerk & Werkzeuge' }
+    ];
+
     function glossarMatches() {
+      const base = _gThema ? GLOSSAR.filter(g => g.thema === _gThema) : GLOSSAR;
       const q = _gQuery.trim().toLowerCase();
-      if (!q) return GLOSSAR;
+      if (!q) return base;
       const terms = q.split(/\s+/).filter(Boolean);
-      return GLOSSAR.filter(g => searchScore(g, terms,
-        [[g.wort, 5], [g.satz, 3], [g.beispiel, 2], [g.tiefe || '', 1]]) > 0);
+      return base.filter(g => searchScore(g, terms,
+        [[g.wort, 5], [g.satz, 3], [g.beispiel, 2], [g.tiefe || '', 1], [g.analogie || '', 1], [g.stolper || '', 1]]) > 0);
     }
 
     // KOMPAKT (E-Straffung): der ganze Zeilenkopf ist der Toggle — Satz, Beispiel,
@@ -1353,8 +1373,10 @@
           </h4>
           <div class="g-body" id="g-body-${g.id}"${open ? '' : ' hidden'}>
             <p class="g-satz">${mdInline(g.satz)}</p>
+            ${g.analogie ? `<div><span class="g-body-label">Stell es dir so vor</span><p class="g-analogie">${mdInline(g.analogie)}</p></div>` : ''}
             <div><span class="g-body-label">pilot-Beispiel</span><p>${mdInline(g.beispiel)}</p></div>
             ${g.tiefe ? `<div><span class="g-body-label">Wenn du tiefer willst</span><p>${mdInline(g.tiefe)}</p></div>` : ''}
+            ${g.stolper ? `<div><span class="g-body-label">Typischer Stolperstein</span><p>${mdInline(g.stolper)}</p></div>` : ''}
             ${xrefsHtml(g.verweise)}
             <div class="g-actions">
               <button type="button" class="vote-btn g-vote${voted ? ' voted' : ''}" aria-pressed="${voted}" onclick="voteBegriff('${g.id}')">
@@ -1365,15 +1387,40 @@
         </article>`;
     }
 
+    // Themen-Chips: „Alle“ + die vier Gruppen aus GLO_THEMEN, Zähler = Gesamtbestand
+    // je Thema (unabhängig von der Suche — die Chips sind der Einstieg, kein Trefferzähler).
+    function renderGloThemen() {
+      const host = document.getElementById('glo-themen');
+      if (!host) return;
+      const chip = (id, label, count) => {
+        const active = _gThema === id;
+        return `<button type="button" id="glo-thema-${id || 'alle'}" class="chip -yellow${active ? ' -active' : ''}"
+          aria-pressed="${active}" onclick="setGloThema(${id ? `'${id}'` : 'null'})">${label} <span class="chip-count">${count}</span></button>`;
+      };
+      host.innerHTML = chip(null, 'Alle', GLOSSAR.length)
+        + GLO_THEMEN.map(t => chip(t.id, t.label, GLOSSAR.filter(g => g.thema === t.id).length)).join('');
+    }
+    function setGloThema(id) {
+      _gThema = (_gThema === id) ? null : id;
+      renderGlossar();
+      const btn = document.getElementById('glo-thema-' + (id || 'alle'));
+      if (btn) btn.focus();
+    }
+
     function renderGlossar() {
       const host = document.getElementById('glossar-liste');
       if (!host) return;
+      renderGloThemen();
       const shown = glossarMatches();
+      const themaLabel = _gThema ? (GLO_THEMEN.find(t => t.id === _gThema) || {}).label : null;
       const hits = document.getElementById('glo-hits');
       if (hits) {
         if (_gQuery.trim()) {
           hits.hidden = false;
-          hits.textContent = `${shown.length} Treffer für „${_gQuery.trim()}“`;
+          hits.textContent = `${shown.length} Treffer für „${_gQuery.trim()}“${themaLabel ? ` im Thema „${themaLabel}“` : ''}`;
+        } else if (themaLabel) {
+          hits.hidden = false;
+          hits.textContent = `${shown.length} Begriffe im Thema „${themaLabel}“`;
         } else { hits.hidden = true; hits.textContent = ''; }
       }
       if (!shown.length) {
@@ -1587,12 +1634,13 @@
         const g = ci(GLOSSAR, ['id', 'wort']);
         if (!g) return deepLinkMiss('begriff');
         id = g.id;
-        // Eintrag muss sichtbar sein: aktive Suche wird gelöst
+        // Eintrag muss sichtbar sein: aktive Suche und Themen-Filter werden gelöst
         if (_gQuery.trim()) {
           _gQuery = '';
           const inp = document.getElementById('glo-search');
           if (inp) inp.value = '';
         }
+        if (_gThema && g.thema !== _gThema) _gThema = null;
         _gExpanded.add(id);
         renderGlossar();
         scrollHighlight('begriff-' + id);

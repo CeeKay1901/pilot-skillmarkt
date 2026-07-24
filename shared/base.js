@@ -1313,7 +1313,7 @@ const GSEARCH_GROUPS = [
   { key: 'begriff', label: 'Begriffe', glob: 'GLOSSAR',
     href: it => 'lernen-hilfe.html?begriff=' + encodeURIComponent(it.id),
     title: it => it.wort, sub: it => it.satz,
-    fields: it => [[it.wort || '', 5], [it.satz || '', 2], [it.beispiel || '', 1], [it.tiefe || '', 1]] },
+    fields: it => [[it.wort || '', 5], [it.satz || '', 2], [it.beispiel || '', 1], [it.tiefe || '', 1], [it.analogie || '', 1], [it.stolper || '', 1]] },
   { key: 'faq', label: 'FAQ', glob: 'FAQ',
     href: it => 'lernen-hilfe.html?faq=' + encodeURIComponent(it.id),
     title: it => it.frage, sub: it => it.intro,

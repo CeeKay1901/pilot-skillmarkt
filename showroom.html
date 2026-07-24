@@ -22,15 +22,6 @@
        ebenfalls schon — hier NICHT duplizieren. Nur ein paar seiten-
        lokale Feinheiten für den ehrlichen Hero-Hinweis.
        ============================================================ */
-    /* Etappe 1 (helle Shell): Spotlight & Mitmachen-Band von dunkler Deko-
-       Fläche auf helle Fläche umgestellt — nur Farben, keine Inhaltslogik. */
-    .sr-spotlight { background: var(--paper-warm); color: var(--c-black); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
-    .sr-spot-label { color: var(--c-gray-m); }
-    .sr-spot-inner h2 { color: var(--c-black); }
-    .sr-spot-inner p.sr-spot-text { color: var(--c-gray-m); }
-    .sr-spot-frame-wrap { border-color: var(--line); background: repeating-conic-gradient(#e8e8e2 0% 25%, #f4f1ea 0% 50%) 50% / 1.6rem 1.6rem; }
-    .sr-spotlight .c-cta.-yellow-border { border-color: var(--c-black); color: var(--c-black); }
-    .sr-spotlight .c-cta.-yellow-border:hover { background: var(--c-black); color: var(--c-white); }
     .sr-desc { display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
     .modal-body .sr-desc { display: block; overflow: visible; }
 
@@ -74,13 +65,6 @@
       <p class="page-sub">Projekte aus dem Team zum Anklicken — ein Marker unterscheidet echte Team-Tools von Beispiel-Projekten, jedes mit Geschichte und Nachbau-Anleitung.</p>
     </div>
   </header>
-
-  <!-- PROJEKT DES MONATS (Spotlight) -->
-  <section class="sr-spotlight" aria-labelledby="sr-spot-h">
-    <div class="sr-spot-inner" id="sr-spot-mount" role="group" aria-labelledby="sr-spot-h">
-      <h2 id="sr-spot-h" class="sr-only">Projekt des Monats</h2>
-    </div>
-  </section>
 
   <main>
     <!-- (a) CASE-GRID -->
@@ -292,8 +276,8 @@
       } else if (state.sort === 'alpha') {
         arr.sort((a, b) => a.titel.localeCompare(b.titel, 'de'));
       } else {
-        // Empfohlen: Spotlight zuerst, dann echte Team-Tools, dann nach Reaktionen
-        arr.sort((a, b) => (b.spotlight ? 1 : 0) - (a.spotlight ? 1 : 0) || (b.istEcht ? 1 : 0) - (a.istEcht ? 1 : 0) || v(b) - v(a) || a.titel.localeCompare(b.titel, 'de'));
+        // Empfohlen: echte Team-Tools zuerst, dann nach Reaktionen
+        arr.sort((a, b) => (b.istEcht ? 1 : 0) - (a.istEcht ? 1 : 0) || v(b) - v(a) || a.titel.localeCompare(b.titel, 'de'));
       }
       return arr;
     }
@@ -366,29 +350,6 @@
           <span class="sr-rank-name">${escHtml(c.titel)}</span>
           <span class="sr-rank-count" data-react-count="${c.id}">${LU.vote}${reactVotes(c)}</span>
         </button>`).join('');
-    }
-
-    // ===== PROJEKT DES MONATS (Spotlight: case mit spotlight:true) =====
-    function renderSpotlight() {
-      const host = document.getElementById('sr-spot-mount');
-      const c = CASES.find(x => x.spotlight);
-      if (!host || !c) return;
-      host.innerHTML = `
-        <div class="sr-spot-body">
-          <p class="section-label sr-spot-label">Projekt des Monats</p>
-          <h2 id="sr-spot-h">${escHtml(c.titel)}</h2>
-          <p class="sr-spot-text">${escHtml(c.kurz)}</p>
-          <div class="sr-spot-meta">${markerHtml(c)}<span class="sr-tag">${escHtml(c.aufwand)}</span></div>
-          <div class="sr-spot-actions">
-            ${reactionBtnHtml(c)}
-            <a class="c-cta -yellow-bg" href="${c.liveUrl}" target="_blank" rel="noopener">Ansehen</a>
-            <button class="c-cta -yellow-border" onclick="openModal('${c.id}')">Die ganze Geschichte</button>
-          </div>
-        </div>
-        <div class="sr-spot-frame-wrap">
-          <iframe class="sr-spot-frame" src="${c.liveUrl}" loading="lazy"
-                  tabindex="-1" aria-hidden="true" title="Vorschau (nicht interaktiv): ${escHtml(c.titel)}"></iframe>
-        </div>`;
     }
 
     // ===== MODAL-ENGINE: Überblick · So entstanden · Nachbauen · Vorschau =====
@@ -554,7 +515,6 @@
       const icons = { 'cases-ic': LU.rocket, 'rank-ic': LU.trophy };
       Object.entries(icons).forEach(([id, svg]) => { const el = document.getElementById(id); if (el) el.innerHTML = svg; });
 
-      renderSpotlight();
       renderCats();
       fillSelect('sr-art', ART_ORDER, ART_LABEL, 'Alle Arten');
       fillSelect('sr-aufwand', AUFWAND_ORDER, AUFWAND_LABEL, 'Jeder Aufwand');
