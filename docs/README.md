@@ -6,8 +6,8 @@ Hier liegen **ein aktiver Plan** und **historische Dokumente**. Die Unterscheidu
 
 | Datei | Beschreibt | Stand | Status |
 |---|---|---|---|
-| `PLAN-BIBLIOTHEK-2026-07.md` | Bibliotheks-Umbau, Projektanweisungen, Startprojekte, Neuigkeiten — mit den Entscheidungen aus der Fragerunde | 25.07.2026 | **aktiv** |
+| `PLAN-BIBLIOTHEK-2026-07.md` | Bibliotheks-Umbau, Projektanweisungen, Startprojekte, Neuigkeiten — Entscheidungen aus der Fragerunde, in Fassung 2 gegen den Code nachgemessen (Messprotokoll im Anhang) | 25.07.2026 | **aktiv** |
 | `PLAN-AI-MARKETPLACE.md` | Der ursprüngliche Ausbauplan vom Einzelseiten-Prototyp zum Marktplatz, Etappen E1–E9 | 15.07.2026 | historisch |
 | `PLAN-E10-ERKLAERBARKEIT-MERGE.md` | Die Zusammenlegung von Hilfe + Lernen zu `lernen-hilfe.html` | 22.07.2026 | historisch |
 
-**Wichtigste Abweichung vom Ist-Zustand:** Beide Dokumente gehen von **acht** Einzelseiten aus. Seit dem E11-Umbau sind es **sechs** — Bibliothek und Baukasten wurden zu `vorlagen.html` verschmolzen, Hilfe und Lernen zu `lernen-hilfe.html`. Die alten Adressen leben als Weiterleitungs-Stubs in der Wurzel weiter. Auch das im Plan beschriebene „Mehr ▾"-Dropdown in der Navigation gibt es nicht mehr; die Navigation ist flach.
+**Wichtigste Abweichung vom Ist-Zustand:** Beide **historischen** Dokumente gehen von **acht** Einzelseiten aus. Seit dem E11-Umbau sind es **sechs** — Bibliothek und Baukasten wurden zu `vorlagen.html` verschmolzen, Hilfe und Lernen zu `lernen-hilfe.html`. Die alten Adressen leben als Weiterleitungs-Stubs in der Wurzel weiter. Auch das im Plan beschriebene „Mehr ▾"-Dropdown in der Navigation gibt es nicht mehr; die Navigation ist flach.
