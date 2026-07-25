@@ -301,7 +301,9 @@
       sort: 'recommended',
       search: ''             // E12: Freitext-Suche (Titel/Beschreibung/Persona/Säule/Art)
     };
-    // KEIN window.RatingConfig — Cases nutzen keine Sterne, nur Reaktionen (vote:reaktion:<id>).
+    // KEIN window.RatingConfig — Cases haben keine Stern-BEWERTUNG (1–5, rate:<typ>:<id>),
+    // sondern nur Reaktionen (vote:reaktion:<id>). Einen Merken-Stern gibt es sehr wohl
+    // (favBtnHtml weiter unten, fav:case:<id>) — das ist ein anderer Mechanismus.
 
     // prefersReduce()/scrollBehavior() kommen als window.-Helfer aus shared/base.js
     // (Shared-Helper-Kontrakt) — hier keine lokalen Kopien mehr.
@@ -355,7 +357,7 @@
     // ===== MERKEN (Favoriten, fav:case:<id>) =====
     /* Mechanik kommt aus shared/base.js. Der Typ 'case' MUSS hier explizit
        übergeben werden: diese Seite setzt bewusst kein window.RatingConfig
-       (siehe Kommentar oben — Cases haben keine Sterne), ohne Typ fiele die
+       (siehe oben — keine Stern-Bewertung), ohne Typ fiele die
        Engine auf den Standard 'skill' zurück und die Merkung landete still im
        falschen Namensraum (fav:skill:<id>). Dann fände „Deine Sachen“ zwar
        einen Eintrag, aber unter der Typ-Bezeichnung „Skill“.

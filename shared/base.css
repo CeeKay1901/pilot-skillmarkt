@@ -57,14 +57,19 @@
              gray-d zur AA-Rettung, ohne Abgleich gegen gray-m.
 
          Konsequenz: Beide Töne bedienen nachweislich DIESELBE Rolle
-         (sekundärer Meta-Text; die 68 Fundstellen sind austauschbar). Zwei
-         Namen für einen Ton ist der eigentliche Fehler — deshalb ist gray-d
-         jetzt ein echter Alias. Damit können sie nie wieder auseinanderdriften.
-         Für neuen Code: --c-gray-m verwenden. */
+         (sekundärer Meta-Text; die 68 Fundstellen waren austauschbar). Zwei
+         Namen für einen Ton ist der eigentliche Fehler.
+
+         NACHTRAG 2026-07-25: gray-d war zunächst nur ein Alias auf gray-m. Das
+         hielt die Töne zwar zusammen, ließ aber 68 Stellen im Code stehen, die
+         einen Namen benutzten, den niemand mehr benutzen sollte — die Regel
+         „für neuen Code gray-m" hätte jeder Blick in den Bestand widerlegt.
+         Alle 68 sind jetzt auf --c-gray-m umgeschrieben (identischer Wert, also
+         null visuelle Änderung), der Alias ist ersatzlos entfernt. Es gibt für
+         diesen Ton nur noch EINEN Namen. */
       --c-gray-l: #bab8ab;
       --c-star-empty: #86847a;  /* leerer KLICK-Stern: 3,20:1 (WCAG 1.4.11) */
       --c-gray-m: #66655d;      /* WCAG AA: 5,86:1 auf Weiß · 4,99:1 im schlechtesten Fall */
-      --c-gray-d: var(--c-gray-m);  /* Alt-Name, identischer Ton — nicht mehr neu verwenden */
       --c-ink-strong: #444;     /* Fließtext dunkel (long-desc, Info-Modal) */
       --c-ink-body: #555;       /* Karten-/Zitattext */
       /* --c-ink-faded entfernt: 0 Treffer für var(--c-ink-faded) im ganzen Projekt.
@@ -220,7 +225,7 @@
     .kicker {
       display: flex; align-items: center; gap: 1.1rem;
       font-family: var(--font-mono); font-size: 1.15rem; font-weight: 600;
-      letter-spacing: .18em; text-transform: uppercase; color: var(--c-gray-d);
+      letter-spacing: .18em; text-transform: uppercase; color: var(--c-gray-m);
       margin: 0 0 1.4rem;
     }
     .kicker::before { content: ''; width: 2rem; height: 1rem; background: var(--c-yellow); flex-shrink: 0; }
@@ -233,7 +238,7 @@
     }
     .page-sub {
       margin-top: 1.2rem; font-size: 1.65rem; line-height: 1.55;
-      color: var(--c-gray-d); max-width: 64rem;
+      color: var(--c-gray-m); max-width: 64rem;
     }
     /* .page-actions entfernt — Volltext-Grep über alle HTML, shared/base.js und
        data/*.js: der Klassenname existiert nirgends als String. */
@@ -341,14 +346,14 @@
       overflow-wrap: anywhere;
     }
     .skill-tagline {
-      font-size: 1.5rem; font-weight: 500; color: var(--c-gray-d);
+      font-size: 1.5rem; font-weight: 500; color: var(--c-gray-m);
       line-height: 1.4;
     }
     .diff-badge {
       display: inline-flex; align-items: center; gap: .5rem;
       padding: .2rem .8rem .2rem .6rem; border-radius: var(--r-pill, 1rem);
       font-size: 1.2rem; font-weight: 500;
-      background: transparent; border: 1px solid var(--line); color: var(--c-gray-d);
+      background: transparent; border: 1px solid var(--line); color: var(--c-gray-m);
     }
     .diff-badge::before { content: ''; width: .55rem; height: .55rem; border-radius: 50%; background: var(--c-gray-l); flex: none; }
     .diff-badge.easy::before { background: var(--c-yellow); }
@@ -560,7 +565,7 @@
     .modal-kind {
       flex-basis: 100%; display: flex; align-items: center; gap: .8rem;
       font-family: var(--font-mono); font-size: 1.05rem; font-weight: 600;
-      letter-spacing: .16em; text-transform: uppercase; color: var(--c-gray-d);
+      letter-spacing: .16em; text-transform: uppercase; color: var(--c-gray-m);
       margin: 0 0 .6rem;
     }
     .modal-kind::before { content: ''; width: 1.4rem; height: .8rem; background: var(--c-yellow); flex-shrink: 0; }
@@ -864,7 +869,7 @@
     @media (max-width: 1023px) { .recently-viewed { padding: 0 var(--pad-m) 1.6rem; } }
 
     /* ===== ACCESSIBILITY (ITERATION 4B) ===== */
-    .skip-link { position: absolute; top: -100%; left: 1rem; background: var(--c-yellow); color: var(--c-black); padding: 1rem 2rem; font-weight: 700; font-size: 1.4rem; border-radius: 0 0 .8rem .8rem; z-index: 9999; text-decoration: none; }
+    .skip-link { position: absolute; top: -100%; left: 1rem; background: var(--c-yellow); color: var(--c-black); padding: 1rem 2rem; font-weight: 700; font-size: 1.4rem; border-radius: 0 0 var(--r-sm) var(--r-sm); z-index: 9999; text-decoration: none; }
     .skip-link:focus { top: 0; }
     .modal-close { min-width: 4.4rem; min-height: 4.4rem; display: flex; align-items: center; justify-content: center; }
 
@@ -877,7 +882,7 @@
     .card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
     .card-sub {
       font-size: 1.1rem; font-weight: 700; text-transform: uppercase;
-      letter-spacing: .12em; color: var(--c-gray-d);
+      letter-spacing: .12em; color: var(--c-gray-m);
     }
     /* Merken-Stern. Liegt seit Juli 2026 auf ALLEN Bereichen (Katalog, Prompts,
        Bausteine, Assets, Projekte, Ressourcen) — vorher nur im Katalog, obwohl
@@ -889,7 +894,16 @@
     .fav-btn {
       background: none; border: none; cursor: pointer; line-height: 1;
       font-size: 2rem; color: var(--c-gray-l); transition: var(--trans); flex-shrink: 0;
-      padding: 1.2rem;            /* Trefffläche ≥44px (WCAG 2.5.8) */
+      padding: 1.2rem;
+      /* Trefffläche ≥44px (WCAG 2.5.8) als HARTE UNTERGRENZE, nicht als Rechnung.
+         Vorher ergab sie sich nur aus font-size (2rem) + padding (2×1.2rem) = 44px
+         — exakt auf der Grenze. Zwei Seiten verkleinern den Stern für die Einpassung
+         auf 1.9rem und lagen damit real bei 43×43px (gemessen), während der
+         Kommentar daneben „bleibt unangetastet" behauptete. Mit min-width/-height
+         kann keine Seite die Grenze mehr versehentlich unterschreiten; inline-flex
+         hält die Glyphe dabei mittig. */
+      min-width: 4.4rem; min-height: 4.4rem;
+      display: inline-flex; align-items: center; justify-content: center;
       position: relative; z-index: 2;  /* über vergrößerten Link-Hitboxen der Karte */
     }
     /* Katalog-Variante: gleicht das Padding gegen den Kartenkopf aus, damit der
@@ -905,7 +919,7 @@
       margin-top: .4rem; padding-top: 1.2rem; border-top: 1px solid var(--c-bg);
     }
     .card-open-hint {
-      font-size: 1.3rem; font-weight: 600; color: var(--c-gray-d);
+      font-size: 1.3rem; font-weight: 600; color: var(--c-gray-m);
       opacity: 0; transform: translateX(-4px); transition: var(--trans);
     }
     .skill-card:hover .card-open-hint, .skill-card:focus-within .card-open-hint { opacity: 1; transform: translateX(0); }
@@ -1128,14 +1142,14 @@
     .sf-demo-note {
       display: flex; align-items: center; gap: .8rem;
       font-family: var(--font-mono); font-size: 1.15rem; line-height: 1.5;
-      color: var(--c-gray-d); background: var(--c-bg);
+      color: var(--c-gray-m); background: var(--c-bg);
       border: 1px dashed var(--line-strong); border-radius: var(--r-sm);
       padding: .9rem 1.4rem; margin: 0 0 2rem;
     }
-    .sf-demo-note .lu { width: 1.6rem; height: 1.6rem; flex-shrink: 0; color: var(--c-gray-d); }
+    .sf-demo-note .lu { width: 1.6rem; height: 1.6rem; flex-shrink: 0; color: var(--c-gray-m); }
     .sf-steps-label {
       font-family: var(--font-mono); font-size: 1.15rem; font-weight: 600;
-      letter-spacing: .1em; text-transform: uppercase; color: var(--c-gray-d);
+      letter-spacing: .1em; text-transform: uppercase; color: var(--c-gray-m);
       margin: 0 0 1.2rem;
     }
     .sf-steps { list-style: none; margin: 0 0 2.4rem; padding: 0; display: grid; gap: 1rem; }
@@ -1147,7 +1161,7 @@
       font-family: var(--font-mono); font-size: 1.3rem; font-weight: 700;
     }
     .sf-step.-done .sf-step-num { background: var(--c-black); color: var(--c-yellow); }
-    .sf-step-body { display: block; font-size: 1.4rem; line-height: 1.5; color: var(--c-gray-d); padding-top: .3rem; }
+    .sf-step-body { display: block; font-size: 1.4rem; line-height: 1.5; color: var(--c-gray-m); padding-top: .3rem; }
     .sf-step-body strong { display: block; color: var(--c-black); font-weight: 600; margin-bottom: .1rem; }
     .sf-intro { font-size: 1.5rem; line-height: 1.6; color: var(--c-ink-strong, var(--c-black)); margin: 0 0 1.8rem; }
     .sf-form { display: grid; gap: 1.6rem; }
@@ -1168,7 +1182,7 @@
     .sf-thanks-ic .lu { width: 3.2rem; height: 3.2rem; }
     .sf-thanks h3 { font-size: 2rem; font-weight: 700; margin: 0 0 .8rem; }
     .sf-thanks p { font-size: 1.5rem; line-height: 1.6; color: var(--c-ink-strong, var(--c-black)); margin: 0 0 1rem; }
-    .sf-thanks-note { font-family: var(--font-mono); font-size: 1.15rem; color: var(--c-gray-d); }
+    .sf-thanks-note { font-family: var(--font-mono); font-size: 1.15rem; color: var(--c-gray-m); }
     @media (max-width: 767px) {
       .sf-overlay { padding: 0; align-items: flex-end; }
       .sf-modal { border-radius: var(--r-lg) var(--r-lg) 0 0; max-height: 95vh; }
@@ -1277,7 +1291,7 @@
     .lib-sec-count { font-family: var(--font-mono); font-size: 1.3rem; color: var(--c-gray-m); }
     .lib-note {
       font-size: 1.5rem; line-height: 1.65;
-      color: var(--c-gray-d); margin: 0 0 2.4rem; max-width: 72ch;
+      color: var(--c-gray-m); margin: 0 0 2.4rem; max-width: 72ch;
     }
     .lib-lic {
       display: inline-flex; align-items: center; gap: .4rem;
@@ -1315,10 +1329,10 @@
     .ff-slider { flex: 1; accent-color: var(--c-black); height: 2.2rem; }
     .ff-size-val {
       font-family: var(--font-mono); font-variant-numeric: tabular-nums;
-      font-size: 1.2rem; color: var(--c-gray-d); min-width: 5.2rem; text-align: right;
+      font-size: 1.2rem; color: var(--c-gray-m); min-width: 5.2rem; text-align: right;
     }
     .ff-stimmung { font-size: 1.4rem; line-height: 1.55; color: var(--c-ink-body); margin: 0; }
-    .ff-meta { display: flex; align-items: center; gap: .8rem 1.2rem; flex-wrap: wrap; font-size: 1.25rem; color: var(--c-gray-d); }
+    .ff-meta { display: flex; align-items: center; gap: .8rem 1.2rem; flex-wrap: wrap; font-size: 1.25rem; color: var(--c-gray-m); }
     .ff-gewicht { font-family: var(--font-mono); }
     .ff-actions { display: flex; align-items: center; gap: .8rem; flex-wrap: wrap; margin-top: .2rem; }
     .lib-btn {
@@ -1379,7 +1393,7 @@
     .swatch:hover { flex: 1.4; }
     .swatch-hex {
       font-family: var(--font-mono); font-size: 1rem; font-weight: 600;
-      background: rgba(255,255,255,.85); color: #262626; border-radius: .4rem;
+      background: rgba(255,255,255,.85); color: #262626; border-radius: var(--r-xs);
       padding: .1rem .4rem; opacity: 0; transition: opacity .2s ease;
     }
     .swatch:hover .swatch-hex, .swatch:focus .swatch-hex { opacity: 1; }
@@ -1387,9 +1401,9 @@
     .pal-pair { display: flex; align-items: center; gap: .8rem; font-size: 1.25rem; }
     .pal-pair-demo {
       font-family: var(--font-mono); font-size: 1.15rem; font-weight: 600;
-      border-radius: .4rem; padding: .3rem .8rem; white-space: nowrap;
+      border-radius: var(--r-xs); padding: .3rem .8rem; white-space: nowrap;
     }
-    .pal-pair-ratio { font-family: var(--font-mono); color: var(--c-gray-d); font-variant-numeric: tabular-nums; }
+    .pal-pair-ratio { font-family: var(--font-mono); color: var(--c-gray-m); font-variant-numeric: tabular-nums; }
     .kontrast-badge {
       display: inline-flex; align-items: center; gap: .4rem;
       font-family: var(--font-mono); font-size: 1.05rem; font-weight: 700;
@@ -1421,12 +1435,12 @@
     .token-row { display: flex; align-items: center; gap: 1rem; font-size: 1.3rem; }
     .token-chip { width: 2.6rem; height: 2.6rem; border-radius: .6rem; border: 1px solid var(--line-strong); flex-shrink: 0; }
     .token-name { font-weight: 600; min-width: 10rem; }
-    .token-var { font-family: var(--font-mono); font-size: 1.15rem; color: var(--c-gray-d); }
+    .token-var { font-family: var(--font-mono); font-size: 1.15rem; color: var(--c-gray-m); }
     .token-use { color: var(--c-gray-m); font-size: 1.2rem; margin-left: auto; text-align: right; }
     .brand-logos { display: flex; flex-direction: column; gap: 1.2rem; }
     .logo-card { display: flex; align-items: center; gap: 1.4rem; border: 1px solid var(--line); border-radius: var(--r-sm); padding: 1.2rem 1.4rem; }
     .logo-thumb { width: 8rem; height: 4rem; object-fit: contain; flex-shrink: 0; }
-    .logo-thumb.-dark { background: var(--c-black); border-radius: .4rem; padding: .4rem; }
+    .logo-thumb.-dark { background: var(--c-black); border-radius: var(--r-xs); padding: .4rem; }
     .logo-meta { min-width: 0; }
     .logo-meta strong { font-size: 1.4rem; display: block; }
     .logo-meta span { font-size: 1.2rem; color: var(--c-gray-m); }
@@ -1553,7 +1567,7 @@
     /* Meistkopiert-Zähler (Namespace copies:baustein:<id>) */
     .copy-count {
       display: inline-flex; align-items: center; gap: .4rem;
-      font-family: var(--font-mono); font-size: 1.15rem; font-weight: 600; color: var(--c-gray-d);
+      font-family: var(--font-mono); font-size: 1.15rem; font-weight: 600; color: var(--c-gray-m);
     }
     .copy-count .lu { width: 1.3rem; height: 1.3rem; color: var(--c-gray-m); }
 
@@ -1612,7 +1626,7 @@
       letter-spacing: .06em; text-transform: uppercase; color: var(--c-black);
       background: var(--c-yellow); border-radius: var(--r-pill); padding: .2rem .8rem; white-space: nowrap;
     }
-    .bk-data-facts { display: flex; gap: .6rem 1.4rem; flex-wrap: wrap; font-family: var(--font-mono); font-size: 1.2rem; color: var(--c-gray-d); }
+    .bk-data-facts { display: flex; gap: .6rem 1.4rem; flex-wrap: wrap; font-family: var(--font-mono); font-size: 1.2rem; color: var(--c-gray-m); }
     .bk-data-desc { font-size: 1.4rem; line-height: 1.55; color: var(--c-ink-body); margin: 0; }
     .bk-data-uebung {
       border-top: 1px solid var(--line); padding-top: 1rem; margin-top: .2rem;
@@ -1731,7 +1745,7 @@
       font-family: var(--font-mono); font-size: 1.05rem; font-weight: 600;
       letter-spacing: .05em; text-transform: uppercase; color: var(--c-gray-m);
     }
-    .sr-persona { font-size: 1.3rem; color: var(--c-gray-d); }
+    .sr-persona { font-size: 1.3rem; color: var(--c-gray-m); }
     .sr-persona strong { font-weight: 600; color: var(--c-ink-strong); }
     .sr-desc { font-size: 1.4rem; line-height: 1.55; color: var(--c-ink-body); margin: 0; }
     /* .sr-tag entfernt — Volltext-Grep über alle HTML, shared/base.js und data/*.js:
@@ -1742,7 +1756,7 @@
     /* ----- Reaktions-Button „Will ich auch“ (vote:reaktion:<id>) ----- */
     .sr-react {
       display: inline-flex; align-items: center; gap: .5rem;
-      border: 1px solid var(--line-strong); background: transparent; color: var(--c-gray-d);
+      border: 1px solid var(--line-strong); background: transparent; color: var(--c-gray-m);
       border-radius: var(--r-pill); padding: .55rem 1.2rem;
       font-family: inherit; font-size: 1.3rem; font-weight: 600; cursor: pointer; transition: var(--trans);
     }
@@ -1790,7 +1804,7 @@
     .sr-rank-item:hover { border-color: var(--c-black); }
     .sr-rank-pos { font-family: var(--font-mono); font-size: 1.6rem; font-weight: 700; color: var(--c-gray-m); min-width: 2.4rem; }
     .sr-rank-name { font-size: 1.45rem; font-weight: 600; }
-    .sr-rank-count { margin-left: auto; display: inline-flex; align-items: center; gap: .4rem; font-family: var(--font-mono); font-size: 1.2rem; color: var(--c-gray-d); }
+    .sr-rank-count { margin-left: auto; display: inline-flex; align-items: center; gap: .4rem; font-family: var(--font-mono); font-size: 1.2rem; color: var(--c-gray-m); }
     .sr-rank-count .lu { width: 1.4rem; height: 1.4rem; color: var(--c-gray-m); }
 
     /* ----- Responsive ----- */
@@ -1824,7 +1838,7 @@
     .nav-suche-kbd kbd {
       font-family: var(--font-mono); font-size: 1.1rem;
       background: rgba(252,252,252,.12); border: 1px solid rgba(252,252,252,.2);
-      border-radius: .4rem; padding: .1rem .5rem; color: inherit;
+      border-radius: var(--r-xs); padding: .1rem .5rem; color: inherit;
     }
     /* Breakpoint bewusst 1099px, NICHT 1023px: bei genau 1024px (iPad quer) kam
        das „Strg K“-Kbd (54px + .8rem Gap) zurück, während .main-nav gleichzeitig
@@ -1871,7 +1885,7 @@
     #gsearch-input::-webkit-search-decoration { -webkit-appearance: none; appearance: none; display: none; }
     .gsearch-close {
       flex-shrink: 0; width: 3.4rem; height: 3.4rem; border-radius: 50%;
-      border: none; background: var(--c-bg); color: var(--c-gray-d);
+      border: none; background: var(--c-bg); color: var(--c-gray-m);
       font-size: 1.5rem; cursor: pointer; line-height: 1;
     }
     .gsearch-close:hover { background: var(--c-yellow); color: var(--c-black); }
@@ -1893,7 +1907,7 @@
       display: block; font-size: 1.35rem; color: var(--c-ink-body); margin-top: .1rem;
       overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
     }
-    .gs-opt-path { display: block; font-family: var(--font-mono); font-size: 1.15rem; color: var(--c-gray-d); margin-top: .2rem; }
+    .gs-opt-path { display: block; font-family: var(--font-mono); font-size: 1.15rem; color: var(--c-gray-m); margin-top: .2rem; }
     .gsearch-foot {
       padding: 1rem 2rem; border-top: 1px solid var(--line);
       font-size: 1.2rem; color: var(--c-gray-m);
@@ -1927,7 +1941,7 @@
     .about-close {
       position: absolute; top: 1.4rem; right: 1.4rem;
       width: 4.4rem; height: 4.4rem; display: flex; align-items: center; justify-content: center;
-      border: none; background: transparent; color: var(--c-gray-d); font-size: 1.7rem; cursor: pointer; border-radius: 50%;
+      border: none; background: transparent; color: var(--c-gray-m); font-size: 1.7rem; cursor: pointer; border-radius: 50%;
     }
     .about-close:hover { background: var(--c-bg); color: var(--c-black); }
     .about-modal h2 { font-size: 2.6rem; font-weight: 700; margin-bottom: 1.6rem; padding-right: 3rem; }

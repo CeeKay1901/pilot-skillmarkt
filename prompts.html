@@ -33,7 +33,7 @@
        ============================================================ */
 
     /* Plattform-Chips (Muster aus skills.html — seitenlokal, bis eine dritte Seite sie braucht) */
-    .pf-chip { font-family: var(--font-mono); font-size: 1.05rem; font-weight: 600; letter-spacing: .04em; padding: .25rem .9rem; border-radius: var(--r-pill); border: 1px solid var(--c-gray-l); color: var(--c-gray-d); background: transparent; white-space: nowrap; }
+    .pf-chip { font-family: var(--font-mono); font-size: 1.05rem; font-weight: 600; letter-spacing: .04em; padding: .25rem .9rem; border-radius: var(--r-pill); border: 1px solid var(--c-gray-l); color: var(--c-gray-m); background: transparent; white-space: nowrap; }
     .pf-chip.pf-code { background: var(--c-black); color: var(--c-yellow); border-color: var(--c-black); }
     .card-platforms { display: inline-flex; gap: .5rem; align-items: center; }
 
@@ -68,7 +68,7 @@
 
     /* Kopier-Zeile im Modal */
     .prompt-copy-row { display: flex; align-items: center; gap: 1.6rem; flex-wrap: wrap; margin-bottom: 1.4rem; }
-    .prompt-copy-hint { font-size: 1.3rem; color: var(--c-gray-d); line-height: 1.5; flex: 1; min-width: 22rem; }
+    .prompt-copy-hint { font-size: 1.3rem; color: var(--c-gray-m); line-height: 1.5; flex: 1; min-width: 22rem; }
 
     /* Live gefüllter Platzhalter: dezenter als der offene gelbe Marker */
     mark.ph.-filled { background: rgba(255,224,94,.38); font-weight: 600; }
@@ -78,7 +78,7 @@
     .variant-seg button {
       font-family: inherit; font-size: 1.3rem; font-weight: 600; cursor: pointer;
       padding: .7rem 1.6rem; background: transparent; border: none;
-      color: var(--c-gray-d); transition: var(--trans); min-height: 3.6rem;
+      color: var(--c-gray-m); transition: var(--trans); min-height: 3.6rem;
     }
     .variant-seg button + button { border-left: 1px solid var(--c-gray-l); }
     .variant-seg button.active { background: var(--c-black); color: var(--c-yellow); }
@@ -87,14 +87,14 @@
     /* ===== PROMPT-BUILDER (nur Leuchttürme) ===== */
     .pb-wrap { border: 1px solid var(--line); background: var(--c-white); border-radius: var(--r-md); padding: 1.8rem 2rem; margin: 0 0 1.6rem; }
     .pb-head { display: flex; align-items: baseline; justify-content: space-between; gap: 1.2rem; flex-wrap: wrap; margin-bottom: .6rem; }
-    .pb-title { font-family: var(--font-mono); font-size: 1.15rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--c-gray-d); margin: 0; }
+    .pb-title { font-family: var(--font-mono); font-size: 1.15rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--c-gray-m); margin: 0; }
     .pb-reset {
       font-family: inherit; font-size: 1.25rem; font-weight: 600; cursor: pointer;
       background: none; border: none; color: var(--c-gray-m);
       text-decoration: underline; text-underline-offset: .3em; padding: .4rem 0;
     }
     .pb-reset:hover { color: var(--c-black); }
-    .pb-lead { font-size: 1.35rem; color: var(--c-gray-d); line-height: 1.5; margin: 0 0 1.6rem; }
+    .pb-lead { font-size: 1.35rem; color: var(--c-gray-m); line-height: 1.5; margin: 0 0 1.6rem; }
     .pb-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.4rem 1.6rem; }
     .pb-field { display: flex; flex-direction: column; gap: .5rem; min-width: 0; }
     .pb-field.-wide { grid-column: 1 / -1; }
@@ -110,8 +110,8 @@
     /* E13: Nicht jede Variante enthält jeden Platzhalter (z. B. „Kurz“ kennt bei
        der Briefing-Zusammenfassung kein [EMPFÄNGER]). Vorher tippte man dort ins
        Leere — jetzt verliert der Marker sein Gelb und ein Satz sagt, warum. */
-    .pb-field.-off mark.ph { background: transparent; border: 1px solid var(--c-gray-l); color: var(--c-gray-d); font-weight: 600; }
-    .pb-off-note { font-size: 1.2rem; line-height: 1.4; color: var(--c-gray-d); margin: 0; }
+    .pb-field.-off mark.ph { background: transparent; border: 1px solid var(--c-gray-l); color: var(--c-gray-m); font-weight: 600; }
+    .pb-off-note { font-size: 1.2rem; line-height: 1.4; color: var(--c-gray-m); margin: 0; }
     @media (max-width: 700px) {
       .pb-form { grid-template-columns: 1fr; }
       .pb-wrap { padding: 1.4rem 1.6rem; }
@@ -149,7 +149,7 @@
     }
     .warum-label {
       font-family: var(--font-mono); font-size: 1.15rem; font-weight: 600;
-      letter-spacing: .1em; text-transform: uppercase; color: var(--c-gray-d);
+      letter-spacing: .1em; text-transform: uppercase; color: var(--c-gray-m);
       margin: 0 0 .8rem;
     }
     .warum-box p:last-child { font-size: 1.5rem; line-height: 1.65; margin: 0; }
@@ -159,7 +159,7 @@
       display: flex; gap: 1.2rem; align-items: baseline; flex-wrap: wrap;
       border: 1px solid var(--line); border-radius: var(--r-sm);
       background: var(--c-white); padding: 1.4rem 1.8rem; margin-top: 2rem;
-      font-size: 1.4rem; line-height: 1.55; color: var(--c-gray-d);
+      font-size: 1.4rem; line-height: 1.55; color: var(--c-gray-m);
     }
     .skill-xref a { color: var(--c-black); font-weight: 700; text-decoration: none; border-bottom: 2px solid var(--c-yellow); white-space: nowrap; }
     .skill-xref a:hover { background: var(--c-yellow); }
@@ -200,7 +200,7 @@
     .chip-gap { width: 1.2rem; flex-shrink: 0; }
 
     /* Beispiel-Ergebnis: ehrlicher Hinweis */
-    .example-note { font-size: 1.3rem; color: var(--c-gray-d); line-height: 1.5; margin: 0 0 1.2rem; }
+    .example-note { font-size: 1.3rem; color: var(--c-gray-m); line-height: 1.5; margin: 0 0 1.2rem; }
 
     /* (Der seitenlokale #modal .chat-meta-Override ist entfallen: die Farbe ist
        jetzt in base.css korrigiert, weil „Du“/„KI-Antwort“ informativer Text ist
@@ -211,7 +211,7 @@
       display: flex; align-items: center; justify-content: space-between;
       gap: 1.6rem; flex-wrap: wrap;
       border-top: 1px solid var(--line); margin-top: 2.4rem; padding-top: 2rem;
-      font-size: 1.4rem; color: var(--c-gray-d);
+      font-size: 1.4rem; color: var(--c-gray-m);
     }
 
     /* Mitmachen-Band am Seitenende: .submit-band-Primitive aus base.css */

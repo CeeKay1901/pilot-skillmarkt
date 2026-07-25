@@ -60,7 +60,7 @@
     .pillar-link {
       display: inline-flex; align-items: center; gap: .8rem;
       padding: 1.3rem 1.6rem; font-size: 1.5rem; font-weight: 600;
-      color: var(--c-gray-d); text-decoration: none; white-space: nowrap;
+      color: var(--c-gray-m); text-decoration: none; white-space: nowrap;
       border-bottom: 3px solid transparent; transition: var(--trans);
     }
     .pillar-link:hover { border-bottom-color: var(--c-yellow); color: var(--c-black); }
@@ -164,7 +164,7 @@
       border-right: 1px solid var(--line);
     }
     .res-card.-intern .res-ico { background: rgba(255,224,94,.25); }
-    .res-ico .lu { width: 2.2rem; height: 2.2rem; color: var(--c-gray-d); }
+    .res-ico .lu { width: 2.2rem; height: 2.2rem; color: var(--c-gray-m); }
     .res-main { padding: 1.8rem 2rem 1.6rem; min-width: 0; }
     .res-kopf { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; margin-bottom: .8rem; }
     .res-typ {
@@ -196,24 +196,27 @@
     .res-fuerdich strong { font-weight: 700; }
     .res-meta {
       display: flex; align-items: center; gap: .6rem 1rem; flex-wrap: wrap;
-      font-size: 1.3rem; color: var(--c-gray-d); margin-bottom: 1.4rem;
+      font-size: 1.3rem; color: var(--c-gray-m); margin-bottom: 1.4rem;
     }
     .res-dauer { display: inline-flex; align-items: center; gap: .5rem; font-variant-numeric: tabular-nums; white-space: nowrap; }
     .res-dauer .lu { width: 1.4rem; height: 1.4rem; color: var(--c-gray-m); }
     .lang-pill {
       font-family: var(--font-mono); font-size: 1.05rem; font-weight: 700; letter-spacing: .08em;
       border: 1px solid var(--line-strong); border-radius: var(--r-pill);
-      padding: .15rem .8rem; color: var(--c-gray-d);
+      padding: .15rem .8rem; color: var(--c-gray-m);
     }
     .res-pf {
       font-family: var(--font-mono); font-size: 1.05rem; letter-spacing: .06em;
       background: rgba(38,38,38,.06); border-radius: var(--r-pill);
-      padding: .25rem .9rem; white-space: nowrap; color: var(--c-gray-d);
+      padding: .25rem .9rem; white-space: nowrap; color: var(--c-gray-m);
     }
     .res-meta .meta-dot { color: var(--c-gray-l); }
     .res-foot { display: flex; align-items: center; gap: 1rem 1.4rem; flex-wrap: wrap; }
     /* UX5-Fix (WCAG AA): informative Rating-Zahl war --c-ink-faded (3.0–3.3:1 < AA).
-       --c-gray-m (#66655d) = 5.71:1 auf --c-white (.res-card) — ≥4.5:1. */
+       --c-gray-m (#66655d) = 5,65:1 auf --paper — ≥4.5:1.
+       (Stand früher als „5.71:1 auf --c-white". Beides veraltet: .res-card wurde
+       bei der Kartenangleichung auf --paper umgestellt, 5.71 galt für --c-white.
+       Der Wert hier ist am laufenden Element nachgemessen, nicht übertragen.) */
     .res-rating { display: flex; align-items: center; gap: .6rem; font-size: 1.25rem; color: var(--c-gray-m); }
     .res-rating .stars-display { font-size: 1.3rem; }
     .res-intern-hint { font-size: 1.25rem; color: var(--c-gray-m); font-style: italic; }
@@ -246,13 +249,16 @@
          ohne sie zwei davon den Link bzw. die Quellenangabe darüber.
          z-index 3 liegt über dem „Start hier“-Band (z-index 2).
        Die negativen Ränder ersetzen die aus base.css (dort für den Katalog-
-       Kartenkopf gerechnet); die ≥44px-Trefferfläche bleibt unangetastet. */
+       Kartenkopf gerechnet) — sie verschieben die Trefferfläche, verkleinern sie
+       nicht. Das kleinere font-size tat das aber: real 43×43px statt 44 (nach-
+       gemessen). base.css hält die 44px seit der Korrektur per min-width/
+       min-height fest, unabhängig von der Schriftgröße. */
     .res-card .fav-btn {
       position: relative; z-index: 3; font-size: 1.9rem;
       margin: -1.1rem -1.1rem -1.1rem auto;
     }
     .res-toggle {
-      background: none; border: none; color: var(--c-gray-d);
+      background: none; border: none; color: var(--c-gray-m);
       font-family: inherit; font-size: 1.3rem; font-weight: 600;
       cursor: pointer; display: inline-flex; align-items: center; gap: .6rem;
       padding: .55rem .4rem; transition: var(--trans); margin-left: auto;
@@ -366,7 +372,7 @@
     .cmd-card.open .cmd-nutzen { display: block; overflow: visible; }
     .cmd-nutzen code, .cmd-body code {
       font-family: var(--font-mono); font-size: .92em;
-      background: rgba(252,252,252,.08); border-radius: .4rem;
+      background: rgba(252,252,252,.08); border-radius: var(--r-xs);
       padding: .05em .4em; color: var(--c-yellow);
     }
     .cmd-actions { display: flex; align-items: center; gap: .8rem; flex-wrap: wrap; margin-left: auto; }
@@ -474,7 +480,7 @@
     .az-btn:hover:not(:disabled) { background: var(--c-yellow); }
     .az-btn:disabled { opacity: .25; cursor: default; }
 
-    .glo-hits { font-family: var(--font-mono); font-size: 1.25rem; color: var(--c-gray-d); margin: 1.6rem 0 0; }
+    .glo-hits { font-family: var(--font-mono); font-size: 1.25rem; color: var(--c-gray-m); margin: 1.6rem 0 0; }
     /* KOMPAKT (E-Straffung): Begriffe als dichte aufklappbare Zeilen — der ganze
        Zeilenkopf ist der Toggle; Satz, Beispiel, Vertiefung und Vote klappen auf. */
     .g-gruppe { margin-top: 2.4rem; }
@@ -500,7 +506,7 @@
       background: none; border: none; cursor: pointer; font-family: inherit;
       padding: 1rem 1.4rem; transition: var(--trans);
     }
-    .g-head:hover .g-wort { color: var(--c-gray-d); }
+    .g-head:hover .g-wort { color: var(--c-gray-m); }
     .g-head .ct-arrow { margin-left: auto; transition: transform .2s; font-size: 1.6rem; line-height: 1; color: var(--c-gray-m); }
     .g-head[aria-expanded="true"] .ct-arrow { transform: rotate(90deg); }
     .g-wort { font-size: 1.5rem; font-weight: 700; letter-spacing: -.01em; color: var(--c-black); line-height: 1.35; }
@@ -510,7 +516,7 @@
     .g-body p.g-satz { font-size: 1.45rem; line-height: 1.6; color: var(--c-ink-body); margin: 0 0 1.6rem; }
     .g-satz code, .g-body code, .faq-body code {
       font-family: var(--font-mono); font-size: .92em;
-      background: rgba(38,38,38,.07); border-radius: .4rem; padding: .05em .4em;
+      background: rgba(38,38,38,.07); border-radius: var(--r-xs); padding: .05em .4em;
     }
     .g-actions { display: flex; align-items: center; gap: 1.2rem; flex-wrap: wrap; margin-top: 1.6rem; }
     /* helle Variante des Vote-Buttons (Basis .vote-btn ist für die dunkle Säule gebaut) */
@@ -562,7 +568,7 @@
       font-size: 1.6rem; font-weight: 600; color: var(--c-black); line-height: 1.4;
       padding: 1.8rem 2.2rem;
     }
-    .faq-q:hover { color: var(--c-gray-d); }
+    .faq-q:hover { color: var(--c-gray-m); }
     .faq-q .ct-arrow { margin-left: auto; transition: transform .2s; font-size: 1.8rem; line-height: 1; color: var(--c-gray-m); }
     .faq-q[aria-expanded="true"] .ct-arrow { transform: rotate(90deg); }
     .faq-body { padding: 0 2.2rem 2.4rem; }

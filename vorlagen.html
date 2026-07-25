@@ -197,8 +197,12 @@
        rechte Kopfgruppe gebildet: Badge/Button und Stern stehen zusammen am
        rechten Rand, damit der Kartentitel links seine Grundlinie behält.
        Die negativen Ränder von .fav-btn (dort für den Katalog-Kartenkopf
-       gerechnet) werden auf die hiesigen Kopfzeilen angepasst; die ≥44px-
-       Trefferfläche aus base.css bleibt dabei unangetastet. */
+       gerechnet) werden auf die hiesigen Kopfzeilen angepasst — negative Ränder
+       verschieben die Trefferfläche, sie verkleinern sie nicht.
+       Das kleinere font-size TAT das aber: 1.9rem + 2×1.2rem Padding ergab real
+       43×43px (nachgemessen), einen Pixel unter WCAG 2.5.8. Deshalb hält
+       base.css die 44px seit der Korrektur per min-width/min-height fest,
+       unabhängig von der Schriftgröße. Diese Zeile darf also verkleinern. */
     .vl-kopf-rechts { display: inline-flex; align-items: center; gap: .8rem; margin-left: auto; }
     .vl-kopf-rechts .fav-btn { font-size: 1.9rem; margin: -1.1rem -1.1rem -1.1rem -.4rem; }
 
@@ -1451,7 +1455,7 @@
         return `<div class="am-preview"><p class="ff-stimmung">${escHtml(r.stimmung)}</p>${palSwatchesHtml(r)}${palPairsHtml(r)}</div>`;
       }
       if (item.typ === 'pattern') {
-        return `<div class="am-preview"><div class="pat-preview" style="${r.css};height:18rem;border-radius:.8rem;border:1px solid var(--line)"></div><p class="ff-stimmung" style="margin-top:1.2rem">${escHtml(r.stimmung)}</p></div>`;
+        return `<div class="am-preview"><div class="pat-preview" style="${r.css};height:18rem;border-radius:var(--r-sm);border:1px solid var(--line)"></div><p class="ff-stimmung" style="margin-top:1.2rem">${escHtml(r.stimmung)}</p></div>`;
       }
       if (item.typ === 'iconset') {
         return `<div class="am-preview"><p class="iconset-stil">${escHtml(r.stil)}</p><p class="am-source"><strong>Wofür:</strong> ${escHtml(r.wofuer)}</p><p class="ff-meta"><span class="ff-gewicht">${r.anzahl.toLocaleString('de-DE')} Icons im Set</span></p></div>`;
