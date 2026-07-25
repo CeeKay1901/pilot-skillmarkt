@@ -890,6 +890,27 @@
       if (el) { el.classList.add('-highlight'); setTimeout(() => el.classList.remove('-highlight'), 2400); }
     }
 
+    /* Kaputter Deep-Link: die id gibt es nicht (mehr). Vorher blieben beide Hashes
+       stumm stehen — gemessen wurde aus „showroom.html?case=gibtsnicht" die URL
+       „…?case=gibtsnicht#case/gibtsnicht" und aus „?g=gibtsnicht" die URL
+       „…?g=gibtsnicht#sp-gibtsnicht", beides ohne jede Rückmeldung. Ein
+       weitergeleiteter kaputter Link sah dadurch aus, als hätte er funktioniert.
+       Jetzt fliegen Hash UND die auslösenden ?case=/?g=-Parameter raus (übrige
+       Query-Parameter wie utm bleiben erhalten), dazu ein kurzer Hinweis.
+       Gleiches Muster wie lernen-hilfe.html:deepLinkMiss und skills.html:applyHash. */
+    function deepLinkMiss(kind) {
+      const label = { case: 'Dieses Projekt', g: 'Dieses Startprojekt' }[kind] || 'Diesen Eintrag';
+      showToast(label + ' gibt es hier (noch) nicht — der Link ist vermutlich veraltet.');
+      try {
+        const q = new URLSearchParams(location.search);
+        q.delete('case'); q.delete('g');
+        const qs = q.toString();
+        _hashLock = true;
+        history.replaceState(null, '', location.pathname + (qs ? '?' + qs : ''));
+        setTimeout(() => { _hashLock = false; }, 0);
+      } catch (e) { /* History blockiert — dann bleibt nur der Toast */ }
+    }
+
     function applyDeepLink(fromLoad) {
       if (fromLoad) {
         try {
@@ -915,24 +936,29 @@
         /* Startprojekt: showroom.html#sp-<id> (aus ?g= oder direkt geteilt).
            Kein Modal — die Karte trägt alles, also nur anfahren und hervorheben.
            Steht NACH dem #case/-Zweig, damit der unverändert zuerst greift.
-           Unbekannte id: still zurückkehren, wie beim Case darunter. */
+           Unbekannte id: Hinweis + URL aufräumen (deepLinkMiss), aber NUR beim
+           Laden — wie auf lernen-hilfe.html. Bei hashchange bliebe es still,
+           sonst quittierte die Seite jeden fremden Ankersprung mit einem Toast. */
         const mg = (location.hash || '').match(/^#sp-(.+)$/);
         if (mg) {
           let gid;
-          try { gid = decodeURIComponent(mg[1]); } catch (e) { return; }
+          try { gid = decodeURIComponent(mg[1]); } catch (e) { if (fromLoad) deepLinkMiss('g'); return; }
           const el = document.getElementById('sp-' + gid);   // renderStartprojekte() lief bereits beim Init
           if (el) {
             el.scrollIntoView({ behavior: window.scrollBehavior(), block: 'center' });
             el.classList.add('-highlight');
             setTimeout(() => el.classList.remove('-highlight'), 2400);
+          } else if (fromLoad) {
+            deepLinkMiss('g');
           }
         }
         return;
       }
       let id;
-      try { id = decodeURIComponent(m[1]); } catch (e) { return; }
+      try { id = decodeURIComponent(m[1]); } catch (e) { if (fromLoad) deepLinkMiss('case'); return; }
       const item = caseById(id);
-      if (!item) return;
+      // Unbekannte id: Hinweis + URL aufräumen, nur beim Laden (siehe deepLinkMiss)
+      if (!item) { if (fromLoad) deepLinkMiss('case'); return; }
       // Case liegt evtl. hinter einem Filter — für den Deep-Link lösen.
       // Auch die Freitext-Suche zählt dazu: sonst springt highlightCard() auf eine
       // Karte, die gar nicht im Grid steht (z. B. Sprung aus der globalen Suche).

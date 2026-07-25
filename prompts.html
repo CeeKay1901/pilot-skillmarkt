@@ -1102,7 +1102,26 @@
     function updateURL() { const h = buildHash(); if (h) writeHash(h, false); }
     function pushURL()   { const h = buildHash(); if (h) writeHash(h, true); }
 
-    function applyHash() {
+    // Kaputter Deep-Link: die id gibt es nicht (mehr). Vorher blieb der Hash stumm
+    // stehen — gemessen wurde aus „prompts.html?p=gibtsnicht" die URL
+    // „prompts.html?p=gibtsnicht#gibtsnicht", ohne jede Rückmeldung. Ein
+    // weitergeleiteter kaputter Link sah dadurch aus, als hätte er funktioniert.
+    // Jetzt fliegen Hash UND der auslösende ?p=-Parameter raus (übrige
+    // Query-Parameter wie utm bleiben erhalten), dazu ein kurzer Hinweis.
+    // Gleiches Muster wie skills.html:applyHash und lernen-hilfe.html:deepLinkMiss.
+    function deepLinkMiss() {
+      showToast('Diesen Prompt gibt es hier (noch) nicht — der Link ist vermutlich veraltet.');
+      try {
+        const q = new URLSearchParams(location.search);
+        q.delete('p');
+        const qs = q.toString();
+        _hashLock = true;
+        history.replaceState(null, '', location.pathname + (qs ? '?' + qs : ''));
+        setTimeout(() => { _hashLock = false; }, 0);
+      } catch (e) { /* History blockiert — dann bleibt nur der Toast */ }
+    }
+
+    function applyHash(fromLoad) {
       if (_hashLock) return;
       const raw = decodeURIComponent(location.hash.slice(1));
       if (!raw) {
@@ -1113,7 +1132,15 @@
       const parts = raw.split('/');
       const id = parts[0];
       const p = PROMPTS.find(x => x.id === id);
-      if (!p) { updateURL(); return; } // unbekannter Prompt: URL nicht vom UI abweichen lassen
+      if (!p) {
+        /* Gemeldet wird NUR beim Laden — wie auf lernen-hilfe.html. Der Hash hier
+           ist unnamespaced (#<id>), also kommen bei hashchange auch seiten-eigene
+           Anker vorbei: der Skip-Link springt auf #main-content. Ein Toast pro
+           Ankersprung wäre falsch, und ein Hash, der ein echtes Element trifft,
+           ist kein kaputter Deep-Link. Sonst wie bisher: URL nicht vom UI abweichen lassen. */
+        if (fromLoad && !document.getElementById(raw)) return deepLinkMiss();
+        updateURL(); return;
+      }
       // Nur Tabs, die es für DIESEN Prompt gibt (Leuchttürme: vorschau, Breite: beispiel)
       let tab = MODAL_TABS.includes(parts[1]) ? parts[1] : 'overview';
       if (!modalTabsFor(p).some(([tid]) => tid === tab)) tab = 'overview';
@@ -1153,9 +1180,12 @@
           history.replaceState(null, '', location.pathname + location.search + '#' + encodeURIComponent(qsPrompt));
         }
       } catch (e) {}
-      applyHash();
-      window.addEventListener('hashchange', applyHash);
-      window.addEventListener('popstate', applyHash);
+      applyHash(true);
+      // Bewusst über Pfeilfunktionen: als direkter Listener bekäme applyHash das
+      // Event-Objekt als ersten Parameter — und das ist truthy, würde also jeden
+      // Ankersprung zu einem „beim Laden" machen.
+      window.addEventListener('hashchange', () => applyHash(false));
+      window.addEventListener('popstate', () => applyHash(false));
 
       // Suche im Filterleisten-Slot (Feld kommt aus renderNav, ID bleibt #search)
       document.getElementById('search')?.addEventListener('input', debounce(e => {
