@@ -35,6 +35,15 @@
    Fassung ihres SVG, damit kopiertes CSS auch außerhalb dieses Repos trägt.
    Beides prüft `node tools/muster-datauri.mjs --pruefen` gegen die Platte.
 
+   ZAHLEN IN beschreibung: Ziffern sind erlaubt, aber nur belegbare — dasselbe
+   --pruefen hält jede Ziffernfolge aus beschreibung gegen die eigenen Daten des
+   Eintrags (Felder, die eigene SVG-Datei, farben/paare/dateien-Länge) und bricht
+   sonst ab. AUSGESCHRIEBENE Zahlwörter („fünf Töne", „vier Paare") gehören
+   deshalb NICHT in eine beschreibung, wenn sie eine Menge aus dem Eintrag
+   nachsprechen: keine Prüfung kann sie halten, und beim nächsten Farbwert steht
+   dort still eine falsche Zahl. Formuliere ohne Zahl („Alle hinterlegten Paare
+   erfüllen AA") oder schreib die Zahl als Ziffer, wenn sie in den Daten steht.
+
    Alle Zahlen sind real zählbar aus diesen Arrays. Nichts erfunden.
    ============================================================ */
 
@@ -44,7 +53,7 @@ const FONTS = [
     name: "Inter",
     kategorie: "sans",
     stimmung: "Der ruhige pilot-Standard: eine neutrale, bildschirmoptimierte Grotesk, die in UI, Fließtext und Datentabellen gleichermaßen verlässlich trägt.",
-    beschreibung: "Variable Sans in einer einzigen Datei: der Gewichtsbereich 100–900 deckt Buttons, Fließtext und Tabellen ab, ohne dass du getrennte Schnitte laden musst. Gedacht als Grundschrift eines Projekts; für Überschriften stellst du bei Bedarf Fraunces oder Newsreader daneben.",
+    beschreibung: "Variable Sans, die alle Gewichte aus derselben Datei holt: der Gewichtsbereich 100–900 deckt Buttons, Fließtext und Tabellen ab, ohne dass du getrennte Schnitte laden musst. Gedacht als Grundschrift eines Projekts; für Überschriften stellst du bei Bedarf Fraunces oder Newsreader daneben.",
     file: "assets/fonts/inter-variable.woff2",
     fontFamily: "Inter",
     fontFaceCss: "@font-face {\n  font-family: 'Inter';\n  src: url('assets/fonts/inter-variable.woff2') format('woff2-variations');\n  font-weight: 100 900;\n  font-style: normal;\n  font-display: swap;\n}",
@@ -86,7 +95,7 @@ const FONTS = [
     name: "Plus Jakarta Sans",
     kategorie: "sans",
     stimmung: "Geometrische Sans mit eigenständigen Details und leicht technischer Anmutung — bringt Frische in Interfaces, ohne aufdringlich zu wirken.",
-    beschreibung: "Variable Sans für Oberflächen, Gewichte 200 bis 800 aus einer Datei. Die Wahl, wenn ein Interface eigenständiger wirken soll als mit Inter; Codeblöcke stellst du laut Paarungs-Hinweis in IBM Plex Mono daneben.",
+    beschreibung: "Variable Sans für Oberflächen, Gewichte 200 bis 800 aus derselben Datei. Die Wahl, wenn ein Interface eigenständiger wirken soll als mit Inter; Codeblöcke stellst du laut Paarungs-Hinweis in IBM Plex Mono daneben.",
     file: "assets/fonts/plus-jakarta-sans-variable.woff2",
     fontFamily: "Plus Jakarta Sans",
     fontFaceCss: "@font-face {\n  font-family: 'Plus Jakarta Sans';\n  src: url('assets/fonts/plus-jakarta-sans-variable.woff2') format('woff2-variations');\n  font-weight: 200 800;\n  font-style: normal;\n  font-display: swap;\n}",
@@ -212,7 +221,7 @@ const FONTS = [
     name: "IBM Plex Mono",
     kategorie: "mono",
     stimmung: "Monospace mit humanistischer Wärme und leicht technischer Signatur — eine ruhige Alternative für Code, Daten und Beschriftungen mit Charakter.",
-    beschreibung: "Monospace in genau einem Schnitt (Gewicht 400, nicht variabel): Es gibt kein Bold aus derselben Datei, dafür ist sie mit rund 14 kB die kleinste Schrift der Sammlung. Für Code, Zahlenspalten und kurze Beschriftungen.",
+    beschreibung: "Monospace mit festem Gewicht 400 (nicht variabel): ein Bold aus derselben Datei gibt es nicht. Dafür ist ihre Datei die kleinste der Sammlung — gut für Code, Zahlenspalten und kurze Beschriftungen.",
     file: "assets/fonts/ibm-plex-mono-400.woff2",
     fontFamily: "IBM Plex Mono",
     fontFaceCss: "@font-face {\n  font-family: 'IBM Plex Mono';\n  src: url('assets/fonts/ibm-plex-mono-400.woff2') format('woff2');\n  font-weight: 400;\n  font-style: normal;\n  font-display: swap;\n}",
@@ -264,7 +273,7 @@ const ICONSETS = [
     "name": "Phosphor",
     "anzahl": 1512,
     "stil": "Flexible Familie in sechs Gewichten (Thin bis Fill) plus Duotone — verspielter und ausdrucksstärker.",
-    "beschreibung": "1512 Icons unter MIT-Lizenz in sechs Strichstärken plus Duotone. Sinnvoll, wenn ein Projekt eine eigene Handschrift bekommen soll: dieselbe Form lässt sich hier dünn oder fett setzen.",
+    "beschreibung": "1512 Icons unter MIT-Lizenz in mehreren Strichstärken plus Duotone. Sinnvoll, wenn ein Projekt eine eigene Handschrift bekommen soll: dieselbe Form lässt sich hier dünn oder fett setzen.",
     "lizenz": "MIT",
     "lizenzUrl": "https://github.com/phosphor-icons/homepage/blob/master/LICENSE",
     "quelleUrl": "https://phosphoricons.com/",
@@ -537,7 +546,7 @@ const PALETTES = [
     "id": "pilot-ci",
     "name": "pilot CI",
     "stimmung": "Die Hausfarben dieses Marketplace: Signal-Gelb auf Ink-Schwarz, getragen von warmem Papier statt kaltem Weiß.",
-    "beschreibung": "Sechs benannte Farbwerte plus vier vorgerechnete Text-auf-Fläche-Paare, die alle AA erfüllen (5,17 bis 13,36). Nimm sie, wenn ein Tool nach pilot aussehen soll, ohne dass du Kontraste selbst nachrechnest.",
+    "beschreibung": "Benannte Farbwerte plus vorgerechnete Text-auf-Fläche-Paare, die alle AA erfüllen (5,17 bis 13,36). Nimm sie, wenn ein Tool nach pilot aussehen soll, ohne dass du Kontraste selbst nachrechnest.",
     "farben": [
       {
         "hex": "#262626",
@@ -599,7 +608,7 @@ const PALETTES = [
     "id": "warm-editorial",
     "name": "Warm editorial",
     "stimmung": "Redaktioneller Ton aus Terrakotta und Creme — ruhig, hochwertig, für lange Texte und Magazin-Layouts.",
-    "beschreibung": "Fünf Erd- und Cremetöne für redaktionelle Layouts. Beim Einsatz aufpassen: Nur Espresso auf Creme (13,55) trägt AA im Fließtext, Terrakotta und Taupe auf Creme reichen laut Datensatz nur für große Schrift.",
+    "beschreibung": "Erd- und Cremetöne für redaktionelle Layouts. Beim Einsatz aufpassen: Nur Espresso auf Creme (13,55) trägt AA im Fließtext, Terrakotta und Taupe auf Creme reichen laut Datensatz nur für große Schrift.",
     "farben": [
       {
         "hex": "#2b2118",
@@ -657,7 +666,7 @@ const PALETTES = [
     "id": "tech-kuehl",
     "name": "Tech kühl",
     "stimmung": "Klares Blau auf fast weißem Grund — sachlich, digital, für Dashboards und Datenprodukte.",
-    "beschreibung": "Fünf Blau- und Grautöne für Dashboards, Tabellen und Datenansichten. Alle vier hinterlegten Paare erfüllen AA (4,55 bis 17,06), du kannst Fließtext, Links und Meta-Zeilen also direkt daraus besetzen.",
+    "beschreibung": "Blau- und Grautöne für Dashboards, Tabellen und Datenansichten. Alle hinterlegten Paare erfüllen AA (4,55 bis 17,06), du kannst Fließtext, Links und Meta-Zeilen also direkt daraus besetzen.",
     "farben": [
       {
         "hex": "#0f172a",
@@ -715,7 +724,7 @@ const PALETTES = [
     "id": "high-contrast",
     "name": "High Contrast",
     "stimmung": "Maximale Lesbarkeit: reines Schwarz-Weiß mit einem einzigen Warnrot als Akzent — barrierearm und laut.",
-    "beschreibung": "Schwarz, Weiß und ein Rot als einziger Akzent; das Paar Schwarz auf Weiß erreicht 21,0 und damit den höchstmöglichen Wert. Für Ansichten, in denen Lesbarkeit vor Stimmung geht: Warnungen, Druckansichten, barrierearme Varianten.",
+    "beschreibung": "Schwarz, Weiß und Rot als Akzent; das Paar Schwarz auf Weiß erreicht 21,0 und damit den höchstmöglichen Wert. Für Ansichten, in denen Lesbarkeit vor Stimmung geht: Warnungen, Druckansichten, barrierearme Varianten.",
     "farben": [
       {
         "hex": "#000000",
@@ -773,7 +782,7 @@ const PALETTES = [
     "id": "gedeckt-natur",
     "name": "Gedeckt Natur",
     "stimmung": "Erdige Grün- und Sandtöne — organisch, vertrauenswürdig, für Nachhaltigkeits- und Bildungsthemen.",
-    "beschreibung": "Fünf gedeckte Grün-, Sand- und Lehmtöne für Themen, die nicht nach Software aussehen sollen. Drei der vier Paare tragen AA, Moos auf Sand (3,9) bleibt großen Größen vorbehalten.",
+    "beschreibung": "Gedeckte Grün-, Sand- und Lehmtöne für Themen, die nicht nach Software aussehen sollen. Alle Paare tragen AA außer Moos auf Sand (3,9) — das bleibt großen Größen vorbehalten.",
     "farben": [
       {
         "hex": "#2f3a2e",
@@ -831,7 +840,7 @@ const PALETTES = [
     "id": "monochrom",
     "name": "Monochrom",
     "stimmung": "Reine Graustufen ohne Buntfarbe — zeitlos und zurückhaltend, lässt Inhalt und Typo sprechen.",
-    "beschreibung": "Fünf Graustufen ohne Buntton — brauchbar als Grundlage, in die du später genau eine Akzentfarbe setzt. Die drei Paare auf Weiß tragen AA, Grau auf Hellgrau (3,2) nur in großer Schrift.",
+    "beschreibung": "Graustufen ohne Buntton — brauchbar als Grundlage, in die du später genau eine Akzentfarbe setzt. Alle Paare auf Weiß tragen AA, Grau auf Hellgrau (3,2) nur in großer Schrift.",
     "farben": [
       {
         "hex": "#171717",
@@ -889,7 +898,7 @@ const PALETTES = [
     "id": "akzent-duo",
     "name": "Akzent-Duo",
     "stimmung": "Zwei kräftige Komplementär-Akzente — Violett und Limette — auf neutralem Grund für Kampagnen mit Zug.",
-    "beschreibung": "Ein dunkler Grundton, ein heller Untergrund und zwei kräftige Akzente (Violett und Limette) für Seiten, auf denen zwei Farben klar auseinandergehalten werden müssen. Violett auf Lavendelweiß erreicht 6,48 und trägt damit auch im Fließtext.",
+    "beschreibung": "Dunkler Grundton, heller Untergrund und dazu kräftige Akzente in Violett und Limette — für Seiten, die klar unterscheidbare Signalfarben brauchen. Violett auf Lavendelweiß erreicht 6,48 und trägt damit auch im Fließtext.",
     "farben": [
       {
         "hex": "#1e1b2e",
@@ -954,7 +963,7 @@ const PATTERNS = [
     "dataUri": "data:image/svg+xml;charset=utf-8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2224%22 height=%2224%22%3E%0A  %3Ccircle cx=%222%22 cy=%222%22 r=%221.3%22 fill=%22%23808080%22 opacity=%22.35%22/%3E%0A%3C/svg%3E%0A",
     "css": "background-color: #f1f1ec; background-image: url('assets/patterns/dots.svg'); background-size: 24px 24px;",
     "stimmung": "Dezente Punkte — leichte Struktur für helle Sektionen ohne vom Inhalt abzulenken.",
-    "beschreibung": "SVG-Kachel von 24×24 Pixeln mit einem einzelnen grauen Punkt, im CSS auf dieselbe Größe gekachelt. Für helle Sektionen, die etwas Struktur bekommen sollen, ohne dass Text darüber schwerer zu lesen wird.",
+    "beschreibung": "SVG-Kachel von 24×24 Pixeln mit einem grauen Punkt, im CSS auf dieselbe Größe gekachelt. Für helle Sektionen, die etwas Struktur bekommen sollen, ohne dass Text darüber schwerer zu lesen wird.",
     "lizenz": "design-assets (MIT-artig frei)",
     "tags": ["muster", "svg", "punkte", "hintergrund", "dezent"],
     "dateien": ["assets/patterns/dots.svg"]
@@ -967,7 +976,7 @@ const PATTERNS = [
     "dataUri": "data:image/svg+xml;charset=utf-8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22%3E%0A  %3Cpath d=%22M40 0H0v40%22 fill=%22none%22 stroke=%22%23808080%22 stroke-opacity=%22.25%22 stroke-width=%221%22/%3E%0A%3C/svg%3E%0A",
     "css": "background-color: #f1f1ec; background-image: url('assets/patterns/grid.svg'); background-size: 40px 40px;",
     "stimmung": "Technisches Gitternetz — Blueprint-Anmutung für Tool- und Daten-Kontexte.",
-    "beschreibung": "SVG-Kachel von 40×40 Pixeln, deren zwei Linien beim Kacheln ein durchgehendes Gitternetz ergeben. Sinnvoll hinter Werkzeug-Oberflächen und Diagrammen, wo das Raster die Struktur des Inhalts aufnimmt.",
+    "beschreibung": "SVG-Kachel von 40×40 Pixeln, deren Linien beim Kacheln ein durchgehendes Gitternetz ergeben. Sinnvoll hinter Werkzeug-Oberflächen und Diagrammen, wo das Raster die Struktur des Inhalts aufnimmt.",
     "lizenz": "design-assets (MIT-artig frei)",
     "tags": ["muster", "svg", "raster", "gitter", "hintergrund"],
     "dateien": ["assets/patterns/grid.svg"]
@@ -1006,7 +1015,7 @@ const PATTERNS = [
     "dataUri": "data:image/svg+xml;charset=utf-8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2216%22 height=%2216%22%3E%0A  %3Cpath d=%22M0 16 16 0M-4 4 4-4M12 20l8-8%22 stroke=%22%23808080%22 stroke-opacity=%22.15%22 stroke-width=%221%22/%3E%0A  %3Cpath d=%22M0 0l16 16M-4 12l8 8M12-4l8 8%22 stroke=%22%23808080%22 stroke-opacity=%22.15%22 stroke-width=%221%22/%3E%0A%3C/svg%3E%0A",
     "css": "background-color: #f1f1ec; background-image: url('assets/patterns/crosshatch.svg'); background-size: 16px 16px;",
     "stimmung": "Feine Kreuzschraffur — handzeichnerische Textur mit editorialem Charakter.",
-    "beschreibung": "SVG-Kachel von 16×16 Pixeln, in der sich zwei Diagonalscharen kreuzen. Die Linien liegen bei 15 Prozent Deckkraft und damit schwächer als in allen anderen Mustern hier — brauchbar auch unter Fließtext.",
+    "beschreibung": "SVG-Kachel von 16×16 Pixeln mit gekreuzten Diagonalen. Die Linien liegen bei 15 Prozent Deckkraft und damit schwächer als in allen anderen Mustern hier — brauchbar auch unter Fließtext.",
     "lizenz": "design-assets (MIT-artig frei)",
     "tags": ["muster", "svg", "schraffur", "textur", "fein"],
     "dateien": ["assets/patterns/crosshatch.svg"]
@@ -1032,7 +1041,7 @@ const PATTERNS = [
     "dataUri": "data:image/svg+xml;charset=utf-8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2232%22 height=%2232%22%3E%0A  %3Cpath d=%22M14 16h4M16 14v4%22 stroke=%22%23808080%22 stroke-opacity=%22.35%22 stroke-width=%221.2%22 stroke-linecap=%22round%22/%3E%0A%3C/svg%3E%0A",
     "css": "background-color: #f1f1ec; background-image: url('assets/patterns/plus.svg'); background-size: 32px 32px;",
     "stimmung": "Verstreute Plus-Marker — luftiges Raster mit technischem Augenzwinkern.",
-    "beschreibung": "SVG-Kachel von 32×32 Pixeln mit einem einzelnen Pluszeichen in der Mitte; gekachelt ergibt das ein weit gestelltes Kreuzraster. Für großzügige Abschnitte, die nur eine Andeutung von Struktur brauchen.",
+    "beschreibung": "SVG-Kachel von 32×32 Pixeln mit einem Pluszeichen in der Mitte; gekachelt ergibt das ein weit gestelltes Kreuzraster. Für großzügige Abschnitte, die nur eine Andeutung von Struktur brauchen.",
     "lizenz": "design-assets (MIT-artig frei)",
     "tags": ["muster", "svg", "plus", "raster", "luftig"],
     "dateien": ["assets/patterns/plus.svg"]
@@ -1044,7 +1053,7 @@ const PATTERNS = [
     "datei": null,
     "css": "background: radial-gradient(at 80% 0%, rgba(255,224,94,.55) 0, transparent 50%), radial-gradient(at 10% 90%, rgba(255,212,0,.18) 0, transparent 55%), #f1f1ec;",
     "stimmung": "Warmes Papier mit Gelb-Schimmer aus der Ecke — die Signatur-Hero-Fläche von pilot.",
-    "beschreibung": "Reines CSS ohne Bilddatei: zwei radiale Verläufe in Signal- und Acid-Gelb über der Papierfarbe der pilot-Palette. Für Kopfbereiche, die zur Hausfarbe passen sollen; angepasst wird über die rgba-Werte.",
+    "beschreibung": "Reines CSS ohne Bilddatei: radiale Verläufe in Signal- und Acid-Gelb über der Papierfarbe der pilot-Palette. Für Kopfbereiche, die zur Hausfarbe passen sollen; angepasst wird über die rgba-Werte.",
     "lizenz": "design-assets (MIT-artig frei)",
     "tags": ["verlauf", "css", "gelb", "kopfbereich", "pilot"],
     "dateien": []
@@ -1056,7 +1065,7 @@ const PATTERNS = [
     "datei": null,
     "css": "background-image: linear-gradient(rgb(128 128 128 / .12) 1px, transparent 1px), linear-gradient(90deg, rgb(128 128 128 / .12) 1px, transparent 1px); background-size: 40px 40px; mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, #000 40%, transparent 100%);",
     "stimmung": "Feines Gitter, das zum Rand ausblendet — Tech-Look ohne harte Kanten.",
-    "beschreibung": "Reines CSS: Zwei lineare Verläufe bilden ein 40-Pixel-Raster, eine mask-image blendet es zum Rand hin aus. Kommt ohne Datei aus, setzt dafür Browser-Unterstützung für mask-image voraus.",
+    "beschreibung": "Reines CSS: Lineare Verläufe bilden ein 40-Pixel-Raster, eine mask-image blendet es zum Rand hin aus. Kommt ohne Datei aus, setzt dafür Browser-Unterstützung für mask-image voraus.",
     "lizenz": "design-assets (MIT-artig frei)",
     "tags": ["verlauf", "css", "raster", "maske"],
     "dateien": []
@@ -1068,7 +1077,7 @@ const PATTERNS = [
     "datei": null,
     "css": "background: radial-gradient(at 20% 25%, #a7f3d0 0, transparent 55%), radial-gradient(at 80% 20%, #bae6fd 0, transparent 55%), radial-gradient(at 65% 80%, #ddd6fe 0, transparent 55%), radial-gradient(at 15% 85%, #fbcfe8 0, transparent 50%), #fafaf9;",
     "stimmung": "Weiches, mehrfarbiges Verlaufsnetz — leichter, freundlicher Hintergrund für helle Layouts.",
-    "beschreibung": "Reines CSS aus vier radialen Verläufen in Grün, Blau, Violett und Rosa über fast weißem Grund. Für helle Layouts, die Farbe brauchen, ohne ein Bild zu laden — jede Farbstelle lässt sich einzeln tauschen.",
+    "beschreibung": "Reines CSS aus radialen Verläufen in Grün, Blau, Violett und Rosa über fast weißem Grund. Für helle Layouts, die Farbe brauchen, ohne ein Bild zu laden — jede Farbstelle lässt sich einzeln tauschen.",
     "lizenz": "design-assets (MIT-artig frei)",
     "tags": ["verlauf", "css", "bunt", "hell", "hintergrund"],
     "dateien": []

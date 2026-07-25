@@ -6,6 +6,14 @@
  *   node tools/muster-datauri.mjs            # dataUri neu erzeugen (Normalfall)
  *   node tools/muster-datauri.mjs --pruefen  # nur prüfen, nichts schreiben (Exit 1 bei Abweichung)
  *
+ * ZUM NAMEN: Der Schreibmodus betrifft nur die Muster — der Prüfmodus nicht.
+ * --pruefen hält seit jeher alle 16 Dateipfade aller 30 Assets gegen die Platte,
+ * nicht nur die sieben eingebetteten SVG. Sein Zuständigkeitsbereich ist also
+ * „data/assets.js gegen die Wirklichkeit", und dazu gehören seit E14 auch die
+ * Ziffern im Fließtext von beschreibung (Punkt (c) weiter unten). Wer hier eine
+ * weitere Prüfung an data/assets.js braucht, hängt sie hier an, statt ein
+ * zweites Werkzeug danebenzustellen — der Dateiname ist enger als der Auftrag.
+ *
  * WARUM überhaupt: Der Kopieren-Knopf bei den Mustern verspricht „einfügen und
  * es läuft". Kopiert wird aber das Feld css, und darin steht
  * url('assets/patterns/dots.svg') — ein repo-relativer Pfad, der in jedem
@@ -41,12 +49,39 @@
  * Regel gar nicht erst an. Also nur den Pfad zwischen den vorhandenen
  * Anführungszeichen tauschen, die Zeichen selbst stehen lassen.
  *
- * WAS --pruefen prüft (beides gegen die Platte, nicht gegeneinander):
+ * WAS --pruefen prüft (a und b gegen die Platte, nicht gegeneinander):
  *   (a) jeder Pfad in jedem dateien[] der 30 Assets existiert,
  *   (b) jeder dataUri ist exakt der heutige Dateiinhalt — dekodiert Byte für
  *       Byte verglichen und zusätzlich als ganzer URI-String.
+ *   (c) jede Ziffernfolge in beschreibung ist aus den eigenen Daten des
+ *       Eintrags belegbar (siehe unten).
  * Ein Muster vom Typ gradient darf keinen dataUri tragen; es gibt keine Datei,
  * die ihn belegen könnte.
+ *
+ * WARUM (c): CLAUDE.md verbietet Zahlen im Fließtext, die aus einem Array
+ * kommen — sie driften lautlos. Wer eine Farbe zu farben[] ergänzt, hätte sonst
+ * eine Karte, die „Fünf Töne" behauptet und sechs zeigt, ohne Fehlermeldung.
+ * Ausgeschriebene Zahlwörter kann keine Prüfung halten; die sind deshalb aus
+ * den Beschreibungen entfernt, wo sie eine Menge nachsprachen. Was bleibt,
+ * sind Ziffern — und die hält (c).
+ *
+ * BELEGBAR heißt für (c): die Zahl kommt vor
+ *   – in der JSON-Serialisierung des Eintrags OHNE beschreibung (also in
+ *     stimmung, css, gewichtBereich, anzahl, farben, paare, lizenz, stil,
+ *     claudePrompt, beispieltext …), oder
+ *   – bei Mustern mit datei im Inhalt genau dieser SVG-Datei auf der Platte,
+ *     oder
+ *   – als Länge von farben[], paare[] oder dateien[].
+ * Verglichen wird der Zahlwert, nicht der Text: „21,0" ist durch ratio 21
+ * belegt, „12" aber NICHT durch 1512 — die Regexe fassen jede Ziffernfolge als
+ * Ganzes, ein Teilstring kann also nichts belegen. Sonst wäre die Prüfung
+ * wertlos, weil in vierstelligen Werten fast jede kleine Zahl steckt.
+ *
+ * NICHT als Beleg zugelassen sind dataUri (das ist die kodierte Kopie der
+ * Datei — %3C, %22 und %0A brächten die Zahlen 3, 22 und 0 als Geschenk mit),
+ * URLs (xmlns=„…/2000/svg" brächte 2000 und aus w3 eine 3) und Hex-Farbwerte
+ * (#808080). Alle drei tragen Ziffern, die nichts über den Eintrag aussagen,
+ * und würden falsche Grünmeldungen erzeugen.
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -81,6 +116,61 @@ function kodiere(text) {
 
 function uriAusDatei(relPfad) {
   return MIME + kodiere(fs.readFileSync(path.join(WURZEL, relPfad), 'utf8'));
+}
+
+/* ------------------------------------------- Ziffern-Beleg (Prüfung c) */
+
+/* Im Fließtext gilt das deutsche Dezimalkomma („4,55"). Bereiche („100–900",
+   Halbgeviertstrich) und Maße („24×24") zerfallen von selbst in zwei Zahlen,
+   weil weder – noch × zu einer Zahl gehören — genau so sollen sie auch zählen. */
+const ZIFFERN_TEXT = /\d+(?:[.,]\d+)?/g;
+/* In Daten und SVG steht der Dezimalpunkt. Ein Komma trennt dort Werte
+   (rgba(255,224,94,.55)) und darf keine Dezimalzahl bilden. */
+const ZIFFERN_DATEN = /\d+(?:\.\d+)?/g;
+
+/* Adressen und Hex-Farben tragen Ziffern, die nichts über den Eintrag
+   aussagen. Ohne diesen Filter belegte xmlns=„http://www.w3.org/2000/svg"
+   jede 3 und jede 2000, und #ffe05e jede 5. */
+function ohneRauschen(text) {
+  return String(text)
+    .replace(/https?:\/\/[^\s"'\\)]+/g, ' ')
+    .replace(/#[0-9a-fA-F]{3,8}\b/g, ' ');
+}
+
+function zahlenAus(text, muster) {
+  const menge = new Set();
+  for (const treffer of String(text).match(muster) || []) menge.add(parseFloat(treffer.replace(',', '.')));
+  return menge;
+}
+
+/* Der Befund soll zeigen, WO die Zahl steht — „Abweichung in tech-kuehl"
+   zwingt sonst zum Suchen. Geliefert wird der Satz um den ersten Treffer. */
+function satzMit(text, stueck) {
+  const stelle = String(text).indexOf(stueck);
+  if (stelle < 0) return String(text).slice(0, 80);
+  const vorher = String(text).lastIndexOf('. ', stelle);
+  const nachher = String(text).indexOf('. ', stelle);
+  return String(text).slice(vorher < 0 ? 0 : vorher + 2, nachher < 0 ? undefined : nachher + 1).trim();
+}
+
+/* Alles, womit ein Eintrag seine eigenen Ziffern belegen darf. */
+function belegbareZahlen(ref) {
+  const ohneText = {};
+  for (const [feld, wert] of Object.entries(ref || {})) {
+    if (feld === 'beschreibung' || feld === 'dataUri') continue;
+    ohneText[feld] = wert;
+  }
+  const zahlen = zahlenAus(ohneRauschen(JSON.stringify(ohneText)), ZIFFERN_DATEN);
+  for (const feld of ['farben', 'paare', 'dateien']) {
+    if (Array.isArray(ref[feld])) zahlen.add(ref[feld].length);
+  }
+  if (ref.datei) {
+    const voll = path.join(WURZEL, ref.datei);
+    if (fs.existsSync(voll)) {
+      for (const z of zahlenAus(ohneRauschen(fs.readFileSync(voll, 'utf8')), ZIFFERN_DATEN)) zahlen.add(z);
+    }
+  }
+  return zahlen;
 }
 
 /* data/assets.js in einer Sandbox laden. Achtung: top-level const landet NICHT
@@ -139,13 +229,87 @@ if (NUR_PRUEFEN) {
     }
   }
 
-  console.log(`muster-datauri: ${ASSETS.length} Assets, ${pfade} Dateipfade, ${mitDatei.length} eingebettete Muster.`);
+  /* (c) Ziffern im Fließtext von beschreibung gegen die eigenen Daten. */
+  let ziffern = 0;
+  let mitBeschreibung = 0;
+  for (const eintrag of ASSETS) {
+    const m = assetModel(eintrag);
+    if (m.beschreibung) mitBeschreibung++;
+    const gefunden = String(m.beschreibung).match(ZIFFERN_TEXT) || [];
+    if (!gefunden.length) continue;
+    const belegt = belegbareZahlen(eintrag.ref || {});
+    for (const stueck of gefunden) {
+      ziffern++;
+      if (belegt.has(parseFloat(stueck.replace(',', '.')))) continue;
+      const quelle = (eintrag.ref && eintrag.ref.datei)
+        ? `Feldern, ${eintrag.ref.datei} oder einer Array-Länge`
+        : 'Feldern oder einer Array-Länge';
+      befunde.push(`${m.typ}/${m.id}: Zahl „${stueck}" aus beschreibung ist in den eigenen Daten nicht belegbar `
+        + `(nicht in ${quelle}) — Satz: „${satzMit(m.beschreibung, stueck)}"`);
+    }
+  }
+
+  /* (d) Superlative über die ganze Sammlung.
+     Nachdem (c) die Ziffern gebunden hat, blieb eine zweite Sorte driftender
+     Aussage übrig, die keine Ziffer braucht: „die kleinste Kachel der Sammlung".
+     Sie ist heute wahr und wird still falsch, sobald jemand ein kleineres Muster
+     oder eine kleinere Schriftdatei ergänzt — also genau beim naheliegendsten
+     nächsten Schritt. Drei solche Sätze stehen im Bestand (ibm-plex-mono,
+     topo, diagonal).
+     Gemessen wird die Größe, über die der Satz redet: bei Schriften die Summe
+     ihrer Dateien auf der Platte, bei Mustern die Kachelkante aus
+     background-size. Verglichen wird innerhalb der eigenen Gattung — eine
+     Schrift konkurriert nicht mit einer Kachel.
+     „höchstmöglich" bei high-contrast ist bewusst NICHT erfasst: 21,0 ist die
+     obere Schranke des WCAG-Verhältnisses, eine Tatsache über die Rechenvorschrift
+     und nicht über diese Sammlung. Ein neuer Eintrag kann sie nicht kippen. */
+  const SUPERLATIV = /\b(kleinste|größte|groesste)\b[^.]*?\bder Sammlung\b/i;
+  const kachelKante = p => {
+    const m = String(p.css || '').match(/background-size:\s*(\d+)px\s+(\d+)px/);
+    return m ? Math.max(Number(m[1]), Number(m[2])) : null;
+  };
+  const dateiBytes = ref => (Array.isArray(ref.dateien) ? ref.dateien : [])
+    .reduce((summe, p) => summe + (fs.existsSync(path.join(WURZEL, p)) ? fs.statSync(path.join(WURZEL, p)).size : 0), 0);
+
+  const groessen = new Map();   // id -> { gattung, wert }
+  for (const eintrag of ASSETS) {
+    const ref = eintrag.ref || {};
+    if (eintrag.typ === 'font') groessen.set(eintrag.id, { gattung: 'Schriftdatei', wert: dateiBytes(ref) });
+    else if (eintrag.typ === 'pattern' && ref.datei) {
+      const kante = kachelKante(ref);
+      if (kante !== null) groessen.set(eintrag.id, { gattung: 'Kachel', wert: kante });
+    }
+  }
+  let superlative = 0;
+  for (const eintrag of ASSETS) {
+    const m = assetModel(eintrag);
+    const treffer = String(m.beschreibung || '').match(SUPERLATIV);
+    if (!treffer) continue;
+    superlative++;
+    const eigen = groessen.get(eintrag.id);
+    if (!eigen) {
+      befunde.push(`${m.typ}/${m.id}: Satz „${satzMit(m.beschreibung, treffer[0])}" behauptet einen Superlativ, `
+        + 'aber für diesen Eintrag ist keine vergleichbare Größe messbar');
+      continue;
+    }
+    const feld = [...groessen.entries()].filter(([, g]) => g.gattung === eigen.gattung).map(([id, g]) => ({ id, wert: g.wert }));
+    const willKlein = /kleinste/i.test(treffer[0]);
+    const grenze = willKlein ? Math.min(...feld.map(x => x.wert)) : Math.max(...feld.map(x => x.wert));
+    if (eigen.wert !== grenze) {
+      const halter = feld.filter(x => x.wert === grenze).map(x => x.id).join(', ');
+      befunde.push(`${m.typ}/${m.id}: Satz „${satzMit(m.beschreibung, treffer[0])}" stimmt nicht mehr — `
+        + `${eigen.gattung} misst ${eigen.wert}, ${willKlein ? 'kleiner' : 'größer'} ist ${halter} mit ${grenze}`);
+    }
+  }
+
+  console.log(`muster-datauri: ${ASSETS.length} Assets, ${pfade} Dateipfade, ${mitDatei.length} eingebettete Muster, `
+    + `${ziffern} Ziffernfolgen und ${superlative} Superlative in ${mitBeschreibung} Beschreibungen.`);
   if (befunde.length) {
     console.error(`ABBRUCH: ${befunde.length} Abweichung(en) zwischen data/assets.js und der Platte.`);
     befunde.forEach(b => console.error('  ' + b));
     process.exit(1);
   }
-  console.log('Alle Pfade vorhanden, alle dataUri identisch mit der Datei.');
+  console.log('Alle Pfade vorhanden, alle dataUri identisch mit der Datei, alle Ziffern belegt, alle Superlative wahr.');
   process.exit(0);
 }
 
