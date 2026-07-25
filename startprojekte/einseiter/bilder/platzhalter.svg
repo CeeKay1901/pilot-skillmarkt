@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" width="1200" height="675" role="img" aria-label="Platzhalter fuer ein Bild">
+  <rect width="1200" height="675" fill="#f4f1ea"/>
+  <rect x="14" y="14" width="1172" height="647" fill="none" stroke="#cfc9b6" stroke-width="4" stroke-dasharray="20 16"/>
+  <g fill="none" stroke="#8c8878" stroke-width="7" stroke-linejoin="round">
+    <rect x="470" y="196" width="260" height="180" rx="10"/>
+    <path d="M488 344 l70 -74 56 52 62 -70 56 92"/>
+  </g>
+  <circle cx="546" cy="248" r="18" fill="#8c8878"/>
+  <g text-anchor="middle" font-family="system-ui, sans-serif">
+    <text x="600" y="452" font-size="60" font-weight="600" fill="#3a3a3a">Platzhalter</text>
+    <text x="600" y="510" font-size="32" fill="#5b5a52">bilder/platzhalter.svg austauschen</text>
+  </g>
+</svg>

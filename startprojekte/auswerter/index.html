@@ -1,0 +1,1193 @@
+<!doctype html>
+<!-- ============================================================
+     AUSWERTER — Startprojekt-Gerüst
+
+     Umfrage-Rückläufe rein, verdichtete Zahlen raus.
+     Doppelklick auf diese Datei genügt, ein Server ist nicht
+     nötig, Netz auch nicht. Die Daten bleiben auf dem Rechner.
+
+     WAS DIESES GERÜST KANN
+     Es liest eine Tabelle in zwei Anordnungen und schreibt
+     sichtbar hin, welche es erkannt hat:
+       Breitformat — eine Zeile je Befragtem, eine Spalte je Frage
+       Langformat  — eine Zeile je Antwort, die Frage als Wert
+     Beide Wege müssen dieselben Zahlen ergeben. Erkennt es
+     nichts, sagt es das und rechnet nicht weiter.
+
+     WO DU ETWAS ÄNDERST
+     Der Code steht unten in einem Block, mit Abschnittsbannern.
+     Die Erkennungsregel selbst steht bei "ERKENNUNGSREGEL" und
+     ist der Kern dieses Gerüsts — lies sie, bevor du sie änderst.
+
+     In Claude Code reicht ein Satz, zum Beispiel:
+     "Rechne pro Region einen eigenen Durchschnitt aus."
+     ============================================================ -->
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Auswerter — Gerüst mit Beispieldaten</title>
+<meta name="description" content="Gerüst für eine Umfrage-Auswertung im Browser: Datei rein, verdichtete Zahlen raus, mit sichtbarer Formaterkennung.">
+
+<style>
+/* ============================================================
+   AUSSEHEN — musst du nicht anfassen.
+   Farben stehen alle hier oben in :root.
+   Keine Schrift von fremden Servern, deshalb system-ui.
+   ============================================================ */
+:root {
+  color-scheme: light;
+
+  --papier:      #f1f1ec;   /* Seitengrund */
+  --karte:       #fbfbf7;   /* Flächen, die sich abheben */
+  --tinte:       #262626;   /* Überschriften */
+  --tinte-weich: #444444;   /* Fließtext */
+  --meta:        #5b5a52;   /* Nebentext, Fuß */
+  --linie:       #e0ddcf;
+  --linie-stark: #cfc9b6;
+  --gelb:        #ffe05e;   /* Akzent, Balken */
+
+  --gut-flaeche:    #e7efe1; /* Erkennung sicher */
+  --gut-linie:      #4a6b38;
+  --pruef-flaeche:  #fdf2c8; /* Erkennung unsicher, bitte prüfen */
+  --pruef-linie:    #8a6a00;
+  --fehler-flaeche: #fae2dc; /* nichts erkannt */
+  --fehler-linie:   #9b3a1e;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--papier);
+  color: var(--tinte-weich);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 1.0625rem;
+  line-height: 1.6;
+}
+
+.seite { max-width: 58rem; margin: 0 auto; padding: 2rem 1.1rem 4rem; }
+
+h1 { margin: .2rem 0 .5rem; font-size: 1.9rem; line-height: 1.2; color: var(--tinte); letter-spacing: -.01em; }
+h2 { margin: 2.4rem 0 .8rem; font-size: 1.25rem; color: var(--tinte); }
+h3 { margin: 1.6rem 0 .4rem; font-size: 1.05rem; color: var(--tinte); }
+p  { margin: .6rem 0; }
+.kicker { margin: 0; font-size: .85rem; letter-spacing: .09em; text-transform: uppercase; color: var(--meta); }
+.lead { font-size: 1.1rem; }
+.klein { font-size: .9rem; color: var(--meta); }
+
+code, pre, .num {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+code { font-size: .9em; background: #eae7db; color: #333333; padding: .08em .32em; border-radius: 3px; }
+
+/* ---- Kästen ---- */
+.hinweis {
+  background: var(--pruef-flaeche);
+  border: 1px solid var(--pruef-linie);
+  border-radius: 10px;
+  padding: .9rem 1.1rem;
+  margin-bottom: 1.8rem;
+}
+.hinweis p { margin: .35rem 0; font-size: .95rem; }
+
+.karte {
+  background: var(--karte);
+  border: 1px solid var(--linie);
+  border-radius: 12px;
+  padding: 1.1rem 1.2rem;
+  margin: .9rem 0;
+}
+
+/* ---- Bedienelemente ---- */
+.reihe { display: flex; flex-wrap: wrap; gap: .6rem; margin: .8rem 0; }
+
+button, .dateiknopf {
+  font: inherit;
+  font-size: .97rem;
+  font-weight: 600;
+  min-height: 44px;
+  padding: .55rem 1.1rem;
+  border-radius: 8px;
+  border: 1px solid var(--tinte);
+  background: var(--karte);
+  color: var(--tinte);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+}
+button.haupt { background: var(--tinte); color: #fcfcfc; }
+button:hover { background: #eae7db; }
+button.haupt:hover { background: #3d3d3d; }
+button:focus-visible, .dateiknopf:focus-within, select:focus-visible, textarea:focus-visible {
+  outline: 3px solid var(--tinte); outline-offset: 2px;
+}
+
+/* Datei wählen: das echte input liegt unsichtbar über der ganzen
+   Schaltfläche. So ist das Tap-Ziel die volle Fläche, nicht nur
+   der kleine Systemknopf. 46px, weil die zwei Rahmenlinien innen
+   abgehen und das input selbst auf 44px kommen soll. */
+.dateiknopf { position: relative; overflow: hidden; min-height: 46px; }
+.dateiknopf input[type="file"] {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  opacity: 0; cursor: pointer;
+}
+
+select {
+  font: inherit; font-size: .95rem; min-height: 44px;
+  padding: .4rem .6rem; border: 1px solid var(--linie-stark);
+  border-radius: 8px; background: var(--karte); color: var(--tinte);
+  max-width: 100%;
+}
+label.feld { display: block; font-size: .9rem; font-weight: 600; color: var(--tinte); margin-bottom: .25rem; }
+
+textarea {
+  width: 100%; min-height: 9rem; padding: .7rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: .88rem; line-height: 1.45;
+  border: 1px solid var(--linie-stark); border-radius: 8px;
+  background: #ffffff; color: var(--tinte); resize: vertical;
+}
+
+/* ---- Formatkasten: die wichtigste Ausgabe dieser Seite ---- */
+#formatkasten { border-radius: 12px; padding: 1.1rem 1.2rem; border: 2px solid; margin: .9rem 0; }
+#formatkasten.sicher { background: var(--gut-flaeche);   border-color: var(--gut-linie); }
+#formatkasten.pruef  { background: var(--pruef-flaeche); border-color: var(--pruef-linie); }
+#formatkasten.fehler { background: var(--fehler-flaeche); border-color: var(--fehler-linie); }
+.format-name { margin: 0; font-size: 1.35rem; font-weight: 700; color: var(--tinte); line-height: 1.25; }
+.format-grund { margin: .45rem 0 0; font-size: .97rem; }
+
+.befunde { list-style: none; margin: .9rem 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: .4rem; }
+.befunde li {
+  font-size: .85rem; background: rgba(255,255,255,.75);
+  border: 1px solid var(--linie-stark); border-radius: 999px; padding: .2rem .7rem;
+}
+.befunde b { color: var(--tinte); }
+
+pre.vorschau {
+  margin: .8rem 0 0; padding: .6rem .7rem; font-size: .82rem; line-height: 1.5;
+  background: #ffffff; border: 1px solid var(--linie-stark); border-radius: 8px;
+  overflow-x: auto; white-space: pre;
+}
+
+/* ---- Kennzahlen ---- */
+.zahlen { display: flex; flex-wrap: wrap; gap: .6rem; margin: .9rem 0 0; padding: 0; list-style: none; }
+.zahlen li {
+  flex: 1 1 8rem; background: var(--karte); border: 1px solid var(--linie);
+  border-radius: 10px; padding: .6rem .8rem;
+}
+.zahlen .wert { display: block; font-size: 1.6rem; font-weight: 700; color: var(--tinte); line-height: 1.1; }
+.zahlen .was { display: block; font-size: .85rem; color: var(--meta); }
+
+/* ---- Balken ---- */
+.frage { margin: 1.4rem 0 0; padding-top: 1.1rem; border-top: 1px solid var(--linie); }
+.frage:first-of-type { border-top: 0; padding-top: 0; }
+.frage-name { margin: 0; font-size: 1.05rem; font-weight: 700; color: var(--tinte); overflow-wrap: anywhere; }
+.frage-meta { margin: .15rem 0 .7rem; font-size: .88rem; color: var(--meta); }
+
+.balken { display: grid; grid-template-columns: minmax(4.5rem, 11rem) 1fr minmax(6.5rem, auto); gap: .5rem .7rem; align-items: center; margin-bottom: .4rem; }
+.balken-name { font-size: .92rem; text-align: right; overflow-wrap: anywhere; }
+.balken-bahn { background: #eae7db; border-radius: 5px; height: 1.5rem; overflow: hidden; }
+.balken-fuell { height: 100%; background: var(--gelb); border-radius: 5px; min-width: 2px; }
+.balken-wert { font-size: .88rem; font-variant-numeric: tabular-nums; color: var(--tinte); white-space: nowrap; }
+
+/* ---- Tabelle der Spalten ---- */
+.tabellenrahmen { overflow-x: auto; margin: .8rem 0; }
+table { border-collapse: collapse; width: 100%; min-width: 32rem; font-size: .92rem; }
+th, td { text-align: left; padding: .5rem .6rem; border-bottom: 1px solid var(--linie); vertical-align: top; }
+th { color: var(--tinte); font-size: .85rem; text-transform: uppercase; letter-spacing: .05em; }
+td.grund { color: var(--meta); font-size: .88rem; }
+
+.liste { margin: .5rem 0; padding-left: 1.2rem; }
+.liste li { margin: .2rem 0; }
+
+.fuss { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--linie); font-size: .9rem; color: var(--meta); }
+
+@media (max-width: 34rem) {
+  .balken { grid-template-columns: 1fr auto; }
+  .balken-name { text-align: left; grid-column: 1 / -1; margin-bottom: -.2rem; }
+  .zahlen li { flex: 1 1 6.5rem; }
+}
+</style>
+</head>
+
+<body>
+<main class="seite">
+
+  <!-- ===== Hinweis: erklärt das Gerüst. Vor dem Weitergeben löschen. ===== -->
+  <aside class="hinweis">
+    <p><strong>Das hier ist ein Gerüst, kein fertiges Werkzeug.</strong> Beim Öffnen wertet es eingebaute Beispieldaten aus, damit du sofort siehst, was herauskommt. Ersetz sie durch deine Datei.</p>
+    <p>Der Punkt dieses Gerüsts: Es schreibt hin, <strong>welches Datenformat es erkannt hat</strong>, bevor die erste Zahl kommt. Erkennt es nichts, rechnet es nichts.</p>
+  </aside>
+
+  <header>
+    <p class="kicker">Startprojekt · Datenauswertung</p>
+    <h1>Umfrage-Auswertung</h1>
+    <p class="lead">Tabelle rein, verdichtete Zahlen raus. Alles rechnet in deinem Browser, nichts wird hochgeladen, nichts gespeichert.</p>
+  </header>
+
+  <!-- ===== 1 · Daten ===== -->
+  <h2>1 · Daten</h2>
+  <div class="karte">
+    <div class="reihe">
+      <span class="dateiknopf">Datei wählen
+        <input type="file" id="datei" accept=".csv,.txt,text/csv,text/plain">
+      </span>
+      <button type="button" id="knopf-breit">Beispiel: Breitformat</button>
+      <button type="button" id="knopf-lang">Beispiel: Langformat</button>
+    </div>
+    <label class="feld" for="eingabe">Oder Tabelle hier einfügen</label>
+    <textarea id="eingabe" spellcheck="false" aria-describedby="eingabe-hilfe"></textarea>
+    <div class="reihe">
+      <button type="button" class="haupt" id="knopf-auswerten">Auswerten</button>
+      <button type="button" id="knopf-leeren">Leeren</button>
+    </div>
+    <p class="klein" id="eingabe-hilfe">Trennzeichen <code>;</code> oder <code>,</code> wird erkannt, ebenso Dezimalkomma, Anführungszeichen und Umlaute. Die Datei wird nur gelesen, nie verändert.</p>
+  </div>
+
+  <!-- ===== 2 · Format — die Pflichtausgabe dieses Gerüsts ===== -->
+  <h2>2 · Format</h2>
+  <div id="formatkasten" class="sicher" role="status" aria-live="polite">
+    <p class="format-name" id="format-name">Noch nichts gelesen</p>
+    <p class="format-grund" id="format-grund"></p>
+    <ul class="befunde" id="befunde"></ul>
+    <pre class="vorschau" id="vorschau" hidden></pre>
+  </div>
+
+  <div class="karte">
+    <div class="reihe">
+      <div>
+        <label class="feld" for="wahl-format">Format</label>
+        <select id="wahl-format">
+          <option value="auto">Automatisch erkennen</option>
+          <option value="breit">Breitformat (Zeile = Befragter)</option>
+          <option value="lang">Langformat (Zeile = Antwort)</option>
+        </select>
+      </div>
+      <div>
+        <label class="feld" for="wahl-kopf">Erste Zeile</label>
+        <select id="wahl-kopf">
+          <option value="auto">Automatisch erkennen</option>
+          <option value="ja">ist die Kopfzeile</option>
+          <option value="nein">ist schon eine Datenzeile</option>
+        </select>
+      </div>
+      <div id="feld-frage" hidden>
+        <label class="feld" for="wahl-frage">Spalte mit der Frage</label>
+        <select id="wahl-frage"></select>
+      </div>
+      <div id="feld-antwort" hidden>
+        <label class="feld" for="wahl-antwort">Spalte mit der Antwort</label>
+        <select id="wahl-antwort"></select>
+      </div>
+      <div id="feld-person" hidden>
+        <label class="feld" for="wahl-person">Spalte mit der Kennung</label>
+        <select id="wahl-person"></select>
+      </div>
+    </div>
+    <p class="klein" id="wahl-hinweis">Liegt die Erkennung daneben, stell das Format hier von Hand um. Die Auswertung rechnet dann mit deiner Wahl und schreibt das oben dazu.</p>
+  </div>
+
+  <!-- ===== 3 · Was gelesen wurde ===== -->
+  <h2>3 · Was gelesen wurde</h2>
+  <div class="karte" id="bilanz"></div>
+  <div id="spaltenteil"></div>
+
+  <!-- ===== 4 · Ergebnis ===== -->
+  <h2>4 · Ergebnis</h2>
+  <div class="karte" id="ergebnis"></div>
+
+  <footer class="fuss">
+    <p>Gerüst für ein Startprojekt · Die Zahlen oben stammen aus der geladenen Tabelle, keine ist eingetippt.</p>
+  </footer>
+
+</main>
+
+<script>
+/* ============================================================
+   1 · BEISPIELDATEN (eingebaut, damit sofort etwas dasteht)
+
+   Das ist eine Beispiel-Umfrage, keine echte Erhebung.
+   Dieselben Zeilen liegen als Datei in daten/ — einmal breit,
+   einmal lang. Zum Ersetzen: eigene Datei wählen.
+   ============================================================ */
+var BEISPIEL_BREIT = [
+'Respondenten_ID;Alter_Bucket;Region;Q1_Markenbekanntheit;Q2_Weiterempfehlung;Q3_Preis_Fair;Q4_Nachhaltig;Q5_Zufrieden;Offene_Antwort',
+'R-0001;18-24;Nord;4;5;3;4;5;Coole Marke, sehe die Werbung oft auf Instagram',
+'R-0002;25-34;Sued;5;4;2;5;4;Preis ist mir zu hoch fuer ein Abo',
+'R-0003;35-44;West;3;3;4;3;3;Kenne ich vom Namen, nutze es aber nicht',
+'R-0004;45-54;Ost;2;2;3;2;3;Habe noch nie davon gehoert bis zur Umfrage',
+'R-0005;25-34;Nord;5;5;4;5;5;Nutze das taeglich fuer den Arbeitsweg, top',
+'R-0006;18-24;West;4;4;3;4;4;',
+'R-0007;55-64;Sued;3;3;3;3;2;Fuer meine Generation eher nichts',
+'R-0008;35-44;Nord;4;4;4;5;4;Gutes Gewissen weil regional, das gefaellt mir',
+'R-0009;25-34;Ost;5;5;2;4;5;Super Service, nur die App haengt manchmal',
+'R-0010;45-54;West;3;2;3;3;3;Werbung ist nett aber ueberzeugt mich nicht',
+'R-0011;18-24;Sued;5;5;3;5;5;Meine Freunde nutzen das alle',
+'R-0012;65+;Nord;2;2;4;2;3;Zu kompliziert mit dem Handy',
+'R-0013;35-44;West;4;4;4;4;4;Solide, wuerde ich weiterempfehlen',
+'R-0014;25-34;Sued;5;4;2;5;4;Nachhaltigkeit ist top, Preis grenzwertig',
+'R-0015;45-54;Nord;3;3;3;3;3;Neutral, kein starkes Gefuehl dazu',
+'R-0016;18-24;Ost;4;5;3;4;5;Sehe die Kampagne staendig auf TikTok',
+'R-0017;55-64;West;2;2;3;2;2;Nicht meine Zielgruppe glaube ich',
+'R-0018;25-34;Nord;5;5;4;5;5;Bestes Preis-Leistungs-Verhaeltnis fuer mich',
+'R-0019;35-44;Sued;4;3;3;4;3;Ganz ok, aber Auswahl koennte groesser sein',
+'R-0020;18-24;West;5;5;3;5;4;Instagram-Werbung hat mich ueberzeugt',
+'R-0021;45-54;Ost;3;3;4;3;4;Fair und zuverlaessig, keine Klagen',
+'R-0022;25-34;Nord;4;4;2;4;3;Zu teuer geworden im letzten Jahr',
+'R-0023;65+;Sued;2;1;3;2;2;Verstehe das Konzept ehrlich gesagt nicht',
+'R-0024;35-44;West;5;5;4;5;5;Wir nutzen es als ganze Familie',
+'R-0025;18-24;Nord;4;4;3;4;4;',
+'R-0026;55-64;Ost;3;3;3;3;3;Habe es einmal probiert, war ok',
+'R-0027;25-34;Sued;5;5;3;5;5;Klarer Favorit, weiter so',
+'R-0028;45-54;West;3;2;4;3;3;Preis passt, Marke sagt mir wenig',
+'R-0029;18-24;Ost;5;5;2;5;4;Liebe die Idee, Abo ist mir zu teuer',
+'R-0030;35-44;Nord;4;4;4;4;4;Guter Kompromiss aus Preis und Qualitaet',
+'R-0031;25-34;West;5;4;3;5;5;Empfehle ich im Kollegenkreis regelmaessig',
+'R-0032;65+;Sued;2;2;3;1;2;Nichts fuer aeltere Menschen wie mich',
+''
+].join('\n');
+
+/* Dasselbe Beispiel im Langformat: eine Zeile je Antwort.
+   Es wird aus BEISPIEL_BREIT umgebaut, damit beide Beispiele
+   garantiert dieselben Antworten enthalten — genau daran lässt
+   sich prüfen, ob beide Wege dieselben Zahlen liefern.
+   Übernommen werden nur die fünf Fragespalten Q1 bis Q5. */
+function beispielLang() {
+  var zeilen = BEISPIEL_BREIT.split('\n').filter(function (z) { return z.trim() !== ''; });
+  var kopf = zeilen[0].split(';');
+  var fragen = [];
+  for (var i = 0; i < kopf.length; i++) { if (/^Q\d/.test(kopf[i])) fragen.push(i); }
+  var raus = ['Respondenten_ID;Frage;Antwort'];
+  for (var z = 1; z < zeilen.length; z++) {
+    var zelle = zeilen[z].split(';');
+    for (var f = 0; f < fragen.length; f++) {
+      raus.push(zelle[0] + ';' + kopf[fragen[f]] + ';' + zelle[fragen[f]]);
+    }
+  }
+  return raus.join('\n') + '\n';
+}
+
+/* ============================================================
+   2 · ZUSTAND
+   ============================================================ */
+var ROH = '';            /* der aktuelle Tabellentext */
+var QUELLE = '';         /* woher er kommt, für die Anzeige */
+var KODIERUNG = '';      /* wie die Datei gelesen wurde */
+var wahlFormat = 'auto'; /* auto | breit | lang */
+var wahlKopf = 'auto';   /* auto | ja | nein */
+var wahlSpalte = {};     /* Spaltenname -> auto | frage | merkmal | ignorieren */
+var wahlLang = { frage: null, antwort: null, person: null }; /* Spaltenindex oder null */
+var letzterFokus = null; /* damit die Tastatur nach dem Neuzeichnen nicht verspringt */
+
+/* ============================================================
+   3 · CSV LESEN
+   ============================================================ */
+
+/* Zerlegt eine Zeile am Trennzeichen. Ein Feld in "Anführungszeichen"
+   darf das Trennzeichen enthalten; "" steht darin für ein echtes ". */
+function zeileTeilen(zeile, trenn) {
+  var raus = [], feld = '', inAnf = false;
+  for (var i = 0; i < zeile.length; i++) {
+    var z = zeile[i];
+    if (inAnf) {
+      if (z === '"') {
+        if (zeile[i + 1] === '"') { feld += '"'; i++; }
+        else inAnf = false;
+      } else feld += z;
+    } else {
+      if (z === '"') inAnf = true;
+      else if (z === trenn) { raus.push(feld); feld = ''; }
+      else feld += z;
+    }
+  }
+  raus.push(feld);
+  return raus.map(function (s) { return s.trim(); });
+}
+
+/* Trennzeichen erkennen, nicht raten: Für jeden Kandidaten wird
+   probeweise zerlegt. Es gewinnt der, bei dem möglichst viele
+   Zeilen gleich viele Felder haben und es mehr als eins ist.
+   Bei Gleichstand gewinnt das Semikolon (deutsche Excel-Exporte). */
+function trennzeichenErkennen(zeilen) {
+  var kandidaten = [';', ',', '\t', '|'];
+  var bester = null, besteNote = -1;
+  for (var k = 0; k < kandidaten.length; k++) {
+    var probe = zeilen.slice(0, 12).map(function (z) { return zeileTeilen(z, kandidaten[k]).length; });
+    var haeufigste = haeufigsterWert(probe);
+    if (haeufigste.wert < 2) continue;
+    var note = (haeufigste.anzahl / probe.length) * 100 + Math.min(haeufigste.wert, 30) / 100;
+    if (note > besteNote) { besteNote = note; bester = kandidaten[k]; }
+  }
+  return bester;
+}
+
+function haeufigsterWert(liste) {
+  var zaehler = {}, wert = liste[0], anzahl = 0;
+  liste.forEach(function (w) { zaehler[w] = (zaehler[w] || 0) + 1; });
+  Object.keys(zaehler).forEach(function (w) {
+    var n = zaehler[w];
+    if (n > anzahl || (n === anzahl && Number(w) > Number(wert))) { anzahl = n; wert = Number(w); }
+  });
+  return { wert: Number(wert), anzahl: anzahl };
+}
+
+/* Text in Zahl, deutsche und englische Schreibweise.
+   1.234,56 -> 1234.56   3,5 -> 3.5   3.5 -> 3.5   4 -> 4
+   Alles mit Einheit (42 %, 3 EUR) bleibt Text — das ist Absicht,
+   sonst rechnet die Auswertung mit halb gelesenen Zahlen weiter. */
+function alsZahl(text) {
+  var s = String(text).trim();
+  if (s === '') return null;
+  if (/^-?\d{1,3}(\.\d{3})+(,\d+)?$/.test(s)) return parseFloat(s.replace(/\./g, '').replace(',', '.'));
+  if (/^-?\d+,\d+$/.test(s)) return parseFloat(s.replace(',', '.'));
+  if (/^-?\d+(\.\d+)?$/.test(s)) return parseFloat(s);
+  return null;
+}
+
+function hatEinheit(text) { return /^-?[\d.,\s]+\s*(%|€|EUR|Prozent|Punkte)$/i.test(String(text).trim()); }
+
+/* Kopfzeile erkennen: Die erste Zeile gilt als Überschrift, wenn
+   in ihr keine Zahl steht und darunter Zahlen stehen — oder wenn
+   ihre Zellen alle gefüllt und alle verschieden sind. Das Ergebnis
+   steht sichtbar im Befund und lässt sich von Hand umstellen. */
+function kopfzeileErkennen(tabelle) {
+  if (!tabelle.length) return false;
+  var erste = tabelle[0];
+  var ersteHatZahl = erste.some(function (z) { return alsZahl(z) !== null; });
+  if (ersteHatZahl) return false;
+  var restHatZahl = tabelle.slice(1).some(function (r) { return r.some(function (z) { return alsZahl(z) !== null; }); });
+  if (restHatZahl) return true;
+  var gefuellt = erste.every(function (z) { return z !== ''; });
+  var verschieden = new Set(erste).size === erste.length;
+  return gefuellt && verschieden && erste.length > 1;
+}
+
+/* ============================================================
+   4 · ERKENNUNGSREGEL — der Kern dieses Gerüsts
+
+   In zwei Sätzen:
+   Langformat, wenn die Kopfzeile eine Frage-Spalte UND eine
+   Antwort-Spalte benennt — dann steht die Frage als Wert in einer
+   Spalte; ersatzweise, wenn die Tabelle höchstens drei Spalten hat
+   und sich die Werte einer Spalte oft wiederholen (dann gilt die
+   Erkennung als unsicher und ist zu prüfen).
+   Sonst Breitformat, wenn mindestens zwei Spalten und zwei
+   Datenzeilen da sind und die Zeilen gleich viele Felder haben —
+   und wenn keins von beidem zutrifft, wird nichts ausgewertet,
+   sondern gemeldet.
+
+   Warum das nötig ist: Eine Auswertung, die Langformat erwartet
+   und Breitformat bekommt, liefert trotzdem Zahlen — nur falsche.
+   Sie liest dann die Kopfzeile als Datensatz und meldet so viele
+   Pseudo-Fragen, wie die Tabelle Befragte hat.
+   ============================================================ */
+var NAME_FRAGE   = /^(frage|fragen|frage_id|frageid|question|item|variable|merkmal|kategorie|thema|feld)$/i;
+var NAME_ANTWORT = /^(antwort|antworten|answer|wert|werte|value|response|ergebnis|auswahl|score|punkte)$/i;
+var NAME_PERSON  = /^(respondent|respondenten_id|respondentid|befragter|befragte|person|teilnehmer|id|kennung|user|nutzer)$/i;
+
+/* Gefüllte Werte einer Spalte, ohne die leeren. */
+function spaltenWerte(zeilen, i) {
+  return zeilen.map(function (z) { return z[i] || ''; }).filter(function (w) { return w !== ''; });
+}
+
+/* Kann diese Spalte die Antworten tragen?
+   Antworten sind das, was gemessen wurde. Nur benannt, nicht gemessen,
+   ist eine Spalte, die die Befragten aufzählt — und genau die wurde
+   hier früher als Ersatz genommen, wenn die echte Antwortspalte fehlte.
+   Drei Ausschlussgründe, jeder einzeln belegbar:
+   1. Die Kopfzeile nennt sie als Kennung („Respondenten_ID").
+   2. Jeder Wert kommt genau einmal vor — das ist eine laufende Nummer.
+   3. Sie bildet zusammen mit der Fragespalte den vollständigen
+      Schlüssel der Tabelle: verschiedene Werte mal verschiedene Fragen
+      ergibt genau die Zeilenzahl. Dann ist sie die zweite Achse einer
+      Kreuztabelle und keine Messung. */
+function taugtAlsAntwort(kopf, zeilen, i, iFrage) {
+  if (i < 0 || i === iFrage) return false;
+  if (NAME_PERSON.test(kopf[i])) return false;
+  var werte = spaltenWerte(zeilen, i);
+  if (werte.length === 0) return false;
+  var versch = new Set(werte).size;
+  if (werte.length >= 4 && versch === werte.length) return false;
+  if (iFrage >= 0) {
+    var verschFrage = new Set(spaltenWerte(zeilen, iFrage)).size;
+    if (versch >= 2 && verschFrage >= 2 && versch * verschFrage === zeilen.length) return false;
+  }
+  return true;
+}
+
+function formatErkennen(kopf, zeilen) {
+  var i;
+
+  /* Regel 1 — Langformat, benannt in der Kopfzeile */
+  var iFrage = -1, iAntwort = -1;
+  for (i = 0; i < kopf.length; i++) {
+    if (iFrage < 0 && NAME_FRAGE.test(kopf[i])) iFrage = i;
+    else if (iAntwort < 0 && NAME_ANTWORT.test(kopf[i])) iAntwort = i;
+  }
+  if (iFrage >= 0 && iAntwort >= 0) {
+    var iPerson = -1;
+    for (i = 0; i < kopf.length; i++) { if (i !== iFrage && i !== iAntwort && NAME_PERSON.test(kopf[i])) { iPerson = i; break; } }
+    return {
+      format: 'lang', sicherheit: 'sicher',
+      grund: 'Die Kopfzeile nennt eine Frage-Spalte („' + kopf[iFrage] + '") und eine Antwort-Spalte („' + kopf[iAntwort] + '"). Die Frage steht damit als Wert in einer Spalte, nicht als Spaltenname — das ist Langformat.',
+      frage: iFrage, antwort: iAntwort, person: iPerson
+    };
+  }
+
+  /* Regel 1b — Langformat benannt, aber unvollständig.
+     Die Kopfzeile nennt eine Frage-Spalte, aber keine Antwort-Spalte.
+     Damit ist die Tabelle als Langformat gemeint und es fehlt die
+     Spalte, in der die Antworten stehen. Gesucht wird nur noch, ob
+     eine übrige Spalte diese Rolle belegbar tragen kann; findet sich
+     keine, wird gemeldet statt geraten — Zahlen-Regel 1: „Fehlt eine
+     Spalte, sagst du das. Du suchst dir keine ähnlich heißende als
+     Ersatz."
+     Umgekehrt (Antwort benannt, Frage nicht) gilt das absichtlich
+     nicht: „Wert", „Score" oder „Punkte" heißt im Breitformat ganz
+     normal eine Messspalte, das wäre ein Fehlalarm. */
+  if (iFrage >= 0 && iAntwort < 0) {
+    var ersatz = -1;
+    for (i = 0; i < kopf.length; i++) {
+      if (taugtAlsAntwort(kopf, zeilen, i, iFrage)) { ersatz = i; break; }
+    }
+    if (ersatz < 0) {
+      var uebrige = [];
+      for (i = 0; i < kopf.length; i++) { if (i !== iFrage) uebrige.push('„' + kopf[i] + '"'); }
+      return {
+        format: 'fehlt',
+        kopfmeldung: 'Langformat, aber die Antwort-Spalte fehlt — es wurde nichts ausgewertet',
+        grund: 'Die Kopfzeile nennt eine Frage-Spalte („' + kopf[iFrage] + '"), aber keine Antwort-Spalte. ' +
+          'Im Langformat steht in jeder Zeile eine Antwort; ohne diese Spalte gibt es nichts zu rechnen. ' +
+          (uebrige.length
+            ? 'Als Ersatz käme ' + (uebrige.length === 1 ? 'nur ' + uebrige[0] + ' in Frage, ' : uebrige.join(' und ') + ' in Frage, ') +
+              'aber ' + (uebrige.length === 1 ? 'diese Spalte zählt' : 'diese Spalten zählen') + ' die Befragten auf statt deren Antworten. '
+            : '') +
+          'Es wird deshalb nichts ausgewertet und keine Ersatzspalte geraten: eine geratene Spalte liefert Zahlen, die niemand nachrechnet. ' +
+          'Ergänz die Spalte mit den Antworten in der Datei — oder stell unten von Hand ein, welche Spalte die Antworten trägt.'
+      };
+    }
+  }
+
+  /* Regel 2 — Langformat vermutet, allein aus der Bauform.
+     Höchstens drei Spalten und eine Spalte, deren Werte sich oft
+     wiederholen. Von mehreren Kandidaten gewinnt die mit den
+     wenigsten verschiedenen Werten: eine Frage wiederholt sich
+     öfter als eine Personenkennung. Die letzte Spalte muss dabei
+     wirklich Antworten tragen können — sonst wird auch hier nicht
+     geraten, sondern weitergeprüft. */
+  if (kopf.length >= 2 && kopf.length <= 3 && zeilen.length >= 4) {
+    var beste = -1, besteAnzahl = Infinity;
+    for (i = 0; i < kopf.length - 1; i++) {
+      if (NAME_PERSON.test(kopf[i])) continue;
+      var werte = spaltenWerte(zeilen, i);
+      var versch = new Set(werte).size;
+      if (versch >= 2 && versch <= werte.length / 3 && versch < besteAnzahl) { beste = i; besteAnzahl = versch; }
+    }
+    if (beste >= 0 && !taugtAlsAntwort(kopf, zeilen, kopf.length - 1, beste)) beste = -1;
+    if (beste >= 0) {
+      return {
+        format: 'lang', sicherheit: 'vermutet',
+        grund: 'Die Tabelle hat nur ' + kopf.length + ' Spalten, und die Werte in Spalte „' + kopf[beste] + '" wiederholen sich (' + besteAnzahl + ' verschiedene auf ' + zeilen.length + ' Zeilen). Das sieht nach einer Zeile je Antwort aus. Die Kopfzeile benennt aber keine Frage- und keine Antwort-Spalte — bitte prüf die Zuordnung unten.',
+        frage: beste, antwort: kopf.length - 1,
+        person: (beste !== 0 && kopf.length === 3) ? 0 : -1
+      };
+    }
+  }
+
+  /* Regel 3 — Breitformat */
+  if (kopf.length >= 2 && zeilen.length >= 2) {
+    return {
+      format: 'breit', sicherheit: 'sicher',
+      grund: 'Die Kopfzeile benennt weder eine Frage- noch eine Antwort-Spalte, und jede Zeile trägt eigene Werte in mehreren Spalten. Also eine Zeile je Befragtem und eine Spalte je Frage — das ist Breitformat.',
+      frage: -1, antwort: -1, person: -1
+    };
+  }
+
+  /* Nichts erkannt */
+  return null;
+}
+
+/* Rolle einer Spalte im Breitformat. Jede Regel bekommt einen
+   Grund mit, der in der Tabelle unter „Was gelesen wurde" steht.
+   Reihenfolge zählt: erst Kennung, dann Freitext, dann Zahl. */
+function rolleBestimmen(name, werte) {
+  var nichtLeer = werte.filter(function (w) { return w !== ''; });
+  var leer = werte.length - nichtLeer.length;
+  var versch = new Set(nichtLeer).size;
+  var laenge = nichtLeer.length ? nichtLeer.reduce(function (s, w) { return s + w.length; }, 0) / nichtLeer.length : 0;
+  var zahlen = nichtLeer.length > 0 && nichtLeer.every(function (w) { return alsZahl(w) !== null; });
+  var einheiten = nichtLeer.filter(hatEinheit).length;
+
+  if (nichtLeer.length === 0) return { rolle: 'leer', grund: 'Die Spalte ist in allen Zeilen leer.' };
+
+  /* Kennung: jeder Wert kommt genau einmal vor. Zahlen zählen nur dann
+     als Kennung, wenn sie eine fortlaufende Nummer bilden (1, 2, 3 …).
+     Sonst wäre jede Messspalte mit lauter verschiedenen Werten — Preis,
+     Umsatz, Dauer — fälschlich eine Kennung und fiele aus der Auswertung. */
+  if (werte.length >= 5 && leer === 0 && versch === werte.length && laenge <= 20) {
+    var fortlaufend = false;
+    if (zahlen) {
+      var n = nichtLeer.map(alsZahl);
+      fortlaufend = n.every(function (x) { return x % 1 === 0; }) &&
+        (Math.max.apply(null, n) - Math.min.apply(null, n) + 1) === n.length;
+    }
+    if (!zahlen || fortlaufend)
+      return { rolle: 'kennung', grund: 'Jeder Wert kommt genau einmal vor (' + versch + ' verschiedene auf ' + werte.length + ' Zeilen)' + (fortlaufend ? ' und sie laufen lückenlos durch' : '') + '. Das ist eine Kennung, keine Antwort.' };
+  }
+
+  if (laenge > 20 || (versch > nichtLeer.length * 0.6 && laenge > 12))
+    return { rolle: 'freitext', grund: 'Lange, meist verschiedene Werte (im Schnitt ' + Math.round(laenge) + ' Zeichen, ' + versch + ' verschiedene). Freitext wird gezählt, aber nicht zu einer Zahl verdichtet.' };
+
+  if (zahlen) {
+    var zs = nichtLeer.map(alsZahl);
+    return { rolle: 'frage', grund: 'Alle ' + nichtLeer.length + ' gefüllten Werte sind Zahlen (' + zahlText(Math.min.apply(null, zs)) + ' bis ' + zahlText(Math.max.apply(null, zs)) + '). Daraus lässt sich ein Durchschnitt bilden.' };
+  }
+
+  if (einheiten > nichtLeer.length / 2)
+    return { rolle: 'merkmal', grund: 'Die Werte tragen eine Einheit (zum Beispiel %) und zählen deshalb als Text, nicht als Zahl. Nimm die Einheit aus der Datei, wenn damit gerechnet werden soll.' };
+
+  if (versch <= 12)
+    return { rolle: 'merkmal', grund: 'Text mit ' + versch + ' verschiedenen Werten. Das teilt die Befragten in Gruppen, statt eine Frage mit einer Skala zu beantworten — wird als Verteilung gezeigt, nicht gemittelt.' };
+
+  return { rolle: 'uebersprungen', grund: versch + ' verschiedene Textwerte auf ' + nichtLeer.length + ' Zeilen. Zu viele für eine Verteilung, zu kurz für Freitext.' };
+}
+
+/* ============================================================
+   5 · AUSWERTEN
+   ============================================================ */
+function auswerten() {
+  var e = analysieren(ROH);
+  zeichnen(e);
+}
+
+function analysieren(text) {
+  var e = {
+    ok: false, meldung: '', hinweise: [],
+    quelle: QUELLE, kodierung: KODIERUNG,
+    trenn: null, kopfzeile: false, zeilenMitInhalt: 0, leerzeilen: 0,
+    spaltenZahl: 0, vorschau: [], format: null, sicherheit: null, grund: '',
+    automatisch: null, vonHand: false,
+    fragen: [], merkmale: [], spalten: [], freitext: [],
+    befragte: null, uebersprungen: [], verwertet: 0
+  };
+
+  if (!text || text.trim() === '') {
+    e.meldung = 'Es liegt noch keine Tabelle vor. Wähl eine Datei, füg Text ein oder lade eins der beiden Beispiele.';
+    return e;
+  }
+
+  /* Zeilen trennen, Leerzeilen zählen statt stumm wegwerfen */
+  var alle = text.split(/\r\n|\r|\n/);
+  var zeilen = [];
+  alle.forEach(function (z) { if (z.trim() === '') e.leerzeilen++; else zeilen.push(z); });
+  e.zeilenMitInhalt = zeilen.length;
+  e.vorschau = zeilen.slice(0, 3);
+
+  if (zeilen.length < 2) {
+    e.meldung = 'Die Tabelle hat nur ' + zeilen.length + ' Zeile mit Inhalt. Für eine Auswertung braucht es eine Kopfzeile und mindestens zwei Datenzeilen.';
+    return e;
+  }
+
+  /* Trennzeichen */
+  e.trenn = trennzeichenErkennen(zeilen);
+  if (!e.trenn) {
+    e.meldung = 'Kein Trennzeichen gefunden. Keine der Zeilen zerfällt in mehrere Spalten — weder an ; noch an , noch an einem Tabulator. Das sieht nach Fließtext aus, nicht nach einer Tabelle.';
+    return e;
+  }
+
+  /* Zerlegen und auf gleiche Feldzahl prüfen */
+  var tabelle = zeilen.map(function (z) { return zeileTeilen(z, e.trenn); });
+  var feldzahlen = tabelle.map(function (r) { return r.length; });
+  var haeufig = haeufigsterWert(feldzahlen);
+  e.spaltenZahl = haeufig.wert;
+  if (haeufig.anzahl / tabelle.length < 0.6) {
+    var beispiele = feldzahlen.slice(0, 4).join(', ');
+    e.meldung = 'Die Zeilen haben unterschiedlich viele Felder (die ersten Zeilen: ' + beispiele + '). Eine Tabelle hat in jeder Zeile gleich viele Spalten — das hier ist keine. Es wird nichts ausgewertet.';
+    return e;
+  }
+  if (haeufig.wert < 2) {
+    e.meldung = 'Alle Zeilen haben nur ein Feld. Damit gibt es keine zweite Spalte, in der eine Antwort stehen könnte.';
+    return e;
+  }
+
+  /* Kopfzeile */
+  var kopfErkannt = kopfzeileErkennen(tabelle);
+  e.kopfzeile = wahlKopf === 'auto' ? kopfErkannt : (wahlKopf === 'ja');
+  e.kopfVonHand = wahlKopf !== 'auto' && e.kopfzeile !== kopfErkannt;
+
+  var kopf, daten;
+  if (e.kopfzeile) {
+    kopf = tabelle[0].slice();
+    daten = tabelle.slice(1);
+  } else {
+    kopf = [];
+    for (var s = 0; s < haeufig.wert; s++) kopf.push('Spalte ' + (s + 1));
+    daten = tabelle.slice();
+    e.hinweise.push('Keine Kopfzeile erkannt — die Spalten heißen deshalb Spalte 1 bis Spalte ' + haeufig.wert + '.');
+  }
+
+  /* Zeilen mit abweichender Feldzahl aussortieren, mit Grund */
+  var brauchbar = [], schief = 0;
+  daten.forEach(function (r) {
+    if (r.length !== haeufig.wert) { schief++; return; }
+    if (r.every(function (z) { return z === ''; })) return;
+    brauchbar.push(r);
+  });
+  var nurLeer = daten.length - brauchbar.length - schief;
+  if (schief) e.uebersprungen.push({ anzahl: schief, grund: 'andere Feldzahl als die Kopfzeile (' + haeufig.wert + ' erwartet)' });
+  if (nurLeer) e.uebersprungen.push({ anzahl: nurLeer, grund: 'Zeile enthält nur leere Felder' });
+
+  if (brauchbar.length < 2) {
+    e.meldung = 'Nach dem Aussortieren bleiben ' + brauchbar.length + ' brauchbare Datenzeilen übrig. Das ist zu wenig für eine Auswertung.';
+    return e;
+  }
+
+  /* Format bestimmen */
+  var erkannt = formatErkennen(kopf, brauchbar);
+  e.automatisch = erkannt ? erkannt.format : null;
+  e.automatischGrund = erkannt ? erkannt.grund : '';
+
+  if (wahlFormat === 'auto') {
+    if (!erkannt) {
+      e.meldung = 'Kein Format erkannt. Die Tabelle passt weder zum Breitformat (eine Zeile je Befragtem, eine Spalte je Frage) noch zum Langformat (eine Zeile je Antwort, die Frage als Wert). Es wird nichts ausgewertet — eine Meldung ist besser als eine Zahl, die niemand nachrechnet.';
+      return e;
+    }
+    /* Format erkannt, aber eine Pflichtspalte fehlt: melden statt raten. */
+    if (erkannt.format === 'fehlt') {
+      e.meldung = erkannt.grund;
+      e.kopfmeldung = erkannt.kopfmeldung;
+      return e;
+    }
+    e.format = erkannt.format;
+    e.sicherheit = erkannt.sicherheit;
+    e.grund = erkannt.grund;
+  } else {
+    e.format = wahlFormat;
+    e.vonHand = true;
+    /* Weicht die Handeinstellung von der Erkennung ab, gilt das Ergebnis
+       als zu prüfen — die Spaltenzuordnung ist dann nicht belegt, sondern
+       angenommen. */
+    var passtZurErkennung = erkannt && erkannt.format === wahlFormat;
+    e.sicherheit = passtZurErkennung ? 'sicher' : 'vermutet';
+    e.grund = 'Von Hand auf ' + (wahlFormat === 'breit' ? 'Breitformat' : 'Langformat') + ' gestellt. ' +
+      (!erkannt ? 'Die automatische Erkennung hätte gar kein Format erkannt.'
+        : erkannt.format === 'fehlt' ? 'Die automatische Erkennung hätte hier nichts ausgewertet: ' + erkannt.grund
+        : passtZurErkennung ? 'Die automatische Erkennung wäre zum selben Ergebnis gekommen.'
+        : 'Die automatische Erkennung hätte ' + (erkannt.format === 'breit' ? 'Breitformat' : 'Langformat') + ' gewählt — prüf das Ergebnis besonders genau.');
+  }
+
+  e.kopf = kopf;
+  if (e.format === 'lang') verdichtenLang(e, kopf, brauchbar, erkannt);
+  else verdichtenBreit(e, kopf, brauchbar);
+  return e;
+}
+
+/* ---- Breitformat: eine Zeile je Befragtem ---- */
+function verdichtenBreit(e, kopf, daten) {
+  e.befragte = daten.length;
+  e.verwertet = daten.length;
+
+  kopf.forEach(function (name, i) {
+    var werte = daten.map(function (r) { return r[i] || ''; });
+    var bestimmt = rolleBestimmen(name, werte);
+    var gewaehlt = wahlSpalte[name] || 'auto';
+    var rolle = gewaehlt === 'auto' ? bestimmt.rolle : gewaehlt;
+    var grund = gewaehlt === 'auto' ? bestimmt.grund : 'Von Hand gesetzt. Automatisch erkannt wäre: ' + rolleName(bestimmt.rolle) + '.';
+    e.spalten.push({ name: name, rolle: rolle, erkannt: bestimmt.rolle, grund: grund });
+
+    if (rolle === 'frage') e.fragen.push(kennzahlen(name, werte));
+    else if (rolle === 'merkmal') e.merkmale.push(kennzahlen(name, werte));
+    else if (rolle === 'freitext') e.freitext.push({ name: name, gefuellt: werte.filter(function (w) { return w !== ''; }).length, gesamt: werte.length });
+  });
+
+  if (e.fragen.length === 0) {
+    var zaehlung = {};
+    e.spalten.forEach(function (s) { zaehlung[s.rolle] = (zaehlung[s.rolle] || 0) + 1; });
+    var aufzaehlung = Object.keys(zaehlung).map(function (r) { return zaehlung[r] + '× ' + rolleName(r); }).join(', ');
+    e.meldung = 'Im Breitformat wurde keine einzige auswertbare Fragespalte gefunden. Gefunden wurden: ' + aufzaehlung + '. Es wird nichts ausgewertet — sieh in der Spaltentabelle nach, welche Spalte deine Frage ist, und setz sie von Hand auf „Frage".';
+    e.ok = false;
+    return;
+  }
+  e.ok = true;
+}
+
+/* ---- Langformat: eine Zeile je Antwort ---- */
+function verdichtenLang(e, kopf, daten, erkannt) {
+  var iFrage = wahlLang.frage !== null ? wahlLang.frage : (erkannt && erkannt.format === 'lang' ? erkannt.frage : 0);
+  var iAntwort = wahlLang.antwort !== null ? wahlLang.antwort : (erkannt && erkannt.format === 'lang' ? erkannt.antwort : kopf.length - 1);
+  var iPerson = wahlLang.person !== null ? wahlLang.person : (erkannt && erkannt.format === 'lang' ? erkannt.person : -1);
+  if (iPerson === iFrage || iPerson === iAntwort) iPerson = -1;
+
+  if (iFrage === iAntwort || iFrage >= kopf.length || iAntwort >= kopf.length) {
+    e.meldung = 'Für das Langformat braucht es zwei verschiedene Spalten: eine mit der Frage, eine mit der Antwort. Stell die beiden unten von Hand ein.';
+    return;
+  }
+
+  e.langSpalten = { frage: iFrage, antwort: iAntwort, person: iPerson };
+  e.spalten.push({ name: kopf[iFrage], rolle: 'langfrage', erkannt: 'langfrage', grund: 'Aus dieser Spalte kommen die Fragen.' });
+  e.spalten.push({ name: kopf[iAntwort], rolle: 'langantwort', erkannt: 'langantwort', grund: 'Aus dieser Spalte kommen die Antworten.' });
+  if (iPerson >= 0) e.spalten.push({ name: kopf[iPerson], rolle: 'kennung', erkannt: 'kennung', grund: 'Kennung der Befragten — daraus wird gezählt, wie viele Personen geantwortet haben.' });
+
+  var sammlung = {}, reihenfolge = [], personen = {}, ohneFrage = 0;
+  daten.forEach(function (r) {
+    var f = r[iFrage] || '';
+    if (f === '') { ohneFrage++; return; }
+    if (!sammlung[f]) { sammlung[f] = []; reihenfolge.push(f); }
+    sammlung[f].push(r[iAntwort] || '');
+    if (iPerson >= 0 && (r[iPerson] || '') !== '') personen[r[iPerson]] = true;
+    e.verwertet++;
+  });
+  if (ohneFrage) e.uebersprungen.push({ anzahl: ohneFrage, grund: 'keine Frage in der Spalte „' + kopf[iFrage] + '"' });
+
+  reihenfolge.forEach(function (f) { e.fragen.push(kennzahlen(f, sammlung[f])); });
+  e.befragte = iPerson >= 0 ? Object.keys(personen).length : null;
+
+  if (e.fragen.length === 0) {
+    e.meldung = 'In der Spalte „' + kopf[iFrage] + '" steht keine einzige Frage. Es wird nichts ausgewertet.';
+    return;
+  }
+
+  /* Plausibilitätsprobe gegen genau die Falle, für die es dieses
+     Gerüst gibt: Im Langformat wiederholt sich jede Frage, einmal
+     je Befragtem. Kommt jede Frage nur ein einziges Mal vor, ist
+     die Spalte keine Frage-Spalte — dann wurde vermutlich eine
+     Breitformat-Tabelle als Langformat gelesen. Lieber melden als
+     eine Liste Pseudo-Fragen ausgeben. */
+  if (e.fragen.length > 3 && e.fragen.length === e.verwertet) {
+    e.meldung = 'In der Spalte „' + kopf[iFrage] + '" kommt jeder Wert genau einmal vor (' + e.fragen.length + ' verschiedene auf ' + e.verwertet + ' Zeilen). Im Langformat wiederholt sich jede Frage einmal je Befragtem — das ist hier nicht der Fall. Sehr wahrscheinlich ist das eine Breitformat-Tabelle. Es wird nichts ausgewertet: stell oben auf Breitformat um oder wähl eine andere Frage-Spalte.';
+    e.ok = false;
+    return;
+  }
+
+  /* Zweite Plausibilitätsprobe: Kreuztabelle statt Messung.
+     Kommt in jeder Frage-Gruppe jeder Antwortwert genau einmal vor
+     und stehen in allen Gruppen dieselben Werte, dann ist die
+     Antwort-Spalte keine Messung, sondern die zweite Achse einer
+     Kreuztabelle. Genau das passiert, wenn die eigentliche
+     Antwortspalte fehlt und stattdessen die Kennung als Frage und
+     die Frage als Antwort gelesen wird. Auch das wird gemeldet. */
+  if (reihenfolge.length >= 2) {
+    var muster = null, kreuz = true;
+    for (var q = 0; q < reihenfolge.length; q++) {
+      var gruppe = sammlung[reihenfolge[q]].filter(function (w) { return w !== ''; });
+      var gesehen = Object.create(null), doppelt = false;
+      gruppe.forEach(function (w) { if (gesehen[w]) doppelt = true; gesehen[w] = true; });
+      if (gruppe.length < 2 || doppelt) { kreuz = false; break; }
+      var schluessel = Object.keys(gesehen).sort().join('');
+      if (muster === null) muster = schluessel;
+      else if (muster !== schluessel) { kreuz = false; break; }
+    }
+    if (kreuz) {
+      e.meldung = 'In der Spalte „' + kopf[iAntwort] + '" steht je Wert von „' + kopf[iFrage] + '" jeder Eintrag genau einmal, und in allen Gruppen stehen dieselben Einträge. ' +
+        'Das sind zwei Merkmale, die sich kreuzen — die Spalte mit den eigentlichen Antworten fehlt. ' +
+        'Es wird nichts ausgewertet: wähl unten die Spalte, in der die Antworten stehen, oder ergänz sie in der Datei.';
+      e.ok = false;
+      return;
+    }
+  }
+
+  e.grundZusatz = 'Fragen kommen aus der Spalte „' + kopf[iFrage] + '", Antworten aus „' + kopf[iAntwort] + '"' +
+    (iPerson >= 0 ? ', Befragte werden über „' + kopf[iPerson] + '" gezählt' : ', eine Spalte mit Befragten-Kennung gibt es nicht') + '.';
+  e.ok = true;
+}
+
+/* Eine Kennzahl wird an genau einer Stelle berechnet — hier. */
+function kennzahlen(name, werte) {
+  var gefuellt = werte.filter(function (w) { return w !== ''; });
+  var leer = werte.length - gefuellt.length;
+  var zahlen = gefuellt.length > 0 && gefuellt.every(function (w) { return alsZahl(w) !== null; });
+  var schnitt = null;
+  if (zahlen) {
+    var summe = gefuellt.reduce(function (s, w) { return s + alsZahl(w); }, 0);
+    schnitt = summe / gefuellt.length;
+  }
+  var zaehler = {};
+  gefuellt.forEach(function (w) { zaehler[w] = (zaehler[w] || 0) + 1; });
+  var verteilung = Object.keys(zaehler).map(function (w) {
+    return { wert: w, anzahl: zaehler[w], anteil: zaehler[w] / gefuellt.length };
+  });
+  if (zahlen) verteilung.sort(function (a, b) { return alsZahl(a.wert) - alsZahl(b.wert); });
+  else verteilung.sort(function (a, b) { return b.anzahl - a.anzahl || a.wert.localeCompare(b.wert, 'de'); });
+
+  return { name: name, gesamt: werte.length, gefuellt: gefuellt.length, leer: leer, zahlen: zahlen, schnitt: schnitt, verteilung: verteilung };
+}
+
+/* ============================================================
+   6 · ANZEIGEN
+   ============================================================ */
+function esc(s) {
+  return String(s).replace(/[&<>"]/g, function (z) {
+    return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[z];
+  });
+}
+function zahlText(n, stellen) {
+  if (n === null || n === undefined) return '–';
+  var s = (stellen === undefined) ? String(n) : n.toFixed(stellen);
+  return s.replace('.', ',');
+}
+function rolleName(r) {
+  return ({
+    frage: 'Frage', merkmal: 'Merkmal', kennung: 'Kennung', freitext: 'Freitext',
+    leer: 'leer', uebersprungen: 'übersprungen', ignorieren: 'ignoriert',
+    langfrage: 'Frage-Spalte', langantwort: 'Antwort-Spalte'
+  })[r] || r;
+}
+function trennName(t) { return t === '\t' ? 'Tabulator' : t; }
+
+function zeichnen(e) {
+  var kasten = document.getElementById('formatkasten');
+  var name = document.getElementById('format-name');
+  var grund = document.getElementById('format-grund');
+  var befunde = document.getElementById('befunde');
+  var vorschau = document.getElementById('vorschau');
+
+  /* --- Formatkasten --- */
+  if (!e.format) {
+    kasten.className = 'fehler';
+    /* kopfmeldung setzt die Erkennung, wenn sie mehr weiß als „gar nichts
+       erkannt" — etwa: Langformat gebaut, aber eine Pflichtspalte fehlt. */
+    name.textContent = e.kopfmeldung || 'Kein Format erkannt — es wurde nichts ausgewertet';
+    grund.textContent = e.meldung;
+  } else if (!e.ok) {
+    /* Format steht fest, die Tabelle passt aber nicht dazu. Auch das
+       ist eine Meldung wert und keine Zahlenkolonne. */
+    kasten.className = 'fehler';
+    name.textContent = (e.vonHand ? 'Von Hand gewählt: ' : 'Gelesen als ') +
+      (e.format === 'breit' ? 'Breitformat' : 'Langformat') + ' — das passt nicht, es wurde nichts ausgewertet';
+    grund.textContent = e.meldung;
+  } else {
+    kasten.className = e.sicherheit === 'vermutet' ? 'pruef' : 'sicher';
+    name.textContent = 'Format erkannt: ' + (e.format === 'breit' ? 'Breitformat' : 'Langformat') +
+      (e.sicherheit === 'vermutet' ? ' (vermutet — bitte prüfen)' : '') +
+      (e.vonHand ? ' (von Hand gesetzt)' : '');
+    grund.textContent = e.grund + (e.grundZusatz && e.ok ? ' ' + e.grundZusatz : '') + (e.ok ? '' : ' ' + e.meldung);
+  }
+
+  var liste = [];
+  if (e.quelle) liste.push(['Quelle', e.quelle]);
+  if (e.trenn) liste.push(['Trennzeichen', trennName(e.trenn)]);
+  if (e.kodierung) liste.push(['Kodierung', e.kodierung]);
+  if (e.zeilenMitInhalt) liste.push(['Zeilen mit Inhalt', e.zeilenMitInhalt]);
+  if (e.spaltenZahl) liste.push(['Spalten', e.spaltenZahl]);
+  if (e.trenn) liste.push(['Kopfzeile', e.kopfzeile ? 'ja' + (e.kopfVonHand ? ' (von Hand)' : '') : 'nein']);
+  if (e.format === 'breit' && e.ok) liste.push(['Fragespalten', e.fragen.length]);
+  if (e.format === 'lang' && e.ok) liste.push(['verschiedene Fragen', e.fragen.length]);
+  befunde.innerHTML = liste.map(function (p) {
+    return '<li>' + esc(p[0]) + ': <b>' + esc(p[1]) + '</b></li>';
+  }).join('');
+
+  if (e.vorschau && e.vorschau.length) {
+    vorschau.hidden = false;
+    vorschau.textContent = 'Die ersten Zeilen, so wie sie in der Datei stehen:\n' + e.vorschau.join('\n');
+  } else {
+    vorschau.hidden = true;
+  }
+
+  /* --- Auswahlfelder für das Langformat --- */
+  var zeigeLang = e.format === 'lang' && e.kopf;
+  ['frage', 'antwort', 'person'].forEach(function (art) {
+    var huelle = document.getElementById('feld-' + art);
+    var feld = document.getElementById('wahl-' + art);
+    huelle.hidden = !zeigeLang;
+    if (!zeigeLang) return;
+    var aktuell = e.langSpalten ? e.langSpalten[art] : -1;
+    feld.innerHTML = (art === 'person' ? '<option value="-1">keine</option>' : '') +
+      e.kopf.map(function (k, i) {
+        return '<option value="' + i + '"' + (i === aktuell ? ' selected' : '') + '>' + esc(k) + '</option>';
+      }).join('');
+  });
+
+  /* --- Zeilenbilanz --- */
+  var bilanz = document.getElementById('bilanz');
+  if (!e.trenn || !e.ok) {
+    bilanz.innerHTML = '<p>Es wurde nichts ausgewertet, deshalb gibt es hier keine Zeilenbilanz.</p>' +
+      (e.zeilenMitInhalt ? '<p class="klein">Gelesen wurden ' + e.zeilenMitInhalt + ' Zeilen mit Inhalt' +
+        (e.leerzeilen ? ' und ' + e.leerzeilen + ' Leerzeile' + (e.leerzeilen > 1 ? 'n' : '') : '') + '.</p>' : '');
+  } else {
+    var uebersprungenGesamt = e.uebersprungen.reduce(function (s, u) { return s + u.anzahl; }, 0);
+    var datenzeilen = e.format === 'lang' ? e.verwertet : (e.fragen.length || e.merkmale.length ? e.befragte : 0);
+    var summe = (e.kopfzeile ? 1 : 0) + datenzeilen + uebersprungenGesamt;
+    var probe = summe === e.zeilenMitInhalt;
+    bilanz.innerHTML =
+      '<ul class="liste">' +
+      '<li>Zeilen mit Inhalt: <b>' + e.zeilenMitInhalt + '</b>' + (e.leerzeilen ? ' (dazu ' + e.leerzeilen + ' Leerzeile' + (e.leerzeilen > 1 ? 'n' : '') + ', zum Beispiel am Dateiende)' : '') + '</li>' +
+      '<li>davon Kopfzeile: <b>' + (e.kopfzeile ? 1 : 0) + '</b></li>' +
+      '<li>davon ' + (e.format === 'lang' ? 'verwertete Antwortzeilen' : 'verwertete Datenzeilen') + ': <b>' + datenzeilen + '</b></li>' +
+      '<li>davon übersprungen: <b>' + uebersprungenGesamt + '</b>' +
+      (uebersprungenGesamt ? ' — ' + e.uebersprungen.map(function (u) { return u.anzahl + '× ' + esc(u.grund); }).join('; ') : '') + '</li>' +
+      '</ul>' +
+      '<p class="klein">Probe: ' + (e.kopfzeile ? 1 : 0) + ' + ' + datenzeilen + ' + ' + uebersprungenGesamt + ' = ' + summe + ' von ' + e.zeilenMitInhalt + ' Zeilen — ' + (probe ? 'stimmt überein.' : 'stimmt nicht überein, hier fehlt etwas.') + '</p>' +
+      (e.hinweise.length ? '<p class="klein">' + e.hinweise.map(esc).join(' ') + '</p>' : '');
+  }
+
+  /* --- Spaltentabelle --- */
+  var spaltenteil = document.getElementById('spaltenteil');
+  if (e.spalten.length) {
+    var umstellbar = e.format === 'breit';
+    spaltenteil.innerHTML =
+      '<h3>Spalten und ihre Rolle</h3>' +
+      '<div class="tabellenrahmen"><table><thead><tr><th>Spalte</th><th>Rolle</th><th>Woran erkannt</th></tr></thead><tbody>' +
+      e.spalten.map(function (s) {
+        var zelle = umstellbar
+          ? '<select data-spalte="' + esc(s.name) + '" class="rollenwahl">' +
+            ['auto', 'frage', 'merkmal', 'ignorieren'].map(function (w) {
+              var beschriftung = w === 'auto' ? 'automatisch: ' + rolleName(s.erkannt) : rolleName(w);
+              var gewaehlt = (wahlSpalte[s.name] || 'auto') === w ? ' selected' : '';
+              return '<option value="' + w + '"' + gewaehlt + '>' + esc(beschriftung) + '</option>';
+            }).join('') + '</select>'
+          : esc(rolleName(s.rolle));
+        return '<tr><td><b>' + esc(s.name) + '</b></td><td>' + zelle + '</td><td class="grund">' + esc(s.grund) + '</td></tr>';
+      }).join('') +
+      '</tbody></table></div>' +
+      (umstellbar ? '<p class="klein">Liegt eine Rolle daneben, stell sie hier um. Die Zahlen unten rechnen sich sofort neu.</p>' : '');
+
+    Array.prototype.forEach.call(spaltenteil.querySelectorAll('.rollenwahl'), function (f) {
+      f.addEventListener('change', function () {
+        wahlSpalte[f.getAttribute('data-spalte')] = f.value;
+        letzterFokus = f.getAttribute('data-spalte');
+        auswerten();
+      });
+    });
+    if (letzterFokus) {
+      var zurueck = spaltenteil.querySelector('.rollenwahl[data-spalte="' + letzterFokus.replace(/"/g, '\\"') + '"]');
+      if (zurueck) zurueck.focus();
+      letzterFokus = null;
+    }
+  } else {
+    spaltenteil.innerHTML = '';
+  }
+
+  /* --- Ergebnis --- */
+  var ziel = document.getElementById('ergebnis');
+  if (!e.ok) {
+    ziel.innerHTML = '<p><b>Es wurden keine Zahlen berechnet.</b></p><p>' + esc(e.meldung || 'Die Tabelle ließ sich nicht auswerten.') + '</p>';
+    return;
+  }
+
+  var kopfzahlen =
+    '<ul class="zahlen">' +
+    '<li><span class="wert" id="zahl-fragen">' + e.fragen.length + '</span><span class="was">Frage' + (e.fragen.length === 1 ? '' : 'n') + '</span></li>' +
+    '<li><span class="wert" id="zahl-befragte">' + (e.befragte === null ? '–' : e.befragte) + '</span><span class="was">Befragte' + (e.befragte === null ? ' (nicht bestimmbar)' : '') + '</span></li>' +
+    '<li><span class="wert" id="zahl-antworten">' + e.fragen.reduce(function (s, f) { return s + f.gefuellt; }, 0) + '</span><span class="was">gezählte Antworten</span></li>' +
+    '</ul>';
+
+  ziel.innerHTML = kopfzahlen +
+    '<h3>Fragen</h3>' + e.fragen.map(frageHtml).join('') +
+    (e.merkmale.length ? '<h3>Merkmale der Befragten</h3>' + e.merkmale.map(frageHtml).join('') : '') +
+    (e.freitext.length ? '<h3>Freitext</h3>' + e.freitext.map(function (f) {
+      return '<p class="klein">„' + esc(f.name) + '": ' + f.gefuellt + ' von ' + f.gesamt + ' Zeilen ausgefüllt. Freitext wird hier nur gezählt — zum Lesen gehört er in die Datei, nicht in eine Kennzahl.</p>';
+    }).join('') : '') +
+    '<p class="klein">Prozente sind auf ganze Zahlen gerundet, die Summe kann dadurch 99 oder 101 ergeben. Bezugsgröße ist jeweils die Zahl der ausgefüllten Antworten auf diese Frage, leere zählen nicht mit.</p>';
+}
+
+function frageHtml(f) {
+  var groesste = f.verteilung.reduce(function (m, v) { return Math.max(m, v.anzahl); }, 1);
+  var meta = f.gefuellt + ' von ' + f.gesamt + ' ausgefüllt' + (f.leer ? ', ' + f.leer + ' leer' : '') +
+    (f.zahlen ? ' · Durchschnitt ' + zahlText(f.schnitt, 2) + ' aus ' + f.gefuellt + ' Antworten' : ' · Text, deshalb kein Durchschnitt');
+  return '<div class="frage"><p class="frage-name">' + esc(f.name) + '</p><p class="frage-meta">' + esc(meta) + '</p>' +
+    f.verteilung.map(function (v) {
+      var breite = Math.round(v.anzahl / groesste * 100);
+      return '<div class="balken">' +
+        '<div class="balken-name">' + esc(v.wert) + '</div>' +
+        '<div class="balken-bahn"><div class="balken-fuell" style="width:' + breite + '%"></div></div>' +
+        '<div class="balken-wert">' + v.anzahl + ' · ' + Math.round(v.anteil * 100) + ' %</div>' +
+        '</div>';
+    }).join('') + '</div>';
+}
+
+/* ============================================================
+   7 · BEDIENUNG
+
+   Gelesen wird ausschließlich über <input type="file"> und
+   FileReader. Kein fetch, kein Nachladen: beides scheitert,
+   wenn die Seite per Doppelklick (file://) geöffnet wird.
+   ============================================================ */
+function uebernehmen(text, quelle, kodierung) {
+  /* Byte-Order-Mark am Anfang stört das erste Feld — weg damit, sichtbar. */
+  var bom = text.charCodeAt(0) === 0xFEFF;
+  if (bom) text = text.slice(1);
+
+  ROH = text;
+  QUELLE = quelle;
+  KODIERUNG = kodierung + (bom ? ' (BOM entfernt)' : '');
+
+  /* Neue Daten, neue Erkennung: Handeinstellungen zurücksetzen. */
+  wahlFormat = 'auto'; wahlKopf = 'auto'; wahlSpalte = {};
+  wahlLang = { frage: null, antwort: null, person: null };
+  document.getElementById('wahl-format').value = 'auto';
+  document.getElementById('wahl-kopf').value = 'auto';
+
+  var feld = document.getElementById('eingabe');
+  if (text.length <= 200000) feld.value = text;
+  else feld.value = text.split(/\r\n|\r|\n/).slice(0, 50).join('\n') + '\n… (Datei ist groß, hier stehen nur die ersten 50 Zeilen — ausgewertet wird sie vollständig)';
+
+  auswerten();
+}
+
+function dateiLesen(datei) {
+  var leser = new FileReader();
+  leser.onload = function () {
+    var text = String(leser.result);
+    /* Ersatzzeichen heißt: die Datei ist nicht UTF-8. Zweiter Versuch
+       mit Windows-1252, so speichert deutsches Excel. */
+    if (text.indexOf('�') >= 0) {
+      var zweiter = new FileReader();
+      zweiter.onload = function () {
+        uebernehmen(String(zweiter.result), 'Datei: ' + datei.name, 'Windows-1252 (als UTF-8 nicht lesbar)');
+      };
+      zweiter.onerror = function () { uebernehmen(text, 'Datei: ' + datei.name, 'UTF-8, teilweise unlesbar'); };
+      zweiter.readAsText(datei, 'windows-1252');
+      return;
+    }
+    var kodierung = 'UTF-8';
+    if (/Ã[¤¶¼]/.test(text)) kodierung = 'UTF-8, aber die Umlaute sehen doppelt kodiert aus (Ã¤ statt ä)';
+    uebernehmen(text, 'Datei: ' + datei.name, kodierung);
+  };
+  leser.onerror = function () {
+    ROH = ''; QUELLE = 'Datei: ' + datei.name; KODIERUNG = '';
+    auswerten();
+  };
+  leser.readAsText(datei, 'UTF-8');
+}
+
+document.getElementById('datei').addEventListener('change', function (ev) {
+  if (ev.target.files && ev.target.files[0]) dateiLesen(ev.target.files[0]);
+});
+document.getElementById('knopf-breit').addEventListener('click', function () {
+  uebernehmen(BEISPIEL_BREIT, 'Beispiel im Breitformat (eingebaut)', 'UTF-8 (eingebauter Text)');
+});
+document.getElementById('knopf-lang').addEventListener('click', function () {
+  uebernehmen(beispielLang(), 'Beispiel im Langformat (eingebaut, aus demselben Beispiel umgebaut)', 'UTF-8 (eingebauter Text)');
+});
+document.getElementById('knopf-auswerten').addEventListener('click', function () {
+  uebernehmen(document.getElementById('eingabe').value, 'Eingefügter Text', 'wie eingefügt');
+});
+document.getElementById('knopf-leeren').addEventListener('click', function () {
+  document.getElementById('eingabe').value = '';
+  uebernehmen('', '', '');
+});
+document.getElementById('wahl-format').addEventListener('change', function (ev) {
+  wahlFormat = ev.target.value;
+  wahlSpalte = {};
+  wahlLang = { frage: null, antwort: null, person: null };
+  auswerten();
+});
+document.getElementById('wahl-kopf').addEventListener('change', function (ev) {
+  wahlKopf = ev.target.value; auswerten();
+});
+['frage', 'antwort', 'person'].forEach(function (art) {
+  document.getElementById('wahl-' + art).addEventListener('change', function (ev) {
+    var i = Number(ev.target.value);
+    wahlLang[art] = (art === 'person' && i < 0) ? -1 : i;
+    auswerten();
+  });
+});
+
+/* Beim Öffnen steht sofort ein Ergebnis da — mit dem eingebauten Beispiel. */
+uebernehmen(BEISPIEL_BREIT, 'Beispiel im Breitformat (eingebaut)', 'UTF-8 (eingebauter Text)');
+</script>
+</body>
+</html>

@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kampagnen-Dashboard — Startprojekt</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    --plane:    #f9f9f7;
+    --flaeche:  #fcfcfb;
+    --tinte:    #0b0b0b;
+    --tinte2:   #52514e;
+    --linie:    #e1e0d9;
+    --achse:    #c3c2b7;
+    --rand:     rgba(11,11,11,0.12);
+    --steuerrand: #898781;
+    --serie:    #2a78d6;
+    --achtung:  #a52020;
+    --achtung-flaeche: #fdf2f2;
+    --schrift: system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --plane:    #0d0d0d;
+      --flaeche:  #1a1a19;
+      --tinte:    #ffffff;
+      --tinte2:   #c3c2b7;
+      --linie:    #2c2c2a;
+      --achse:    #383835;
+      --rand:     rgba(255,255,255,0.14);
+      --steuerrand: #898781;
+      --serie:    #3987e5;
+      --achtung:  #ff8a8a;
+      --achtung-flaeche: #2a1616;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--plane);
+    color: var(--tinte);
+    font-family: var(--schrift);
+    font-size: 16px;
+    line-height: 1.5;
+    -webkit-text-size-adjust: 100%;
+  }
+  .seite { max-width: 1120px; margin: 0 auto; padding: 20px 16px 56px; }
+  @media (min-width: 720px) { .seite { padding: 32px 24px 72px; } }
+
+  h1 { font-size: 1.5rem; line-height: 1.25; margin: 0 0 6px; }
+  h2 { font-size: 1.125rem; margin: 0 0 4px; }
+  h3 { font-size: 0.95rem; margin: 0 0 8px; color: var(--tinte2); font-weight: 600; }
+  p  { margin: 0 0 10px; }
+  .lead { color: var(--tinte2); margin: 0 0 4px; max-width: 62ch; }
+  .klein { font-size: 0.85rem; color: var(--tinte2); }
+  .sr-only {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+  }
+
+  .karte {
+    background: var(--flaeche);
+    border: 1px solid var(--rand);
+    border-radius: 10px;
+    padding: 14px;
+    margin: 0 0 16px;
+  }
+  @media (min-width: 720px) { .karte { padding: 18px; } }
+
+  /* ---------- Datenquelle ---------- */
+  .quelle-zeile {
+    display: flex; flex-wrap: wrap; gap: 10px 16px;
+    align-items: baseline; margin-bottom: 12px;
+  }
+  .quelle-name { font-weight: 600; overflow-wrap: anywhere; }
+  .marke {
+    display: inline-block; font-size: 0.78rem; font-weight: 600;
+    border: 1px solid var(--rand); border-radius: 999px;
+    padding: 2px 9px; color: var(--tinte2); background: var(--plane);
+  }
+  .knopfreihe { display: flex; flex-wrap: wrap; gap: 10px; align-items: stretch; }
+
+  input[type="file"], button, select, textarea {
+    font: inherit; color: var(--tinte); background: var(--flaeche);
+    border: 1px solid var(--steuerrand); border-radius: 8px;
+    min-height: 44px; padding: 9px 12px; max-width: 100%;
+  }
+  #datei { padding: 9px 10px; flex: 1 1 260px; min-width: 0; }
+  button { cursor: pointer; font-weight: 600; }
+  button:hover { border-color: var(--serie); }
+  textarea { width: 100%; min-height: 132px; line-height: 1.4; resize: vertical; }
+  select { min-width: 0; width: 100%; }
+  :focus-visible { outline: 3px solid var(--serie); outline-offset: 2px; }
+
+  details { border: 1px solid var(--rand); border-radius: 8px; background: var(--flaeche); }
+  details + details, .karte > details { margin-top: 10px; }
+  summary {
+    min-height: 44px; padding: 11px 12px;
+    cursor: pointer; font-weight: 600; font-size: 0.92rem; border-radius: 8px;
+  }
+  summary::marker { color: var(--tinte2); }
+  .details-inhalt { padding: 0 12px 12px; }
+
+  /* ---------- Meldung ---------- */
+  .meldung {
+    border: 1px solid var(--achtung); border-left-width: 5px;
+    background: var(--achtung-flaeche);
+    border-radius: 8px; padding: 12px 14px; margin: 0 0 16px;
+  }
+  .meldung h2 { color: var(--achtung); font-size: 1rem; margin-bottom: 4px; }
+  .meldung p:last-child { margin-bottom: 0; }
+  .meldung ul { margin: 6px 0 0; padding-left: 20px; }
+
+  /* ---------- Kennzahlen ---------- */
+  .kachelfeld {
+    display: grid; gap: 10px;
+    grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
+  }
+  .kachel {
+    border: 1px solid var(--rand); border-radius: 9px;
+    padding: 12px; background: var(--plane); min-width: 0;
+  }
+  .kachel .titel { font-size: 0.82rem; color: var(--tinte2); display: block; }
+  .kachel .wert {
+    /* schrumpft auf schmalen Geräten mit, damit 25.977.200 nicht umbricht */
+    font-size: clamp(1.15rem, 4.6vw, 1.55rem);
+    font-weight: 650; line-height: 1.2;
+    display: block; margin-top: 2px; overflow-wrap: anywhere;
+  }
+  .kachel .fuss { font-size: 0.75rem; color: var(--tinte2); display: block; margin-top: 4px; }
+  /* Kachel ohne Zahl: der Fuß sagt dann nicht, wie gerechnet wurde,
+     sondern warum nichts gerechnet werden konnte. Damit das nicht wie
+     eine Fußnote aussieht, bekommt es die Warnfarbe der Meldungen. */
+  .kachel.ohne-zahl { border-color: var(--achtung); background: var(--achtung-flaeche); }
+  .kachel.ohne-zahl .wert { color: var(--tinte2); font-weight: 500; }
+  .kachel .warum { font-size: 0.8rem; color: var(--achtung); display: block; margin-top: 4px; }
+
+  /* ---------- Diagramme ---------- */
+  .diagrammfeld { display: grid; gap: 16px; align-items: start; }
+  /* Ohne min-width:0 wachsen Grid-Kinder auf die Breite ihrer breitesten
+     Tabelle und schieben die ganze Seite waagerecht raus. */
+  .diagrammfeld > *, .steuerung > * { min-width: 0; }
+  @media (min-width: 860px) { .diagrammfeld { grid-template-columns: 1fr 1fr; } }
+  .steuerung { display: grid; gap: 10px; margin: 10px 0 14px; }
+  @media (min-width: 420px) { .steuerung { grid-template-columns: 1fr 1fr; } }
+  .steuerung label { display: block; font-size: 0.82rem; color: var(--tinte2); margin-bottom: 3px; }
+  .buehne { width: 100%; min-width: 0; }
+  .buehne svg { display: block; width: 100%; max-width: 100%; height: auto; }
+  .leerhinweis { color: var(--tinte2); font-size: 0.9rem; padding: 12px 0; }
+
+  /* ---------- Tabellen ---------- */
+  .tabellenrahmen { overflow-x: auto; max-width: 100%; }
+  table { border-collapse: collapse; font-size: 0.85rem; width: 100%; }
+  caption { text-align: left; color: var(--tinte2); font-size: 0.82rem; padding-bottom: 6px; }
+  th, td { text-align: left; padding: 6px 10px 6px 0; border-bottom: 1px solid var(--linie); white-space: nowrap; }
+  th { color: var(--tinte2); font-weight: 600; }
+  td.zahl, th.zahl { text-align: right; font-variant-numeric: tabular-nums; }
+
+  /* ---------- Rechenweg ---------- */
+  .rechenweg { margin: 0; }
+  .rechenweg div { display: flex; flex-wrap: wrap; gap: 4px 10px; padding: 5px 0; border-bottom: 1px solid var(--linie); }
+  .rechenweg div:last-child { border-bottom: 0; }
+  .rechenweg dt { color: var(--tinte2); font-size: 0.85rem; min-width: 190px; }
+  .rechenweg dd { margin: 0; font-size: 0.85rem; overflow-wrap: anywhere; }
+
+  footer { color: var(--tinte2); font-size: 0.85rem; border-top: 1px solid var(--linie); padding-top: 14px; }
+</style>
+</head>
+<body>
+<div class="seite">
+
+  <header>
+    <h1>Kampagnen-Dashboard</h1>
+    <p class="lead">Kampagnenzahlen rein, Diagramme raus. Alles rechnet im Browser, es geht nichts ins Netz.</p>
+    <p class="klein">Das ist ein Gerüst zum Weiterbauen, kein fertiges Produkt. Die Rechenwege stehen offen unter den Diagrammen.</p>
+  </header>
+
+  <div id="meldung" hidden></div>
+
+  <section class="karte" aria-labelledby="h-quelle">
+    <h2 id="h-quelle">Datenquelle</h2>
+    <div class="quelle-zeile">
+      <span class="quelle-name" id="quelle-name">—</span>
+      <span class="marke" id="quelle-marke">—</span>
+    </div>
+    <div class="knopfreihe">
+      <input type="file" id="datei" accept=".csv,.txt,.tsv,text/csv,text/plain"
+             aria-describedby="datei-hinweis">
+      <button type="button" id="zurueck">Beispieldaten zurückholen</button>
+    </div>
+    <p class="klein" id="datei-hinweis" style="margin-top:10px">
+      CSV oder Textdatei mit Kopfzeile. Trennzeichen Semikolon, Komma, Tabulator oder senkrechter Strich
+      werden erkannt, ebenso Komma als Dezimaltrennzeichen und Prozentzeichen.
+    </p>
+    <details>
+      <summary>Zahlen stattdessen einfügen</summary>
+      <div class="details-inhalt">
+        <p class="klein">Aus Excel markieren, kopieren und hier einfügen. Die erste Zeile muss die Spaltennamen enthalten.</p>
+        <label class="sr-only" for="einfuegefeld">Tabelle einfügen</label>
+        <textarea id="einfuegefeld" spellcheck="false"
+                  placeholder="Kanal;Klicks;Spend_EUR"></textarea>
+        <div class="knopfreihe" style="margin-top:10px">
+          <button type="button" id="uebernehmen">Eingefügte Zahlen übernehmen</button>
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <section class="karte" aria-labelledby="h-kennzahlen">
+    <h2 id="h-kennzahlen">Überblick</h2>
+    <p class="klein" id="kennzahlen-info">—</p>
+    <div class="kachelfeld" id="kachelfeld"></div>
+  </section>
+
+  <div class="diagrammfeld">
+
+    <section class="karte" aria-labelledby="h-balken">
+      <h2 id="h-balken">Vergleich der Gruppen</h2>
+      <p class="klein">Wie verteilt sich eine Kennzahl über eine Textspalte. Die Balken sind absteigend sortiert.</p>
+      <div class="steuerung">
+        <div>
+          <label for="wahl-gruppe">Gruppieren nach</label>
+          <select id="wahl-gruppe"></select>
+        </div>
+        <div>
+          <label for="wahl-kennzahl">Kennzahl</label>
+          <select id="wahl-kennzahl"></select>
+        </div>
+      </div>
+      <div class="buehne" id="buehne-balken"></div>
+      <details>
+        <summary>Zahlen als Tabelle</summary>
+        <div class="details-inhalt tabellenrahmen" id="tabelle-balken"></div>
+      </details>
+    </section>
+
+    <section class="karte" aria-labelledby="h-streu">
+      <h2 id="h-streu">Zusammenhang zweier Zahlen</h2>
+      <p class="klein">Ein Punkt ist eine Zeile aus der Datei. Zeigt, ob mehr von der einen Größe auch mehr von der anderen bedeutet.</p>
+      <div class="steuerung">
+        <div>
+          <label for="wahl-x">Waagerecht</label>
+          <select id="wahl-x"></select>
+        </div>
+        <div>
+          <label for="wahl-y">Senkrecht</label>
+          <select id="wahl-y"></select>
+        </div>
+      </div>
+      <div class="buehne" id="buehne-streu"></div>
+      <details>
+        <summary>Zahlen als Tabelle</summary>
+        <div class="details-inhalt tabellenrahmen" id="tabelle-streu"></div>
+      </details>
+    </section>
+
+  </div>
+
+  <section class="karte" aria-labelledby="h-rechenweg">
+    <h2 id="h-rechenweg">So wurde gerechnet</h2>
+    <p class="klein">Damit sichtbar bleibt, was das Werkzeug aus deiner Datei gemacht hat.</p>
+    <dl class="rechenweg" id="rechenweg"></dl>
+    <details>
+      <summary id="rohdaten-titel">Alle eingelesenen Zeilen</summary>
+      <div class="details-inhalt tabellenrahmen" id="tabelle-roh"></div>
+    </details>
+  </section>
+
+  <footer>
+    <p>Läuft per Doppelklick ohne Server, ohne Internet, ohne Installation.
+       Nichts wird gespeichert, ein Neuladen setzt alles auf die Beispieldaten zurück.</p>
+  </footer>
+
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ==================================================================== *
+   *  HIER ANSETZEN — und nur hier.                                       *
+   *                                                                      *
+   *  Diese eine Stelle legt fest, welche Spalten deiner Tabelle als      *
+   *  Kennzahl gelten und wie sie gerechnet werden.                       *
+   *                                                                      *
+   *  summen  = Spalten, die man aufaddieren darf.                        *
+   *  quoten  = Spalten, die ein Verhältnis sind. Die werden NICHT        *
+   *            addiert und auch nicht gemittelt, sondern aus zwei        *
+   *            Summen neu gerechnet. (Der Mittelwert von Prozentwerten   *
+   *            aus verschieden großen Zeilen ist falsch.)                *
+   *  start   = womit die Seite beim Öffnen anfängt.                      *
+   *                                                                      *
+   *  Neue Spalte ergänzen: eine Zeile in "summen" dazu, fertig.          *
+   *  Fehlt eine Spalte in deiner Datei, wird sie übersprungen und unten  *
+   *  unter "So wurde gerechnet" genannt.                                 *
+   * ==================================================================== */
+  var EINSTELLUNGEN = {
+    summen: [
+      { spalte: 'Impressions', titel: 'Impressions', einheit: '',   nachkomma: 0 },
+      { spalte: 'Klicks',      titel: 'Klicks',      einheit: '',   nachkomma: 0 },
+      { spalte: 'Conversions', titel: 'Conversions', einheit: '',   nachkomma: 0 },
+      { spalte: 'Spend_EUR',   titel: 'Spend',       einheit: ' €', nachkomma: 0 }
+    ],
+    quoten: [
+      { spalte: 'CTR',     titel: 'CTR', zaehler: 'Klicks',    nenner: 'Impressions',
+        einheit: ' %', faktor: 100, nachkomma: 2 },
+      { spalte: 'CPA_EUR', titel: 'CPA', zaehler: 'Spend_EUR', nenner: 'Conversions',
+        einheit: ' €', faktor: 1,   nachkomma: 2 }
+    ],
+    start: { gruppe: 'Kanal', balken: 'Spend_EUR', streuX: 'Spend_EUR', streuY: 'Conversions' }
+  };
+  /* ================= Ende der Ansatzstelle ============================ */
+
+
+  /* Beispieltabelle, damit beim Öffnen sofort etwas zu sehen ist.
+     Wortgleiche Kopie der Übungsdatei kampagnen-kpis.csv aus diesem Projekt.
+     Es sind Übungszahlen, keine echten Kundenzahlen. */
+  var BEISPIEL_CSV =
+'Kampagne;Marke;Kanal;Impressions;Klicks;CTR;Conversions;Spend_EUR;CPA_EUR\n' +
+'Fruehjahr Bio Awareness;Gruenwerk;Meta Ads;1284500;19640;1,53%;412;8900;21,60\n' +
+'Fruehjahr Bio Awareness;Gruenwerk;Google Ads Search;146200;11380;7,78%;689;7420;10,77\n' +
+'Fruehjahr Bio Awareness;Gruenwerk;YouTube;982300;7410;0,75%;95;5600;58,95\n' +
+'Fruehjahr Bio Awareness;Gruenwerk;Display Retargeting;2140600;9630;0,45%;301;3120;10,37\n' +
+'Pendler Herbst;VELOMO;Meta Ads;1876400;33720;1,80%;884;12400;14,03\n' +
+'Pendler Herbst;VELOMO;Google Ads Search;98700;9840;9,97%;742;9860;13,29\n' +
+'Pendler Herbst;VELOMO;TikTok;3421900;41260;1,21%;356;8700;24,44\n' +
+'Pendler Herbst;VELOMO;Newsletter;54300;6210;11,44%;198;780;3,94\n' +
+'Pendler Herbst;VELOMO;OOH Digital;1450000;0;0,00%;61;15200;249,18\n' +
+'Echte Pause Sommer;Quellgold;Meta Ads;2318700;28140;1,21%;503;11300;22,47\n' +
+'Echte Pause Sommer;Quellgold;YouTube;1642800;12310;0,75%;144;9400;65,28\n' +
+'Echte Pause Sommer;Quellgold;TikTok;4102500;58730;1,43%;612;10800;17,65\n' +
+'Echte Pause Sommer;Quellgold;Display Retargeting;1893400;7620;0,40%;188;2740;14,57\n' +
+'Echte Pause Sommer;Quellgold;Radio Spot;890000;0;0,00%;0;6500;0,00\n' +
+'Regionalitaet Always-on;Kornwerk;Meta Ads;742100;10380;1,40%;221;4300;19,46\n' +
+'Regionalitaet Always-on;Kornwerk;Google Ads Search;61400;5120;8,34%;389;3980;10,23\n' +
+'Regionalitaet Always-on;Kornwerk;LinkedIn;218900;3140;1,43%;74;2610;35,27\n' +
+'Regionalitaet Always-on;Kornwerk;Newsletter;41800;4890;11,70%;167;540;3,23\n' +
+'Regionalitaet Always-on;Kornwerk;Pinterest;334200;4010;1,20%;58;1120;19,31\n' +
+'Grill Aktion Q3;Gruenwerk;Meta Ads;968400;14210;1,47%;338;6100;18,05\n' +
+'Grill Aktion Q3;Gruenwerk;Google Ads Shopping;127600;9870;7,74%;521;5840;11,21\n' +
+'Winter Abo Push;VELOMO;Meta Ads;1104300;18960;1,72%;447;7900;17,67\n' +
+'Winter Abo Push;VELOMO;Google Ads Search;76200;7640;10,03%;588;6720;11,43\n';
+
+  var SVGNS = 'http://www.w3.org/2000/svg';   // einziger erlaubter Namensraum, keine Netzadresse
+  var TRENNER_NAME = { ';': 'Semikolon', ',': 'Komma', '\t': 'Tabulator', '|': 'senkrechter Strich' };
+
+  var daten = null;      // aktuell ausgewertete Tabelle
+  var zeichenTimer = 0;
+
+  /* ------------------------------------------------------------------ *
+   * Kleine Helfer
+   * ------------------------------------------------------------------ */
+  function id(x) { return document.getElementById(x); }
+
+  function el(tag, klasse, text) {
+    var e = document.createElement(tag);
+    if (klasse) e.className = klasse;
+    if (text !== undefined && text !== null) e.textContent = String(text);
+    return e;
+  }
+
+  function svgEl(name, attr) {
+    var e = document.createElementNS(SVGNS, name);
+    for (var k in attr) { if (Object.prototype.hasOwnProperty.call(attr, k)) e.setAttribute(k, attr[k]); }
+    return e;
+  }
+
+  function fmt(n, nachkomma) {
+    if (n === null || n === undefined || typeof n !== 'number' || isNaN(n) || n === Infinity || n === -Infinity) return '–';
+    return n.toLocaleString('de-DE', { minimumFractionDigits: nachkomma, maximumFractionDigits: nachkomma });
+  }
+
+  function liste(arr) { return arr.length ? arr.join(', ') : 'keine'; }
+
+  /* ------------------------------------------------------------------ *
+   * CSV lesen — Trennzeichen und Dezimalzeichen werden gemessen,
+   * nicht geraten. Anführungszeichen mit Trennzeichen darin bleiben heil.
+   * ------------------------------------------------------------------ */
+  function csvZerlegen(text, tr) {
+    var zeilen = [], zeile = [], feld = '', inAnf = false, i, z;
+    for (i = 0; i < text.length; i++) {
+      z = text.charAt(i);
+      if (inAnf) {
+        if (z === '"') {
+          if (text.charAt(i + 1) === '"') { feld += '"'; i++; } else { inAnf = false; }
+        } else { feld += z; }
+      } else if (z === '"' && feld === '') {
+        inAnf = true;
+      } else if (z === tr) {
+        zeile.push(feld); feld = '';
+      } else if (z === '\n' || z === '\r') {
+        if (z === '\r' && text.charAt(i + 1) === '\n') i++;
+        zeile.push(feld); zeilen.push(zeile); zeile = []; feld = '';
+      } else {
+        feld += z;
+      }
+    }
+    if (feld !== '' || zeile.length) { zeile.push(feld); zeilen.push(zeile); }
+    // Leerzeilen (auch reine Trennzeichen-Zeilen und die Leerzeile am Dateiende) fallen raus
+    return zeilen.filter(function (r) {
+      return r.some(function (f) { return String(f).trim() !== ''; });
+    });
+  }
+
+  function trennerFinden(text) {
+    var kandidaten = [';', '\t', '|', ','], bestes = null, besteNote = -1, k;
+    for (k = 0; k < kandidaten.length; k++) {
+      var tr = kandidaten[k];
+      var r = csvZerlegen(text, tr);
+      if (r.length === 0) continue;
+      var breite = r[0].length;
+      if (breite < 2) continue;
+      var gleich = 0, n;
+      for (n = 0; n < r.length; n++) { if (r[n].length === breite) gleich++; }
+      var note = (gleich / r.length) * 1000 + breite;   // Gleichmäßigkeit zählt mehr als Spaltenzahl
+      if (note > besteNote) { besteNote = note; bestes = tr; }
+    }
+    return bestes;
+  }
+
+  /* Deutsch (1.284,50) oder englisch (1,284.50)? Über alle Zellen abgestimmt. */
+  function stilFinden(rohzeilen, tr) {
+    if (tr === ',') return 'en';       // bei Komma als Trennzeichen kann Komma kein Dezimalzeichen sein
+    var de = 0, en = 0, r, s, w;
+    for (r = 1; r < rohzeilen.length; r++) {
+      for (s = 0; s < rohzeilen[r].length; s++) {
+        w = String(rohzeilen[r][s]).trim().replace(/[%€\s]/g, '');
+        if (/^[+-]?\d{1,3}(\.\d{3})+(,\d+)?$/.test(w) || /^[+-]?\d+,\d+$/.test(w)) de++;
+        else if (/^[+-]?\d{1,3}(,\d{3})+(\.\d+)?$/.test(w) || /^[+-]?\d+\.\d+$/.test(w)) en++;
+      }
+    }
+    return en > de ? 'en' : 'de';
+  }
+
+  function zahlLesen(roh, stil) {
+    if (roh === null || roh === undefined) return null;
+    var s = String(roh).replace(/\u00a0/g, ' ').trim();   // geschuetztes Leerzeichen aus Excel
+    if (s === '') return null;
+    s = s.replace(/[%€\s]/g, '').replace(/^EUR/i, '');
+    if (s === '') return null;
+    if (stil === 'de') s = s.replace(/\./g, '').replace(',', '.');
+    else s = s.replace(/,/g, '');
+    if (!/^[+-]?(\d+\.?\d*|\.\d+)$/.test(s)) return null;
+    var n = Number(s);
+    return isNaN(n) || n === Infinity || n === -Infinity ? null : n;
+  }
+
+  /* Liest Text zu einer Tabelle. Gibt entweder { ok: true, ... } zurück
+     oder { ok: false, grund, hilfe } — nie stillschweigend etwas Halbes. */
+  function tabelleLesen(text, quelle) {
+    if (!text || text.replace(/\s/g, '') === '') {
+      return { ok: false, grund: 'Die Datei ist leer.', hilfe: ['Es steht kein Zeichen darin, das ausgewertet werden könnte.'] };
+    }
+    var tr = trennerFinden(text);
+    if (!tr) {
+      return {
+        ok: false,
+        grund: 'In dieser Datei sind keine Spalten zu erkennen.',
+        hilfe: [
+          'Gesucht wurde nach Semikolon, Tabulator, senkrechtem Strich und Komma. Keines davon teilt den Text in mindestens zwei Spalten.',
+          'Fließtext, PDF-Auszüge und Word-Dokumente lassen sich so nicht auswerten. Speichere die Tabelle in Excel über „Speichern unter“ als CSV.'
+        ]
+      };
+    }
+    var roh = csvZerlegen(text, tr);
+    if (roh.length < 2) {
+      return {
+        ok: false,
+        grund: 'Die Datei hat eine Kopfzeile, aber keine Datenzeile.',
+        hilfe: ['Erwartet wird eine Zeile mit den Spaltennamen und darunter mindestens eine Zeile mit Werten.']
+      };
+    }
+    var kopf = roh[0].map(function (h, i) {
+      var t = String(h).trim();
+      return t === '' ? 'Spalte ' + (i + 1) : t;
+    });
+
+    var uebersprungen = 0;
+    var zeilen = [];
+    for (var r = 1; r < roh.length; r++) {
+      if (roh[r].length !== kopf.length) { uebersprungen++; continue; }
+      zeilen.push(roh[r].map(function (f) { return String(f).trim(); }));
+    }
+    if (zeilen.length === 0) {
+      return {
+        ok: false,
+        grund: 'Keine der Datenzeilen hat so viele Spalten wie die Kopfzeile.',
+        hilfe: ['Die Kopfzeile hat ' + kopf.length + ' Spalten. ' + uebersprungen + ' Zeilen hatten eine andere Anzahl und wurden deshalb nicht gerechnet.']
+      };
+    }
+
+    var stil = stilFinden([kopf].concat(zeilen), tr);
+
+    // Zahlen einmal vorrechnen, damit später nichts doppelt geparst wird
+    var werte = zeilen.map(function (z) {
+      return z.map(function (f) { return zahlLesen(f, stil); });
+    });
+
+    var zahlSpalten = [], textSpalten = [], prozentSpalten = [];
+    for (var s = 0; s < kopf.length; s++) {
+      var gefuellt = 0, zahlig = 0, prozentig = 0;
+      for (var i = 0; i < zeilen.length; i++) {
+        if (zeilen[i][s] === '') continue;
+        gefuellt++;
+        if (werte[i][s] !== null) zahlig++;
+        if (zeilen[i][s].indexOf('%') !== -1) prozentig++;
+      }
+      if (gefuellt > 0 && zahlig / gefuellt >= 0.8) {
+        zahlSpalten.push(kopf[s]);
+        if (prozentig / gefuellt >= 0.5) prozentSpalten.push(kopf[s]);
+      } else {
+        textSpalten.push(kopf[s]);
+      }
+    }
+
+    if (zahlSpalten.length === 0) {
+      return {
+        ok: false,
+        grund: 'Es gibt keine Spalte mit Zahlen.',
+        hilfe: [
+          'Erkannt wurden ' + kopf.length + ' Spalten mit dem Trennzeichen „' + TRENNER_NAME[tr] + '“, aber in keiner stehen überwiegend Zahlen.',
+          'Wahrscheinlich ist das gar keine Tabelle, oder die Zahlen stehen als Text mit Zeichen darin, die hier nicht erkannt werden.'
+        ]
+      };
+    }
+    if (textSpalten.length === 0) {
+      return {
+        ok: false,
+        grund: 'Es gibt keine Textspalte zum Gruppieren.',
+        hilfe: ['Alle ' + kopf.length + ' Spalten enthalten Zahlen. Für die Balken wird mindestens eine Spalte mit Bezeichnungen gebraucht, etwa Kanal oder Kampagne.']
+      };
+    }
+
+    return {
+      ok: true, quelle: quelle, trenner: tr, stil: stil,
+      kopf: kopf, zeilen: zeilen, werte: werte,
+      zahlSpalten: zahlSpalten, textSpalten: textSpalten, prozentSpalten: prozentSpalten,
+      uebersprungen: uebersprungen
+    };
+  }
+
+  /* ------------------------------------------------------------------ *
+   * Rechnen
+   * ------------------------------------------------------------------ */
+  function spaltenNr(d, name) { return d.kopf.indexOf(name); }
+  function hat(d, name) { return spaltenNr(d, name) !== -1; }
+
+  function summe(d, name, filter) {
+    var s = spaltenNr(d, name);
+    if (s === -1) return null;
+    var t = 0, gab = false;
+    for (var i = 0; i < d.werte.length; i++) {
+      if (filter && !filter(i)) continue;
+      var v = d.werte[i][s];
+      if (v !== null) { t += v; gab = true; }
+    }
+    return gab ? t : null;
+  }
+
+  function quoteRechnen(q, d, filter) {
+    if (!hat(d, q.zaehler) || !hat(d, q.nenner)) return null;
+    var z = summe(d, q.zaehler, filter), n = summe(d, q.nenner, filter);
+    if (z === null || n === null || n === 0) return null;
+    return (z / n) * q.faktor;
+  }
+
+  /* ------------------------------------------------------------------ *
+   * Warum kam keine Zahl heraus?
+   *
+   * summe() und quoteRechnen() geben null zurück, wenn nichts zu rechnen
+   * war — mehr wussten die Kacheln bisher nicht. Sie zeigten deshalb ein
+   * „–" und behaupteten im Fuß trotzdem eine Rechnung, die gar nicht
+   * stattgefunden hat. Die beiden Befund-Funktionen liefern zusätzlich
+   * den Grund, damit im Fuß entweder der Rechenweg steht (wenn gerechnet
+   * wurde) oder der Grund (wenn nicht). Gerechnet wird weiterhin an genau
+   * einer Stelle: hier wird nur nachgesehen, nicht neu gerechnet.
+   * ------------------------------------------------------------------ */
+  function summeBefund(d, name) {
+    var w = summe(d, name);
+    if (w !== null) return { wert: w, fuss: 'Summe aus ' + d.zeilen.length + ' Zeilen' };
+    return {
+      wert: null,
+      warum: 'In der Spalte „' + name + '" steht in keiner der ' + d.zeilen.length +
+             ' Zeilen ein Wert. Ohne Werte gibt es keine Summe — deshalb steht hier keine Zahl.'
+    };
+  }
+
+  function quoteBefund(q, d) {
+    var z = summe(d, q.zaehler), n = summe(d, q.nenner);
+    if (z === null || n === null) {
+      var leer = z === null ? q.zaehler : q.nenner;
+      return {
+        wert: null,
+        warum: 'In der Spalte „' + leer + '" steht in keiner der ' + d.zeilen.length +
+               ' Zeilen ein Wert. ' + q.titel + ' ist ' + q.zaehler + ' geteilt durch ' + q.nenner +
+               ' — ohne diese Spalte lässt sich das nicht rechnen.'
+      };
+    }
+    if (n === 0) {
+      return {
+        wert: null,
+        warum: 'Die Summe von „' + q.nenner + '" über alle ' + d.zeilen.length +
+               ' Zeilen ist 0. Durch 0 lässt sich nicht teilen, deshalb steht hier keine Zahl.'
+      };
+    }
+    return { wert: (z / n) * q.faktor, fuss: 'Summe ' + q.zaehler + ' geteilt durch Summe ' + q.nenner };
+  }
+
+  /* Aktive Kennzahlen: nur die, deren Spalten wirklich in der Datei stehen. */
+  function aktiveSummen(d) {
+    return EINSTELLUNGEN.summen.filter(function (k) { return hat(d, k.spalte); });
+  }
+  function aktiveQuoten(d) {
+    return EINSTELLUNGEN.quoten.filter(function (q) { return hat(d, q.zaehler) && hat(d, q.nenner); });
+  }
+
+  /* Notfall: passt keine eingerichtete Kennzahl, werden alle Zahlenspalten
+     summiert — aber sichtbar angesagt, nicht heimlich. */
+  function ersatzSummen(d) {
+    return d.zahlSpalten
+      .filter(function (n) { return d.prozentSpalten.indexOf(n) === -1; })
+      .map(function (n) { return { spalte: n, titel: n, einheit: '', nachkomma: 0, ersatz: true }; });
+  }
+
+  function kennzahlListe(d) {
+    var s = aktiveSummen(d);
+    var q = aktiveQuoten(d);
+    if (s.length === 0 && q.length === 0) return { summen: ersatzSummen(d), quoten: [], ersatz: true };
+    return { summen: s, quoten: q, ersatz: false };
+  }
+
+  function gruppieren(d, dimension, kennzahl) {
+    var sp = spaltenNr(d, dimension);
+    if (sp === -1) return [];
+    var reihenfolge = [], nach = Object.create(null);   // ohne Prototyp, sonst kollidieren
+    for (var i = 0; i < d.zeilen.length; i++) {         // Gruppennamen wie "constructor"
+      var name = d.zeilen[i][sp] === '' ? '(ohne Angabe)' : d.zeilen[i][sp];
+      if (!nach[name]) { nach[name] = []; reihenfolge.push(name); }
+      nach[name].push(i);
+    }
+    return reihenfolge.map(function (name) {
+      var mengen = nach[name], dabei = Object.create(null);
+      mengen.forEach(function (n) { dabei[n] = true; });
+      var filter = function (n) { return dabei[n] === true; };
+      var wert = kennzahl.zaehler ? quoteRechnen(kennzahl, d, filter) : summe(d, kennzahl.spalte, filter);
+      return { name: name, wert: wert, zeilen: mengen.length };
+    });
+  }
+
+  /* ------------------------------------------------------------------ *
+   * Balkendiagramm — waagerechte Balken, absteigend, Wert direkt daneben.
+   * Eine Farbe für alle Balken: die Länge zeigt die Größe bereits.
+   * ------------------------------------------------------------------ */
+  function balkenPfad(x, y, w, h, r, rechts) {
+    r = Math.min(r, Math.max(w, 0), h / 2);
+    if (w < 0.6) return null;
+    if (rechts) {
+      return 'M' + x + ' ' + y + ' h' + (w - r) +
+             ' a' + r + ' ' + r + ' 0 0 1 ' + r + ' ' + r +
+             ' v' + (h - 2 * r) + ' a' + r + ' ' + r + ' 0 0 1 ' + (-r) + ' ' + r +
+             ' h' + (-(w - r)) + ' z';
+    }
+    return 'M' + (x + w) + ' ' + y + ' h' + (-(w - r)) +
+           ' a' + r + ' ' + r + ' 0 0 0 ' + (-r) + ' ' + r +
+           ' v' + (h - 2 * r) + ' a' + r + ' ' + r + ' 0 0 0 ' + r + ' ' + r +
+           ' h' + (w - r) + ' z';
+  }
+
+  function kuerzen(textEl, maxBreite) {
+    var voll = textEl.textContent;
+    if (maxBreite <= 8) { textEl.textContent = ''; return; }
+    if (textEl.getComputedTextLength() <= maxBreite) return;
+    var t = voll;
+    while (t.length > 1) {
+      t = t.slice(0, -1);
+      textEl.textContent = t + '…';
+      if (textEl.getComputedTextLength() <= maxBreite) return;
+    }
+  }
+
+  function balkenZeichnen(host, gruppen, kennzahl) {
+    host.textContent = '';
+    if (!gruppen.length) {
+      host.appendChild(el('p', 'leerhinweis', 'Für diese Auswahl gibt es keine Werte.'));
+      return;
+    }
+    var W = Math.max(240, Math.round(host.clientWidth || 320));
+    var zeileH = 46, oben = 6;
+    var H = oben + gruppen.length * zeileH;
+
+    var svg = svgEl('svg', {
+      width: W, height: H, viewBox: '0 0 ' + W + ' ' + H,
+      role: 'img',
+      'aria-label': kennzahl.titel + ' je Gruppe, ' + gruppen.length +
+                    ' Balken. Die Werte stehen darunter auch als Tabelle.'
+    });
+    host.appendChild(svg);   // muss vor dem Messen im Dokument hängen
+
+    var werte = gruppen.map(function (g) { return typeof g.wert === 'number' ? g.wert : 0; });
+    var max = Math.max.apply(null, werte.concat([0]));
+    var min = Math.min.apply(null, werte.concat([0]));
+    if (max === min) max = min + 1;
+    var skala = function (v) { return ((v - min) / (max - min)) * W; };
+    var x0 = skala(0);
+
+    if (min < 0) {
+      svg.appendChild(svgEl('line', {
+        x1: x0, x2: x0, y1: oben, y2: H, stroke: 'var(--achse)', 'stroke-width': 1
+      }));
+    }
+
+    gruppen.forEach(function (g, i) {
+      var y = oben + i * zeileH;
+      var gruppe = svgEl('g', {});
+      var titel = svgEl('title', {});
+      titel.textContent = g.name + ' — ' + kennzahl.titel + ': ' +
+        fmt(g.wert, kennzahl.nachkomma) + (kennzahl.einheit || '');
+      gruppe.appendChild(titel);
+
+      var wertText = svgEl('text', {
+        x: W, y: y + 13, 'text-anchor': 'end', 'font-size': 13,
+        'font-family': 'inherit', fill: 'var(--tinte)',
+        'font-variant-numeric': 'tabular-nums', 'font-weight': 600
+      });
+      wertText.textContent = fmt(g.wert, kennzahl.nachkomma) + (kennzahl.einheit || '');
+      gruppe.appendChild(wertText);
+
+      var nameText = svgEl('text', {
+        x: 0, y: y + 13, 'font-size': 13, 'font-family': 'inherit', fill: 'var(--tinte2)'
+      });
+      nameText.textContent = g.name;
+      gruppe.appendChild(nameText);
+      svg.appendChild(gruppe);
+      kuerzen(nameText, W - wertText.getComputedTextLength() - 14);
+
+      var v = typeof g.wert === 'number' ? g.wert : 0;
+      var xv = skala(v);
+      var links = Math.min(x0, xv), breite = Math.abs(xv - x0);
+      var pfad = balkenPfad(links, y + 21, breite, 12, 4, v >= 0);
+      if (pfad) {
+        gruppe.appendChild(svgEl('path', { d: pfad, fill: 'var(--serie)' }));
+      } else {
+        gruppe.appendChild(svgEl('rect', {
+          x: links, y: y + 21, width: 2, height: 12, fill: 'var(--achse)'
+        }));
+      }
+    });
+  }
+
+  /* ------------------------------------------------------------------ *
+   * Streudiagramm — ein Punkt je Zeile.
+   * ------------------------------------------------------------------ */
+  /* Runde Achsenwerte statt 5.067 und 884: Schrittweite auf 1, 2, 2,5 oder 5
+     mal einer Zehnerpotenz einrasten lassen. */
+  function achsenSchritte(min, max, anzahl) {
+    var spanne = max - min;
+    if (spanne <= 0) return [min];
+    var roh = spanne / anzahl;
+    var groesse = Math.pow(10, Math.floor(Math.log(roh) / Math.LN10));
+    var norm = roh / groesse;
+    var schritt = (norm <= 1 ? 1 : norm <= 2 ? 2 : norm <= 2.5 ? 2.5 : norm <= 5 ? 5 : 10) * groesse;
+    var out = [], v = Math.ceil(min / schritt) * schritt;
+    while (v <= max + schritt * 0.0001 && out.length < 30) {
+      out.push(Math.abs(v) < schritt * 1e-9 ? 0 : v);
+      v += schritt;
+    }
+    return out.length ? out : [min, max];
+  }
+
+  /* Eine Einheit für die ganze Achse, damit nicht "5.000" neben "10 Tsd." steht. */
+  function achsenFormat(max) {
+    var a = Math.abs(max);
+    var bau = function (teiler, wort) {
+      return function (v) {
+        if (v === 0) return '0';
+        return fmt(v / teiler, (v % teiler === 0) ? 0 : 1) + wort;
+      };
+    };
+    if (a >= 1e9) return bau(1e9, ' Mrd.');
+    if (a >= 1e6) return bau(1e6, ' Mio.');
+    if (a >= 1e4) return bau(1e3, ' Tsd.');
+    return function (v) { return fmt(v, v % 1 === 0 ? 0 : 2); };
+  }
+
+  function streuZeichnen(host, punkte, xName, yName) {
+    host.textContent = '';
+    if (punkte.length < 2) {
+      host.appendChild(el('p', 'leerhinweis',
+        'Für diese beiden Spalten gibt es weniger als zwei vollständige Zeilen.'));
+      return;
+    }
+    var W = Math.max(240, Math.round(host.clientWidth || 320));
+    var H = Math.max(250, Math.min(360, Math.round(W * 0.66)));
+    var mL = 54, mR = 10, mO = 22, mU = 44;
+    var pW = W - mL - mR, pH = H - mO - mU;
+
+    var xs = punkte.map(function (p) { return p.x; });
+    var ys = punkte.map(function (p) { return p.y; });
+    var xMin = Math.min.apply(null, xs), xMax = Math.max.apply(null, xs);
+    var yMin = Math.min.apply(null, ys), yMax = Math.max.apply(null, ys);
+    if (xMin >= 0) xMin = 0;
+    if (yMin >= 0) yMin = 0;
+    if (xMax === xMin) xMax = xMin + 1;
+    if (yMax === yMin) yMax = yMin + 1;
+
+    var sx = function (v) { return mL + ((v - xMin) / (xMax - xMin)) * pW; };
+    var sy = function (v) { return mO + pH - ((v - yMin) / (yMax - yMin)) * pH; };
+
+    var svg = svgEl('svg', {
+      width: W, height: H, viewBox: '0 0 ' + W + ' ' + H,
+      role: 'img',
+      'aria-label': yName + ' über ' + xName + ', ' + punkte.length +
+                    ' Punkte. Die Werte stehen darunter auch als Tabelle.'
+    });
+
+    var yFmt = achsenFormat(Math.max(Math.abs(yMin), Math.abs(yMax)));
+    var xFmt = achsenFormat(Math.max(Math.abs(xMin), Math.abs(xMax)));
+
+    achsenSchritte(yMin, yMax, 4).forEach(function (v) {
+      var y = sy(v);
+      svg.appendChild(svgEl('line', {
+        x1: mL, x2: mL + pW, y1: y, y2: y,
+        stroke: 'var(--linie)', 'stroke-width': 1
+      }));
+      var t = svgEl('text', {
+        x: mL - 8, y: y + 4, 'text-anchor': 'end', 'font-size': 11,
+        'font-family': 'inherit', fill: 'var(--tinte2)',
+        'font-variant-numeric': 'tabular-nums'
+      });
+      t.textContent = yFmt(v);
+      svg.appendChild(t);
+    });
+
+    svg.appendChild(svgEl('line', {
+      x1: mL, x2: mL + pW, y1: mO + pH, y2: mO + pH,
+      stroke: 'var(--achse)', 'stroke-width': 1
+    }));
+
+    achsenSchritte(xMin, xMax, W < 380 ? 2 : 4).forEach(function (v) {
+      var x = sx(v);
+      var t = svgEl('text', {
+        x: x, y: mO + pH + 17,
+        'text-anchor': x <= mL + 14 ? 'start' : (x >= mL + pW - 14 ? 'end' : 'middle'),
+        'font-size': 11, 'font-family': 'inherit', fill: 'var(--tinte2)',
+        'font-variant-numeric': 'tabular-nums'
+      });
+      t.textContent = xFmt(v);
+      svg.appendChild(t);
+    });
+
+    var yTitel = svgEl('text', {
+      x: 0, y: 12, 'font-size': 11, 'font-family': 'inherit', fill: 'var(--tinte2)'
+    });
+    yTitel.textContent = 'senkrecht: ' + yName;
+    svg.appendChild(yTitel);
+
+    var xTitel = svgEl('text', {
+      x: W, y: H - 6, 'text-anchor': 'end', 'font-size': 11,
+      'font-family': 'inherit', fill: 'var(--tinte2)'
+    });
+    xTitel.textContent = 'waagerecht: ' + xName;
+    svg.appendChild(xTitel);
+
+    punkte.forEach(function (p) {
+      var g = svgEl('g', {});
+      var titel = svgEl('title', {});
+      titel.textContent = p.name + ' — ' + xName + ': ' + fmt(p.x, p.x % 1 ? 2 : 0) +
+                          ', ' + yName + ': ' + fmt(p.y, p.y % 1 ? 2 : 0);
+      g.appendChild(titel);
+      g.appendChild(svgEl('circle', {
+        cx: sx(p.x), cy: sy(p.y), r: 12, fill: 'transparent'    // großzügige Trefferfläche
+      }));
+      g.appendChild(svgEl('circle', {
+        cx: sx(p.x), cy: sy(p.y), r: 5,
+        fill: 'var(--serie)', stroke: 'var(--flaeche)', 'stroke-width': 2
+      }));
+      svg.appendChild(g);
+    });
+
+    host.appendChild(svg);
+  }
+
+  /* ------------------------------------------------------------------ *
+   * Tabellen
+   * ------------------------------------------------------------------ */
+  function tabelleBauen(spalten, zeilen, beschriftung) {
+    var t = el('table');
+    var c = el('caption', null, beschriftung);
+    t.appendChild(c);
+    var thead = el('thead'), tr = el('tr');
+    spalten.forEach(function (s) {
+      var th = el('th', s.zahl ? 'zahl' : null, s.titel);
+      th.setAttribute('scope', 'col');
+      tr.appendChild(th);
+    });
+    thead.appendChild(tr); t.appendChild(thead);
+    var tbody = el('tbody');
+    zeilen.forEach(function (z) {
+      var r = el('tr');
+      z.forEach(function (feld, i) {
+        r.appendChild(el('td', spalten[i] && spalten[i].zahl ? 'zahl' : null, feld));
+      });
+      tbody.appendChild(r);
+    });
+    t.appendChild(tbody);
+    return t;
+  }
+
+  /* ------------------------------------------------------------------ *
+   * Meldungen
+   * ------------------------------------------------------------------ */
+  function meldungZeigen(titel, absaetze) {
+    var box = id('meldung');
+    box.textContent = '';
+    box.className = 'meldung';
+    box.setAttribute('role', 'alert');
+    box.hidden = false;
+    box.appendChild(el('h2', null, titel));
+    var ul = el('ul');
+    absaetze.forEach(function (a) { ul.appendChild(el('li', null, a)); });
+    box.appendChild(ul);
+  }
+
+  function meldungWeg() {
+    var box = id('meldung');
+    box.hidden = true;
+    box.textContent = '';
+    box.removeAttribute('role');
+  }
+
+  /* ------------------------------------------------------------------ *
+   * Auswahlfelder füllen
+   * ------------------------------------------------------------------ */
+  /* vorgaben: der Reihe nach durchprobieren, erste vorhandene gewinnt.
+     Eine schon getroffene Auswahl bleibt beim Nachladen erhalten. */
+  function selectFuellen(sel, werte, vorgaben) {
+    var alt = sel.value;
+    sel.textContent = '';
+    werte.forEach(function (w) {
+      var o = el('option', null, w.titel);
+      o.value = w.wert;
+      sel.appendChild(o);
+    });
+    var namen = werte.map(function (w) { return w.wert; });
+    var kandidaten = [alt].concat(vorgaben).concat(namen);
+    for (var i = 0; i < kandidaten.length; i++) {
+      if (kandidaten[i] && namen.indexOf(kandidaten[i]) !== -1) { sel.value = kandidaten[i]; return; }
+    }
+  }
+
+  function gewaehlteKennzahl(d) {
+    var kz = kennzahlListe(d);
+    var name = id('wahl-kennzahl').value;
+    var treffer = kz.summen.concat(kz.quoten).filter(function (k) { return k.spalte === name; });
+    return treffer.length ? treffer[0] : (kz.summen[0] || kz.quoten[0] || null);
+  }
+
+  /* ------------------------------------------------------------------ *
+   * Alles anzeigen
+   * ------------------------------------------------------------------ */
+  function anzeigen() {
+    var d = daten;
+    if (!d) return;
+    var kz = kennzahlListe(d);
+
+    id('quelle-name').textContent = d.quelle.name;
+    id('quelle-marke').textContent = d.zeilen.length + ' Datenzeilen';
+    id('rohdaten-titel').textContent = 'Alle eingelesenen Zeilen (' + d.zeilen.length + ')';
+
+    /* --- Kacheln --- */
+    var feld = id('kachelfeld');
+    feld.textContent = '';
+    var befunde = kz.summen.map(function (k) { return { kennzahl: k, befund: summeBefund(d, k.spalte) }; })
+      .concat(kz.quoten.map(function (q) { return { kennzahl: q, befund: quoteBefund(q, d) }; }));
+
+    befunde.forEach(function (x) {
+      var b = x.befund, ohne = b.wert === null;
+      var kachel = el('div', ohne ? 'kachel ohne-zahl' : 'kachel');
+      kachel.appendChild(el('span', 'titel', x.kennzahl.titel));
+      /* Ohne Zahl auch ohne Einheit: „– €" behauptet einen Eurobetrag,
+         den es nicht gibt. */
+      kachel.appendChild(el('span', 'wert', ohne ? 'keine Zahl' : fmt(b.wert, x.kennzahl.nachkomma) + (x.kennzahl.einheit || '')));
+      kachel.appendChild(el('span', ohne ? 'warum' : 'fuss', ohne ? b.warum : b.fuss));
+      feld.appendChild(kachel);
+    });
+    if (!befunde.length) {
+      feld.appendChild(el('p', 'leerhinweis', 'In dieser Datei ist keine Spalte dabei, die sich als Kennzahl rechnen lässt.'));
+    }
+
+    /* Die Erklärzeile darf nur behaupten, was auch passiert ist. */
+    var ohneZahl = befunde.filter(function (x) { return x.befund.wert === null; });
+    var quotenGerechnet = befunde.filter(function (x) { return x.kennzahl.zaehler && x.befund.wert !== null; }).length;
+    var saetze = [];
+    if (kz.ersatz) {
+      saetze.push('Keine der eingerichteten Kennzahlen steht in dieser Datei. Deshalb sind hier alle Zahlenspalten einfach aufaddiert — prüfe, ob das für Quoten wie CTR oder CPA überhaupt sinnvoll ist.');
+    } else if (quotenGerechnet > 0) {
+      saetze.push('Quoten sind aus den Summen neu berechnet, nicht über die Zeilen gemittelt.');
+    } else if (kz.quoten.length > 0) {
+      saetze.push('Keine der eingerichteten Quoten ließ sich rechnen.');
+    }
+    if (ohneZahl.length) {
+      var namen = ohneZahl.map(function (x) { return x.kennzahl.titel; }).join(', ');
+      saetze.push(ohneZahl.length === 1
+        ? 'Eine Kachel bleibt ohne Zahl (' + namen + ') — warum, steht in der Kachel selbst.'
+        : ohneZahl.length + ' Kacheln bleiben ohne Zahl (' + namen + ') — warum, steht jeweils in der Kachel selbst.');
+    }
+    id('kennzahlen-info').textContent = saetze.join(' ');
+
+    /* --- Auswahlfelder --- */
+    selectFuellen(id('wahl-gruppe'),
+      d.textSpalten.map(function (n) { return { wert: n, titel: n }; }),
+      [EINSTELLUNGEN.start.gruppe]);
+    selectFuellen(id('wahl-kennzahl'),
+      kz.summen.concat(kz.quoten).map(function (k) { return { wert: k.spalte, titel: k.titel }; }),
+      [EINSTELLUNGEN.start.balken]);
+    var zahlAuswahl = d.zahlSpalten.map(function (n) { return { wert: n, titel: n }; });
+    selectFuellen(id('wahl-x'), zahlAuswahl, [EINSTELLUNGEN.start.streuX, d.zahlSpalten[0]]);
+    selectFuellen(id('wahl-y'), zahlAuswahl, [EINSTELLUNGEN.start.streuY, d.zahlSpalten[1]]);
+
+    /* --- Rechenweg --- */
+    var rw = id('rechenweg');
+    rw.textContent = '';
+    var zeilenAn = function (dt, dd) {
+      var z = el('div');
+      z.appendChild(el('dt', null, dt));
+      z.appendChild(el('dd', null, dd));
+      rw.appendChild(z);
+    };
+    zeilenAn('Quelle', d.quelle.name + (d.quelle.eingebaut ? ' — im Werkzeug eingebaut' : ''));
+    zeilenAn('Ausgewertete Zeilen', d.zeilen.length + ' Datenzeilen, ' + d.kopf.length + ' Spalten');
+    zeilenAn('Trennzeichen', TRENNER_NAME[d.trenner] + ' — gemessen, nicht angenommen');
+    zeilenAn('Dezimaltrennzeichen', d.stil === 'de' ? 'Komma (deutsche Schreibweise)' : 'Punkt (englische Schreibweise)');
+    zeilenAn('Textspalten', liste(d.textSpalten));
+    zeilenAn('Zahlenspalten', liste(d.zahlSpalten));
+    zeilenAn('Nicht summiert, weil Quote',
+      kz.quoten.length
+        ? kz.quoten.map(function (q) { return q.spalte + ' = ' + q.zaehler + ' / ' + q.nenner; }).join(' · ')
+        : 'keine');
+    var eingerichtet = EINSTELLUNGEN.summen.concat(EINSTELLUNGEN.quoten)
+      .map(function (k) { return k.spalte; });
+    zeilenAn('Eingerichtet, aber nicht in der Datei',
+      liste(eingerichtet.filter(function (n) { return !hat(d, n); })));
+    var uebrig = kz.ersatz ? [] : d.zahlSpalten.filter(function (n) { return eingerichtet.indexOf(n) === -1; });
+    zeilenAn('In der Datei, aber nicht eingerichtet', uebrig.length
+      ? liste(uebrig) + ' — steht in keiner Kachel. Ergänze die Spalte oben im Quelltext unter „HIER ANSETZEN“.'
+      : 'keine');
+    zeilenAn('Übersprungene Zeilen', d.uebersprungen === 0
+      ? 'keine'
+      : d.uebersprungen + ' Zeilen hatten eine andere Spaltenzahl als die Kopfzeile');
+
+    /* --- Rohdaten --- */
+    var rohSpalten = d.kopf.map(function (n) { return { titel: n, zahl: d.zahlSpalten.indexOf(n) !== -1 }; });
+    id('tabelle-roh').textContent = '';
+    id('tabelle-roh').appendChild(
+      tabelleBauen(rohSpalten, d.zeilen, 'Alle ' + d.zeilen.length + ' Zeilen so, wie sie gelesen wurden.'));
+
+    diagrammeZeichnen();
+  }
+
+  function diagrammeZeichnen() {
+    var d = daten;
+    if (!d) return;
+
+    /* Balken */
+    var kennzahl = gewaehlteKennzahl(d);
+    var dimension = id('wahl-gruppe').value;
+    if (kennzahl && dimension) {
+      var gruppen = gruppieren(d, dimension, kennzahl).slice();
+      gruppen.sort(function (a, b) {
+        return (typeof b.wert === 'number' ? b.wert : -Infinity) -
+               (typeof a.wert === 'number' ? a.wert : -Infinity);
+      });
+      balkenZeichnen(id('buehne-balken'), gruppen, kennzahl);
+      id('tabelle-balken').textContent = '';
+      id('tabelle-balken').appendChild(tabelleBauen(
+        [{ titel: dimension }, { titel: 'Zeilen', zahl: true }, { titel: kennzahl.titel, zahl: true }],
+        gruppen.map(function (g) {
+          return [g.name, String(g.zeilen), fmt(g.wert, kennzahl.nachkomma) + (kennzahl.einheit || '')];
+        }),
+        kennzahl.titel + ' je ' + dimension + ', dieselben Zahlen wie im Diagramm.'));
+    }
+
+    /* Streuung */
+    var xName = id('wahl-x').value, yName = id('wahl-y').value;
+    var xi = spaltenNr(d, xName), yi = spaltenNr(d, yName);
+    if (xi !== -1 && yi !== -1) {
+      var bezeichner = d.textSpalten.length ? spaltenNr(d, d.textSpalten[0]) : -1;
+      var zweiter = d.textSpalten.length > 2 ? spaltenNr(d, d.textSpalten[2]) : -1;
+      var punkte = [];
+      for (var i = 0; i < d.zeilen.length; i++) {
+        var x = d.werte[i][xi], y = d.werte[i][yi];
+        if (x === null || y === null) continue;
+        var name = (bezeichner !== -1 ? d.zeilen[i][bezeichner] : 'Zeile ' + (i + 1)) +
+                   (zweiter !== -1 ? ' · ' + d.zeilen[i][zweiter] : '');
+        punkte.push({ x: x, y: y, name: name });
+      }
+      streuZeichnen(id('buehne-streu'), punkte, xName, yName);
+      id('tabelle-streu').textContent = '';
+      id('tabelle-streu').appendChild(tabelleBauen(
+        [{ titel: 'Zeile' }, { titel: xName, zahl: true }, { titel: yName, zahl: true }],
+        punkte.map(function (p) {
+          return [p.name, fmt(p.x, p.x % 1 ? 2 : 0), fmt(p.y, p.y % 1 ? 2 : 0)];
+        }),
+        punkte.length + ' von ' + d.zeilen.length + ' Zeilen haben in beiden Spalten eine Zahl.'));
+    }
+  }
+
+  /* ------------------------------------------------------------------ *
+   * Daten übernehmen
+   * ------------------------------------------------------------------ */
+  function uebernehmen(text, quelle) {
+    var ergebnis = tabelleLesen(text, quelle);
+    if (!ergebnis.ok) {
+      var wo = daten ? daten.quelle.name : 'nichts';
+      meldungZeigen('„' + quelle.name + '“ wurde nicht übernommen',
+        [ergebnis.grund].concat(ergebnis.hilfe).concat(
+          ['Angezeigt werden weiterhin die Zahlen aus: ' + wo + '.']));
+      return false;
+    }
+    meldungWeg();
+    daten = ergebnis;
+    anzeigen();
+    return true;
+  }
+
+  /* Manche Excel-Ausgaben sind nicht UTF-8. Steht ein Ersatzzeichen im Text,
+     wird einmal in der westeuropäischen Kodierung nachgelesen. */
+  function dateiLesen(file) {
+    var leser = new FileReader();
+    leser.onerror = function () {
+      meldungZeigen('Die Datei konnte nicht gelesen werden',
+        ['Der Browser hat den Zugriff abgelehnt. Kopiere den Inhalt notfalls über das Textfeld.']);
+    };
+    leser.onload = function () {
+      var text = String(leser.result || '');
+      if (text.indexOf('�') !== -1) {
+        var zweiter = new FileReader();
+        zweiter.onload = function () {
+          uebernehmen(String(zweiter.result || ''), { name: file.name, eingebaut: false });
+        };
+        zweiter.onerror = function () {
+          uebernehmen(text, { name: file.name, eingebaut: false });
+        };
+        zweiter.readAsText(file, 'windows-1252');
+        return;
+      }
+      uebernehmen(text, { name: file.name, eingebaut: false });
+    };
+    leser.readAsText(file, 'utf-8');
+  }
+
+  function beispielLaden() {
+    uebernehmen(BEISPIEL_CSV, { name: 'Beispieldaten (kampagnen-kpis)', eingebaut: true });
+  }
+
+  /* ------------------------------------------------------------------ *
+   * Verdrahtung
+   * ------------------------------------------------------------------ */
+  id('datei').addEventListener('change', function (ev) {
+    var f = ev.target.files && ev.target.files[0];
+    if (f) dateiLesen(f);
+  });
+
+  id('uebernehmen').addEventListener('click', function () {
+    var text = id('einfuegefeld').value;
+    if (text.trim() === '') {
+      meldungZeigen('Das Textfeld ist leer',
+        ['Füge zuerst eine Tabelle mit Kopfzeile ein, dann noch einmal auf den Knopf.']);
+      return;
+    }
+    uebernehmen(text, { name: 'Eingefügte Zahlen', eingebaut: false });
+  });
+
+  id('zurueck').addEventListener('click', function () {
+    id('datei').value = '';
+    beispielLaden();
+  });
+
+  ['wahl-gruppe', 'wahl-kennzahl', 'wahl-x', 'wahl-y'].forEach(function (n) {
+    id(n).addEventListener('change', diagrammeZeichnen);
+  });
+
+  window.addEventListener('resize', function () {
+    window.clearTimeout(zeichenTimer);
+    zeichenTimer = window.setTimeout(diagrammeZeichnen, 150);
+  });
+
+  beispielLaden();
+})();
+</script>
+</body>
+</html>

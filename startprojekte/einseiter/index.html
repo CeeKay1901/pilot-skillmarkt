@@ -1,0 +1,310 @@
+<!doctype html>
+<!-- ============================================================
+     EINSEITER — Startprojekt-Gerüst
+
+     Eine Seite, die man weitergibt. Doppelklick auf diese Datei
+     genügt, ein Server ist nicht nötig, Netz auch nicht.
+
+     WO DU ETWAS ÄNDERST
+     Alles Sichtbare steht weiter unten in EINEM Block, zwischen
+     den Markierungen "INHALT ANFANG" und "INHALT ENDE".
+     Dazwischen ist nichts versteckt. Alles davor ist nur das
+     Aussehen und muss nicht angefasst werden.
+
+     Gelb markierte Stellen auf der Seite sind offene Angaben.
+     Im Text unten sind das die Stellen mit class="offen".
+     Trag die echte Angabe ein und nimm das span-Paar weg.
+
+     In Claude Code reicht ein Satz, zum Beispiel:
+     "Ersetz den Beispielinhalt durch unseren Kampagnenrückblick."
+     ============================================================ -->
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Titel: steht im Browser-Tab und in der Link-Vorschau. Austauschen. -->
+<title>Einseiter — Gerüst mit Beispielinhalt</title>
+<meta name="description" content="Gerüst für eine teilbare Seite: ein Thema, ein Bildschirm, ohne Netz lauffähig. Der Beispielinhalt gehört ersetzt.">
+
+<style>
+/* ============================================================
+   AUSSEHEN — musst du nicht anfassen.
+   Wenn doch: Die Farben stehen alle hier oben in :root.
+   Keine Schrift von fremden Servern, deshalb system-ui.
+   ============================================================ */
+:root {
+  color-scheme: light;
+
+  --papier:      #f1f1ec;   /* Seitengrund */
+  --karte:       #fbfbf7;   /* Flächen, die sich abheben */
+  --tinte:       #262626;   /* Überschriften */
+  --tinte-weich: #444444;   /* Fließtext */
+  --meta:        #5b5a52;   /* Nebentext, Bildunterschrift, Fuß */
+  --linie:       #e0ddcf;
+  --linie-stark: #cfc9b6;
+  --gelb:        #ffe05e;   /* Akzent */
+  --offen-flaeche: #fdf2c8; /* Markierung: hier fehlt eine Angabe */
+  --offen-linie:   #a37f00;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--papier);
+  color: var(--tinte-weich);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 1.0625rem;
+  line-height: 1.65;
+}
+
+.seite {
+  max-width: 42rem;          /* rund 70 Zeichen je Zeile */
+  margin: 0 auto;
+  padding: 1.5rem 1.15rem 3rem;
+}
+
+h1, h2 { color: var(--tinte); line-height: 1.2; }
+
+h1 {
+  font-size: clamp(1.7rem, 1.15rem + 2.4vw, 2.5rem);
+  letter-spacing: -0.015em;
+  margin: 0 0 .6rem;
+}
+
+h2 {
+  font-size: clamp(1.2rem, 1.08rem + 0.6vw, 1.45rem);
+  margin: 2.6rem 0 .6rem;
+}
+
+p, ul { margin: 0 0 1rem; }
+
+/* ---- Kopf ---- */
+.kicker {
+  margin: 0 0 .5rem;
+  font-size: .8rem;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: var(--meta);
+}
+.lead { font-size: 1.12rem; color: var(--tinte-weich); }
+.trenner { height: 4px; width: 3.5rem; background: var(--gelb); border-radius: 2px; margin: 1.4rem 0 0; }
+
+/* ---- Hinweis, der vor dem Weitergeben gelöscht wird ---- */
+.hinweis {
+  border: 2px dashed var(--linie-stark);
+  background: #fff9e3;
+  border-radius: 10px;
+  padding: .95rem 1.05rem;
+  margin: 0 0 2.2rem;
+  font-size: .95rem;
+}
+.hinweis p { margin: 0 0 .55rem; }
+.hinweis p:last-child { margin-bottom: 0; }
+.hinweis strong { color: var(--tinte); }
+
+/* ---- Markierung für offene Angaben ---- */
+.offen {
+  background: var(--offen-flaeche);
+  border-bottom: 2px dotted var(--offen-linie);
+  border-radius: 3px;
+  padding: 0 .18em;
+  color: #3a3a3a;
+}
+
+/* ---- Kernsatz ---- */
+.kernsatz {
+  background: var(--karte);
+  border: 1px solid var(--linie);
+  border-left: 5px solid var(--gelb);
+  border-radius: 8px;
+  padding: 1rem 1.15rem;
+  font-size: 1.1rem;
+  color: var(--tinte);
+}
+
+/* ---- Zahlen ---- */
+.zahlen {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr));
+  gap: .7rem;
+}
+.kachel {
+  background: var(--karte);
+  border: 1px solid var(--linie);
+  border-radius: 10px;
+  padding: .85rem .95rem;
+}
+.kachel-wert { margin: 0 0 .15rem; font-size: 1.45rem; font-weight: 650; color: var(--tinte); }
+.kachel-label { margin: 0; font-size: .9rem; color: var(--meta); }
+
+/* ---- Listen ---- */
+.punkte { padding-left: 1.15rem; }
+.punkte li { margin-bottom: .5rem; }
+
+/* ---- Bild ---- */
+figure { margin: 1.4rem 0; }
+figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--linie);
+  border-radius: 10px;
+}
+figcaption { margin-top: .5rem; font-size: .9rem; color: var(--meta); }
+
+/* ---- Abschluss ---- */
+.mail {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: .7rem 1.2rem;
+  background: var(--tinte);
+  color: #fcfcfc;
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 8px;
+  overflow-wrap: anywhere;
+}
+.mail:hover { background: #3d3d3d; }
+.mail:focus-visible { outline: 3px solid var(--tinte); outline-offset: 3px; }
+.mail-zusatz { margin: .6rem 0 0; font-size: .92rem; color: var(--meta); }
+
+/* ---- Fuß ---- */
+.fuss {
+  margin-top: 3rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--linie);
+  font-size: .9rem;
+  color: var(--meta);
+}
+
+code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: .9em;
+  background: #eae7db;
+  color: #333333;
+  padding: .08em .32em;
+  border-radius: 3px;
+}
+
+/* ---- Ausdruck: viele geben Seiten als PDF weiter (Strg+P) ---- */
+@media print {
+  body { background: #ffffff; color: #000000; font-size: 11pt; }
+  .seite { max-width: none; padding: 0; }
+  h1, h2 { color: #000000; }
+  h2 { break-after: avoid; }
+  .kernsatz, .kachel, figure { break-inside: avoid; }
+  .kernsatz, .kachel, .hinweis { background: none; }
+  .hinweis { border-color: #999999; }
+  .offen { background: none; border-bottom: 1px dotted #000000; color: #000000; }
+  .mail { background: none; color: #000000; border: 1px solid #000000; padding: .3rem .6rem; min-height: 0; }
+  code { background: none; }
+}
+</style>
+</head>
+
+<body>
+<main class="seite">
+
+<!-- ============================================================
+     INHALT ANFANG
+
+     Ab hier bis "INHALT ENDE" steht alles, was auf der Seite zu
+     sehen ist. Jeden Text hier darfst du direkt überschreiben.
+
+     <span class="offen">…</span> färbt eine Stelle gelb ein:
+     dort fehlt eine echte Angabe. Ist sie eingetragen, nimmst du
+     das span-Paar weg, dann verschwindet die Markierung.
+     ============================================================ -->
+
+  <!-- ===== Hinweis: erklärt das Gerüst. Vor dem Weitergeben löschen. ===== -->
+  <aside class="hinweis">
+    <p><strong>Das hier ist ein Gerüst, keine fertige Seite.</strong> Jeder Text darunter ist Beispiel und gehört ersetzt. Die gelb markierten Stellen sind die, an denen eine echte Angabe fehlt.</p>
+    <p>Alles, was du änderst, steht in <code>index.html</code> zwischen <code>INHALT ANFANG</code> und <code>INHALT ENDE</code>. Diesen Kasten löschst du, bevor du die Seite weitergibst.</p>
+  </aside>
+
+  <!-- ===== 1 · Kopf: Titel und ein Satz, worum es geht ===== -->
+  <header>
+    <p class="kicker">Kampagne <span class="offen">Name eintragen</span> · <span class="offen">Zeitraum</span></p>
+    <h1>Was dabei herausgekommen ist</h1>
+    <p class="lead">Ein Überblick auf einem Bildschirm, für alle, die nicht dabei waren: worum es ging, was gemacht wurde, was dabei herauskam und was als Nächstes ansteht.</p>
+    <div class="trenner"></div>
+  </header>
+
+  <!-- ===== 2 · Kern: vier Abschnitte, je ein Gedanke ===== -->
+
+  <section>
+    <h2>Das Wichtigste in einem Satz</h2>
+    <p class="kernsatz"><span class="offen">Hier steht der eine Satz, den jemand nach dem Lesen weitererzählen soll.</span></p>
+  </section>
+
+  <section>
+    <h2>Die Zahlen</h2>
+    <p>Drei Zahlen reichen. Zu jeder gehört, woher sie kommt, sonst ist die erste Rückfrage genau die.</p>
+    <ul class="zahlen">
+      <li class="kachel">
+        <p class="kachel-wert"><span class="offen">Zahl</span></p>
+        <p class="kachel-label">Reichweite</p>
+      </li>
+      <li class="kachel">
+        <p class="kachel-wert"><span class="offen">Zahl</span></p>
+        <p class="kachel-label">Klicks</p>
+      </li>
+      <li class="kachel">
+        <p class="kachel-wert"><span class="offen">Zahl</span></p>
+        <p class="kachel-label">Kosten je Kontakt</p>
+      </li>
+    </ul>
+    <p>Die Beschriftungen sind Beispiele. Nimm die Kennzahlen, über die ihr wirklich sprecht, und schreib dazu, woher sie stammen: <span class="offen">Quelle eintragen</span>.</p>
+  </section>
+
+  <section>
+    <h2>Was gemacht wurde</h2>
+    <p>Drei bis fünf Punkte, je ein Gedanke. Wer nur die Aufzählung liest, soll den Ablauf trotzdem verstehen.</p>
+    <ul class="punkte">
+      <li><span class="offen">Kanal oder Maßnahme</span> — in einem Satz, was dort lief.</li>
+      <li><span class="offen">Kanal oder Maßnahme</span> — mit dem Zeitraum, wenn er wichtig ist.</li>
+      <li><span class="offen">Kanal oder Maßnahme</span> — und was daran anders war als geplant.</li>
+    </ul>
+
+    <figure>
+      <img src="bilder/platzhalter.svg" width="1200" height="675"
+           alt="Platzhalter — hier kommt ein Bild hin, das etwas zeigt.">
+      <figcaption>Beispielbild aus dem Ordner <code>bilder/</code>. Tausch die Datei aus oder lösch diesen Abschnitt. Der Pfad bleibt relativ, sonst bleibt das Bild beim Empfänger leer. Jedes Bild, das etwas aussagt, braucht einen <code>alt</code>-Text.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2>Was wir daraus mitnehmen</h2>
+    <ul class="punkte">
+      <li><span class="offen">Eine Erkenntnis</span> — und was sie beim nächsten Mal ändert.</li>
+      <li><span class="offen">Eine Erkenntnis</span> — auch wenn sie unbequem ist. Genau die wird sonst zweimal gemacht.</li>
+    </ul>
+  </section>
+
+  <!-- ===== 3 · Abschluss: was jetzt zu tun ist, mit Kontakt ===== -->
+  <section>
+    <h2>Wie es weitergeht</h2>
+    <p>Ein bis zwei Sätze: Was ist der nächste Schritt, bis wann, und wer macht ihn. Wenn du etwas zurückbekommen willst, schreib hin, was und bis wann — <span class="offen">Rückmeldung bis TT.MM.</span></p>
+    <p><a class="mail" href="mailto:vorname.nachname@example.com">Per Mail antworten</a></p>
+    <p class="mail-zusatz">Die Adresse steht in <code>index.html</code> im <code>href</code> dieses Links: <span class="offen">vorname.nachname@example.com</span>. Ein Mail-Link ist ohne Server die ehrliche Lösung — ein Formular hätte hier niemanden, der es entgegennimmt.</p>
+  </section>
+
+  <!-- ===== 4 · Fuß: wer die Seite gemacht hat und von wann sie ist ===== -->
+  <footer class="fuss">
+    <p>Gemacht von <span class="offen">Name</span> · Stand <span class="offen">TT.MM.JJJJ</span></p>
+    <p>Diese Seite braucht kein Netz. Zum Weitergeben den ganzen Ordner verschicken, nicht nur <code>index.html</code> — sonst fehlt das Bild.</p>
+  </footer>
+
+<!-- ============================================================
+     INHALT ENDE
+     ============================================================ -->
+
+</main>
+</body>
+</html>
