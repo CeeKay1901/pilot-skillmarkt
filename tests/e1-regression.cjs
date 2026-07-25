@@ -83,6 +83,49 @@ async function runViewport(browser, vp) {
     blockedResourceErrors: blockedResourceErrors.length,
   });
 
+  /* ---------- (1b) Bestandszahl in den Meta-Tags == VISIBLE_SKILL_COUNT ----------
+     Die drei Meta-Beschreibungen tragen die Zahl der sichtbaren Skills als
+     getippten Text („35 echte Skills"). Getippt MUSS sie sein: Suchmaschinen und
+     Link-Vorschauen lesen das statische HTML, dort rechnet kein JavaScript. Genau
+     deshalb driftet sie lautlos, sobald jemand HIDDEN oder einen Eintrag in
+     data/skills.js anfasst — und niemandem fällt es auf, weil die Seite selbst
+     überall die richtige Zahl anzeigt (#page-sub-count wird zur Laufzeit gefüllt).
+
+     Der Sollwert steht bewusst NICHT in diesem Test, sondern kommt zur Laufzeit
+     aus VISIBLE_SKILL_COUNT. Der Test kann also nicht mitdriften.
+
+     Verglichen wird gegen VISIBLE_SKILL_COUNT, NICHT gegen die Kartenzahl im
+     Reiter „Alle": die ist 37, weil Merge-Karten als eine Karte zählen — Check 02
+     pinnt genau das. Wer hier die Kartenzahl einsetzt, baut einen Test, der von
+     Tag eins rot ist, und zieht dann die Meta-Tags auf einen falschen Wert nach.
+
+     „Genau eine Zahl je Tag" ist Absicht: eine zweite Zahl in der Beschreibung
+     macht unentscheidbar, welche die Bestandszahl ist. Wer eine zweite braucht,
+     muss diesen Test bewusst anfassen. Das ist der Zweck.
+
+     UNTERGRENZE: soll > 0 und drei gefundene Tags — sonst wäre „keine Zahl ==
+     keine Zahl" grün. */
+  const metaZahl = await page.evaluate(() => {
+    const lies = sel => {
+      const el = document.querySelector(sel);
+      return el ? (el.getAttribute('content') || '') : null;
+    };
+    const tags = {
+      description: lies('meta[name="description"]'),
+      og: lies('meta[property="og:description"]'),
+      twitter: lies('meta[name="twitter:description"]'),
+    };
+    const zahlen = {};
+    for (const [k, v] of Object.entries(tags)) zahlen[k] = v === null ? null : (v.match(/\d+/g) || []);
+    return { soll: typeof VISIBLE_SKILL_COUNT === 'number' ? VISIBLE_SKILL_COUNT : null, tags, zahlen };
+  });
+  check('01b_meta_bestandszahl_stimmt',
+    typeof metaZahl.soll === 'number' && metaZahl.soll > 0
+      && Object.values(metaZahl.tags).filter(v => v !== null).length === 3
+      && Object.values(metaZahl.zahlen).every(z =>
+        Array.isArray(z) && z.length === 1 && Number(z[0]) === metaZahl.soll),
+    metaZahl);
+
   // ---------- (2) Katalog: Aufgaben-Tabs + Karten-Anzahl pro Tab ----------
   const tabLabels = await page.evaluate(() =>
     [...document.querySelectorAll('#cat-tabs .cat-tab')].map(b => b.textContent.trim())
