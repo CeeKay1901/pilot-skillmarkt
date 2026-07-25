@@ -55,7 +55,7 @@ python3 -m http.server 8401
 - **Inhalte** liegen in `data/*.js` — klassische Scripts mit globalen Konstanten, direkt editierbar.
 - **Skill-Dateien** liegen unter `skills/<id>/`. Nach Änderungen `node build-skills.mjs` laufen lassen (schreibt `manifest.json` und `files-all.json` neu).
 - **Design und Engine** liegen zentral in `shared/base.css` und `shared/base.js` — Änderungen dort wirken auf allen sechs Seiten.
-- **Vor jedem Push** die zehn Regressionssuiten laufen lassen (siehe `CLAUDE.md`).
+- **Vor jedem Push** die elf Regressionssuiten laufen lassen (siehe `CLAUDE.md`).
 
 **Push auf `main` veröffentlicht sofort** (GitHub Pages).
 

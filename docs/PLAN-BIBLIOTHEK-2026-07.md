@@ -1,6 +1,21 @@
 # Implementierungsplan — Bibliothek, Inhalte, Neuigkeiten
 
-**Stand:** 25.07.2026 · **Fassung 5** (Stufen 0 bis 4 umgesetzt, Ergebnisse eingetragen; offen ist nur noch Stufe 5)
+> ## ABGESCHLOSSEN · dieses Dokument ist **historisch**
+>
+> **Alle sechs Stufen (0 bis 5) sind umgesetzt.** Abgeschlossen am 25.07.2026.
+> `docs/` führt laut `CLAUDE.md` genau **einen aktiven Plan**; dieser hier ist es
+> **nicht mehr**. Er wird nicht weitergeschrieben und ist als Nachweis gedacht,
+> nicht als Arbeitsanweisung: Wer wissen will, was heute gilt, liest den Code und
+> `CLAUDE.md`, nicht dieses Dokument.
+>
+> **Was hier drinsteht und sonst nirgends:** die Begründungen für die
+> Entwurfsentscheidungen — und die Stellen, an denen der Plan selbst danebenlag.
+> Die sind bewusst **nicht** wegkorrigiert, sondern als Korrekturen sichtbar
+> stehengelassen. Der Abschnitt **[„Abschluss — was Stufe 5 wirklich geliefert
+> hat"](#abschluss--was-stufe-5-wirklich-geliefert-hat)** sammelt sie und listet,
+> was offen geblieben ist.
+
+**Stand:** 25.07.2026 · **Fassung 6** (Stufen 0 bis 5 umgesetzt, Plan geschlossen; Fassung 5 hatte Stufe 5 noch offen)
 **Grundlage:** Bestandsaufnahme vom 25.07.2026, eine Fragerunde mit sechs Entscheidungsblöcken, und ein Messlauf gegen den Ist-Zustand (Protokoll am Ende).
 
 Dieses Dokument hält fest, **was entschieden ist**, damit es nicht neu verhandelt wird, und **in welcher Reihenfolge gebaut wird**. Es ersetzt keine der harten Regeln aus `CLAUDE.md` — die gelten weiter, besonders „kein Build-Step", „Zahlen-Ehrlichkeit" und „ändere nie einen Test, um ihn grün zu bekommen".
@@ -25,7 +40,7 @@ Die erste Fassung entstand direkt aus der Fragerunde und trug Zahlen aus der Bes
 7. **Der Neuigkeiten-Block wäre in seiner geplanten Form unbrauchbar geworden.** Der Messlauf über alle 243 Einträge ergibt nur **fünf verschiedene Tage**; 219 der 243 liegen auf dem 16. und 17. Juli. „Die letzten acht Einträge" wären buchstäblich **acht Glossarbegriffe vom 24. Juli** — sonst nichts. Details unten in Stufe 1.
 8. **Der `seit`-Generator ist nicht trivial.** Die ID-Schreibweise wechselt sogar *innerhalb* von `data/assets.js`: Schriften stehen als `id: "inter"`, Muster als `"id": "dots"`. Ein naiver Pickaxe liefert für ganze Blöcke stumm null Treffer — im Test zurückgewiesen für `dots` und `grid`.
 9. **Startprojekte passen nicht in das `CASES`-Schema.** Ein Gerüst hat keine `persona`, keine `story`, kein `zitat`, keinen `aufwand`, keine `liveUrl`, keinen `reaktionSeed` — sechs von sechzehn Feldern wären leer oder erfunden.
-10. **Bilder im Repo sind unwiderruflich.** `.git` liegt heute bei 13 MB. Binärdateien lassen sich nachträglich nicht mehr aus der Historie entfernen, ohne sie umzuschreiben. Ohne Größenbudget wächst das Repo dauerhaft.
+10. **Bilder im Repo sind unwiderruflich.** ~~`.git` liegt heute bei 13 MB.~~ Binärdateien lassen sich nachträglich nicht mehr aus der Historie entfernen, ohne sie umzuschreiben. Ohne Größenbudget wächst das Repo dauerhaft. *(Zahl beim Abschluss nachgemessen und korrigiert — siehe [Korrektur 5](#korrektur-5--die-repo-zahlen-stimmen-nicht-und-die-schlussfolgerung-hing-am-falschen-posten). Die Aussage bleibt richtig, aber `.git` war nie der große Posten.)*
 
 **Was sich dadurch ändert:** Stufe 1 wird tagesweise statt eintragsweise gebaut (und bleibt dadurch testneutral), Stufe 3 bekommt eine eigene Datenliste statt eines Eingriffs in `CASES` (und bleibt dadurch ebenfalls testneutral), und Stufe 5 ist kleiner als gedacht, weil zwei Bausteine schon da sind.
 
@@ -49,7 +64,7 @@ Die erste Fassung entstand direkt aus der Fragerunde und trug Zahlen aus der Bes
 | Alte Daten und Links | **Sauber vereinheitlichen, Altes verfällt.** Bewusst in Kauf genommen: gespeicherte Merkungen alter Typen und geteilte `?a=`/`?b=`-Links brechen. |
 | Reihenfolge | **Kleines zuerst, Umbau zuletzt.** Jede Stufe geht einzeln live. |
 | Einreichwege | **Vertagt aufs Backend.** Die vier simulierten Flows bleiben vorerst, wie sie sind. |
-| Regressionssuiten | e6, e7 und **e9** werden in Stufe 5 neu geschrieben; jeder verschobene Sollwert bekommt im Test seine Begründung. Stufen 0 und 1 kamen ohne Teständerung aus, **die Stufen 2, 3 und 4 nicht**: Stufe 2 zog e9 und e11 nach, Stufe 3 erneut e9 und e11 (und verschärfte `e11:03`), Stufe 4 ergänzte einen Check in e1 und zwei Kommentare in e3 — nie wurde dabei eine Zusicherung schwächer (Details in der jeweiligen Stufe). |
+| Regressionssuiten | ~~e6, e7 und **e9** werden in Stufe 5 neu geschrieben~~ *(eingetreten: nur e9 und e11 wurden nachgezogen, e6 und e7 blieben ohne eine geänderte Zeile grün — [Abschluss](#offen-geblieben) Punkt 1)*; jeder verschobene Sollwert bekommt im Test seine Begründung. Stufen 0 und 1 kamen ohne Teständerung aus, **die Stufen 2, 3 und 4 nicht**: Stufe 2 zog e9 und e11 nach, Stufe 3 erneut e9 und e11 (und verschärfte `e11:03`), Stufe 4 ergänzte einen Check in e1 und zwei Kommentare in e3 — nie wurde dabei eine Zusicherung schwächer (Details in der jeweiligen Stufe). |
 | Changelog-Reiter | **Streichen.** |
 
 ---
@@ -424,37 +439,39 @@ Die Vorhersage „keine" hat für den Changelog gehalten und für die anderen be
 
 ---
 
-## Stufe 5 — Der Bibliotheks-Umbau
+## Stufe 5 — Der Bibliotheks-Umbau · **erledigt 25.07.2026**
 
 **Zuerst das Datenmodell, dann die Karten, dann die Pakete.** Nicht am Layout anfangen.
+
+> Der folgende Abschnitt ist der **Plan**, wie er vor der Umsetzung dastand — samt der Stellen, an denen er danebenlag. Was daraus wurde, steht darunter unter [„Abschluss"](#abschluss--was-stufe-5-wirklich-geliefert-hat).
 
 ### Ausgangslage — kleiner als gedacht
 
 Beim Nachsehen sind zwei Bausteine schon da, die der Plan neu bauen wollte:
 
-- **Die vereinte Liste existiert.** `ASSETS` ist bereits ein dünner Index über alle vier Asset-Typen (`id`, `typ`, `name`, `rating`, `ref`) mit dem Volldatensatz hinter `ref`. Genau die zweischichtige Form, die das gemeinsame Modell braucht. Was fehlt, ist nicht das Modell, sondern **eine gemeinsame Karte und ein gemeinsames Modal**.
+- **Die vereinte Liste existiert.** `ASSETS` ist bereits ein dünner Index über alle vier Asset-Typen (`id`, `typ`, `name`, `rating`, `ref`) mit dem Volldatensatz hinter `ref`. Genau die zweischichtige Form, die das gemeinsame Modell braucht. ~~Was fehlt, ist nicht das Modell, sondern **eine gemeinsame Karte und ein gemeinsames Modal**.~~ **Der letzte Satz war falsch** — von den neun Modellfeldern gab es drei; `beschreibung`, `vorschau`, `dateien[]` und `tags` fehlten vollständig, `lizenz` bei allen sieben Paletten, und die Seite erfand für Paletten zur Laufzeit einen Lizenzsatz. Belege in [Korrektur 3](#korrektur-3--zwei-bestandsbehauptungen-waren-zu-optimistisch).
 - **Die getrennten Bereiche existieren.** `vorlagen.html` hat bereits neun `.lib-section` mit eigener Überschrift und abwechselndem Hintergrund. Die zweite Navigationsebene, die du wolltest, ist also eine **Umgruppierung von zwei Reitern auf vier**, kein Neuaufbau.
 
-Das reduziert Stufe 5 spürbar. Der Umbau bleibt trotzdem die größte Stufe — aber das Risiko liegt in den Karten und Deep-Links, nicht in der Struktur.
+~~Das reduziert Stufe 5 spürbar.~~ Der Umbau bleibt trotzdem die größte Stufe — aber das Risiko liegt in den Karten und Deep-Links, nicht in der Struktur. *(„Reduziert spürbar" hat sich nicht bestätigt: Stufe 5 wurde die größte Stufe des Plans, vier Lieferungen, sieben Commits plus die noch nicht committete Absicherung.)*
 
 ### Arbeit
 
-1. **Gemeinsames Modell.** Jeder Eintrag: `id`, `typ`, `name`, `beschreibung`, `vorschau`, `dateien[]`, `lizenz`, `tags`, `seit`. Dateien werden über eine Referenz adressiert, die heute ein lokaler Pfad ist und später eine URL aus dem Objektspeicher sein kann — ohne dass das Modell sich ändert. `seit` sitzt an den **Quell-Arrays** (`FONTS`, `PALETTES`, `PATTERNS`, `ICONSETS`), nicht am abgeleiteten Index.
+1. **Gemeinsames Modell.** Jeder Eintrag: `id`, `typ`, `name`, `beschreibung`, `vorschau`, `dateien[]`, `lizenz`, `tags`, `seit`. Dateien werden über eine Referenz adressiert, die heute ein lokaler Pfad ist und später eine URL aus dem Objektspeicher sein kann — ohne dass das Modell sich ändert. ~~`seit` sitzt an den **Quell-Arrays** (`FONTS`, `PALETTES`, `PATTERNS`, `ICONSETS`), nicht am abgeleiteten Index.~~ **Diese Forderung war falsch und wurde bewusst nicht umgesetzt:** `data/seit.js` ist eine erzeugte Datei mit Einfrier-Regel, ein handgepflegtes `seit` am Quell-Array würde driften. Ebenso nicht als Datenfeld gebaut: `vorschau` — Begründung zu beidem im [Abschluss](#offen-geblieben), Punkte 2 und 3.
 2. **Eine Karte, ein Modal, eine Suche, ein Filter.** Damit verschwinden von selbst:
    - die **21 nicht anklickbaren Assets** — nur die 9 Schriften haben heute einen „Details"-Knopf, Paletten, Muster und Icon-Sets haben keinen;
    - das zweite Suchfeld;
-   - die **beiden** Reiter-Zähler, die die Suche ignorieren (`vl-count-bausteine` steht fest auf `BAUSTEINE.length`, `vl-count-assets` auf `ASSETS.length`);
-   - der fehlende Leerzustand. **Präzisierung:** Schriften, Paletten, Muster und der Icon-Browser haben einen; der Brand-Abschnitt hat keinen, und kein Zähler reagiert auf die Suche.
+   - ~~die **beiden** Reiter-Zähler, die die Suche ignorieren~~ (`vl-count-bausteine` steht fest auf `BAUSTEINE.length`, `vl-count-assets` auf `ASSETS.length`) — **es waren vier von neun**, dazu `data-count` und `icons-count`;
+   - der fehlende Leerzustand. ~~**Präzisierung:** Schriften, Paletten, Muster und der Icon-Browser haben einen; der Brand-Abschnitt hat keinen, und kein Zähler reagiert auf die Suche.~~ **Die Präzisierung war in beiden Hälften falsch:** ohne Leerzustand waren **fünf** Abschnitte (Bausteine, Meistkopiert, Beispieldaten, Projektanweisungen, Brand), und auf die Suche reagierten bereits **fünf von neun** Zählern. Zahlen und Methode in [Korrektur 3](#korrektur-3--zwei-bestandsbehauptungen-waren-zu-optimistisch).
 3. **Zwei Navigationsebenen.** Reiter `Design · Code · Daten · Pakete`, darin die Kategorien als klar getrennte Bereiche mit eigenen Überschriften. Zuordnung der neun bestehenden Abschnitte: Design ← Schriften, Icons, Paletten, Muster, Brand · Code ← Bausteine, Meistkopiert, Projektanweisungen · Daten ← Beispieldaten, Bilder · Pakete ← neu.
 4. **Pakete als Typ.** Verweise auf vorhandene IDs und eigene Dateien; das ZIP wird zur Laufzeit gepackt.
 5. **Design-System pilot** als erstes Paket: Tokens, Schriften, Muster, Beispielseite, `CLAUDE.md` mit den Designregeln.
 6. **Bild-Bereich** mit den zwei vorhandenen Test-SVGs plus freien Fotos.
    - Jede Lizenz wird **pro Bild** geprüft und angezeigt — keine Aufnahme ohne belegte Lizenz und Quellenangabe.
-   - **Größenbudget: höchstens 2 MB für den gesamten Bildbestand**, WebP, längste Kante 1600 px. Grund: Binärdateien bleiben dauerhaft in der Historie (`.git` liegt heute bei 13 MB von 15 MB Gesamtgröße) und lassen sich nicht mehr sauber entfernen. Ohne Build-Step gibt es keine Bildpipeline, die das später repariert.
+   - **Größenbudget: höchstens 2 MB für den gesamten Bildbestand**, WebP, längste Kante 1600 px. Grund: Binärdateien bleiben dauerhaft in der Historie ~~(`.git` liegt heute bei 13 MB von 15 MB Gesamtgröße)~~ und lassen sich nicht mehr sauber entfernen. Ohne Build-Step gibt es keine Bildpipeline, die das später repariert. *(Klammerzahl falsch — [Korrektur 5](#korrektur-5--die-repo-zahlen-stimmen-nicht-und-die-schlussfolgerung-hing-am-falschen-posten). Das Budget selbst hat gehalten: `assets/bilder` liegt beim Abschluss bei **1,9 MB**.)*
    - Zahl der Fotos: so viele wie das Budget trägt, Richtwert acht bis zwölf.
 7. **Muster-CSS lauffähig machen.** Sieben der zehn Hintergründe (die SVG-Muster; die drei Verläufe sind selbsttragend) kopieren heute `url('assets/patterns/…')` — ein relativer Pfad, der außerhalb des Repos ins Leere zeigt. **Entschieden:** der **kopierte Schnipsel bekommt das SVG als `data:`-URI** (er muss überall funktionieren, wo man ihn einfügt — das ist das Versprechen des Kopieren-Knopfs), **und das Modal bietet zusätzlich die `.svg`-Datei zum Download** (wer die Datei will, soll sie bekommen). Die sieben SVGs sind zwischen 134 und 576 Bytes groß, der `data:`-URI bläht den Schnipsel also nicht auf.
 8. **Tote Deep-Links melden sich.** Da alte Links bewusst verfallen, bekommt ein nicht auflösbarer Deep-Link (`?a=`, `?b=`, `?d=` mit unbekannter ID) eine sichtbare Meldung statt wie heute stillzuschweigen.
-9. **Suiten e6, e7 und e9 neu.** e9 gehört dazu, weil `DEEPLINK_RE` die Parameter `vorlagen.html?a=`, `?b=` und `?d=` fest verdrahtet — eine Vereinheitlichung der Typen bricht die Zusicherung. Jeder verschobene Sollwert bekommt seine Begründung im Test. Die Kopfkommentare von e6 und e7 werden mitgezogen: sie beschreiben noch `bibliothek.html`/`baukasten.html` und ein „Mehr ▾"-Dropdown, das es nicht mehr gibt.
+9. **Suiten e6, e7 und e9 neu.** e9 gehört dazu, weil `DEEPLINK_RE` die Parameter `vorlagen.html?a=`, `?b=` und `?d=` fest verdrahtet — eine Vereinheitlichung der Typen bricht die Zusicherung. Jeder verschobene Sollwert bekommt seine Begründung im Test. Die Kopfkommentare von e6 und e7 werden mitgezogen: sie beschreiben noch `bibliothek.html`/`baukasten.html` und ein „Mehr ▾"-Dropdown, das es nicht mehr gibt. *(**Nur teilweise geliefert.** e9 wurde nachgezogen, e11 dazu; e6 und e7 blieben unangetastet und grün — die Kopfkommentare stehen unverändert falsch da. [Abschluss](#offen-geblieben), Punkt 1.)*
 
 **Abnahme:**
 - Alle 30 Assets sind anklickbar und öffnen dasselbe Modal.
@@ -463,6 +480,154 @@ Das reduziert Stufe 5 spürbar. Der Umbau bleibt trotzdem die größte Stufe —
 - Kein Bild ohne belegte Lizenz; `du -sh` über den Bildordner unter 2 MB.
 - Ein erfundener Deep-Link erzeugt eine sichtbare Meldung.
 - e6, e7, e9 neu geschrieben und grün; e1, e3, e8, e10 unverändert grün.
+
+---
+
+## Abschluss — was Stufe 5 wirklich geliefert hat
+
+*Geschrieben am 25.07.2026 beim Schließen des Plans. Alle Zahlen in diesem Abschnitt sind an diesem Tag selbst gemessen worden; die Methode steht jeweils dabei. Wo eine Zahl nicht belegbar war, steht das da — statt einer Schätzung.*
+
+### Der tatsächliche Schnitt: vier Lieferungen statt drei
+
+Der Plan sah unter „Risiken" **drei** Auslieferungen vor („Modell, Karten und Pakete sind drei eigene Auslieferungen"). Geworden sind es **vier**. Abgelesen aus `git log --oneline` (die sieben Commits ab `a27374f`, alle vom 25.07.2026):
+
+| Lieferung | Commits | Was drin ist |
+|---|---|---|
+| **5a** | `a27374f`, `f2afeee` | Tote Deep-Links melden sich (`prompts.html`, `showroom.html`); alle 30 Assets bekommen einen „Details"-Knopf; jeder Abschnitt sagt, was die Suche mit ihm tut |
+| **5b** | `3c6cef8`, `8bebc79`, `8f6e509` | Gemeinsames Asset-Modell in `data/assets.js`; Muster-CSS als `data:`-URI; `tools/muster-datauri.mjs` als neuer Prüfer (Pfade, eingebettete Muster, jede Ziffer in den Beschreibungen); **eine** Asset-Karte für alle vier Typen |
+| **5c** | `3a56ef8`, `cd3077e` | Bildbestand (**18** WebP-Dateien = 9 Fotos in je zwei Größen), Design-System-Paket, `data/bilder.js` + `data/pakete.js`, `tools/bilder-pakete.mjs`; die vier Reiter; `shared/base.js` und `index.html` um die zwei neuen Sammlungen ergänzt |
+| **5d** | *noch nicht committet* | Die Prüfarbeit, die 5a–5c hinterlassen haben: neue Suite `tests/e14-bilder-pakete.cjs`, Nachzug in `tests/e9-suche.cjs`, die vier Reiter in `qa a11y`, die Zahlwörter in `data/assets.js` und dieser Abschluss |
+
+**Warum vier und nicht drei:** Der Plan hat die Auslieferungen nach dem *Bauwerk* geschnitten (Modell · Karten · Pakete) und dabei die *Absicherung* nicht als eigenes Stück gezählt. Sie wurde aber eines: Zwei neue Datendateien und zwei neue Sammlungen brauchen einen Prüfer gegen die Platte (`tools/bilder-pakete.mjs`), eine Regressionssuite (`e14`) und einen Nachzug in den Aufzählungen (`e9`, `e11`) — zusammen mehr Arbeit als 5a. Das ist dieselbe Lehre wie in den Stufen 2 und 3, nur eine Ebene höher: **Ein neuer Bestand kostet nicht nur den Bau, sondern auch die Prüfung, und die ist keine Zugabe zur letzten Lieferung.**
+
+Zweite Beobachtung aus der Historie, die man in der Tabelle nicht sieht: **die Lieferungen liefen nicht sauber nacheinander.** `3a56ef8` („Stufe 5c, Teil 1") steht in der Historie *zwischen* drei 5b-Commits. Der Bildbestand wurde vorgezogen, weil die 18 WebP-Dateien unabhängig vom Kartenumbau entstehen konnten. Das war praktisch, macht aber die Aussage „jede Lieferung geht einzeln live" für 5b und 5c ungenau — zwischen `3c6cef8` und `8f6e509` gab es einen Stand, in dem das Modell schon neu und die Karte noch alt war.
+
+### Fünf Korrekturen am Plan
+
+Sie stehen hier als Korrekturen und nicht stillschweigend eingearbeitet, weil der Plan an genau diesen Stellen ein Muster zeigt, das sich lohnt zu kennen: **Er hat aus dem Kopf aufgezählt, statt zu messen** — dieselbe Diagnose, die schon in Stufe 4 stand („Eine aus dem Kopf geschriebene Fundstellenliste ist eine Vermutung, kein Messergebnis").
+
+#### Korrektur 1 — Vier Suiten hängen an `vorlagen.html`, die der Plan nicht dort sah
+
+Gemessen mit `grep -c 'vorlagen\.html' tests/*.cjs`, danach jede Fundstelle einzeln angesehen:
+
+- **e8** — Plan: „—" (unberührt). Gemessen: **8 Code-Zeilen** mit einer harten `vorlagen.html`-Adresse (Z. 304, 305, 308, 528, 529, 545, 546, 590), in **4 verschiedenen Formen**: `vorlagen.html`, `vorlagen.html?tab=assets`, `vorlagen.html?b=`, `vorlagen.html#bk-data-`. Sie prüfen die Querverweise in `showroom.html` und die Bereichs-/Neuigkeiten-Links auf `index.html`. Eine umbenannte Reiterkennung oder ein geänderter Deep-Link-Parameter hätte e8 rot gemacht, obwohl `showroom.html` selbst unangetastet bleibt.
+- **e11** — Plan: „✓" (bleibt unverändert grün). Gemessen: berührt an zwei Stellen. `PFLICHT_LINKS` (Z. 53) enthält `vorlagen.html` **und** `vorlagen.html?tab=assets`; die Sammlungszahl `globs` (Z. 215) musste in Stufe 5c von 12 auf **14** nachgezogen werden, weil `BILDER` und `PAKETE` dazukamen. Beides mit Begründung im Test, die Zusicherung `lueckenGesamt === 0` blieb unberührt — aber „unverändert grün" war es nicht.
+- **e12** — Plan: „?" (nicht vorhergesagt). Gemessen: Die Suite **ist** eine `vorlagen.html`-Suite. Ihr Default-Ziel steht in Z. 80 auf `http://localhost:8412/vorlagen.html`, sie hat 13 Checks und 13 Fundstellen der Seite, darunter einen Strukturvertrag (welche Hashes die Seite schließen darf) und „0 JS-Fehler auf `vorlagen.html`".
+- **e13** — Plan: „?". Gemessen: berührt über einen Vertrag, der quer über zwei Seiten läuft. Z. 415 und 563 verlangen, dass die Anleitung an jeder Startprojekt-Karte im Showroom auf `vorlagen.html?pa=<anweisung>` zeigt.
+- **Bestätigt unberührt:** **e1**, **e3**, **e10** — je **0** Treffer `vorlagen.html`.
+
+*Eine Abweichung zur Vorab-Meldung, die zu diesem Abschluss geführt hat:* Dort war von „6 harten hrefs" in e8 die Rede. Nachgezählt sind es **8** Code-Zeilen (Kommentarzeilen nicht mitgerechnet) in 4 verschiedenen Formen. An der Schlussfolgerung ändert das nichts.
+
+#### Korrektur 2 — `qa zaehler` fehlt im Plan vollständig
+
+Der Plan führt unter „Testwirkung" nur die zehn Regressionssuiten. `node tools/qa/index.mjs zaehler` steht nirgends, obwohl die Prüfung für `vorlagen.html` **drei Selektoren hart festnagelt**: `input#search`, `#bk-grid` und `#bk-cats .bk-cat` (`ZAEHLER_SEITEN` in `tools/qa/index.mjs`). Fällt einer davon weg, meldet die Prüfung `SELEKTOR DEFEKT, nicht geprüft` und zählt die Seite als Befund — sie sagt **nicht** „ok".
+
+**Das ist Absicht und gehört als Risiko in einen Umbauplan.** Der Kommentar an Ort und Stelle sagt warum: Ein falscher Selektor würde sonst zu einem stillen Überspringen führen, „das in der Ausgabe wie ok aussieht — die gefährlichste Sorte Fehlmessung". Wer beim Umbau den Selektor einfach „nachzieht", damit es wieder grün wird, schaltet die Prüfung ab, statt sie zu erfüllen. Der Plan hätte das führen müssen; ein Umbau, der `#bk-grid` umbenennt, sieht sonst wie ein Werkzeugfehler aus.
+
+Beim Abschluss gemessen: `qa zaehler` ist **sauber** über alle fünf geprüften Seiten, `vorlagen.html` eingeschlossen. Die drei Selektoren haben den Umbau also überlebt.
+
+#### Korrektur 3 — Zwei Bestandsbehauptungen waren zu optimistisch
+
+Nachgemessen am Stand **vor** Stufe 5 (`git show daa4263:data/assets.js` bzw. `:vorlagen.html`, in Node ausgewertet, nicht gegrept):
+
+**„Die vereinte Liste existiert."** Von den **9** Feldern, die der Plan selbst als gemeinsames Modell aufschreibt, gab es im Bestand **3**:
+
+| Feld | vorher vorhanden |
+|---|---|
+| `id` · `typ` · `name` | 30 von 30 |
+| `beschreibung` · `vorschau` · `dateien[]` · `tags` | **0 von 30** — weder im Index noch im `ref` dahinter |
+| `lizenz` | 23 von 30 — es fehlte bei **allen 7 Paletten** |
+| `seit` | 0 von 30 |
+
+Und die fehlende Palette-Lizenz war schlimmer als eine Lücke: `assetLicenseLabel()` in `vorlagen.html` gab für `typ === 'palette'` die feste Zeichenkette `'Farbwerte frei nutzbar'` zurück. Die Seite **erfand** die Lizenzaussage zur Laufzeit, statt eine fehlende zu melden — auf einer Seite, deren Abnahmebedingung „kein Asset ohne belegte Lizenz" lautet. „Was fehlt, ist nicht das Modell" war also falsch: Es fehlten zwei Drittel davon, und an einer Stelle wurde die Lücke gefüllt statt gezeigt.
+
+**„Die beiden Reiter-Zähler, die die Suche ignorieren."** `vorlagen.html` hatte vor Stufe 5 **neun** Zähler. Gemessen an ihren Render-Funktionen:
+
+- **reagierten auf die Suche (5):** `bausteine-count`, `pa-count`, `fonts-count`, `pal-count`, `pat-count`
+- **ignorierten sie (4):** `vl-count-bausteine`, `vl-count-assets`, `data-count`, `icons-count`
+
+Der Plan nannte **zwei** der vier und übersah `data-count` und `icons-count`. Die „Präzisierung" im selben Arbeitspunkt — *„kein Zähler reagiert auf die Suche"* — war schlicht falsch: **fünf von neun** taten es bereits.
+
+**Ebenfalls in diesem Arbeitspunkt:** *„der Brand-Abschnitt hat keinen [Leerzustand]"*. Gemessen: Leerzustand hatten **vier** Abschnitte (Schriften, Paletten, Muster über `.vl-grid-empty`, Icons über `.icon-empty`); **fünf** hatten keinen — Bausteine, Meistkopiert, Beispieldaten, Projektanweisungen und Brand. Der Plan nannte einen von fünf.
+
+Alle drei Fehler haben dieselbe Form: Der Plan hat das genannt, was ihm beim Hinsehen zuerst auffiel, und daraus eine Vollzähligkeitsaussage gemacht. Der Umbau war dadurch nicht kleiner, sondern nur schlechter beschrieben.
+
+#### Korrektur 4 — `EXPECTED_TOTAL = 3` in e12 hat es nie gegeben
+
+Eine Begründung dieses Plans stützte sich auf die Annahme, `tests/e12-anweisungen.cjs` verlange fest `EXPECTED_TOTAL = 3`. Gemessen: Die Zeichenkette `EXPECTED_TOTAL` kommt in e12 **überhaupt nicht vor**. Die Suite leitet zur Laufzeit aus `ANWEISUNGEN.length` ab — sie kann also gar nicht mitdriften.
+
+**Und die Gegenprobe hat noch etwas gefunden.** Die Annahme, `EXPECTED_TOTAL` sei „nur in e6 (30) und e8 (10)" hartkodiert, stimmt ebenfalls nicht. `grep -rn 'EXPECTED_TOTAL' tests/` findet die Konstante in **vier** Suiten:
+
+| Suite | Wert | Kommentar im Test |
+|---|---:|---|
+| e3 | 23 | — |
+| e6 | 30 | `ASSETS = Fonts + Paletten + Muster + Icon-Sets` |
+| e7 | 12 | `BAUSTEINE.length` |
+| e8 | 10 | `CASES.length` |
+
+Für einen Umbau der Bibliothek ist vor allem **e7 = 12** wichtig: Der Wert hängt an `BAUSTEINE.length`, und die Bausteine wohnen im Reiter „Code" derselben Seite.
+
+#### Korrektur 5 — Die Repo-Zahlen stimmen nicht, und die Schlussfolgerung hing am falschen Posten
+
+Der Plan nennt an drei Stellen „`.git` 13 MB von 15 MB gesamt" und leitet daraus das Bildbudget ab. Nachgemessen am 25.07.2026 mit `du -sh` (Blockgröße) und gegengeprüft mit `git count-objects -vH`:
+
+| | Plan | gemessen |
+|---|---|---|
+| Repo gesamt | 15 MB | **25 MB** (`du -sh --apparent-size`: 23 MB) |
+| `.git` | 13 MB | **7,8 MB** (`git count-objects -vH`: `size-pack 7.44 MiB`, 2 Packs) |
+| größter Posten | *(nicht genannt)* | **`skills/` mit 11 MB** — 410 Dateien |
+| `assets/` | 422 KB | **2,3 MB** (davon `assets/bilder` 1,9 MB — der Zuwachs aus Stufe 5c) |
+
+Die **Schlussfolgerung** des Plans bleibt trotzdem richtig: Binärdateien bleiben in der Historie, ein Größenbudget ist nötig, und das Budget hat gehalten (1,9 MB von 2 MB). Falsch war die **Begründung**: Nicht `.git` ist der große Posten, sondern der Arbeitsbaum, und darin `skills/`. Wer die Zahlen des Plans für eine Aufräum-Entscheidung heranzieht, räumt am falschen Ende.
+
+*Auch hier eine Abweichung zur Vorab-Meldung:* Dort standen „14 MB von 28 MB". Ich messe **7,8 von 25**. Die Differenz bei `.git` ist zu groß für Messrauschen; die plausibelste Erklärung ist ein zwischenzeitlich gelaufenes `git gc` (die Historie liegt jetzt in 2 Packs). Der Punkt „`skills/` ist mit 11 MB der größte Posten" deckt sich.
+
+### Was Stufe 5 nachweislich geliefert hat
+
+Gegen die Abnahmeliste der Stufe, jede Zeile selbst gemessen:
+
+| Abnahmekriterium | Ergebnis |
+|---|---|
+| Alle 30 Assets anklickbar, dasselbe Modal | **erfüllt** — 30 `.asset-card` im Reiter Design, **30** davon mit „Details"-Knopf (`openModal`) |
+| Kopierter Muster-CSS funktioniert außerhalb des Repos | **erfüllt als Mechanik** — der Schnipsel trägt den `data:`-URI, und `tools/muster-datauri.mjs --pruefen` hält alle 7 gegen die Datei auf der Platte (Lauf beim Abschluss: sauber). **Nicht neu geführt** wurde der Einzelnachweis „in einer leeren HTML-Datei außerhalb des Repos geöffnet" |
+| Bildbudget unter 2 MB | **erfüllt, knapp** — `du -sh assets/bilder` = **1,9 MB**. Bleiben ~0,1 MB; ein weiteres Foto in dieser Größe sprengt das Budget |
+| Erfundener Deep-Link erzeugt eine sichtbare Meldung | **erfüllt** — `vlDeepLinkMiss()` auf `vorlagen.html` für `?a=` `?b=` `?d=` `?pa=` `?bild=` `?paket=`, dazu die Gegenstücke auf `prompts.html` und `showroom.html` aus 5a |
+| Jeder Abschnitt hat einen Leerzustand | **erfüllt** — gezählt über `class="vl-grid-empty"` und `class="icon-empty"`: **9** Leerzustände heute gegenüber **4** vorher |
+| Jeder Reiter-Zähler zeigt die gefilterte Zahl | **erfüllt** — `qa zaehler` sauber über alle fünf Seiten |
+| Kein Bild ohne belegte Lizenz | **für den Neubestand erfüllt, für den Altbestand rot** — siehe „Offen geblieben", Punkt 4 |
+| e6, e7, e9 neu geschrieben und grün | **nicht geliefert** — siehe „Offen geblieben", Punkt 1 |
+
+Dazu, außerhalb der Abnahmeliste, drei Dinge, die der Plan gar nicht verlangt hatte und die trotzdem entstanden sind, weil der Umbau sie nötig machte: `tools/muster-datauri.mjs`, `tools/bilder-pakete.mjs` und die Ziffern-Prüfung in den Asset-Beschreibungen. Alle drei prüfen **Daten gegen Platte**, nie Daten gegen Daten — der Grund steht in `CLAUDE.md`.
+
+### Offen geblieben
+
+1. **e6 und e7 wurden nicht neu geschrieben.** Arbeitspunkt 9 verlangte „Suiten e6, e7 und e9 neu". Gemessen mit `git log --name-only a27374f~1..HEAD -- tests/`: In Stufe 5 wurden **nur** `tests/e9-suche.cjs` und `tests/e11-neuigkeiten.cjs` angefasst (beide in `cd3077e`). e6 und e7 sind grün geblieben, ohne dass eine Zeile nötig war — die Zusicherungen hängen an Klassen (`.font-card`, `.pal-card`, `.baustein-card`), und die haben den Umbau bewusst überlebt (Begründung steht in `vorlagen.html` über `assetCardHtml`). **Offen bleibt der Teil, den der Plan ausdrücklich mit aufgeführt hatte:** Die Kopfkommentare beschreiben weiter Seiten, die es nicht mehr gibt — `tests/e6-bibliothek.cjs` Z. 3 und 15 („E6-Messlatte für die Asset-Bibliothek (`bibliothek.html`)", „Default-URL: …/`bibliothek.html`"), `tests/e7-baukasten.cjs` Z. 3 und 17 dasselbe für `baukasten.html`, dazu in beiden „Mehr-Dropdown" für ein Menü, das es seit E11 nicht mehr gibt. Der **Code** darunter zeigt längst richtig auf `vorlagen.html?tab=assets` bzw. `vorlagen.html` (e6 Z. 26/27) — der Kopf ist also nicht mehr wirksam, nur noch falsch. Für jemanden, der die Suite zum ersten Mal öffnet, ist das die schlechteste Kombination: eine Anleitung, die in die Irre führt, ohne dass etwas rot wird.
+2. **`seit` sitzt nicht an den Quell-Arrays — und soll es auch nicht.** Arbeitspunkt 1 verlangte: „`seit` sitzt an den **Quell-Arrays** (`FONTS`, `PALETTES`, `PATTERNS`, `ICONSETS`), nicht am abgeleiteten Index." Gemessen: **0 von 9 · 0 von 7 · 0 von 10 · 0 von 4**. Das Datum steht in `data/seit.js` unter dem Schlüssel `ASSETS:<id>` (30 Schlüssel, gezählt). **Der Plan hat sich hier selbst widersprochen:** `data/seit.js` ist eine **erzeugte** Datei (`tools/seit.mjs`, Einfrier-Regel aus Stufe 1), und `CLAUDE.md` sagt ausdrücklich „nicht von Hand pflegen". Ein `seit`-Feld am Quell-Array wäre entweder handgepflegt — dann driftet es — oder es müsste vom Generator in die Datendateien zurückgeschrieben werden, was die Einfrier-Regel unterläuft. Die Nichtumsetzung ist die richtige Entscheidung; **falsch ist die Forderung im Plan**, und sie steht bis hierher unkorrigiert da.
+3. **`vorschau` gibt es nicht als Datenfeld** — 0 von 30. Das ist bewusst und begründet, aber die Begründung stand bisher nur im Code, nicht im Plan: Eine Schrift zeigt eine Schriftprobe, eine Palette Farbfelder, ein Muster seine Fläche. Das lässt sich nicht in **ein** Datenfeld fassen, ohne HTML in die Daten zu schreiben. Gebaut ist stattdessen ein typabhängiger Render-Slot `.ac-vorschau` in `vorlagen.html`. Vom 9-Felder-Modell des Plans sind damit **8 als Daten** geliefert und das neunte als Anzeigeform.
+4. **Der Altbestand an Bildern hat keine Lizenzangabe.** `data/bilder.js` hat **11 Einträge, davon 0 ohne `lizenz`** — für den Neubestand ist die Abnahmebedingung „kein Bild ohne belegte Lizenz" also erfüllt. Im Repo liegen aber Bilder, die zu keiner Sammlung gehören und nirgends eine Lizenzaussage tragen. Gefunden mit `find` über alle Bildformate (ohne `.git`, `skills/`, `demo/`), abgeglichen gegen `BILDER`, `PATTERNS` und `BRAND`:
+   - `og-image.png` (Wurzel, 146 KB — das Vorschaubild für geteilte Links)
+   - `assets/favicon.svg`
+   - `assets/brand/pilot-logo.svg` und `assets/brand/pilot-logo-dark.svg` — `BRAND.logos` trägt `id`, `name`, `datei`, `wofuer`; ein Feld `lizenz` gibt es dort **nicht**. Es gibt einen Nutzungshinweis (`logoHinweis`), aber der ist eine Verwendungsregel, keine Lizenzaussage.
+   - `startprojekte/einseiter/bilder/platzhalter.svg`
+   
+   Das sind **fünf** Dateien, nicht vier (die Vorab-Meldung sprach von „`og-image.png` und drei weiteren"). Bei dreien davon (Favicon, zwei Logos) ist die Antwort vermutlich „pilot-eigenes Material" — aber genau das steht nirgends, und eine Abnahmebedingung, deren Antwort man raten muss, ist nicht erfüllt. **Die Bedingung „kein Bild ohne belegte Lizenz" ist für den Altbestand rot.**
+5. **`vorlagen.html` läuft bei 320 px um 11 px über — und die Ursache ist eine andere als gemeldet.** Gemessen bei 320 px Breite: `document.documentElement.scrollWidth` = **331** gegen `clientWidth` **320**. Verursacher ist **nicht** der Kopfbereich, sondern die Abschnittsüberschrift `h2#pa-h` („Projektanweisungen für Claude") weit unten auf der Seite — sie ragt um **11,5 px** heraus, und das ist exakt der Überstand des ganzen Dokuments. **Vorbestehend:** Gegen den Stand vor Stufe 5 (`daa4263`, als eigener Server ausgeliefert und gemessen) liegt derselbe Wert vor — 331/320, dieselbe Überschrift, dieselben 11,5 px. Der Umbau hat das weder verursacht noch behoben. Kein Werkzeug meldet es, weil **320 px nicht in den Viewports von `qa responsive` steht** (dort: 360, 390, 740, 768, 1024, 1440); bei 360 px und darüber ist die Prüfung sauber.
+6. **Die Reiterleiste passt bei ≤ 390 px nicht mehr, und man sieht es nicht.** Gemessen an `.vl-tabs`: `overflow-x: auto` bei `scrollbar-width: none` und ausgeblendetem WebKit-Balken. Breite des Streifens **507 px** — bei 320, 360 und 390 px Viewport liegen „Daten" und „Pakete" damit außerhalb, erreichbar nur durch seitliches Wischen, ohne sichtbaren Hinweis darauf. Kein Body-Überlauf, deshalb meldet `qa responsive` nichts (die Prüfung nimmt gewollte Scroll-Streifen ausdrücklich aus). **Nicht neu, aber deutlich verschärft:** vor Stufe 5 war derselbe Streifen mit zwei Reitern **362 px** breit und passte bei 390 px genau; jetzt fehlen dort 117 px.
+7. **Die übrigen `qa`-Prüfungen haben die blinde Stelle noch, die `a11y` in 5d verloren hat.** `qa a11y` misst `vorlagen.html` seit dieser Lieferung in allen vier Reitern (`?tab=assets` · `?tab=daten` · `?tab=pakete` · ohne Parameter). `qa kontrast`, `qa responsive`, `qa robust` und `qa zaehler` messen weiterhin nur den Standard-Reiter „Code" — drei von vier Reitern sieht dort niemand. **Beim Abschluss einmal von Hand nachgemessen**, damit die offene Stelle keine unbekannte Schuld ist: Die projekteigene Kontrastprüfung findet hinter dem Reiter Design genau die 6 bewusst vorgeführten Farbpaare (Punkt 8) und sonst nichts, hinter Daten und Pakete **0** Befunde und **0** Konsolenfehler. Die Lücke ist also heute leer — aber sie ist da.
+8. **6 × `color-contrast` an `.pal-pair-demo` sind Inhalt, kein Defekt** — und die Ausnahme ist eng. Der Abschnitt „Farbpaletten mit Kontrast-Check" führt vor, welche Farbpaare zusammen lesbar sind: Schriftmuster „Aa" in den echten Farben, daneben das gerechnete Verhältnis und eine Plakette. Von den 28 hinterlegten Paaren liegen **6** unter 4,5:1 (3,20 bis 3,94) — und genau diese 6 tragen sichtbar „AA groß". `qa a11y` nimmt sie benannt aus (`AUSNAHME_LABELS` in `tools/qa/index.mjs`), aber nur solange die Plakette in derselben Zeile „AA groß" oder „unter AA" sagt; behauptet sie „AA", wird gemeldet. Rotnachweis geführt: ein echter Kontrastfehler im selben Reiter wird weiterhin gemeldet, und eine lügende Plakette lässt alle 6 Knoten wieder rot werden.
+9. **Der Plan hat `og-image.png` und die Startseiten-Bilder nie erfasst.** Punkt 4 oben ist der sichtbare Teil davon; der allgemeine ist: Der Bildbereich wurde als *neuer* Bestand geplant und geprüft, der *vorhandene* Bildbestand kam in keiner Stufe vor. Wer die Abnahmebedingung „kein Bild ohne belegte Lizenz" als Repo-Aussage liest, liest sie falsch — sie galt immer nur für `data/bilder.js`.
+
+### Wofür dieser Plan ein Nachweis ist
+
+Über alle sechs Stufen hat sich derselbe Fehler wiederholt, jedes Mal in anderer Verkleidung: Der Plan hat **aufgezählt statt gemessen** — Fundstellen (Stufe 4), Registrierstellen (Stufen 2 und 3), Testabhängigkeiten (Korrektur 1), Bestandsgrößen (Korrektur 3), Testkonstanten (Korrektur 4), Repo-Größen (Korrektur 5). Jedes Mal war die Liste kürzer als die Wirklichkeit, nie länger. Das ist kein Zufall: Beim Aufzählen aus dem Kopf fällt einem ein, was man zuletzt gesehen hat, und das ist systematisch zu wenig.
+
+Die Gegenmittel, die sich bewährt haben, stehen verstreut in den Stufen und hier einmal zusammen:
+
+- **Nach dem Muster suchen, nicht nach dem Namen.** (Stufe 1: `e3:i5` und `e8:i5` wurden übersehen, weil nach `newsHasBibliothek` gesucht wurde statt nach `.news-item`.)
+- **Nach den Aufzählungen suchen, nicht nur nach dem Selektor.** Positivlisten und harte Sammlungszahlen kennen einen neuen Typ nie von selbst. (Stufen 2 und 3.)
+- **Eine Gleichheitsprüfung ist wertlos, solange nicht eine Seite nachweislich ungleich null ist.** (Stufe 2.)
+- **Eine Prüfung, die auf halbem Weg „gut genug" zurückgibt, ist keine Prüfung.** (Stufe 3, `e11:03`.)
+- **Zu jeder Ausnahme gehört ein Rotnachweis.** Eine Ausnahme, die zu viel durchlässt, ist schlimmer als der Befund, den sie unterdrückt. (Stufe 4 und 5d.)
 
 ---
 
@@ -477,13 +642,26 @@ Ausgangslage vor dem Start gemessen (25.07.2026, gegen `localhost:8412`): **e6 g
 | **2 · Projektanweisungen** ✔ | ✓ | ✓ | ✓ | ✓ | ✓ | **△** | ✓ | **△** | **neu** | — | `e12-anweisungen` (13 Checks × 2 Viewports) |
 | **3 · Startprojekte** ✔ | ✓ | ✓ | ✓ | ✓ | ✓ | **△** | ✓ | **△** | ✓ | **neu** | `e13-startprojekte` (15 Checks × 2 Viewports) |
 | **4 · Restliste** ✔ | **△** | **△** | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | `e1:01b` Meta-Zahl-Regression |
-| 5 · Umbau | ✓ | — | **✎** | **✎** | — | **✎** | ✓ | ✓ | ? | ? | — |
+| ~~5 · Umbau (Vorhersage)~~ | ✓ | — | **✎** | **✎** | ~~—~~ | **✎** | ✓ | ~~✓~~ | ~~?~~ | ~~?~~ | — |
+| **5 · Umbau (gemessen)** ✔ | ✓ | ✓ | ✓ | ✓ | **berührt** | **△** | ✓ | **△** | **berührt** | **berührt** | `e14-bilder-pakete` (Stand: in Arbeit) |
 
-✔ erledigt · ✓ bleibt unverändert grün · △ angepasst, ohne eine Zusicherung aufzuweichen · ✎ wird neu geschrieben · ? Wirkung nicht vorhergesagt, vor der Stufe zu messen
+✔ erledigt · ✓ bleibt unverändert grün · △ angepasst, ohne eine Zusicherung aufzuweichen · ✎ wird neu geschrieben · ? Wirkung nicht vorhergesagt, vor der Stufe zu messen · **berührt** = die Suite hängt nachweislich an `vorlagen.html`, auch wenn sie in Stufe 5 nicht geändert werden musste
+
+**Die Vorhersagezeile lag bei 4 von 10 Suiten daneben.** Sie ist oben durchgestrichen stehengeblieben, weil der Fehler lehrreicher ist als die Korrektur: Gefragt wurde „welche Suite muss ich anfassen?", richtig gewesen wäre „welche Suite hängt an dieser Seite?". Die Belege stehen in [Korrektur 1](#korrektur-1--vier-suiten-hängen-an-vorlagenhtml-die-der-plan-nicht-dort-sah). Kurz:
+
+| Suite | Plan sagte | gemessen |
+|---|---|---|
+| **e8** | — (unberührt) | **berührt** — hart verdrahtete `vorlagen.html`-Adressen in `showroom.html` und `index.html` |
+| **e11** | ✓ (unverändert grün) | **△** — `PFLICHT_LINKS` und die Sammlungszahl `globs` mussten mit |
+| **e12** | ? (nicht vorhergesagt) | **berührt** — Zielseite der ganzen Suite ist `vorlagen.html` |
+| **e13** | ? (nicht vorhergesagt) | **berührt** — der Vertrag `vorlagen.html?pa=<anweisung>` an jeder Startprojekt-Karte |
+| e1 · e3 · e10 | ✓ | **bestätigt unberührt** — 0 Treffer `vorlagen.html` in allen dreien |
 
 **Reale Check-Zahlen nach Stufe 4**, gezählt mit dem in `CLAUDE.md` dokumentierten Kommando: e1 **17** · e3 **18** · e6 **17** · e7 **15** · e8 **15** · e9 **8** · e10 **7** · e11 **10** · e12 **13** · e13 **15**. Alle zehn Exit 0.
 
-**Die Regel für den ganzen Plan hieß:** In den Stufen 0–4 wird **keine bestehende Testdatei angefasst** — kein Sollwert verschoben, keine Zeile geändert. **Sie hat in drei von fünf Stufen nicht gehalten** (Stufe 2: e9 und e11 · Stufe 3: e9 und e11 · Stufe 4: e1 und e3, jeweils Begründung dort). Sie war zu grob formuliert: Ein neuer Inhaltstyp berührt zwangsläufig jede Liste, die Typen aufzählt, und zwei davon stehen in Tests; ein entfernter Bestand berührt jeden Kommentar, der auf ihn zeigt. Es bleibt die schärfere Fassung: **Kein Sollwert wird verschoben, um etwas grün zu bekommen.** Wird einer bewusst nachgezogen, steht die Begründung an Ort und Stelle im Test — so geschehen bei `globs` 10 → 11 → 12. Diese Fassung hat über alle fünf Stufen gehalten: kein Eingriff hat eine Prüfung geschwächt, drei haben sie verschärft (`?pa=`, `?g=`, und der Hash-Nachweis in `e11:03`). Erst Stufe 5 schreibt e6, e7 und e9 neu.
+*Für den Stand **nach Stufe 5** ist hier bewusst keine Zahl eingetragen.* Als dieser Abschluss geschrieben wurde, lag Lieferung 5d noch im Arbeitsbaum (`tests/e9-suche.cjs` geändert, `tests/e14-bilder-pakete.cjs` neu und noch nicht committet). Eine Zahl aus einem Zwischenstand wäre in dem Moment falsch, in dem 5d fertig ist — und eine geschätzte wäre schlimmer. Wer sie braucht, zählt sie mit dem Kommando aus `CLAUDE.md` selbst nach.
+
+**Die Regel für den ganzen Plan hieß:** In den Stufen 0–4 wird **keine bestehende Testdatei angefasst** — kein Sollwert verschoben, keine Zeile geändert. **Sie hat in drei von fünf Stufen nicht gehalten** (Stufe 2: e9 und e11 · Stufe 3: e9 und e11 · Stufe 4: e1 und e3, jeweils Begründung dort). Sie war zu grob formuliert: Ein neuer Inhaltstyp berührt zwangsläufig jede Liste, die Typen aufzählt, und zwei davon stehen in Tests; ein entfernter Bestand berührt jeden Kommentar, der auf ihn zeigt. Es bleibt die schärfere Fassung: **Kein Sollwert wird verschoben, um etwas grün zu bekommen.** Wird einer bewusst nachgezogen, steht die Begründung an Ort und Stelle im Test — so geschehen bei `globs` 10 → 11 → 12 ~~→~~ *(und in Stufe 5c weiter auf **14**, wegen `BILDER` und `PAKETE`)*. Diese Fassung hat über alle **sechs** Stufen gehalten: kein Eingriff hat eine Prüfung geschwächt, drei haben sie verschärft (`?pa=`, `?g=`, und der Hash-Nachweis in `e11:03`). ~~Erst Stufe 5 schreibt e6, e7 und e9 neu.~~ *(Eingetreten ist das nicht: Stufe 5 hat e9 und e11 nachgezogen und e6/e7 gar nicht angefasst — [Abschluss](#offen-geblieben), Punkt 1.)*
 
 **In Stufe 0 und 1 hat die alte Regel gehalten — und zweimal zu einem besseren Entwurf geführt, nicht zu einem Kompromiss:**
 
@@ -520,7 +698,10 @@ Nicht weil Tests unantastbar wären, sondern weil ein Entwurf, der eine grüne Z
 - **`badge: "neu"` ist von 28 auf 2 geschrumpft** (erledigt). Wer die alte Zahl erwartet, wird sie vermissen. Sie war nur nie wahr.
 - ~~**Zeitbombe im Neuigkeiten-Block**~~ — in Fassung 2 stand hier, dass die Bereichslinks irgendwann aus dem Zeitfenster fallen und vier Prüfungen rot färben. Mit der Sammelmeldung aus Stufe 1 kann das nicht mehr passieren: sie nimmt jeden herausfallenden Tag auf. **Erledigt, nicht vertagt.**
 - **`skills.html` wächst in diesem Plan nicht** — die Projektanweisungen landen bewusst in `vorlagen.html`, obwohl der Skill-Baukasten die passende Maschine hätte. Grund: über 4.000 Zeilen und drei Views in einer Datei sind bereits die Stelle mit dem höchsten Risiko für ungewollte Nebenwirkungen. *(Die Zahl im Text lautete „4.124" und war schon bei der Niederschrift überholt. Gemessen mit `wc -l`: vor Stufe 4 **4.130**, danach **4.075** — die Datei ist als einzige in diesem Plan geschrumpft, um die 55 Zeilen des Changelog-Reiters.)*
-- **Stufe 5 ist die einzige Stufe, die nicht in einem Zug live gehen sollte.** Modell, Karten und Pakete sind drei eigene Auslieferungen. Wer sie bündelt, hat im Fehlerfall keinen Punkt zum Zurückgehen.
+- **Stufe 5 ist die einzige Stufe, die nicht in einem Zug live gehen sollte.** ~~Modell, Karten und Pakete sind drei eigene Auslieferungen.~~ Wer sie bündelt, hat im Fehlerfall keinen Punkt zum Zurückgehen. *(Geworden sind es **vier** — die Absicherung war die vierte. Und sie liefen nicht sauber nacheinander: der Bildbestand wurde mitten in 5b eingeschoben. Beides im [Abschluss](#der-tatsächliche-schnitt-vier-lieferungen-statt-drei).)*
+- **`qa zaehler` nagelt drei Selektoren auf `vorlagen.html` fest — das fehlte in diesem Plan.** *(Nachgetragen beim Abschluss, [Korrektur 2](#korrektur-2--qa-zaehler-fehlt-im-plan-vollständig).)* `input#search`, `#bk-grid` und `#bk-cats .bk-cat` stehen hart in `ZAEHLER_SEITEN` (`tools/qa/index.mjs`). Ein Umbau, der einen davon umbenennt, bekommt `SELEKTOR DEFEKT, nicht geprüft` — und die Versuchung, den Selektor im Werkzeug „nachzuziehen", schaltet genau die Prüfung ab, die den Zähler-Betrug findet. Die harte Verdrahtung ist Absicht: Ein weicher Selektor hätte still übersprungen und wie „ok" ausgesehen. Wer hier etwas umbenennt, muss die Begründung im Werkzeug mitschreiben, so wie bei einem Test-Sollwert.
+- **Der Altbestand an Bildern hat keine Lizenzangabe.** Fünf Dateien (`og-image.png`, `assets/favicon.svg`, die zwei Logo-SVGs, `startprojekte/einseiter/bilder/platzhalter.svg`) tragen nirgends eine Lizenzaussage. Die Abnahmebedingung „kein Bild ohne belegte Lizenz" galt faktisch immer nur für `data/bilder.js`. **Offen** — Einzelheiten im [Abschluss](#offen-geblieben), Punkt 4.
+- **Drei von vier `qa`-Prüfungen sehen `vorlagen.html` nur im Standard-Reiter.** `a11y` misst seit 5d alle vier; `kontrast`, `responsive`, `robust` und `zaehler` nicht. Heute ist dahinter nichts verborgen (einmal von Hand gegengemessen), aber die Stelle bleibt blind. **Offen** — [Abschluss](#offen-geblieben), Punkt 7.
 
 ---
 
@@ -557,7 +738,7 @@ Elf Suchtypen in `GSEARCH_GROUPS` über zehn Sammlungen — `SKILLS` bedient `sk
 - `vl-count-bausteine` = `BAUSTEINE.length`, `vl-count-assets` = `ASSETS.length` — beide fest, beide ignorieren Suche und Filter.
 - Leerzustand vorhanden bei Schriften, Paletten, Mustern (`.vl-grid-empty`) und Icons (`.icon-empty`); Brand-Abschnitt ohne.
 - `beispieldaten/umfrage-rohdaten.csv`: 32 Datenzeilen, Breitformat, Spalten `Respondenten_ID;Alter_Bucket;Region;Q1_…;…;Q5_Zufrieden;Offene_Antwort`.
-- Repo 15 MB gesamt, davon 13 MB `.git`; `assets/` 422 KB (Schriften 372 KB).
+- ~~Repo 15 MB gesamt, davon 13 MB `.git`; `assets/` 422 KB (Schriften 372 KB).~~ **Falsch gemessen.** Beim Abschluss mit Methode nachgemessen — siehe [Korrektur 5](#korrektur-5--die-repo-zahlen-stimmen-nicht-und-die-schlussfolgerung-hing-am-falschen-posten). Richtig ist: Repo **25 MB**, davon `.git` **7,8 MB** und `skills/` **11 MB**.
 - 91 Commits, erster am 09.07.2026, Autor- und Commit-Datum bei allen identisch.
 
 **`seit`-Generator, Prototyp:** 243 von 243 Einträgen datiert, kein Ausfall, Laufzeit 53 s. Fallstrick nachgewiesen: `-S'id: "dots"'` liefert 0 Commits, weil `data/assets.js` bei den Mustern `"id": "dots"` schreibt und bei den Schriften `id: "inter"`. Die Regex muss beide Formen fassen.

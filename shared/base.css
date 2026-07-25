@@ -1429,6 +1429,20 @@
     }
     .pal-pairs { display: flex; flex-direction: column; gap: .5rem; }
     .pal-pair { display: flex; align-items: center; gap: .8rem; font-size: 1.25rem; }
+    /* .pal-pair-demo ist ein SCHRIFTMUSTER, kein Fließtext: das „Aa" zeigt, wie
+       ein Farbpaar aussieht, und die Plakette daneben sagt, ob es AA erfüllt.
+       Farbe und Hintergrund kommen deshalb per style-Attribut aus data/assets.js
+       und dürfen hier NICHT überschrieben werden — eine Palette, in der jedes
+       Paar AA erfüllt, kann den Unterschied nicht mehr vorführen, um den es dem
+       Abschnitt geht.
+       Folge: 6 der 28 hinterlegten Paare liegen unter 4,5:1 (gemessen 25.07.2026)
+       und werden von axe als `color-contrast` gemeldet. Das ist der INHALT, kein
+       Defekt — `node tools/qa/index.mjs a11y` nimmt genau diese Knoten benannt
+       aus, aber nur solange die Plakette daneben „AA groß" oder „unter AA" sagt.
+       Begründung und Rotnachweis stehen bei AUSNAHME_LABELS in tools/qa/index.mjs.
+       Bewusst NICHT auf 2.4rem vergrößert, nur damit WCAG die Großschrift-Schwelle
+       von 3:1 anlegt: das hätte den Befund weggerechnet, statt ihn zu erklären,
+       und die Zeile gesprengt. */
     .pal-pair-demo {
       font-family: var(--font-mono); font-size: 1.15rem; font-weight: 600;
       border-radius: var(--r-xs); padding: .3rem .8rem; white-space: nowrap;

@@ -18,8 +18,8 @@
                      WCAG-Relativluminanz-Formel berechnet (keine Fantasiewerte).
      PATTERNS      — 10 Hintergründe (7 SVG-Muster + 3 CSS-Gradients).
      BRAND         — realer pilot-CI-Spickzettel (Tokens aus shared/base.css)
-                     plus die zwei real vorliegenden Logo-SVGs. Kein erfundenes
-                     offizielles Brand-Material.
+                     plus die real vorliegenden Logo-SVGs (BRAND.logos). Kein
+                     erfundenes offizielles Brand-Material.
      ASSETS        — vereinte, deep-linkbare Liste (Fonts + Paletten + Patterns
                      + Icon-Sets) mit typ-Feld und normalisiertem rating; Basis
                      für Detail-Modal, Bewertung (rate:asset:<id>) und Deep-Link
@@ -43,6 +43,19 @@
    nachsprechen: keine Prüfung kann sie halten, und beim nächsten Farbwert steht
    dort still eine falsche Zahl. Formuliere ohne Zahl („Alle hinterlegten Paare
    erfüllen AA") oder schreib die Zahl als Ziffer, wenn sie in den Daten steht.
+
+   DAS GILT ERST RECHT FÜR stil, stimmung, wofuer UND logoHinweis: die sieht
+   --pruefen überhaupt nicht an, weder als Ziffer noch als Wort. Am 25.07.2026
+   sind dort zwei Zahlwörter aufgefallen und beseitigt worden — „sechs Gewichten"
+   bei iconset/phosphor (war zusätzlich sachlich falsch) und „Die beiden SVGs" in
+   BRAND.logoHinweis. Beide Stellen tragen jetzt einen Kommentar mit der
+   Begründung. Stehen geblieben sind Zahlwörter, die nichts nachzählen, was
+   driften kann: die Pangramme in beispieltext („Zwei flinke Boxer …", „… mehr
+   als drei ausgeschmückte") und „beide Rollen" bei font/manrope, wo die zwei
+   Rollen im selben Satz benannt sind. „Zwei kräftige Komplementär-Akzente" in
+   palette/akzent-duo bleibt ebenfalls: die zwei Akzente sind namentlich genannt
+   und stecken schon in der id — wer einen dritten aufnimmt, benennt die Palette
+   ohnehin um.
 
    Alle Zahlen sind real zählbar aus diesen Arrays. Nichts erfunden.
    ============================================================ */
@@ -272,8 +285,25 @@ const ICONSETS = [
     "id": "phosphor",
     "name": "Phosphor",
     "anzahl": 1512,
-    "stil": "Flexible Familie in sechs Gewichten (Thin bis Fill) plus Duotone — verspielter und ausdrucksstärker.",
-    "beschreibung": "1512 Icons unter MIT-Lizenz in mehreren Strichstärken plus Duotone. Sinnvoll, wenn ein Projekt eine eigene Handschrift bekommen soll: dieselbe Form lässt sich hier dünn oder fett setzen.",
+    /* Hier stand bis zum 25.07.2026 „in sechs Gewichten (Thin bis Fill) plus
+       Duotone". Das war doppelt falsch: ein ausgeschriebenes Zahlwort hält keine
+       Prüfung (--pruefen sieht nur beschreibung an, und dort nur Ziffern), und
+       die Aussage stimmte auch inhaltlich nicht — Duotone IST das sechste
+       Gewicht, keine Zugabe obendrauf. Der Satz zählte also sieben.
+       Nachgemessen am 25.07.2026 an zwei unabhängigen Stellen:
+         · README von github.com/phosphor-icons/homepage — „6 weights: Thin,
+           Light, Regular, Bold, Fill, and Duotone"
+         · Dateibaum von github.com/phosphor-icons/core — genau diese sechs
+           Ordner unter assets/, jeder mit 1512 SVGs. Das ist zugleich der Beleg
+           für anzahl oben.
+       Die Namen stehen jetzt als Liste in den Daten, statt gezählt im Fließtext.
+       Der Text nennt bewusst KEINE Zahl: eine Ziffer „6" dürfte erst dort stehen,
+       wenn tools/muster-datauri.mjs `gewichte` in seine Array-Längen-Liste
+       aufnimmt (belegbareZahlen, aktuell nur farben/paare/dateien) — sonst wäre
+       sie wieder eine Zahl, die niemand hält. */
+    "gewichte": ["Thin", "Light", "Regular", "Bold", "Fill", "Duotone"],
+    "stil": "Flexible Familie: dieselbe Form gibt es dünn, fett, gefüllt und zweifarbig — verspielter und ausdrucksstärker.",
+    "beschreibung": "1512 Icons unter MIT-Lizenz, jede Form in mehreren Gewichten von Thin bis Duotone. Sinnvoll, wenn ein Projekt eine eigene Handschrift bekommen soll: dieselbe Form lässt sich hier dünn oder fett setzen.",
     "lizenz": "MIT",
     "lizenzUrl": "https://github.com/phosphor-icons/homepage/blob/master/LICENSE",
     "quelleUrl": "https://phosphoricons.com/",
@@ -1146,7 +1176,11 @@ const BRAND = {
       "wofuer": "Für dunkle Hintergründe (Ink-Schwarz)."
     }
   ],
-  "logoHinweis": "Die beiden SVGs sind die real in der Bibliothek vorliegenden pilot-Logos. Verwendung nur im echten pilot-Kontext; Schutzraum und Mindestgröße bitte mit dem Brand-Team abstimmen.",
+  /* „Die beiden SVGs" stand hier bis zum 25.07.2026 — ein ausgeschriebenes
+     Zahlwort für die Länge von logos[] direkt darüber. Kommt ein drittes Logo
+     dazu (etwa eine einfarbige Fassung), wird der Satz still falsch, und keine
+     Prüfung sieht es. Jetzt zählt der Satz nicht mehr mit. */
+  "logoHinweis": "Die hier gezeigten SVGs sind die real in der Bibliothek vorliegenden pilot-Logos. Verwendung nur im echten pilot-Kontext; Schutzraum und Mindestgröße bitte mit dem Brand-Team abstimmen.",
   "querverweise": [
     {
       "label": "Skill: brand-guidelines",

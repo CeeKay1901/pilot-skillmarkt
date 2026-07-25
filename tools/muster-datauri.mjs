@@ -161,7 +161,15 @@ function belegbareZahlen(ref) {
     ohneText[feld] = wert;
   }
   const zahlen = zahlenAus(ohneRauschen(JSON.stringify(ohneText)), ZIFFERN_DATEN);
-  for (const feld of ['farben', 'paare', 'dateien']) {
+  /* Array-Längen sind belegbare Zahlen: „7 Farben" ist beweisbar, wenn farben[]
+     sieben Einträge hat. Die Liste wird erweitert, sobald ein Eintrag ein neues
+     zählbares Array bekommt — `gewichte` kam am 25.07.2026 bei iconset/phosphor
+     dazu. Ohne diese Zeile dürfte die Beschreibung die Zahl der Gewichte gar
+     nicht nennen, obwohl sie danebensteht und nachzählbar ist; die Aufnahme
+     macht die Prüfung also nicht weicher, sondern erlaubt eine Aussage, die
+     belegt IST. Wichtig ist nur, dass hier ausschließlich Arrays stehen, deren
+     Länge die Beschreibung wirklich meint. */
+  for (const feld of ['farben', 'paare', 'dateien', 'gewichte']) {
     if (Array.isArray(ref[feld])) zahlen.add(ref[feld].length);
   }
   if (ref.datei) {

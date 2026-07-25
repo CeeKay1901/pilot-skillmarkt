@@ -41,7 +41,7 @@ shared/base.css       Design-System + alle geteilten Komponenten (~2.240 Zeilen)
 shared/base.js        Engine: Nav, Modal, Rating, Suche, Deep-Links (~2.070 Zeilen)
 data/*.js             14 Datendateien, klassische Scripts mit globalen Konstanten
                       (data/seit.js ist ERZEUGT — tools/seit.mjs, nicht von Hand pflegen)
-tests/*.cjs           10 Playwright-Regressionssuiten (e1, e3, e6–e13)
+tests/*.cjs           11 Playwright-Regressionssuiten (e1, e3, e6–e14)
 tools/seit.mjs        ermittelt aus der Git-Historie, seit wann ein Eintrag hier steht
 skills/<id>/          echte Skill-Dateien (Source of Truth für den Datei-Viewer)
 startprojekte/<id>/   drei leere Gerüste zum Weiterbauen (ZIP-Download im Showroom;
@@ -80,14 +80,14 @@ docs/                 Planungsdokumente — ein aktiver Plan, der Rest historisc
 
 ## Testen
 
-**Immer mit der Basis-URL aufrufen.** Alle zehn Suiten leiten ihre Zielseite selbst ab; mit einer Seiten-URL laufen e6 und e9 falsch-negativ.
+**Immer mit der Basis-URL aufrufen.** Alle elf Suiten leiten ihre Zielseite selbst ab; mit einer Seiten-URL laufen e6 und e9 falsch-negativ.
 
 ```bash
 # Server (beide, manche Suiten haben unterschiedliche Defaults)
 nohup python3 -m http.server 8401 >/dev/null 2>&1 &
 nohup python3 -m http.server 8412 >/dev/null 2>&1 &
 
-for t in e1-regression e3-prompts e6-bibliothek e7-baukasten e8-showroom e9-suche e10-lernenhilfe e11-neuigkeiten e12-anweisungen e13-startprojekte; do
+for t in e1-regression e3-prompts e6-bibliothek e7-baukasten e8-showroom e9-suche e10-lernenhilfe e11-neuigkeiten e12-anweisungen e13-startprojekte e14-bilder-pakete; do
   PLAYWRIGHT_BROWSERS_PATH=$HOME/.cache/ms-playwright node tests/$t.cjs http://localhost:8412/
 done
 ```
@@ -100,7 +100,7 @@ Zur Warnung, weil es schon zu falschen Berichten geführt hat: `grep -c '"pass":
 node tests/e3-prompts.cjs http://localhost:8412/ | grep -oE '"[0-9]{2}[a-z]?_[a-z0-9_]+":' | sort -u | wc -l
 ```
 
-Reale Check-Zahlen (25.07.2026, mit genau diesem Kommando gezählt): e1 17 · e3 18 · e6 17 · e7 15 · e8 15 · e9 8 · e10 7 · e11 10 · e12 13 · e13 15. e12 und e13 laufen über zwei Viewports, zählen aber jeden Check einmal.
+Reale Check-Zahlen (25.07.2026, mit genau diesem Kommando gezählt): e1 17 · e3 18 · e6 17 · e7 15 · e8 15 · e9 9 · e10 7 · e11 10 · e12 13 · e13 15 · e14 16. e12, e13 und e14 laufen über zwei Viewports, zählen aber jeden Check einmal.
 
 Playwright-Aufruf in eigenen Skripten:
 ```js
@@ -161,7 +161,7 @@ Beide prüfen **Daten gegen Platte**, nie Daten gegen Daten. Der Anlass ist ders
 
 ## Deploy
 
-**Push auf `main` = Deploy** (GitHub Pages, `https://ceekay1901.github.io/pilot-skillmarkt/`). `.nojekyll` muss bleiben. Vor dem Push: alle zehn Suiten grün und 0 Konsolenfehler auf allen sechs Seiten.
+**Push auf `main` = Deploy** (GitHub Pages, `https://ceekay1901.github.io/pilot-skillmarkt/`). `.nojekyll` muss bleiben. Vor dem Push: alle elf Suiten grün und 0 Konsolenfehler auf allen sechs Seiten.
 
 ---
 

@@ -9,7 +9,8 @@
  *   robust       Übersteht die Seite vergifteten localStorage?
  *   responsive   Body-Overflow, aus dem Viewport ragende Bedienelemente, Tap-Ziele
  *   links        Link-Rot in data/*.js (inkl. echter YouTube-Prüfung)
- *   a11y         WCAG-Prüfung mit axe-core (injiziert, kein npm nötig)
+ *   a11y         WCAG-Prüfung mit axe-core (injiziert, kein npm nötig);
+ *                vorlagen.html wird mit allen vier Reitern gemessen
  *   manifest     Stimmen skills/manifest.json + files-all.json zum Dateibestand?
  *   aufraeumen   Verwaiste Browser-Prozesse beenden (gegen Termux-Abstürze)
  *   alles        alle browserbasierten Prüfungen nacheinander
@@ -389,6 +390,63 @@ function manifest() {
  */
 const AXE = new URL('./vendor/axe.min.js', import.meta.url).pathname;
 
+/* ===== ANSICHTEN — was hinter einem Reiter liegt, hat axe nie gesehen =====
+ *
+ * `vorlagen.html` trägt seit dem Vier-Reiter-Umbau vier Panels; drei davon sind
+ * beim Laden `hidden`. axe überspringt versteckte Knoten grundsätzlich (das ist
+ * richtig so — was niemand sieht, kann niemanden behindern). Folge: Diese
+ * Prüfung hat jahrelang nur den Standard-Reiter „Code" gemessen und für die
+ * anderen drei „ok" gemeldet, ohne sie je angesehen zu haben.
+ *
+ * Umgeschaltet wird über `?tab=`, NICHT durch Entfernen des `hidden`-Attributs:
+ * Nur der echte Reiterwechsel rendert die Panels wirklich (die Module rendern
+ * ihr Raster erst, wenn ihr Reiter aktiv wird) und setzt nebenbei RatingConfig
+ * und ModalConfig um. Ein von Hand entferntes `hidden` zeigte ein leeres Panel —
+ * gemessen wäre dann wieder nichts.
+ *
+ * `panel` ist die Gegenprobe: Greift `?tab=` eines Tages nicht mehr, würde die
+ * Prüfung sonst viermal denselben Standard-Reiter messen und dreimal grundlos
+ * „ok" melden. Deshalb wird die Sichtbarkeit des erwarteten Panels hart geprüft
+ * und die Ansicht als ROT/ungültig gemeldet, statt still danebenzumessen —
+ * dasselbe Muster wie „SELEKTOR DEFEKT" in `zaehler`.
+ */
+const A11Y_ANSICHTEN = {
+  'vorlagen.html': [
+    { name: 'Reiter Code (Standard)', query: '',             panel: 'panel-bausteine' },
+    { name: 'Reiter Design',          query: '?tab=assets',  panel: 'panel-assets' },
+    { name: 'Reiter Daten',           query: '?tab=daten',   panel: 'panel-daten' },
+    { name: 'Reiter Pakete',          query: '?tab=pakete',  panel: 'panel-pakete' }
+  ]
+};
+const ansichtenVon = s => A11Y_ANSICHTEN[s] || [{ name: '', query: '', panel: null }];
+
+/* ===== BENANNTE AUSNAHME: vorgeführte Farbpaare =====
+ *
+ * Der Abschnitt „Farbpaletten mit Kontrast-Check" (Reiter Design) führt VOR,
+ * welche Farbpaare zusammen lesbar sind und welche nicht. Jede Zeile zeigt ein
+ * Schriftmuster „Aa" in den echten Farben, daneben das gerechnete Verhältnis
+ * und eine Plakette: „AA", „AA groß" oder „unter AA". Gemessen am 25.07.2026:
+ * 6 der 28 hinterlegten Paare liegen unter 4,5:1 — und genau diese 6 tragen
+ * sichtbar die Plakette „AA groß", sagen also selbst, dass sie für Fließtext
+ * nicht reichen. axe meldet hier folglich nicht einen Fehler der Seite, sondern
+ * den INHALT der Seite. Ein Umfärben würde die Vorführung zerstören: eine
+ * Palette, in der alle Paare AA erfüllen, kann den Unterschied nicht mehr
+ * zeigen, um den es dem Abschnitt geht.
+ *
+ * Die Ausnahme ist deshalb bewusst so eng wie möglich gefasst und scheitert im
+ * Zweifel ZU (kein pauschales Abschalten der Regel `color-contrast`):
+ *   1. Der Knoten muss `.pal-pair-demo` sein und in einer `.pal-pair`-Zeile
+ *      sitzen — das ist ausschließlich das Schriftmuster, kein Fließtext.
+ *   2. In derselben Zeile muss eine `.kontrast-badge` stehen. Ohne Plakette
+ *      gibt es keine Aussage, die die Ausnahme tragen könnte.
+ *   3. Diese Plakette muss wörtlich „AA groß" oder „unter AA" sagen. Behauptet
+ *      sie „AA", widerspricht die Seite der Messung — das ist ein echter
+ *      Befund und wird gemeldet. Jede andere Beschriftung (Umbenennung,
+ *      Übersetzung, Tippfehler) fällt ebenfalls durch und wird gemeldet.
+ * Die durchgelassenen Knoten werden GEZÄHLT und ausgegeben, nie verschwiegen.
+ */
+const AUSNAHME_LABELS = ['AA groß', 'unter AA'];
+
 async function a11y() {
   if (!fs.existsSync(AXE)) {
     console.log('  tools/qa/vendor/axe.min.js fehlt. Holen mit:\n' +
@@ -398,30 +456,76 @@ async function a11y() {
   const b = await browser();
   const ctx = await messKontext(b, { viewport: { width: 1440, height: 900 } });
   const alle = [];
+  let bewusstGesamt = 0;
   try {
     for (const s of SEITEN) {
-      const { p } = await oeffne(ctx, BASIS + s);
-      await p.addScriptTag({ path: AXE });
-      const r = await p.evaluate(async () => {
-        const res = await window.axe.run(document, {
-          runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'] }
-        });
-        return {
-          verstoesse: res.violations.map(v => ({
-            id: v.id, wirkung: v.impact, anzahl: v.nodes.length, hilfe: v.help,
-            beispiel: (v.nodes[0] || {}).html ? String(v.nodes[0].html).slice(0, 90) : ''
-          })),
-          bestanden: res.passes.length, unklar: res.incomplete.length
-        };
-      });
-      r.verstoesse.forEach(v => alle.push({ seite: s, ...v }));
-      zeile(r.verstoesse.length === 0, s, { verstoesse: r.verstoesse.length, bestandeneRegeln: r.bestanden, unklar: r.unklar });
-      await p.close();
+      for (const a of ansichtenVon(s)) {
+        const etikett = a.name ? s + ' · ' + a.name : s;
+        const { p } = await oeffne(ctx, BASIS + s + a.query);
+        // Gegenprobe: liegt der erwartete Reiter wirklich offen? (siehe A11Y_ANSICHTEN)
+        if (a.panel) {
+          const offen = await p.evaluate(id => {
+            const el = document.getElementById(id);
+            return el ? (!el.hidden && el.getClientRects().length > 0) : null;
+          }, a.panel);
+          if (offen !== true) {
+            alle.push({ seite: etikett, id: 'PRUEFUNG_UNGUELTIG', wirkung: 'critical', anzahl: 1,
+              hilfe: `Panel #${a.panel} war nach „${a.query || '(ohne Parameter)'}" nicht offen `
+                   + (offen === null ? '(Panel gar nicht gefunden)' : '(versteckt)')
+                   + ' — die Ansicht wurde NICHT geprüft.', beispiel: '' });
+            zeile(false, etikett + ' — REITER NICHT AKTIV, nicht geprüft', { panel: a.panel, offen });
+            await p.close(); continue;
+          }
+        }
+        await p.addScriptTag({ path: AXE });
+        const r = await p.evaluate(async (labels) => {
+          const res = await window.axe.run(document, {
+            runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'] }
+          });
+          /* Vorgeführtes Farbpaar? Bedingungen 1–3, siehe AUSNAHME_LABELS. */
+          const vorgefuehrt = (el) => {
+            if (!el || !el.matches('.pal-pair-demo')) return false;
+            const reihe = el.closest('.pal-pair');
+            if (!reihe) return false;
+            const badge = reihe.querySelector('.kontrast-badge');
+            if (!badge) return false;
+            return labels.includes(badge.textContent.trim());
+          };
+          const verstoesse = [], bewusst = [];
+          for (const v of res.violations) {
+            let knoten = v.nodes;
+            if (v.id === 'color-contrast') {
+              const bleibt = [];
+              for (const n of knoten) {
+                const sel = Array.isArray(n.target) ? n.target[n.target.length - 1] : n.target;
+                let el = null; try { el = document.querySelector(sel); } catch (e) {}
+                if (vorgefuehrt(el)) { bewusst.push(String(n.html).slice(0, 70)); continue; }
+                bleibt.push(n);
+              }
+              knoten = bleibt;
+            }
+            if (!knoten.length) continue;
+            verstoesse.push({
+              id: v.id, wirkung: v.impact, anzahl: knoten.length, hilfe: v.help,
+              beispiel: (knoten[0] || {}).html ? String(knoten[0].html).slice(0, 90) : ''
+            });
+          }
+          return { verstoesse, bewusst, bestanden: res.passes.length, unklar: res.incomplete.length };
+        }, AUSNAHME_LABELS);
+        r.verstoesse.forEach(v => alle.push({ seite: etikett, ...v }));
+        bewusstGesamt += r.bewusst.length;
+        zeile(r.verstoesse.length === 0, etikett, { verstoesse: r.verstoesse.length, bestandeneRegeln: r.bestanden, unklar: r.unklar });
+        if (r.bewusst.length)
+          console.log(`      ${r.bewusst.length}× color-contrast als vorgeführtes Farbpaar ausgenommen `
+                    + `(.pal-pair-demo mit Plakette „AA groß"/„unter AA") — die Seite sagt es selbst dazu.`);
+        await p.close();
+      }
     }
   } finally { await b.close(); }
   if (alle.length) console.log(JSON.stringify(alle, null, 1));
   console.log('  Hinweis: axe prüft nur automatisch Prüfbares — Tastatur, Fokusreihenfolge\n' +
               '  und Verständlichkeit bleiben Handarbeit.');
+  if (bewusstGesamt) console.log(`  ${bewusstGesamt} Kontrast-Meldung(en) als bewusste Vorführung ausgenommen (siehe AUSNAHME_LABELS).`);
   return bilanz(alle, 'Barrierefreiheit (axe-core)');
 }
 

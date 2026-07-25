@@ -14,7 +14,15 @@
  *   06 · 0 JS-Fehler über den ganzen Flow (blocked-resource-Errors gefiltert wie e8).
  *   07 · Tastatur-Navigation: ArrowDown setzt aria-activedescendant + .is-active.
  *   08 · Footer #footer-about öffnet #about-overlay mit dem Absender-Satz §1.1.
+ *   09 · DEEPLINK_RE wird auch für die Formen AUFGERUFEN, die Check 03 nie
+ *        erreicht. Der tippt „prompt" — eine Abfrage ohne einen einzigen
+ *        Treffer aus BILDER und PAKETE. Check 09 tippt stattdessen Abfragen,
+ *        die zur Laufzeit AUS diesen zwei Sammlungen abgeleitet sind, und
+ *        verlangt: mindestens ein ?bild=-Treffer, mindestens ein ?paket=-
+ *        Treffer, und jeder gefundene href matcht die Positivliste. Damit ist
+ *        der Vertrag nicht mehr nur formuliert, sondern auch angefasst.
  *
+
  * Aufruf:
  *   PLAYWRIGHT_BROWSERS_PATH=$HOME/.cache/ms-playwright node tests/e9-suche.cjs [URL]
  *   Server extern: python3 -m http.server 8412 (im Projekt-Root) — das Lazy-Nachladen der
@@ -51,14 +59,16 @@ const VORLAGEN_TARGET = TARGET.replace(/skills\.html.*$/, 'vorlagen.html');
 // Ein Tippfehler wie ?x= oder ein vergessener Parameter fällt weiterhin durch:
 // die Liste zählt Formen auf, statt sie zu erlauben.
 //
-// WARNUNG zur Reichweite dieses Vertrags (gemessen 25.07.2026): geprüft wird nur,
-// was Check 03 tatsächlich eintippt. Der tippt „prompt" — eine Abfrage, die aus
-// BILDER und PAKETE keinen Treffer holt. Die beiden neuen Formen waren dieser
-// Regex also gar nicht erst begegnet; die Suite wäre grün geblieben und blind.
-// Nachgemessen an derselben Regex, bevor sie hier ergänzt wurde: „testbild" holt
-// 4 Treffer, 2 fielen durch; „paket" holt 8, einer fiel durch. Wer die Liste
-// erweitert, sollte die neue Form einmal von Hand gegen eine Abfrage halten, die
-// sie auch trifft — sonst prüft man einen Vertrag, den niemand aufruft.
+// REICHWEITE DIESES VERTRAGS — die Lücke, die es hier einmal gab:
+// Geprüft wird nur, was eine Suite tatsächlich EINTIPPT. Check 03 tippt „prompt";
+// diese Abfrage holt aus BILDER und PAKETE keinen einzigen Treffer. Die zwei
+// Formen ?bild= und ?paket= waren dieser Regex deshalb nie begegnet — die Suite
+// war grün und blind. Nachgemessen am 25.07.2026, bevor die Liste ergänzt wurde:
+// „testbild" holt 4 Treffer, 2 fielen durch; „paket" holt 8, einer fiel durch.
+// Geschlossen wird das von Check 09: er leitet seine Abfragen ZUR LAUFZEIT aus
+// BILDER und PAKETE ab und verlangt, dass beide Formen wirklich auftreten.
+// Wer die Liste künftig erweitert, erweitert auch die Abfragen dort — eine Form
+// ohne Abfrage, die sie trifft, ist ein Vertrag, den niemand aufruft.
 const DEEPLINK_RE = /(skills\.html\?skill=|prompts\.html\?p=|hilfe\.html\?(befehl|begriff|faq)=|lernen(-hilfe)?\.html\?r=|vorlagen\.html\?a=|vorlagen\.html\?b=|vorlagen\.html\?d=|vorlagen\.html\?pa=|vorlagen\.html\?bild=|vorlagen\.html\?paket=|showroom\.html\?case=|showroom\.html\?g=)/;
 
 const VIEWPORTS = [
@@ -158,6 +168,56 @@ async function runViewport(browser, vp) {
     };
   });
   check('07_keyboard_nav', navInfo.hasActive && navInfo.activeIsOption && navInfo.aad.length > 0, navInfo);
+
+  // ---------- (9) DEEPLINK_RE wird auch für BILDER und PAKETE aufgerufen ----------
+  /* Siehe die Warnung über DEEPLINK_RE. Die Abfragen werden ZUR LAUFZEIT aus den
+     Daten abgeleitet, nicht eingetippt: ein Schlagwort ist genau das Wort, mit
+     dem jemand den Eintrag sucht, und es wandert mit, wenn die Daten wandern.
+     _gsEnsureData() lädt beim ersten Tippen ALLE Quellen aus GSEARCH_SOURCES —
+     nach Check 03 stehen BILDER und PAKETE hier also bereits.
+
+     WARUM MEHRERE ABFRAGEN STATT EINER, DIE BEIDES TRIFFT: eine gemeinsame
+     Abfrage gibt es nur zufällig („farben" trifft am 25.07.2026 beides). Sie
+     zur Laufzeit als Schnittmenge zu suchen, hiesse: sobald die Schnittmenge
+     leer wird, prüft der Check gar nichts mehr — und zwar still. Zwei abgeleitete
+     Abfragen halten den Vertrag unabhängig davon, ob die Sammlungen ein Wort
+     teilen. Verlangt wird deshalb die Abdeckung über alle Abfragen zusammen. */
+  const abfragen = await page.evaluate(() => {
+    const woerter = (it, felder) => felder
+      .flatMap(f => (Array.isArray(it[f]) ? it[f] : [it[f] || '']))
+      .join(' ').toLowerCase().split(/[^a-zäöüß0-9]+/)
+      .filter(w => w.length >= 4);
+    const proSammlung = (arr, felder) => {
+      if (!Array.isArray(arr) || !arr.length) return [];
+      return [...new Set(woerter(arr[0], felder))].slice(0, 4);
+    };
+    return {
+      bild: (typeof BILDER !== 'undefined') ? proSammlung(BILDER, ['tags', 'name']) : [],
+      paket: (typeof PAKETE !== 'undefined') ? proSammlung(PAKETE, ['tags', 'name']) : [],
+    };
+  });
+  const abfrageErgebnisse = [];
+  for (const q of [...abfragen.bild, ...abfragen.paket]) {
+    await page.fill('#gsearch-input', q);
+    await page.waitForFunction(() => document.querySelectorAll('#gsearch-results .gs-opt[role="option"]').length > 0,
+      { timeout: 4000 }).catch(() => {});
+    await page.waitForTimeout(150);
+    const hrefs = await page.evaluate(() =>
+      [...document.querySelectorAll('#gsearch-results .gs-opt[role="option"]')].map(a => a.getAttribute('href') || ''));
+    abfrageErgebnisse.push({
+      q, treffer: hrefs.length,
+      ungueltig: hrefs.filter(h => !DEEPLINK_RE.test(h)),
+      bild: hrefs.filter(h => /vorlagen\.html\?bild=/.test(h)).length,
+      paket: hrefs.filter(h => /vorlagen\.html\?paket=/.test(h)).length,
+    });
+  }
+  const bildTreffer = abfrageErgebnisse.reduce((s, r) => s + r.bild, 0);
+  const paketTreffer = abfrageErgebnisse.reduce((s, r) => s + r.paket, 0);
+  const ungueltigGesamt = abfrageErgebnisse.reduce((s, r) => s + r.ungueltig.length, 0);
+  check('09_deeplink_vertrag_wird_aufgerufen',
+    abfragen.bild.length > 0 && abfragen.paket.length > 0
+      && bildTreffer >= 1 && paketTreffer >= 1 && ungueltigGesamt === 0,
+    { abfragen, abfrageErgebnisse, bildTreffer, paketTreffer, ungueltigGesamt });
 
   // ---------- (5) Esc schließt, Fokus zurück auf Opener ----------
   // Erst das per Cmd+K geöffnete Overlay schließen (Opener war body), dann über

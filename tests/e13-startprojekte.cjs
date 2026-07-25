@@ -777,7 +777,13 @@ async function runViewport(browser, vp) {
         id: sp.id,
         dateiname: download.suggestedFilename(),
         groesse: buf.length,
-        signatur: buf.slice(0, 4).toString('latin1') === 'PK',
+        /* ZIP-Signatur als Zahl statt als Zeichenkette: die alte Fassung trug die
+           Steuerbytes 0x03 und 0x04 WOERTLICH im Quelltext. Sie funktionierte, war
+           aber in grep und in jedem Diff unsichtbar und las sich als === 'PK' —
+           also als deutlich schwaechere Pruefung, als sie war. 0x04034b50 ist
+           dieselben vier Bytes little-endian gelesen. (Gefunden 25.07.2026 beim
+           Bau von e14, wo es von Anfang an so steht.) */
+        signatur: buf.length >= 4 && buf.readUInt32LE(0) === 0x04034b50,
         gelesen: gelesen.ok, grund: gelesen.grund || null,
         namen,
         fehlend: soll.filter(n => namen.indexOf(n) === -1),
