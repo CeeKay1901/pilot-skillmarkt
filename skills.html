@@ -1430,6 +1430,9 @@ Gib einen priorisierten Report aus:
 
   <script src="data/skills.js"></script>
   <script src="data/contributors.js"></script>
+  <!-- Ersterscheinungs-Daten (tools/seit.mjs) für das „Neu"-Fähnchen. defer
+       genügt: die Karten entstehen erst in DOMContentLoaded. -->
+  <script src="data/seit.js" defer></script>
   <script src="shared/base.js"></script>
   <script>
     // ===== DATA ===== (Katalogdaten ausgelagert nach data/skills.js + data/contributors.js)
@@ -1793,6 +1796,9 @@ Gib einen priorisierten Report aus:
       // Typ-Badge nur für Plugins/Frameworks — Skills bleiben unmarkiert (kein Rausch)
       const _type = itemType(skill);
       const typeBadgeHtml = _type !== 'skill' ? `<span class="type-badge ${_type}">${typeLabel(_type)}</span>` : '';
+      // „Neu" kommt aus data/seit.js, nicht aus den Katalogdaten — siehe istNeu()
+      // in base.js. Ohne geladenes SEIT bleibt es einfach leer.
+      const neuFlagHtml = (typeof istNeu === 'function' && istNeu('SKILLS', skill.id)) ? '<span class="card-neu-flag">Neu</span>' : '';
 
       const triggerHtml = skill.trigger
         ? `<button class="card-trigger-chip" onclick="quickCopy(event,'${escHtml(skill.trigger)}')" title="Befehl kopieren">${escHtml(skill.trigger)}</button>`
@@ -1803,7 +1809,7 @@ Gib einen priorisierten Report aus:
       return `
         <article class="skill-card${state._noCardAnim ? '' : ' card-in'}" style="animation-delay:${state._noCardAnim ? 0 : delay}ms" onclick="openModal('${skill.id}')">
           <div class="card-top">
-            <span class="card-top-left"><span class="card-sub">${escHtml(subLabel(skill.subcategory))}</span>${typeBadgeHtml}</span>
+            <span class="card-top-left"><span class="card-sub">${escHtml(subLabel(skill.subcategory))}</span>${typeBadgeHtml}${neuFlagHtml}</span>
             <button class="fav-btn ${fav ? 'active' : ''}" onclick="toggleFavorite(event,'${skill.id}','skill')" aria-label="${escHtml(skill.name)} ${fav ? 'aus Favoriten entfernen' : 'zu Favoriten hinzufügen'}" aria-pressed="${fav}">${fav ? '★' : '☆'}</button>
           </div>
           <h3 class="skill-name"><button type="button" class="card-open-btn" onclick="event.stopPropagation();openModal('${skill.id}')">${escHtml(skill.name)}</button></h3>

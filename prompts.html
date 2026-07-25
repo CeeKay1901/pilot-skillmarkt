@@ -350,6 +350,9 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script src="data/prompts.js"></script>
+  <!-- Ersterscheinungs-Daten (tools/seit.mjs) für das „Neu"-Fähnchen. defer
+       genügt: die Karten entstehen erst in DOMContentLoaded. -->
+  <script src="data/seit.js" defer></script>
   <script src="shared/base.js"></script>
   <script>
     // ===== DATA ===== (data/prompts.js: PROMPTS, PROMPT_PLATFORMS, PROMPT_SPOTLIGHT, PROMPT_START)
@@ -723,6 +726,7 @@
             <span class="card-top-left">
               <span class="card-sub">${escHtml(groupLabel(p.taskGroup))}</span>
               ${isSpot ? '<span class="card-spot-flag" aria-label="Highlight-Prompt">Highlight</span>' : ''}
+              ${(typeof istNeu === 'function' && istNeu('PROMPTS', p.id)) ? '<span class="card-neu-flag">Neu</span>' : ''}
             </span>
             ${favBtnHtml(p)}
           </div>

@@ -1383,40 +1383,45 @@ const GS_AREA_LABELS = {
 
 // Feste Reihenfolge der Trefferschubladen. Jede Gruppe kennt ihr Global, ihren
 // Deep-Link, Titel/Kurzinfo-Felder und die searchScore-Felder (aus dem Vertrag).
+//
+// `bereich` ergänzt den Deep-Link um die Übersichtsseite: WO wohnt diese
+// Gattung? Der Neuigkeiten-Block braucht beides — den einzelnen Eintrag und
+// den Ort, an dem er steht. Aus dem Deep-Link ableiten ginge nicht: Assets
+// liegen unter vorlagen.html?tab=assets, ihr Deep-Link ist vorlagen.html?a=…
 const GSEARCH_GROUPS = [
-  { key: 'skill', label: 'Skills', glob: 'SKILLS',
+  { key: 'skill', label: 'Skills', glob: 'SKILLS', bereich: 'skills.html',
     filter: it => (!it.itemType || it.itemType === 'skill') && !_gsHiddenSkillIds().has(it.id),
     href: it => 'skills.html?skill=' + encodeURIComponent(it.id),
     title: it => it.name, sub: it => it.tagline, fields: null },
-  { key: 'plugin', label: 'Plugins & Frameworks', glob: 'SKILLS',
+  { key: 'plugin', label: 'Plugins & Frameworks', glob: 'SKILLS', bereich: 'skills.html',
     filter: it => (it.itemType === 'plugin' || it.itemType === 'framework') && !_gsHiddenSkillIds().has(it.id),
     href: it => 'skills.html?skill=' + encodeURIComponent(it.id),
     title: it => it.name, sub: it => it.tagline, fields: null },
-  { key: 'prompt', label: 'Prompts', glob: 'PROMPTS',
+  { key: 'prompt', label: 'Prompts', glob: 'PROMPTS', bereich: 'prompts.html',
     href: it => 'prompts.html?p=' + encodeURIComponent(it.id),
     title: it => it.name, sub: it => it.tagline,
     fields: it => [[it.name || '', 5], [(it.tags || []).join(' '), 3], [it.tagline || '', 2], [it.promptText || '', 1]] },
-  { key: 'befehl', label: 'Befehle', glob: 'BEFEHLE',
+  { key: 'befehl', label: 'Befehle', glob: 'BEFEHLE', bereich: 'lernen-hilfe.html',
     href: it => 'lernen-hilfe.html?befehl=' + encodeURIComponent(it.id),
     title: it => it.cmd, sub: it => it.nutzen,
     fields: it => [[it.cmd || '', 5], [it.nutzen || '', 3], [it.beispiel || '', 1], [it.tipp || '', 1]] },
-  { key: 'begriff', label: 'Begriffe', glob: 'GLOSSAR',
+  { key: 'begriff', label: 'Begriffe', glob: 'GLOSSAR', bereich: 'lernen-hilfe.html',
     href: it => 'lernen-hilfe.html?begriff=' + encodeURIComponent(it.id),
     title: it => it.wort, sub: it => it.satz,
     fields: it => [[it.wort || '', 5], [it.satz || '', 2], [it.beispiel || '', 1], [it.tiefe || '', 1], [it.analogie || '', 1], [it.stolper || '', 1]] },
-  { key: 'faq', label: 'FAQ', glob: 'FAQ',
+  { key: 'faq', label: 'FAQ', glob: 'FAQ', bereich: 'lernen-hilfe.html',
     href: it => 'lernen-hilfe.html?faq=' + encodeURIComponent(it.id),
     title: it => it.frage, sub: it => it.intro,
     fields: it => [[it.frage || '', 5], [it.intro || '', 2], [(it.schritte || []).join(' '), 1]] },
-  { key: 'ressource', label: 'Ressourcen', glob: 'RESSOURCEN',
+  { key: 'ressource', label: 'Ressourcen', glob: 'RESSOURCEN', bereich: 'lernen-hilfe.html',
     href: it => 'lernen-hilfe.html?r=' + encodeURIComponent(it.id),
     title: it => it.titel, sub: it => it.fuerDich || it.beschreibung,
     fields: it => [[it.titel || '', 5], [(it.tags || []).join(' '), 3], [it.beschreibung || '', 1], [it.fuerDich || '', 1]] },
-  { key: 'asset', label: 'Assets', glob: 'ASSETS',
+  { key: 'asset', label: 'Assets', glob: 'ASSETS', bereich: 'vorlagen.html?tab=assets',
     href: it => 'vorlagen.html?a=' + encodeURIComponent(it.id),
     title: it => it.name, sub: it => it.typ,
     fields: it => [[it.name || '', 5], [it.typ || '', 2], [it.kategorie || '', 2]] },
-  { key: 'baustein', label: 'Bausteine', glob: 'BAUSTEINE',
+  { key: 'baustein', label: 'Bausteine', glob: 'BAUSTEINE', bereich: 'vorlagen.html',
     href: it => 'vorlagen.html?b=' + encodeURIComponent(it.id),
     title: it => it.name, sub: it => it.beschreibung,
     fields: it => [[it.name || '', 5], [(it.tags || []).join(' '), 3], [it.beschreibung || '', 2], [it.einsatz || '', 1]] },
@@ -1424,11 +1429,11 @@ const GSEARCH_GROUPS = [
      data/bausteine.js, also NICHT in GSEARCH_SOURCES eintragen — der Eintrag
      für BAUSTEINE lädt dieselbe Datei, und zwei Einträge auf eine Quelle sind
      genau die Doppel-Anfrage, vor der der Kommentar bei GLOSSAR/FAQ warnt. */
-  { key: 'daten', label: 'Beispieldaten', glob: 'BEISPIELDATEN',
+  { key: 'daten', label: 'Beispieldaten', glob: 'BEISPIELDATEN', bereich: 'vorlagen.html',
     href: it => 'vorlagen.html?d=' + encodeURIComponent(it.id),
     title: it => it.datei, sub: it => it.beschreibung,
     fields: it => [[it.datei || '', 5], [it.beschreibung || '', 2], [it.format || '', 2], [it.spaltenHinweis || '', 1], [it.uebungstext || '', 1]] },
-  { key: 'case', label: 'Projekte', glob: 'CASES',
+  { key: 'case', label: 'Projekte', glob: 'CASES', bereich: 'showroom.html',
     href: it => 'showroom.html?case=' + encodeURIComponent(it.id),
     title: it => it.titel, sub: it => it.kurz,
     fields: it => [[it.titel || '', 5], [it.kurz || '', 2], [it.persona || '', 1], [it.saeule || '', 1]] },
@@ -1455,6 +1460,150 @@ function _gsGlobal(name) {
     }
   } catch (e) {}
   return undefined;
+}
+
+/* ============================================================
+   NEUIGKEITEN — „Neu im Marketplace" unten auf der Startseite.
+
+   TAGESWEISE, NICHT EINTRAGSWEISE. Gemessen am 25.07.2026 über alle 243
+   Einträge: sie verteilen sich auf FÜNF Tage, 219 davon auf den 16. und
+   17. Juli. Eine Liste der „letzten acht Einträge" hätte damit acht
+   Glossarbegriffe vom 24. Juli gezeigt — sonst nichts. Ein Tag ist hier die
+   Meldung, nicht der Eintrag: das arbeitet mit der Bündelung statt gegen sie,
+   und Bereichs-Eröffnungen („der Baukasten ist da") bleiben erzählbar.
+
+   ABGELEITET, NICHT GEPFLEGT. Einträge, Zahlen und Links kommen aus SEIT
+   (data/seit.js, erzeugt von tools/seit.mjs) und GSEARCH_GROUPS. Sie können
+   nicht veralten. Redaktionell ist ausschliesslich die optionale
+   Tages-Überschrift in NEWS_TITEL.
+
+   DREI TAGE PLUS EINE „DAVOR"-MELDUNG. Ein reines Zeitfenster hätte den
+   Anfang stillschweigend abgeschnitten: Katalog und Prompt-Sammlung kamen am
+   16.07., und wer die Seite später öffnet, hätte nie erfahren, dass es sie
+   gibt. Die Sammelmeldung wächst nach hinten statt zu verfallen — sie nimmt
+   jeden Tag auf, der aus dem Fenster fällt.
+
+   Nebeneffekt, der Absicht ist: die Zahl der Meldungen bleibt dauerhaft bei
+   drei bis vier, und die Bereichslinks bleiben dauerhaft vollständig. Vier
+   fremde Suiten prüfen genau das an index.html — e3:i5 (prompts.html),
+   e6:i5 (vorlagen.html?tab=assets), e7:i5 (vorlagen.html) und e8:i5 (alle
+   vier plus showroom.html und lernen-hilfe.html), jede zusätzlich mit
+   „3–4 .news-item". Ein reines Vier-Tage-Fenster erfüllte das nur zufällig
+   und nur heute; mit der Sammelmeldung ist es eine Eigenschaft der Bauform.
+   Bewacht wird das von tests/e11-neuigkeiten.cjs (Check 09), damit ein Umbau
+   HIER auffällt statt vier fremde Suiten unerklärt rot zu färben.
+   ============================================================ */
+const NEWS_TAGE = 3;            // so viele Tage stehen einzeln
+const NEWS_PRO_GRUPPE = 3;      // so viele Einträge werden je Gattung benannt
+const NEWS_NAMENSGRENZE = 12;   // bis zu so vielen Einträgen am Tag: Namen statt Zahlen
+
+/* Optionale Überschrift je Tag, plus eine für die Sammelmeldung (Schlüssel
+   „sammel"). Fehlt eine, wird sie aus der Zusammensetzung erzeugt. Hier stehen
+   die Bereichs-Eröffnungen, die eine reine Eintragsliste nicht ausdrücken kann
+   — sie waren der Inhalt der früheren Handpflege.
+   Formuliert so, dass sie nicht verfallen: Rutscht ein Tag in die Sammelmeldung,
+   wird seine Überschrift schlicht nicht mehr benutzt, statt falsch zu werden. */
+const NEWS_TITEL = {
+  '2026-07-18': 'Der Showroom ist da',
+  'sammel': 'Davor: der Aufbau des Marketplace',
+};
+
+const _newsOrdnung = k => GSEARCH_GROUPS.findIndex(g => g.key === k);
+
+/* Gattungen deterministisch ordnen: erst nach Menge, bei Gleichstand nach der
+   festen GSEARCH_GROUPS-Reihenfolge. Ohne das hinge die Anzeige an der
+   Objekt-Schlüsselfolge und ein Test dagegen wäre wackelig. */
+function _newsSortiere(nachKey) {
+  const gruppen = Object.keys(nachKey).map(k => nachKey[k]).sort((a, b) =>
+    b.eintraege.length - a.eintraege.length || _newsOrdnung(a.key) - _newsOrdnung(b.key));
+  gruppen.forEach(gr => gr.eintraege.sort((x, y) => String(x.titel).localeCompare(String(y.titel), 'de')));
+  return { gruppen, gesamt: gruppen.reduce((n, gr) => n + gr.eintraege.length, 0) };
+}
+
+/* ALLE datierten Einträge, nach Tag gebündelt, jüngster zuerst. */
+function newsTage() {
+  if (typeof SEIT === 'undefined' || !SEIT) return [];
+  const proTag = {};
+  GSEARCH_GROUPS.forEach(g => {
+    const arr = _gsGlobal(g.glob);
+    if (!Array.isArray(arr)) return;
+    arr.forEach(it => {
+      if (g.filter && !g.filter(it)) return;      // HIDDEN-Skills tauchen nirgends auf
+      const datum = SEIT[g.glob + ':' + it.id];
+      if (!datum) return;
+      const tag = (proTag[datum] = proTag[datum] || {});
+      const gr = (tag[g.key] = tag[g.key] || { key: g.key, label: g.label, bereich: g.bereich, eintraege: [] });
+      gr.eintraege.push({ titel: g.title(it) || it.id, href: g.href(it) });
+    });
+  });
+  return Object.keys(proTag).sort().reverse()
+    .map(datum => Object.assign({ datum }, _newsSortiere(proTag[datum])));
+}
+
+/* Was tatsächlich im Block steht: die jüngsten Tage einzeln, alles Ältere als
+   EINE Sammelmeldung. Wächst nach hinten, verfällt nicht. */
+function newsMeldungen(anzahlTage) {
+  const tage = newsTage();
+  const n = anzahlTage || NEWS_TAGE;
+  const einzeln = tage.slice(0, n);
+  const rest = tage.slice(n);
+  if (!rest.length) return einzeln;
+  const nachKey = {};
+  rest.forEach(t => t.gruppen.forEach(gr => {
+    const z = (nachKey[gr.key] = nachKey[gr.key] || { key: gr.key, label: gr.label, bereich: gr.bereich, eintraege: [] });
+    z.eintraege = z.eintraege.concat(gr.eintraege);
+  }));
+  return einzeln.concat([Object.assign({ datum: rest[0].datum, sammel: true, tage: rest.length }, _newsSortiere(nachKey))]);
+}
+
+/* Überschrift, wenn keine redaktionelle hinterlegt ist. Bewusst ohne Zahl:
+   die Zahlen stehen im Text, und „1 neue Skills" wäre schief. */
+function _newsAutoTitel(m) {
+  if (m.sammel) return `Davor: der Aufbau in ${m.gruppen.length} Bereichen`;
+  return m.gruppen.length === 1 ? `Neue ${m.gruppen[0].label}` : `Neu in ${m.gruppen.length} Bereichen`;
+}
+
+function newsHtml(anzahlTage) {
+  return newsMeldungen(anzahlTage).map(m => {
+    /* Wenig am Tag: Einträge namentlich (contentorientiert). Viel am Tag:
+       Gattung + Zahl — bei 153 Einträgen wären drei herausgegriffene Namen
+       keine Information, sondern Zufall. Die Sammelmeldung ist immer gross. */
+    const namentlich = !m.sammel && m.gesamt <= NEWS_NAMENSGRENZE;
+    const teile = m.gruppen.map(gr => {
+      const ort = `<a href="${escHtml(gr.bereich)}">${escHtml(gr.label)}</a>`;
+      if (!namentlich) return `${gr.eintraege.length} ${ort}`;
+      const gezeigt = gr.eintraege.slice(0, NEWS_PRO_GRUPPE)
+        .map(e => `<a href="${escHtml(e.href)}">${escHtml(e.titel)}</a>`).join(', ');
+      const rest = gr.eintraege.length - NEWS_PRO_GRUPPE;
+      return `${ort}: ${gezeigt}${rest > 0 ? ` und ${rest} weitere` : ''}`;
+    });
+    return `<li class="news-item">
+            <span class="news-date">${escHtml((m.sammel ? 'bis ' : '') + formatDate(m.datum))}</span>
+            <div>
+              <p class="news-title">${escHtml(NEWS_TITEL[m.sammel ? 'sammel' : m.datum] || _newsAutoTitel(m))}</p>
+              <p class="news-text">${teile.join(' · ')}</p>
+            </div>
+          </li>`;
+  }).join('');
+}
+
+/* „Neu" ist abgeleitet, nicht gepflegt: ein Eintrag gilt als neu, wenn sein
+   Datum zu den beiden jüngsten Inhaltstagen gehört. Bewusst ohne Uhrzeit-
+   Bezug — eine Regel wie „jünger als 14 Tage" hinge an der Uhr des Geräts und
+   wäre nicht prüfbar. Dass an einem Launch-Tag viele Einträge neu sind, ist
+   richtig: dann sind sie es. Ersetzt das tote Feld badge:"neu", das bei 28 von
+   45 Katalogeinträgen stand, nirgends gerendert wurde und nach den echten
+   Daten für 26 davon falsch war. */
+function neueTage(wieViele) {
+  if (typeof SEIT === 'undefined' || !SEIT) return [];
+  const tage = [];
+  for (const k in SEIT) if (tage.indexOf(SEIT[k]) === -1) tage.push(SEIT[k]);
+  return tage.sort().reverse().slice(0, wieViele || 2);
+}
+function istNeu(glob, id) {
+  if (typeof SEIT === 'undefined' || !SEIT) return false;
+  const datum = SEIT[glob + ':' + id];
+  return !!datum && neueTage().indexOf(datum) !== -1;
 }
 
 let _gsIndex = [];

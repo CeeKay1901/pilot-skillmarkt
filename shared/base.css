@@ -322,6 +322,18 @@
       border-color: var(--c-black);
     }
 
+    /* „Neu"-Fähnchen auf Katalogkarten. Abgeleitet aus data/seit.js (istNeu in
+       base.js), NICHT gepflegt — das frühere Datenfeld badge:"neu" stand bei 28
+       von 45 Einträgen, wurde nirgends gerendert und war für 26 davon falsch.
+       Kontrast Schwarz auf Signal-Gelb: 11,58:1. */
+    .card-neu-flag {
+      font-family: var(--font-mono); font-size: 1rem; font-weight: 700;
+      letter-spacing: .14em; text-transform: uppercase;
+      background: var(--c-yellow); color: var(--c-black);
+      border-radius: var(--r-pill); padding: .3rem .8rem .25rem;
+      white-space: nowrap; flex-shrink: 0;
+    }
+
     /* Titel-Schaltfläche in Katalogkarten (.skill-card, .prompt-card, .pilot-card).
        Sieht aus wie Text, ist aber das echte Bedienelement der Karte: sie trägt
        die Aktion, den Tastaturzugang und den Fokusring. Erbt bewusst die gesamte

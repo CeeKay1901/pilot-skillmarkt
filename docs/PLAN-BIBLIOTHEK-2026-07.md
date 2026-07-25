@@ -1,6 +1,6 @@
 # Implementierungsplan — Bibliothek, Inhalte, Neuigkeiten
 
-**Stand:** 25.07.2026 · **Fassung 2** (geprüft gegen den Code, Zahlen nachgemessen)
+**Stand:** 25.07.2026 · **Fassung 3** (Stufen 0 und 1 umgesetzt, Ergebnisse eingetragen)
 **Grundlage:** Bestandsaufnahme vom 25.07.2026, eine Fragerunde mit sechs Entscheidungsblöcken, und ein Messlauf gegen den Ist-Zustand (Protokoll am Ende).
 
 Dieses Dokument hält fest, **was entschieden ist**, damit es nicht neu verhandelt wird, und **in welcher Reihenfolge gebaut wird**. Es ersetzt keine der harten Regeln aus `CLAUDE.md` — die gelten weiter, besonders „kein Build-Step", „Zahlen-Ehrlichkeit" und „ändere nie einen Test, um ihn grün zu bekommen".
@@ -49,7 +49,7 @@ Die erste Fassung entstand direkt aus der Fragerunde und trug Zahlen aus der Bes
 | Alte Daten und Links | **Sauber vereinheitlichen, Altes verfällt.** Bewusst in Kauf genommen: gespeicherte Merkungen alter Typen und geteilte `?a=`/`?b=`-Links brechen. |
 | Reihenfolge | **Kleines zuerst, Umbau zuletzt.** Jede Stufe geht einzeln live. |
 | Einreichwege | **Vertagt aufs Backend.** Die vier simulierten Flows bleiben vorerst, wie sie sind. |
-| Regressionssuiten | e6, e7 und **e9** werden in Stufe 5 neu geschrieben; jeder verschobene Sollwert bekommt im Test seine Begründung. Stufen 0–4 kommen ohne Teständerung aus. |
+| Regressionssuiten | e6, e7 und **e9** werden in Stufe 5 neu geschrieben; jeder verschobene Sollwert bekommt im Test seine Begründung. Stufen 0–4 kommen ohne Teständerung aus — in 0 und 1 nachgewiesen. |
 | Changelog-Reiter | **Streichen.** |
 
 ---
@@ -95,65 +95,80 @@ Stufe 4 ist unabhängig von allen anderen und kann eingeschoben werden, wo es pa
 
 ---
 
-## Stufe 1 — Datumsfeld und Neuigkeiten
+## Stufe 1 — Datumsfeld und Neuigkeiten · **erledigt 25.07.2026**
 
 ### Der Befund, der die Form bestimmt
 
-Ich habe den Generator gebaut und über alle 243 Einträge laufen lassen, bevor der Block entworfen wurde. Ergebnis:
+Der Generator wurde gebaut und über alle 243 Einträge laufen gelassen, **bevor** der Block entworfen wurde. Ergebnis:
 
 | Tag | Einträge | Zusammensetzung |
 |---|---:|---|
 | 2026-07-16 | 66 | Skills 43, Prompts 23 |
-| 2026-07-17 | 153 | Befehle 28, Glossar 41, FAQ 10, Ressourcen 27, Bausteine 12, Beispieldaten 5, Schriften 9, Paletten 7, Muster 10, Icon-Sets 4 |
+| 2026-07-17 | 153 | Glossar 41, Assets 30, Befehle 28, Ressourcen 27, Bausteine 12, FAQ 10, Beispieldaten 5 |
 | 2026-07-18 | 10 | Projekte 10 |
-| 2026-07-23 | 6 | Skills 2, Ressourcen 1, Beispieldaten 3 |
+| 2026-07-23 | 6 | Skills 2, Beispieldaten 3, Ressourcen 1 |
 | 2026-07-24 | 8 | Glossar 8 |
 
-**219 von 243 Einträgen liegen auf zwei Tagen.** „Die letzten acht Einträge, gattungsübergreifend" ergäbe damit: acht Glossarbegriffe vom 24. Juli. Nicht gattungsübergreifend, nicht repräsentativ, und in einer Woche unverändert.
+**219 von 243 Einträgen liegen auf zwei Tagen.** „Die letzten acht Einträge, gattungsübergreifend" ergäbe damit: acht Glossarbegriffe vom 24. Juli. Nicht gattungsübergreifend, nicht repräsentativ, und in einer Woche unverändert. **Deshalb tagesweise** — ein Tag ist die Meldung, nicht der Eintrag. Das arbeitet mit der Bündelung statt gegen sie und macht den Tiebreaker überflüssig: innerhalb eines Tages wird nach Menge, fester Gattungsreihenfolge und Name sortiert, also deterministisch.
 
-**Deshalb tagesweise.** Ein Tag ist eine Meldung, nicht ein Eintrag. Das hat drei Vorteile, die eintragsweise nicht zu haben sind:
+### Die Form hat sich beim Bauen noch einmal geändert
 
-- Es arbeitet **mit** der Bündelung statt gegen sie. Dass 153 Einträge gemeinsam kamen, ist die Wahrheit — tagesweise erzählt sie sich als „an diesem Tag kam der ganze Bereich".
-- Es rettet die Bereichs-Eröffnungen. Die drei „ist da"-Meldungen der handgeschriebenen Liste liegen alle auf dem 17. Juli. Genau dort steht künftig die Tagesgruppe.
-- Es macht den Tiebreaker überflüssig. Innerhalb eines Tages wird nach Typreihenfolge und Name sortiert — deterministisch, also testbar.
+Der Plan sah **vier Tage** vor. Beim Testlauf fielen `e3:i5_news_mentions_prompts` und `e8:i5_news_mentions_showroom_and_interlinks` rot aus — **zwei Prüfungen, die meine Analyse übersehen hatte.** Ich hatte nur nach `newsHasBibliothek`/`newsHasBaukasten` gesucht und dabei nicht bemerkt, dass e3 und e8 eigene `i5`-Varianten mitbringen. Der vollständige Vertrag lautet:
 
-### Arbeit
+| Suite | verlangt einen Link auf |
+|---|---|
+| e3:i5 | `prompts.html` |
+| e6:i5 | `vorlagen.html?tab=assets` |
+| e7:i5 | `vorlagen.html` |
+| e8:i5 | alle drei plus `showroom.html` und `lernen-hilfe.html*` |
 
-1. **`seit` ermitteln.** Ein Generator `tools/seit.mjs` schreibt `data/seit.js` — eine flache Zuordnung `"<glob>:<id>" → "JJJJ-MM-TT"`. Eigene Datei statt Eingriff in die zehn Datendateien: eine Stelle zum Nachziehen, keine Konflikte in den großen Dateien, und der Generator kann nichts kaputt schreiben.
-   - Ermittlung: `git log --format=%cs --reverse --pickaxe-regex -S'"?id"?: *["\']<id>["\']' -- data/<datei>.js`.
-   - **Die Regex muss beide Schreibweisen fassen.** `data/assets.js` mischt sie: Schriften stehen als `id: "inter"`, Muster als `"id": "dots"`. Der naive Pickaxe liefert für `dots` und `grid` null Treffer — nachgewiesen.
-   - **Kein stiller Ausfall.** Ein Eintrag ohne Datum bricht den Generator ab und wird benannt. Ein leises Loch wäre schlimmer als ein Abbruch.
-   - **Einfrier-Regel.** Vorhandene Einträge werden nie überschrieben, nur fehlende ergänzt. Sonst verliert der Bestand sein Datum, sobald Stufe 5 IDs vereinheitlicht.
-   - Datumsquelle ist das Commit-Datum. Geprüft: über alle 91 Commits stimmen Autor- und Commit-Datum überein, die Quelle ist also stabil.
-   - Laufzeit gemessen: 53 s für 243 Einträge. Einmalig, danach nur noch für Neuzugänge.
-2. **Neuigkeiten-Block** unten auf der Startseite: die **letzten vier Tage** als je eine Meldung. Jede Meldung nennt, was kam, und verlinkt bis zu drei Einträge namentlich, darüber hinaus „und N weitere".
-3. **Optionale Tages-Überschrift.** Eine kleine, handgepflegte Zuordnung `NEWS_TITEL = { '2026-07-17': '…' }`. Fehlt eine Überschrift, wird sie aus der Typmischung erzeugt („Acht neue Begriffe im Glossar"). **Nur die Überschrift ist redaktionell — Einträge, Zahlen und Links bleiben abgeleitet und können nicht veralten.**
-4. **`badge: "neu"` auflösen.** Steht heute bei 28 von 45 Katalogeinträgen und wird nirgends gerendert. Künftig aus `seit` abgeleitet. **Sichtbare Folge, bewusst:** nach den gemessenen Daten trügen dann noch 2 Skills das Abzeichen statt 28 — weil nur zwei nach dem 17. Juli dazukamen. Das ist die Wahrheit, das gepflegte Feld war es nicht.
+Alle vier zusätzlich mit „3–4 `.news-item`". Die Prompt-Sammlung stammt vom 16. Juli und fiel aus dem Vier-Tage-Fenster — also fehlte `prompts.html`.
+
+**Gelöst wurde das nicht durch Anpassen der Tests, sondern durch eine bessere Bauform:** drei Tage einzeln, plus **eine Sammelmeldung** („Davor: der Aufbau des Marketplace") für alles Ältere. Das ist unabhängig von den Tests die richtigere Lösung — ein reines Zeitfenster hätte den Anfang stillschweigend abgeschnitten, und wer die Seite später öffnet, hätte nie erfahren, dass Katalog und Prompt-Sammlung existieren. Die Sammelmeldung wächst nach hinten statt zu verfallen.
+
+**Damit ist auch die Zeitbombe entschärft,** die in Fassung 2 noch als offener Punkt stand: Weil die Sammelmeldung jeden Tag aufnimmt, der aus dem Fenster fällt, bleiben Meldungszahl (3–4) und Bereichslinks **dauerhaft** vollständig. Sie sind jetzt eine Eigenschaft der Bauform, nicht ein Zufall des Datenstands.
+
+### Umgesetzt
+
+1. **`tools/seit.mjs` → `data/seit.js`**, flache Zuordnung `"<Global>:<id>" → "JJJJ-MM-TT"`. Eigene Datei statt Eingriff in die zehn Datendateien.
+   - Ermittlung per `git log --format=%cs --reverse --pickaxe-regex -S'"?id"?: *["\']<id>["\']'`.
+   - **Die Regex fasst beide Schreibweisen.** `data/assets.js` mischt sie: Schriften als `id: "inter"`, Muster als `"id": "dots"`. Der naive Pickaxe liefert für `dots` und `grid` null Treffer — nachgewiesen.
+   - **Kein stiller Ausfall:** ein Eintrag ohne Datum bricht den Lauf ab und wird benannt.
+   - **Einfrier-Regel:** vorhandene Daten werden nie überschrieben. Gemessen: erster Lauf 48 s, zweiter 0,09 s (243 übernommen, 0 neu ermittelt).
+   - Datumsquelle ist das Commit-Datum; über alle 91 Commits stimmen Autor- und Commit-Datum überein.
+2. **Neuigkeiten-Block** aus `SEIT` + `GSEARCH_GROUPS`. Wenig am Tag (≤ 12): Einträge namentlich mit Deep-Link. Viel am Tag: Gattung + Zahl mit Bereichslink — bei 153 Einträgen wären drei herausgegriffene Namen Zufall, keine Information.
+3. **`GSEARCH_GROUPS` bekam `bereich`** — die Übersichtsseite je Gattung. Aus dem Deep-Link ableitbar war sie nicht: Assets wohnen unter `vorlagen.html?tab=assets`, ihr Deep-Link ist `vorlagen.html?a=…`.
+4. **Optionale Tages-Überschrift** (`NEWS_TITEL`, plus Schlüssel `sammel`). Nur die Überschrift ist redaktionell; Einträge, Zahlen und Links sind abgeleitet und können nicht veralten. Formuliert so, dass sie nicht verfällt: rutscht ein Tag in die Sammelmeldung, wird seine Überschrift schlicht nicht mehr benutzt.
+5. **`badge` restlos entfernt** — 45 Vorkommen (28 `"neu"`, 5 `"empfohlen"`, 12 `null`), von niemandem gelesen. An seine Stelle tritt `istNeu()`: neu ist, was zu den **zwei jüngsten Inhaltstagen** gehört. Bewusst ohne Uhrzeitbezug — eine Regel wie „jünger als 14 Tage" hinge an der Uhr des Geräts und wäre nicht prüfbar. Gemessen: **2 statt 28** Skills tragen das Fähnchen, 0 Prompts. Gegengeprüft, dass ausser `badge` kein Feld verlorenging (0 Abweichungen über alle 45 Einträge).
 
 ### Testwirkung
 
-**Keine — wenn der Block die drei Vorgaben einhält, die aus den bestehenden Tests folgen.** `e6:i5` und `e7:i5` messen an `index.html`:
+**Keine bestehende Testdatei angefasst.** Neu: `tests/e11-neuigkeiten.cjs`, 10 Checks über zwei Viewports.
 
-| Vorgabe | Woher | Erfüllt durch |
+| Suite | vorher | nachher |
 |---|---|---|
-| `document.querySelectorAll('.news-item').length` zwischen 3 und 4 | e6:i5, e7:i5 | vier Tagesgruppen, Klasse bleibt `.news-item` |
-| ein `.news-item .news-text a` mit `href="vorlagen.html?tab=assets"` | e6:i5 | Überschrift des 17.07. verlinkt die Asset-Bibliothek |
-| ein `.news-item .news-text a` mit `href="vorlagen.html"` | e7:i5 | Überschrift des 17.07. verlinkt den Baukasten |
+| e1 · e3 · e6 · e7 · e8 · e9 · e10 | grün | grün, unverändert |
+| e11 (neu) | — | grün, 10 Checks, 20 Instanzen |
 
-Das ist kein Zufall, sondern eine **Entwurfsvorgabe**: Der Block wird so gebaut, dass die bestehenden Tests halten.
+Check 09 in e11 hält den Vertrag mit den vier fremden `i5`-Prüfungen fest, damit ein künftiger Umbau **dort** auffällt — mit Begründung — statt vier Suiten unerklärt rot zu färben.
 
-**Diese Neutralität hat ein Verfallsdatum — und das ist richtig so.** Der 17. Juli ist heute die vierte von vier Gruppen. Sobald **vier neue Inhaltstage** dazukommen, fällt er heraus, mit ihm die beiden Links, und `e6:i5` / `e7:i5` werden rot. Das ist kein Konstruktionsfehler, sondern eine Zusicherung, die abläuft: Sie behauptet „die Startseite meldet den Baukasten als neu" — und das ist irgendwann schlicht nicht mehr wahr.
+### Abnahme — gemessen
 
-Wenn es so weit ist, ist die richtige Reaktion **nicht**, den 17. Juli künstlich festzunageln. Der eigentliche Zweck der beiden Checks (laut Suite-Kopf: „die Verzahnung mit der Startseite") ist bereits doppelt abgedeckt — durch `i2_area_card_links_vorlagen[_assets]` und `i6_area_cta_navigates`. Dann wird der Neuigkeiten-Teil aus i5 mit dieser Begründung entfernt, und der Rest der Prüfung bleibt.
+| Kriterium | Ergebnis |
+|---|---|
+| Meldungen im Block | 4 (3 Tage + Sammelmeldung), Vorgabe 3–4 |
+| Sortierung | absteigend, Sammelmeldung schliesst ab |
+| Deep-Links | **17 von 17** lösen auf (HTTP 200 **und** Modal/Anker/Bereichsseite erreicht) |
+| Datum mit Jahreszahl | 4 von 4 |
+| Erfundene Daten | 0 — jedes angezeigte Datum kommt in `SEIT` vor |
+| `SEIT`-Abdeckung | **243 von 243** Einträgen über alle zehn Sammlungen, 0 Lücken |
+| „Neu"-Fähnchen == `istNeu()` | 2/2 auf `skills.html`, 0/0 auf `prompts.html` |
+| totes `badge`-Feld | 0 Vorkommen |
+| Pflicht-Bereichslinks | 6 von 6 vorhanden |
+| JS-Fehler | 0 |
+| `qa` kontrast · a11y · zaehler · responsive · robust | alle sauber |
 
-### Abnahme
-
-- Block zeigt vier Tagesgruppen, absteigend nach Datum.
-- Jeder genannte Eintrag hat einen Deep-Link, der auflöst (kein 404, Ziel öffnet sich wirklich).
-- Kein Datum ist geschätzt: jedes stammt aus `data/seit.js`, jeder Wert dort aus einem Commit.
-- Jahreszahl steht dran (die alten `<li>` schrieben „23. Juli" ohne Jahr).
-- Neuer Testfall `e-neu`: Block nie leer, nie mehr als vier Gruppen, jede Gruppe mit mindestens einem auflösenden Link, Sortierung absteigend.
-- e6 (24 Checks) und e7 (22 Checks) bleiben grün, **ohne Änderung an den Testdateien**.
+*Rechenprobe der Anzeige:* 8 (24.07.) + 6 (23.07.) + 10 (18.07.) + 216 (Sammelmeldung) = 240 = 243 minus die drei `HIDDEN`-Einträge.
 
 ---
 
@@ -273,23 +288,30 @@ Das reduziert Stufe 5 spürbar. Der Umbau bleibt trotzdem die größte Stufe —
 
 ## Testwirkung im Überblick
 
-Ausgangslage heute gemessen (25.07.2026, gegen `localhost:8412`): **e6 grün, 24 Checks in 41 Instanzen über drei Läufe. e7 grün, 22 Checks in 37 Instanzen.** Exit-Code 0, `failed: []` bei beiden.
+Ausgangslage vor dem Start gemessen (25.07.2026, gegen `localhost:8412`): **e6 grün, 24 Checks in 41 Instanzen. e7 grün, 22 Checks in 37 Instanzen.** Exit-Code 0, `failed: []` bei beiden.
 
-| Stufe | e1 | e3 | e6 | e7 | e8 | e9 | e10 | Neue Tests |
-|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|---|
-| 0 · Sofort-Fixes | — | — | ✓ | — | — | — | — | Kontrast-Check je Farbfeld |
-| 1 · `seit` + Neuigkeiten | — | — | ✓* | ✓* | — | — | — | `e-neu` (Block-Form) |
-| 2 · Projektanweisungen | — | — | — | ✓ | — | ✓ | — | — |
-| 3 · Startprojekte | — | — | — | — | ✓ | — | — | Formaterkennung Auswerter |
-| 4 · Restliste | ✓ | ✓ | — | — | — | — | — | Meta-Zahl-Regression |
-| 5 · Umbau | ✓ | — | **✎** | **✎** | — | **✎** | ✓ | — |
+| Stufe | e1 | e3 | e6 | e7 | e8 | e9 | e10 | e11 | Neue Tests |
+|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|---|
+| **0 · Sofort-Fixes** ✔ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — | Kontrast/Umbruch je Farbfeld |
+| **1 · `seit` + Neuigkeiten** ✔ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | **neu** | `e11-neuigkeiten` (10 Checks) |
+| 2 · Projektanweisungen | — | — | — | ✓ | — | ✓ | — | — | — |
+| 3 · Startprojekte | — | — | — | — | ✓ | — | — | — | Formaterkennung Auswerter |
+| 4 · Restliste | ✓ | ✓ | — | — | — | — | — | — | Meta-Zahl-Regression |
+| 5 · Umbau | ✓ | — | **✎** | **✎** | — | **✎** | ✓ | ✓ | — |
 
-✓ bleibt unverändert grün · ✎ wird neu geschrieben
-\* nur, solange die drei Entwurfsvorgaben aus Stufe 1 eingehalten werden
+✔ erledigt · ✓ bleibt unverändert grün · ✎ wird neu geschrieben
 
 **Regel für den ganzen Plan:** In den Stufen 0–4 wird **keine bestehende Testdatei angefasst** — kein Sollwert verschoben, keine Zeile geändert. Nur neue Tests kommen dazu. Erst Stufe 5 schreibt e6, e7 und e9 neu, und dort bekommt jeder verschobene Sollwert seine Begründung an Ort und Stelle.
 
-Das ist keine Zierde, sondern der Grund für zwei Entwurfsentscheidungen: Stufe 1 wurde tagesweise gebaut und Stufe 3 bekam eine eigene Datenliste, **weil** die naheliegenden Varianten grüne Zusicherungen gebrochen hätten. Nicht weil Tests unantastbar wären, sondern weil ein Entwurf, der eine grüne Zusicherung bricht, erst begründen muss, warum die Zusicherung falsch war — und in beiden Fällen war sie es nicht.
+**In Stufe 0 und 1 hat die Regel gehalten — und zweimal zu einem besseren Entwurf geführt, nicht zu einem Kompromiss:**
+
+- Stufe 1 wurde **tagesweise** gebaut, weil eintragsweise acht Glossarbegriffe gezeigt hätte.
+- Stufe 1 bekam die **Sammelmeldung**, weil ein reines Zeitfenster den Anfang stillschweigend abschneidet. Dass damit vier fremde `i5`-Prüfungen grün bleiben, ist die Folge, nicht der Zweck — die Prüfungen verlangten das Richtige.
+- Stufe 3 bekommt aus demselben Grund eine eigene Datenliste statt eines Eingriffs in `CASES`.
+
+Nicht weil Tests unantastbar wären, sondern weil ein Entwurf, der eine grüne Zusicherung bricht, erst begründen muss, warum die Zusicherung falsch war — und in allen drei Fällen war sie es nicht.
+
+**Eine Lehre aus Stufe 1, die für den Rest gilt:** Ich hatte `e3:i5` und `e8:i5` bei der Planung übersehen, weil ich nach den Namen aus e6/e7 gesucht hatte statt nach dem Muster. Vor jeder weiteren Stufe wird deshalb **über alle Suiten** nach dem betroffenen Selektor gesucht, nicht nach dem erwarteten Check-Namen.
 
 ---
 
@@ -310,8 +332,9 @@ Das ist keine Zierde, sondern der Grund für zwei Entwurfsentscheidungen: Stufe 
 - **Gespeicherte Merkungen und Bewertungen alter Typen verfallen.** Ebenfalls bewusst. Betroffen sind die Präfixe `rate:asset:`, `fav:asset:`, `rate:baustein:`, `fav:baustein:` und `tried:*` der umbenannten Typen. Die Migrationsschicht in `shared/base.js` deckt nur die alten `skill-*`-Keys ab und hilft hier nicht.
 - **Bildlizenzen.** Freie Quellen sind nicht automatisch frei von Auflagen. Jedes aufgenommene Foto braucht eine belegte Lizenz und Quellenangabe; im Zweifel wird es nicht aufgenommen.
 - **Bilder sind unumkehrbar.** Was einmal im Repo liegt, bleibt in der Historie. Das Größenbudget in Stufe 5 ist deshalb eine harte Grenze, keine Richtschnur.
-- **Git-Historie als Datumsquelle** funktioniert (243 von 243 Einträgen datiert, Autor- und Commit-Datum über alle 91 Commits identisch), liefert aber grobe Cluster: fünf Tage, davon zwei mit 90 % der Einträge. Die tagesweise Form macht daraus eine Stärke — aber der Block wird selten neu, weil selten ein neuer Tag dazukommt.
-- **`badge: "neu"` schrumpft sichtbar** von 28 auf 2. Wer die Zahl erwartet, wird sie vermissen. Sie war nur nie wahr.
+- **Git-Historie als Datumsquelle** funktioniert (243 von 243 Einträgen datiert, Autor- und Commit-Datum über alle 91 Commits identisch), liefert aber grobe Cluster: fünf Tage, davon zwei mit 90 % der Einträge. Die tagesweise Form macht daraus eine Stärke — aber der Block wird nur dann neu, wenn wirklich ein neuer Inhaltstag dazukommt. Das ist ehrlich und zugleich der Preis: an ruhigen Wochen steht dort dasselbe wie letzte Woche.
+- **`badge: "neu"` ist von 28 auf 2 geschrumpft** (erledigt). Wer die alte Zahl erwartet, wird sie vermissen. Sie war nur nie wahr.
+- ~~**Zeitbombe im Neuigkeiten-Block**~~ — in Fassung 2 stand hier, dass die Bereichslinks irgendwann aus dem Zeitfenster fallen und vier Prüfungen rot färben. Mit der Sammelmeldung aus Stufe 1 kann das nicht mehr passieren: sie nimmt jeden herausfallenden Tag auf. **Erledigt, nicht vertagt.**
 - **`skills.html` wächst in diesem Plan nicht** — die Projektanweisungen landen bewusst in `vorlagen.html`, obwohl der Skill-Baukasten die passende Maschine hätte. Grund: 4.124 Zeilen und drei Views in einer Datei sind bereits die Stelle mit dem höchsten Risiko für ungewollte Nebenwirkungen.
 - **Stufe 5 ist die einzige Stufe, die nicht in einem Zug live gehen sollte.** Modell, Karten und Pakete sind drei eigene Auslieferungen. Wer sie bündelt, hat im Fehlerfall keinen Punkt zum Zurückgehen.
 

@@ -39,11 +39,13 @@ lernen-hilfe.html     Ressourcen + Befehle + Glossar + FAQ (E11-Merge zweier Sei
 
 shared/base.css       Design-System + alle geteilten Komponenten (~1.900 Zeilen)
 shared/base.js        Engine: Nav, Modal, Rating, Suche, Deep-Links (~1.800 Zeilen)
-data/*.js             9 Datendateien, klassische Scripts mit globalen Konstanten
-tests/*.cjs           7 Playwright-Regressionssuiten
+data/*.js             10 Datendateien, klassische Scripts mit globalen Konstanten
+                      (data/seit.js ist ERZEUGT — tools/seit.mjs, nicht von Hand pflegen)
+tests/*.cjs           8 Playwright-Regressionssuiten
+tools/seit.mjs        ermittelt aus der Git-Historie, seit wann ein Eintrag hier steht
 skills/<id>/          echte Skill-Dateien (Source of Truth für den Datei-Viewer)
 demo/, beispieldaten/ echte Artefakte und Übungsdaten
-docs/                 historische Planungsdokumente (E1–E10), nicht mehr aktuell
+docs/                 Planungsdokumente — ein aktiver Plan, der Rest historisch
 ```
 
 **Redirect-Stubs in der Wurzel:** `bibliothek.html`+`baukasten.html` → `vorlagen.html`, `hilfe.html`+`lernen.html` → `lernen-hilfe.html`. Alte geteilte Links müssen weiter funktionieren — nicht löschen.
@@ -60,6 +62,8 @@ docs/                 historische Planungsdokumente (E1–E10), nicht mehr aktue
 - **localStorage ist typ-genamespaced:** `rate:<typ>:<id>`, `fav:<typ>:<id>`, `tried:<typ>:<id>`, `vote:<typ>:<id>`.
 - **Ein neuer merkbarer Typ heißt: EIN Eintrag in `GSEARCH_GROUPS`** (base.js). Diese Liste ist die gemeinsame Quelle für globale Suche UND „Deine Sachen" — sie liefert Titel, Kurzinfo und Deep-Link. Ohne Eintrag speichert der Stern zwar, aber „Deine Sachen" kann ihn nicht auflösen und zeigt ihn gar nicht an. Dazu gehören jeweils: der `case` in `_gsGlobal`, das Label in `DS_TYPE_LABEL`, ein `?param=`-Deep-Link auf der Zielseite und der Typ **explizit** im `toggleFavorite(event, id, 'typ')`. Merkbar sind aktuell: Skills, Prompts, Bausteine, Assets, Beispieldaten, Projekte, Ressourcen.
 - **Nicht alles braucht einen Stern.** Merken löst „ich finde es in einer großen Menge nicht wieder". Bei kleinen, immer sichtbaren Mengen (die zwei Logos im Marken-Panel) ist der Stern Rauschen. Wo bewusst keiner sitzt, gehört die Begründung als Kommentar daneben — sonst liest es die nächste Prüfung als Lücke.
+- **`seit` statt `addedAt`, wenn es um „neu" geht.** `addedAt` in `data/skills.js` ist die redaktionelle Entstehungszeit und liegt bei 30 von 45 Einträgen **vor** dem ersten Commit (Daten bis Oktober 2025). Wann etwas hier erschienen ist, steht ausschließlich in `data/seit.js` — erzeugt von `tools/seit.mjs` aus der Git-Historie, Schlüssel `<Global>:<id>`. Der Generator **überschreibt nie** (Einfrier-Regel): sobald IDs umbenannt werden, findet der Pickaxe die alte Historie nicht mehr. Neue Einträge: `node tools/seit.mjs`, danach `--pruefen` muss 0 Lücken melden.
+- **Der Neuigkeiten-Block ist abgeleitet, nicht gepflegt** (`newsHtml`/`newsMeldungen` in base.js). Drei Tage einzeln plus **eine Sammelmeldung** für alles Ältere. Die Sammelmeldung ist kein Schmuck: sie hält die Zahl der Meldungen dauerhaft bei 3–4 und nennt dauerhaft jeden Bereich — genau das prüfen `e3:i5`, `e6:i5`, `e7:i5` und `e8:i5` an `index.html`. Ein reines Zeitfenster erfüllt das nur zufällig und nur so lange, bis der jeweilige Launch-Tag herausfällt. Bewacht von `tests/e11-neuigkeiten.cjs` (Check 09), damit ein Umbau **dort** auffällt statt vier fremde Suiten unerklärt rot zu färben.
 - **Alle localStorage-Zugriffe müssen gekapselt bleiben** (`lsGet`/`lsSet`/`lsRemove` in base.js, try/catch). Privatmodus darf die Seite nicht töten.
 - **Deep-Links:** `?param=` wird auf die Hash-Form umgeschrieben, übrige Query-Parameter bleiben erhalten (utm überlebt).
 - **Klickbare Karten: nie die Karte selbst zur Schaltfläche machen.** Eine Karte, die Sterne, Chips oder Kopieren-Knöpfe enthält, darf kein `role="button"` + `tabindex="0"` tragen — eine Schaltfläche darf keine Schaltflächen enthalten (axe `nested-interactive`; das waren einmal 66 Knoten). Muster im Bestand:
@@ -74,14 +78,14 @@ docs/                 historische Planungsdokumente (E1–E10), nicht mehr aktue
 
 ## Testen
 
-**Immer mit der Basis-URL aufrufen.** Alle sieben Suiten leiten ihre Zielseite selbst ab; mit einer Seiten-URL laufen e6 und e9 falsch-negativ.
+**Immer mit der Basis-URL aufrufen.** Alle acht Suiten leiten ihre Zielseite selbst ab; mit einer Seiten-URL laufen e6 und e9 falsch-negativ.
 
 ```bash
 # Server (beide, manche Suiten haben unterschiedliche Defaults)
 nohup python3 -m http.server 8401 >/dev/null 2>&1 &
 nohup python3 -m http.server 8412 >/dev/null 2>&1 &
 
-for t in e1-regression e3-prompts e6-bibliothek e7-baukasten e8-showroom e9-suche e10-lernenhilfe; do
+for t in e1-regression e3-prompts e6-bibliothek e7-baukasten e8-showroom e9-suche e10-lernenhilfe e11-neuigkeiten; do
   PLAYWRIGHT_BROWSERS_PATH=$HOME/.cache/ms-playwright node tests/$t.cjs http://localhost:8412/
 done
 ```
@@ -142,7 +146,7 @@ node tools/qa/index.mjs aufraeumen   # verwaiste Browser-Prozesse (gegen Abstür
 
 ## Deploy
 
-**Push auf `main` = Deploy** (GitHub Pages, `https://ceekay1901.github.io/pilot-skillmarkt/`). `.nojekyll` muss bleiben. Vor dem Push: alle sieben Suiten grün und 0 Konsolenfehler auf allen sechs Seiten.
+**Push auf `main` = Deploy** (GitHub Pages, `https://ceekay1901.github.io/pilot-skillmarkt/`). `.nojekyll` muss bleiben. Vor dem Push: alle acht Suiten grün und 0 Konsolenfehler auf allen sechs Seiten.
 
 ---
 

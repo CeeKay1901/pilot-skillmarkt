@@ -341,36 +341,10 @@
       <div class="fresh-inner anim-reveal">
         <p class="kicker">Neu dazugekommen</p>
         <h2 id="fresh-h">Neu im Marketplace</h2>
-        <ul class="news-list">
-          <li class="news-item">
-            <span class="news-date">23. Juli</span>
-            <div>
-              <p class="news-title">Frisch im Katalog &amp; kuratiert</p>
-              <p class="news-text">Zwei neue Skills im Katalog: <strong>dataviz</strong> (Charts &amp; Dashboards) und <strong>webapp-testing</strong> (Tools im echten Browser durchklicken). Dazu frisch durchgesehene Einträge in <a href="lernen-hilfe.html#glossar">Glossar &amp; Ressourcen</a> · <a href="skills.html">zum Katalog</a></p>
-            </div>
-          </li>
-          <li class="news-item">
-            <span class="news-date">17. Juli</span>
-            <div>
-              <p class="news-title">Der Baukasten ist da</p>
-              <p class="news-text">Fertige Code-Bausteine mit Live-Vorschau und „Sag Claude einfach …"-Prompt. <a href="vorlagen.html">Zum Baukasten</a> · passende Prompts in der <a href="prompts.html">Prompt-Sammlung</a></p>
-            </div>
-          </li>
-          <li class="news-item">
-            <span class="news-date">17. Juli</span>
-            <div>
-              <p class="news-title">Der Showroom ist da</p>
-              <p class="news-text">Echte Team-Tools und Beispiel-Projekte zum Anklicken. <a href="showroom.html">Zum Showroom</a> · bei Blockern hilft <a href="lernen-hilfe.html">Lernen &amp; Hilfe</a></p>
-            </div>
-          </li>
-          <li class="news-item">
-            <span class="news-date">17. Juli</span>
-            <div>
-              <p class="news-title">Die Asset-Bibliothek ist da</p>
-              <p class="news-text">Schriften, Icons, Paletten und Muster — frei nutzbar, Lizenz sichtbar. <a href="vorlagen.html?tab=assets">Zur Asset-Bibliothek</a></p>
-            </div>
-          </li>
-        </ul>
+        <!-- Wird aus data/seit.js + GSEARCH_GROUPS erzeugt (newsHtml in base.js).
+             Vorher standen hier vier handgeschriebene Meldungen mit Datumsangaben
+             ohne Jahr, die niemand nachzog. -->
+        <ul class="news-list" id="news-list"></ul>
       </div>
     </section>
 
@@ -401,6 +375,9 @@
   <script src="data/bausteine.js" defer></script>
   <!-- Showroom-Daten (E8), nur für die Live-Zähler — gleiches defer-Muster -->
   <script src="data/cases.js" defer></script>
+  <!-- Ersterscheinungs-Daten für den Neuigkeiten-Block (erzeugt von tools/seit.mjs).
+       Muss NACH den Datendateien stehen: der Block bündelt deren Einträge nach Tag. -->
+  <script src="data/seit.js" defer></script>
   <script src="shared/base.js"></script>
   <script>
     // ===== STATE (base.js-Konvention; Modal-Engine läuft hier nicht) =====
@@ -542,6 +519,20 @@
       const react = document.getElementById('area-showroom-spot-react');
       const lhCase = CASES.find(c => c.id === 'umfrage-auswerter');
       if (react && lhCase) react.innerHTML = `<span class="rating-text">${getVotes('reaktion', lhCase.id, lhCase.reaktionSeed)} × „Will ich auch“</span>`;
+    });
+
+    // ===== NEU IM MARKETPLACE (abgeleitet, nicht gepflegt) =====
+    // Braucht ALLE Datendateien plus data/seit.js — die laden per defer, also
+    // DOMContentLoaded. newsHtml() steckt in base.js, weil es GSEARCH_GROUPS
+    // liest: dieselbe Registry, die auch Suche und „Deine Sachen" bedient.
+    // Fällt SEIT aus, bleibt die Liste leer statt mit einer Fehlermeldung zu
+    // stehen — der Abschnitt trägt dann nichts bei, aber er bricht auch nichts.
+    document.addEventListener('DOMContentLoaded', () => {
+      const host = document.getElementById('news-list');
+      if (!host || typeof newsHtml !== 'function') return;
+      const html = newsHtml();
+      if (html) host.innerHTML = html;
+      else { const s = document.getElementById('neu'); if (s) s.hidden = true; }
     });
 
     // ===== MEINE REISE (sektionsübergreifend aus localStorage, via base.js) =====

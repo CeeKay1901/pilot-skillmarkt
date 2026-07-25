@@ -69,8 +69,7 @@
             "rating": 5
           }
         ],
-        "featured": true,
-        "badge": "neu"
+        "featured": true
       },
       {
         "id": "prototyp-bauen",
@@ -152,8 +151,7 @@
             "rating": 4
           }
         ],
-        "featured": true,
-        "badge": "empfohlen"
+        "featured": true
       },
       {
         "id": "webseite-bauen",
@@ -220,8 +218,7 @@
             "rating": 5
           }
         ],
-        "featured": true,
-        "badge": null
+        "featured": true
       },
       {
         "id": "erste-automation",
@@ -279,8 +276,7 @@
             "rating": 4
           }
         ],
-        "featured": false,
-        "badge": "neu"
+        "featured": false
       },
       {
         "id": "tool-teilen",
@@ -329,8 +325,7 @@
             "rating": 4
           }
         ],
-        "featured": false,
-        "badge": "neu"
+        "featured": false
       },
       {
         "id": "webaudit",
@@ -415,8 +410,7 @@
             "rating": 5
           }
         ],
-        "featured": false,
-        "badge": "empfohlen"
+        "featured": false
       },
       {
         "id": "briefing-gen",
@@ -484,8 +478,7 @@
             "rating": 5
           }
         ],
-        "featured": true,
-        "badge": "empfohlen"
+        "featured": true
       },
       {
         "id": "campaign-check",
@@ -553,8 +546,7 @@
             "rating": 5
           }
         ],
-        "featured": true,
-        "badge": null
+        "featured": true
       },
       {
         "id": "mediaplan-audit",
@@ -615,8 +607,7 @@
             "rating": 4
           }
         ],
-        "featured": false,
-        "badge": "neu"
+        "featured": false
       },
       {
         "id": "tracking-audit",
@@ -675,8 +666,7 @@
           }
         ],
         "comments": [],
-        "featured": false,
-        "badge": "neu"
+        "featured": false
       },
       {
         "id": "keyword-research",
@@ -736,8 +726,7 @@
             "rating": 5
           }
         ],
-        "featured": false,
-        "badge": null
+        "featured": false
       },
       {
         "id": "content-recycling",
@@ -804,8 +793,7 @@
             "rating": 4
           }
         ],
-        "featured": true,
-        "badge": "neu"
+        "featured": true
       },
       {
         "id": "tonalitaets-check",
@@ -866,8 +854,7 @@
             "rating": 4
           }
         ],
-        "featured": false,
-        "badge": "neu"
+        "featured": false
       },
       {
         "id": "social-kalender",
@@ -918,8 +905,7 @@
           }
         ],
         "comments": [],
-        "featured": false,
-        "badge": "neu"
+        "featured": false
       },
       {
         "id": "meeting-notes",
@@ -977,8 +963,7 @@
           }
         ],
         "comments": [],
-        "featured": false,
-        "badge": null
+        "featured": false
       },
       {
         "id": "markt-research",
@@ -1045,8 +1030,7 @@
             "rating": 5
           }
         ],
-        "featured": false,
-        "badge": null
+        "featured": false
       },
       {
         "id": "persona-builder",
@@ -1106,8 +1090,7 @@
             "rating": 4
           }
         ],
-        "featured": false,
-        "badge": "neu"
+        "featured": false
       },
       {
         "id": "pitch-deck",
@@ -1158,8 +1141,7 @@
             "rating": 4
           }
         ],
-        "featured": false,
-        "badge": null
+        "featured": false
       },
       {
         "id": "daten-aufbereiten",
@@ -1227,8 +1209,7 @@
             "rating": 5
           }
         ],
-        "featured": true,
-        "badge": "neu"
+        "featured": true
       },
       {
         "id": "report-summary",
@@ -1295,8 +1276,7 @@
             "rating": 5
           }
         ],
-        "featured": true,
-        "badge": null
+        "featured": true
       },
       {
         "id": "moodboard",
@@ -1354,8 +1334,7 @@
           }
         ],
         "comments": [],
-        "featured": false,
-        "badge": "neu"
+        "featured": false
       },
       {
         "id": "slides-aus-daten",
@@ -1406,8 +1385,7 @@
           }
         ],
         "comments": [],
-        "featured": false,
-        "badge": "neu"
+        "featured": false
       },
       {
         "category": "anthropic",
@@ -1420,7 +1398,6 @@
         ],
         "endorsements": [],
         "comments": [],
-        "badge": "neu",
         "trigger": null,
         "id": "pptx",
         "platforms": { "code": true, "langdock": false },
@@ -1466,7 +1443,6 @@
         ],
         "endorsements": [],
         "comments": [],
-        "badge": "neu",
         "trigger": null,
         "id": "xlsx",
         "platforms": { "code": true, "langdock": false },
@@ -1511,7 +1487,6 @@
         ],
         "endorsements": [],
         "comments": [],
-        "badge": "neu",
         "trigger": null,
         "id": "docx",
         "platforms": { "code": true, "langdock": false },
@@ -1556,7 +1531,6 @@
         ],
         "endorsements": [],
         "comments": [],
-        "badge": "neu",
         "trigger": null,
         "id": "pdf",
         "platforms": { "code": true, "langdock": false },
@@ -1599,7 +1573,6 @@
         ],
         "endorsements": [],
         "comments": [],
-        "badge": "neu",
         "trigger": null,
         "id": "brand-guidelines",
         "platforms": { "code": true, "langdock": false },
@@ -1643,7 +1616,6 @@
         ],
         "endorsements": [],
         "comments": [],
-        "badge": "neu",
         "trigger": null,
         "id": "web-artifacts-builder",
         "platforms": { "code": true, "langdock": false },
@@ -1696,7 +1668,6 @@
           }
         ],
         "comments": [],
-        "badge": "neu",
         "trigger": null,
         "id": "skill-creator",
         "itemType": "plugin",
@@ -1756,7 +1727,6 @@
         ],
         "endorsements": [],
         "comments": [],
-        "badge": "neu",
         "trigger": null,
         "id": "internal-comms",
         "platforms": { "code": true, "langdock": true },
@@ -1806,7 +1776,6 @@
         "version": "1.0.0",
         "addedAt": "2026-07-10",
         "updatedAt": "2026-07-16",
-        "badge": "neu",
         "featured": false,
         "tags": ["design", "web", "bauen", "ui", "typografie"],
         "useCases": ["Landingpages mit Charakter", "Interne Tools aufwerten", "Kunden-Prototypen präsentabel machen"],
@@ -1853,7 +1822,6 @@
         "version": "1.0.0",
         "addedAt": "2026-07-10",
         "updatedAt": "2026-07-10",
-        "badge": "neu",
         "featured": false,
         "tags": ["kreativ", "design", "poster", "visual", "png"],
         "useCases": ["Key-Visual-Entwürfe", "Moodboard-Poster", "Schnelle Kampagnen-Visuals"],
@@ -1880,7 +1848,6 @@
         "version": "1.0.0",
         "addedAt": "2026-07-10",
         "updatedAt": "2026-07-10",
-        "badge": "neu",
         "featured": false,
         "tags": ["content", "konzept", "proposal", "schreiben", "workflow"],
         "useCases": ["Kundenkonzepte", "Entscheidungsvorlagen", "New-Business-Papiere"],
@@ -1907,7 +1874,6 @@
         "version": "1.0.0",
         "addedAt": "2026-07-10",
         "updatedAt": "2026-07-10",
-        "badge": "neu",
         "featured": false,
         "tags": ["design", "themes", "präsentation", "styling", "ci"],
         "useCases": ["Deck in 1 Minute umstylen", "Report-Look vereinheitlichen", "Kunden-CI als Theme"],
@@ -1965,8 +1931,7 @@
             "rating": 5
           }
         ],
-        "featured": false,
-        "badge": "empfohlen"
+        "featured": false
       },
 
       {
@@ -2008,8 +1973,7 @@
             "rating": 5
           }
         ],
-        "featured": false,
-        "badge": "empfohlen"
+        "featured": false
       },
 
       {
@@ -2042,8 +2006,7 @@
           }
         ],
         "comments": [],
-        "featured": false,
-        "badge": "neu"
+        "featured": false
       },
 
       {
@@ -2078,7 +2041,6 @@
         ],
         "comments": [],
         "featured": false,
-        "badge": "neu",
         "source": "https://github.com/anthropics/knowledge-work-plugins/tree/main/data/skills/data-visualization"
       },
 
@@ -2114,7 +2076,6 @@
         ],
         "comments": [],
         "featured": false,
-        "badge": "neu",
         "source": "https://github.com/anthropics/skills/tree/main/skills/webapp-testing"
       },
 
@@ -2158,8 +2119,7 @@
             "rating": 4
           }
         ],
-        "featured": false,
-        "badge": "neu"
+        "featured": false
       },
 
       {
@@ -2210,7 +2170,6 @@
           }
         ],
         "featured": false,
-        "badge": null,
         "source": "https://github.com/obra/superpowers",
         "installCmd": "/plugin install superpowers@claude-plugins-official",
         "installAlt": {
@@ -2271,7 +2230,6 @@
           }
         ],
         "featured": false,
-        "badge": null,
         "source": "https://github.com/anthropics/claude-plugins-official/tree/main/plugins/ralph-loop",
         "installCmd": "/plugin install ralph-loop@claude-plugins-official",
         "contains": "3 Befehle — /ralph-loop:ralph-loop (Loop starten), /ralph-loop:cancel-ralph (abbrechen), /ralph-loop:help — plus der Stop-Hook, der den Loop am Laufen hält. Keine Skills, kein MCP.",
@@ -2335,7 +2293,6 @@
           }
         ],
         "featured": false,
-        "badge": null,
         "source": "https://github.com/open-gsd/gsd-core",
         "workflow": {
           "intro": "GSD lädst du nicht als Datei herunter — es ist eine feste Abfolge von Befehlen, mit der du Claude durch ein Projekt führst. Für den Einstieg reichen diese sechs Schritte; /gsd-help listet den Rest.",
@@ -2409,7 +2366,6 @@
           }
         ],
         "featured": false,
-        "badge": null,
         "source": "https://github.com/obra/superpowers",
         "workflow": {
           "intro": "TDD braucht keine Installation — die Arbeitsweise steckt komplett in den Prompts. Mit installiertem Superpowers-Skill wird sie strenger, weil Claude die Regeln dann selbst durchsetzt.",
@@ -2487,7 +2443,6 @@
           }
         ],
         "featured": false,
-        "badge": null,
         "source": "https://github.com/obra/superpowers",
         "workflow": {
           "intro": "Drei sauber getrennte Arbeitsschritte, jeder mit eigenem Skill. Voraussetzung: die Superpowers-Skills sind installiert — einzeln aus unserem Katalog oder als superpowers-Plugin.",
