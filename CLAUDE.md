@@ -60,6 +60,13 @@ docs/                 historische Planungsdokumente (E1–E10), nicht mehr aktue
 - **localStorage ist typ-genamespaced:** `rate:<typ>:<id>`, `fav:<typ>:<id>`, `tried:<typ>:<id>`, `vote:<typ>:<id>`.
 - **Alle localStorage-Zugriffe müssen gekapselt bleiben** (`lsGet`/`lsSet`/`lsRemove` in base.js, try/catch). Privatmodus darf die Seite nicht töten.
 - **Deep-Links:** `?param=` wird auf die Hash-Form umgeschrieben, übrige Query-Parameter bleiben erhalten (utm überlebt).
+- **Klickbare Karten: nie die Karte selbst zur Schaltfläche machen.** Eine Karte, die Sterne, Chips oder Kopieren-Knöpfe enthält, darf kein `role="button"` + `tabindex="0"` tragen — eine Schaltfläche darf keine Schaltflächen enthalten (axe `nested-interactive`; das waren einmal 66 Knoten). Muster im Bestand:
+  ```html
+  <article class="skill-card" onclick="openModal('id')">      <!-- Maus: ganze Fläche -->
+    <h3 class="skill-name"><button type="button" class="card-open-btn"
+        onclick="event.stopPropagation();openModal('id')">Titel</button></h3>
+  ```
+  Der Titel trägt Aktion, Tastaturzugang und Fokusring (`.card-open-btn`, base.css). `event.stopPropagation()` verhindert das Doppel-Öffnen. Die Karte reagiert über `:focus-within` sichtbar mit. Ausnahme: Karten **ohne** interaktive Kinder (`.ex-starter-card`) dürfen `role="button"` behalten.
 
 ---
 

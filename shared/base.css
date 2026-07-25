@@ -304,7 +304,32 @@
       box-shadow: 6px 6px 0 var(--c-yellow);
       border-color: var(--c-black);
     }
-    .skill-card:focus-visible { outline: 2px solid var(--c-black); outline-offset: 2px; }
+    /* Die Karte selbst ist NICHT mehr fokussierbar (kein role="button", kein
+       tabindex) — sie enthält Schaltflächen, und eine Schaltfläche darf keine
+       Schaltflächen enthalten (axe: nested-interactive, 66 Knoten auf
+       skills.html + prompts.html). Der Tastaturweg läuft jetzt über den
+       Titel-Button .card-open-btn, so wie ihn vorlagen/showroom/lernen-hilfe
+       längst benutzen. Damit die Karte trotzdem sichtbar reagiert, wenn etwas
+       in ihr den Fokus hat, erbt :focus-within die Hover-Geste. */
+    .skill-card:focus-within {
+      transform: translate(-2px, -2px);
+      box-shadow: 6px 6px 0 var(--c-yellow);
+      border-color: var(--c-black);
+    }
+
+    /* Titel-Schaltfläche in Katalogkarten (.skill-card, .prompt-card, .pilot-card).
+       Sieht aus wie Text, ist aber das echte Bedienelement der Karte: sie trägt
+       die Aktion, den Tastaturzugang und den Fokusring. Erbt bewusst die gesamte
+       Typografie ihres Elternelements — der Titel soll sich nicht ändern, nur
+       bedienbar werden. */
+    .card-open-btn {
+      display: inline-block; max-width: 100%;
+      background: none; border: 0; padding: 0; margin: 0;
+      font: inherit; color: inherit; letter-spacing: inherit; text-align: left;
+      overflow-wrap: anywhere;
+      cursor: pointer;
+    }
+    .card-open-btn:focus-visible { outline: 2px solid var(--c-black); outline-offset: 3px; border-radius: var(--r-xs); }
 
     /* overflow-wrap:anywhere — mit dem Default „normal“ brach ein langes Kompositum
        gar nicht: Stresstest mit 68 Zeichen ergab scrollWidth 755 bei clientWidth 357,
