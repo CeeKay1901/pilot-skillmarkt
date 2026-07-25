@@ -1385,18 +1385,36 @@
     .pal-card.-highlight { border-color: var(--c-yellow); box-shadow: 0 0 0 3px rgba(255,224,94,.45); }
     .pal-name { font-size: 1.7rem; font-weight: 700; }
     .pal-stimmung { font-size: 1.35rem; line-height: 1.5; color: var(--c-ink-body); margin: 0; }
-    .pal-swatches { display: flex; border-radius: var(--r-sm); overflow: hidden; border: 1px solid var(--line); }
+    /* Farbfelder brechen um, statt abgeschnitten zu werden.
+       Gemessen 25.07.2026 bei 390 px: der Streifen ist 306 px breit, die Felder
+       blieben bei 62 px stehen (min-width: auto zog die min-content-Breite der
+       Hex-Beschriftung hoch). Alle sieben Paletten liefen über — „pilot CI" mit
+       6 Farben um 66 px, die anderen um 4 px. Die Hausfarbe war nicht antippbar.
+       flex-basis 8rem trifft beide Enden: bei 306 px (Handy) passen 3 pro Zeile,
+       bei 507 px (Desktop, .pal-grid zweispaltig) alle 6, bei ~686 px (Tablet,
+       einspaltig) ebenfalls alle. min-width: 0 verhindert den min-content-Zug
+       dauerhaft — das war die eigentliche Ursache. */
+    .pal-swatches { display: flex; flex-wrap: wrap; border-radius: var(--r-sm); overflow: hidden; border: 1px solid var(--line); }
     .swatch {
-      flex: 1; min-height: 6.4rem; border: none; cursor: pointer; position: relative;
-      display: flex; align-items: flex-end; padding: .6rem; transition: flex .2s ease;
+      flex: 1 1 8rem; min-width: 0;
+      min-height: 6.4rem; border: none; cursor: pointer; position: relative;
+      display: flex; align-items: flex-end; padding: .6rem; transition: flex-grow .2s ease;
     }
-    .swatch:hover { flex: 1.4; }
+    /* Nur flex-grow — die Kurzform „flex: 1.4" würde die basis auf 0 zurücksetzen
+       und den Umbruch beim Hover neu berechnen (Sprung in der Zeilenaufteilung). */
+    .swatch:hover { flex-grow: 1.4; }
+    /* Dauerhaft sichtbar statt nur bei Hover: auf Touch-Geräten gab es kein Hover,
+       der Hex-Wert war dort nie zu sehen (gemessen: opacity 0 auf allen 36 Feldern).
+       Deckende Plakette statt heller/dunkler Schrift direkt auf der Farbe: von den
+       36 Farben erreichen drei mit KEINER der beiden Textfarben 4,5:1 —
+       #c2571a 4,38:1 · #7c7692 4,21:1 · #8a7d6b 3,92:1. Die Plakette bringt
+       #262626 auf #fcfcfc und damit überall 14,75:1, unabhängig von der Farbe. */
     .swatch-hex {
       font-family: var(--font-mono); font-size: 1rem; font-weight: 600;
-      background: rgba(255,255,255,.85); color: #262626; border-radius: var(--r-xs);
-      padding: .1rem .4rem; opacity: 0; transition: opacity .2s ease;
+      background: var(--c-white); color: var(--c-black);
+      border: 1px solid rgba(38,38,38,.32); border-radius: var(--r-xs);
+      padding: .1rem .4rem;
     }
-    .swatch:hover .swatch-hex, .swatch:focus .swatch-hex { opacity: 1; }
     .pal-pairs { display: flex; flex-direction: column; gap: .5rem; }
     .pal-pair { display: flex; align-items: center; gap: .8rem; font-size: 1.25rem; }
     .pal-pair-demo {

@@ -20,13 +20,15 @@ node tools/qa/index.mjs <prüfung> [basis-url]     # Standard: http://localhost:
 
 Exit-Code 0 = sauber, 1 = mindestens ein Befund.
 
-## Drei Fallen, die hier fest verdrahtet sind
+## Vier Fallen, die hier fest verdrahtet sind
 
 **Einblend-Animationen.** Die Seite blendet Inhalte per IntersectionObserver ein. Wer das nicht erzwingt, misst Elemente mit `opacity: 0`. Eine komplette Kontrastprüfung meldete deswegen einmal „Alpha 0" für alles. `lib.mjs` erzwingt `.anim-reveal`→`.in-view` und `.cat-reveal`→`.in` vor jeder Messung.
 
 **Kumulierte Deckkraft.** Eine Prüfung, die nur `color` gegen `background-color` rechnet, übersieht die halbe Fehlerklasse. Lehre fürs Projekt: **Deckkraft taugt nicht zur Text-Abschwächung**, weil sie nicht prüfbar ist — immer eine echte Farbe setzen.
 
 **Stilles Überspringen.** Ein falscher Selektor erzeugt keinen Fehler, sondern eine Lücke, die in der Ausgabe wie „ok" aussieht — die gefährlichste Fehlmessung überhaupt. `zaehler` bricht deshalb **hart ab**, wenn ein Selektor nicht greift, statt weiterzulaufen.
+
+**Halbe WCAG-Regeln.** `responsive` prüfte Tap-Ziele gegen 24 px und kannte davon nur die Ausnahme für Fließtext-Links. Nach dem `nested-interactive`-Umbau meldete es deshalb 6× `button.card-open-btn` mit 21 px Höhe — der Titel-Button ist seither das Tastatur-Bedienelement der Karte und sieht bewusst wie Text aus. Als **Zeigerziel** dient die Karte darum herum (~300×200 px), und genau dafür gibt es in WCAG 2.5.8 die Ausnahme „Equivalent". Die ist jetzt drin — aber **streng**: verglichen wird der `onclick`-Rumpf, nicht bloß „irgendein klickbarer Vorfahr". Ein kleiner Knopf mit *anderer* Aktion in derselben Karte fällt weiter auf (gegengeprüft mit drei eingeschleusten Proben). Lehre: Eine Regel halb zu kennen erzeugt Fehlbefunde, die man irgendwann wegschaut — und dann schaut man auch die echten weg.
 
 ## Warum axe-core und nicht Pa11y oder Lighthouse
 

@@ -199,7 +199,24 @@ async function responsive() {
           // Fließtext-Links sind von WCAG 2.5.8 ausgenommen
           const imText = el.tagName === 'A' && el.parentElement && /^(P|LI|TD|SPAN|DIV)$/.test(el.parentElement.tagName)
             && el.parentElement.textContent.trim().length > el.textContent.trim().length + 20;
-          if (!imText && (b.height < 24 || b.width < 24)) klein.push({ sel: el.id ? '#' + el.id : el.tagName.toLowerCase() + '.' + String(el.className).split(/\s+/)[0], h: Math.round(b.height), w: Math.round(b.width) });
+          // Ausnahme „Equivalent" (WCAG 2.5.8): dieselbe Funktion ist über ein
+          // anderes, ausreichend großes Bedienelement erreichbar. Real geworden
+          // an den Katalogkarten: seit die Karte selbst kein role="button" mehr
+          // trägt (nested-interactive), ist der Titel das Tastatur-Bedienelement
+          // — 21 px hoch, weil er wie Text aussehen soll. Als ZEIGERZIEL dient
+          // die Karte darum herum, ~300x200 px.
+          // Bewusst streng: verglichen wird der onclick-Rumpf, nicht bloß „ein
+          // klickbarer Vorfahr existiert". Sonst würden auch die kleinen
+          // .pilot-skill-chip (openModal) von der Pilotenkarte (filterByPilot)
+          // freigekauft — andere Aktion, also keine Ausnahme.
+          const eigen = (el.getAttribute('onclick') || '').replace(/^\s*event\.stopPropagation\(\);\s*/, '').trim();
+          let ersatzZiel = false;
+          for (let a = el.parentElement; a && a !== document.body && eigen; a = a.parentElement) {
+            if ((a.getAttribute('onclick') || '').trim() !== eigen) continue;
+            const ab = a.getBoundingClientRect();
+            if (ab.width >= 24 && ab.height >= 24) { ersatzZiel = true; break; }
+          }
+          if (!imText && !ersatzZiel && (b.height < 24 || b.width < 24)) klein.push({ sel: el.id ? '#' + el.id : el.tagName.toLowerCase() + '.' + String(el.className).split(/\s+/)[0], h: Math.round(b.height), w: Math.round(b.width) });
         });
         return { scrollW: document.documentElement.scrollWidth, innerW: window.innerWidth, raus, klein: klein.slice(0, 10) };
       });

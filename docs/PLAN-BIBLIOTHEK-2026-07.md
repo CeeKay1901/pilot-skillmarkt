@@ -66,20 +66,32 @@ Stufe 4 ist unabhängig von allen anderen und kann eingeschoben werden, wo es pa
 
 ---
 
-## Stufe 0 — Sofort-Fixes
+## Stufe 0 — Sofort-Fixes · **erledigt 25.07.2026**
 
 **Warum zuerst:** Unabhängig vom Umbau, kosten täglich Substanz, kommen im Umbau nicht automatisch mit.
 
 1. **Farbfelder am Handy.** Gemessen bei 390 px: bei allen sieben Paletten werden Felder abgeschnitten, bei „pilot CI" zwei — die Hausfarbe ist dort nicht antippbar. Ursache: `.pal-swatches` ist ein `flex` mit `overflow: hidden`, die `.swatch` haben kein `min-width: 0`. Lösung: umbrechen statt abschneiden.
-2. **Hex-Werte dauerhaft sichtbar.** `.swatch-hex` steht auf `opacity: 0` und erscheint nur bei Hover — auf Touch-Geräten also nie. Ersetzen durch eine echte, dauerhaft sichtbare Beschriftung mit je nach Untergrund heller oder dunkler Schrift.
+2. **Hex-Werte dauerhaft sichtbar.** `.swatch-hex` steht auf `opacity: 0` und erscheint nur bei Hover — auf Touch-Geräten also nie.
+
+**Eine Vorgabe hat beim Bauen nicht gehalten.** Der Plan schrieb „Beschriftung mit je nach Untergrund heller oder dunkler Schrift". Nachgemessen über alle 36 Farben: **drei erreichen mit *keiner* der beiden Textfarben 4,5:1** — `#c2571a` 4,38:1 · `#7c7692` 4,21:1 · `#8a7d6b` 3,92:1. Der Ansatz hätte die eigene Abnahme nicht bestanden. Gebaut wurde stattdessen eine **deckende Plakette** (`#262626` auf `#fcfcfc`): 14,75:1 auf jedem Feld, unabhängig von der Farbe darunter. Die Abnahme unten ist entsprechend korrigiert — Beschriftung gegen **ihren eigenen Hintergrund**, nicht gegen das Farbfeld.
+
+**Umgesetzt:** `flex-basis: 8rem` + `min-width: 0` + `flex-wrap`. Der Wert trifft alle drei Breiten: 306 px (Handy) → 3 pro Zeile, 507 px (Desktop, `.pal-grid` zweispaltig) → alle 6, ~686 px (Tablet, einspaltig) → alle 6. Dazu `.swatch:hover` von der Kurzform `flex: 1.4` auf `flex-grow: 1.4` — die Kurzform hätte die `basis` auf 0 zurückgesetzt und den Umbruch beim Hover neu berechnet.
 
 **Testwirkung:** keine. `e6:07_contrast_badges_wcag` prüft die Kontrast-Abzeichen der Paare, nicht die Beschriftung der Felder.
 
-**Abnahme:**
-- Bei 390 px kein abgeschnittenes Feld über alle sieben Paletten (Playwright: `scrollWidth <= clientWidth` je `.pal-swatches`).
-- Hex-Wert ohne Hover lesbar (`opacity` computed ≥ 1 ohne Zeigerereignis).
-- Kontrast jeder Beschriftung gegen ihr **eigenes** Farbfeld gemessen, ≥ 4.5:1 (WCAG 1.4.3), mit der Formel aus `tools/qa/lib.mjs` — keine geschätzten Werte.
-- e6 bleibt grün (24 Checks).
+**Abnahme — gemessen bei 320 / 390 / 768 / 1280 px, je 36 Felder:**
+
+| Kriterium | Ergebnis |
+|---|---|
+| Streifen mit Überlauf (`scrollWidth > clientWidth`) | **0** von 7, auf allen vier Breiten |
+| Kontrast Beschriftung gegen ihren Hintergrund (WCAG 1.4.3) | **14,75:1** — Minimum über alle 36 |
+| Beschriftung ohne Hover sichtbar | **36 von 36** (`opacity` 1) |
+| Tippfläche unter 44 px | **0** |
+| Beschriftung außerhalb ihres Feldes | **0** |
+| e6 | grün, 24 Checks, 41 Instanzen, `failed: []` |
+| `qa kontrast` · `qa a11y` · `qa responsive` | alle sechs Seiten sauber |
+
+**Nebenbefund, mitbehoben.** `qa responsive` meldete 6× `button.card-open-btn` mit 21 px Höhe auf `skills.html` — ein Rückstand aus dem `nested-interactive`-Umbau, den die vorige Runde nicht bemerkt hat, weil sie `responsive` nicht noch einmal laufen ließ. Kein echter Verstoß: WCAG 2.5.8 nimmt Ziele aus, deren Funktion über ein anderes, ausreichend großes Bedienelement erreichbar ist — und die Karte trägt bei allen vier Kartentypen **denselben `onclick`-Rumpf** wie ihr Titel-Button (geprüft: `.skill-card`, `.group-card`, `.prompt-card`, `.pilot-card`). Das Werkzeug kannte nur die Fließtext-Ausnahme. Jetzt kennt es beide — und vergleicht dafür den `onclick`-Rumpf, nicht bloß „ein klickbarer Vorfahr existiert", damit z. B. die kleinen `.pilot-skill-chip` (andere Aktion als ihre Karte) weiter auffallen. Mit drei eingeschleusten Proben gegengeprüft.
 
 ---
 
