@@ -235,28 +235,58 @@ async function responsive() {
 
 /* ---------------------------------------------------------------------- links */
 // Link-Rot ist in diesem Projekt real passiert (ein Artikel rutschte hinter eine
-// Paywall). Zwei Fallen: (1) GitHub drosselt bei vielen Anfragen mit 429 — das
+// Paywall). Drei Fallen: (1) GitHub drosselt bei vielen Anfragen mit 429 — das
 // ist KEIN toter Link, deshalb wird nachgeprüft. (2) YouTube liefert auch für
-// GELÖSCHTE Videos 200 — deshalb echte oEmbed-Prüfung.
+// GELÖSCHTE Videos 200 — deshalb echte oEmbed-Prüfung. (3) Manche Hosts sperren
+// genau den User-Agent unten aus (Anti-Scraper-Schranke) und antworten 401/403,
+// während dieselbe URL ohne gesetzten UA 200 liefert — siehe UA_SPERRE.
 const UA = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36';
 const warte = ms => new Promise(r => setTimeout(r, ms));
-const hole = (u, extra = '') => {
+const hole = (u, extra = '', ohneUA = false) => {
+  const ua = ohneUA ? '' : `-A ${JSON.stringify(UA)}`;
   try {
-    return execSync(`curl -sS -o /dev/null -L --max-time 25 -A ${JSON.stringify(UA)} -w '%{http_code}|%{url_effective}' ${extra} ${JSON.stringify(u)}`, { encoding: 'utf8' }).trim().split('|');
+    return execSync(`curl -sS -o /dev/null -L --max-time 25 ${ua} -w '%{http_code}|%{url_effective}' ${extra} ${JSON.stringify(u)}`, { encoding: 'utf8' }).trim().split('|');
   } catch { return ['ERR', '']; }
 };
 
+/* UA_SPERRE — warum 401/403 einen zweiten Versuch OHNE User-Agent bekommen.
+   Gemessen am 25.07.2026 an unsplash.com: mit dem UA oben antworten Lizenzseite
+   und alle neun Bildseiten mit 401 und leiten auf eine Anti-Scraper-Challenge
+   um; ohne gesetzten UA antwortet dieselbe URL mit 200. Die Links sind also
+   lebendig — die Sperre gilt dem Prüfer, nicht dem Ziel.
+   Das ist dieselbe Klasse wie die 429-Drosselung darunter und wird deshalb
+   genauso behandelt: nachprüfen statt melden. Bewusst allgemein gehalten (kein
+   Sonderfall für einen Host), denn die nächste Sperre kommt von woanders.
+   Das schwächt die Prüfung nicht ab: der zweite Versuch muss 200 liefern, sonst
+   bleibt der Link tot — nur eben mit dem Code des zweiten Versuchs, damit im
+   Bericht steht, woran es wirklich lag. */
+const UA_SPERRE = new Set(['401', '403']);
+
+/* XML-Namensräume sind KEINE Adressen. `xmlns="http://www.w3.org/2000/svg"` ist
+   laut Spezifikation eine reine Kennung — sie wird nie abgerufen, und w3.org
+   sperrt Massenabrufe darauf ohnehin (gemessen 25.07.2026: 403 mit Prüf-UA,
+   400 ohne). Aufgefallen ist das, als data/assets.js die sieben Muster-SVGs als
+   `data:`-URI aufnahm: darin steht das xmlns im Klartext, und der Sammel-Regex
+   oben zieht es als Link heraus — inklusive des angehängten `%22` aus dem
+   kodierten Anführungszeichen.
+   Bewusst eng gefasst auf die zwei Namensräume, die hier real vorkommen: ein
+   echter Verweis auf eine w3.org-SEITE (etwa eine WCAG-Fundstelle) soll weiter
+   geprüft werden. Wer hier pauschal `www.w3.org` einträgt, schaltet genau das ab. */
+const XML_NAMESPACE = /^https?:\/\/www\.w3\.org\/(2000\/svg|1999\/xlink|1999\/xhtml)(%22|"|\/)?$/;
+
 async function links() {
   const gefunden = new Map();
+  const uebersprungen = new Set();
   for (const f of fs.readdirSync(path.join(WURZEL, 'data'))) {
     const src = fs.readFileSync(path.join(WURZEL, 'data', f), 'utf8');
     for (let u of src.match(/https?:\/\/[^\s'"`)\]<>]+/g) || []) {
       u = u.replace(/[.,;]+$/, '');
+      if (XML_NAMESPACE.test(u)) { uebersprungen.add(u); continue; }   // Kennung, keine Adresse — siehe XML_NAMESPACE
       if (!gefunden.has(u)) gefunden.set(u, new Set());
       gefunden.get(u).add(f);
     }
   }
-  const tot = [], umgeleitet = [];
+  const tot = [], umgeleitet = [], ohneUA = [];
   const nachpruefen = [];
   for (const [u, dateien] of gefunden) {
     const yt = u.match(/youtube\.com\/watch\?v=([\w-]+)/);
@@ -271,8 +301,13 @@ async function links() {
       if (!ok) tot.push({ u, dateien: [...dateien], grund: 'Video nicht mehr verfügbar (oEmbed)' });
       continue;
     }
-    const [code, ziel] = hole(u);
+    let [code, ziel] = hole(u);
     if (code === '429') { nachpruefen.push([u, dateien]); continue; }
+    if (UA_SPERRE.has(code)) {
+      const [c2, z2] = hole(u, '', true);          // zweiter Versuch ohne UA — siehe UA_SPERRE
+      if (c2 === '200') { ohneUA.push(u); code = c2; ziel = z2; }
+      else code = code + '→' + c2;                 // beide Codes, damit der Bericht die Ursache nennt
+    }
     if (code !== '200') { tot.push({ u, dateien: [...dateien], code }); zeile(false, u.slice(0, 70), { code }); continue; }
     if (ziel && ziel.replace(/\/$/, '') !== u.replace(/\/$/, '')) umgeleitet.push({ u, ziel });
   }
@@ -286,7 +321,12 @@ async function links() {
       if (code !== '200') tot.push({ u, dateien: [...dateien], code });
     }
   }
-  console.log(`\n  ${gefunden.size} Links geprüft · ${umgeleitet.length} nur per Weiterleitung erreichbar`);
+  console.log(`\n  ${gefunden.size} Links geprüft · ${umgeleitet.length} nur per Weiterleitung erreichbar`
+    + (uebersprungen.size ? ` · ${uebersprungen.size} XML-Namensraum übersprungen (${[...uebersprungen].join(', ')})` : ''));
+  if (ohneUA.length) {
+    console.log(`  ${ohneUA.length} Link(s) sperren den Prüf-User-Agent aus (401/403), antworten ohne ihn aber 200 — lebendig, kein Link-Rot:`);
+    ohneUA.forEach(u => console.log('   ' + u));
+  }
   if (umgeleitet.length) {
     console.log('  Hinweis: Weiterleitungen werden irgendwann abgeschaltet — Zieladresse eintragen:');
     umgeleitet.forEach(x => console.log('   ' + x.u + '\n     → ' + x.ziel));
