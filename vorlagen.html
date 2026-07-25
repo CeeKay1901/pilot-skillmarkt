@@ -354,6 +354,25 @@
       </div>
     </section>
 
+    <!-- (d) PROJEKTANWEISUNGEN — die kopierfertigen CLAUDE.md-Vorlagen.
+         Steht bewusst NACH den Beispieldaten und VOR dem Mitmachen-Band: die
+         Reihenfolge im Reiter folgt dem Arbeitsweg (Baustein → Übungsdaten →
+         eigenes Projekt aufsetzen). Als `-alt` klassifiziert, damit die
+         plain/-alt-Abwechslung des Reiters ohne Umbau des Bestands aufgeht. -->
+    <section class="lib-section -alt" aria-labelledby="pa-h">
+      <div class="lib-inner">
+        <p class="kicker">Projektstart</p>
+        <div class="lib-sec-head">
+          <span class="lib-sec-ic lu-slot" id="pa-ic"></span>
+          <h2 id="pa-h">Projektanweisungen für Claude</h2>
+          <span class="lib-sec-count" id="pa-count"></span>
+        </div>
+        <p class="lib-note">Eine <code>CLAUDE.md</code> ist die Hausordnung deines Projekts: Claude Code liest sie automatisch, sobald du im Projektordner startest, und hält sich in jeder Antwort daran. Such dir die Vorlage aus, die zu deinem Vorhaben passt, kopier sie und speicher sie als <code>CLAUDE.md</code> neben deine Dateien. „Warum steht das drin?“ erklärt jeden Abschnitt einzeln — du sollst die Anweisung verstehen, nicht nur besitzen.</p>
+        <div class="bk-pa-grid" id="bk-pa-grid"></div>
+        <p class="bk-pa-hinweis" id="bk-pa-hinweis"></p>
+      </div>
+    </section>
+
     <!-- MITMACHEN -->
     <section class="submit-band" aria-labelledby="bk-submit-h">
       <div class="submit-band-inner">
@@ -478,6 +497,15 @@
 
   <script src="data/bausteine.js"></script>
   <script src="data/assets.js"></script>
+  <!-- Projektanweisungen (CLAUDE.md-Vorlagen im Bausteine-Reiter). Ohne `defer`
+       und VOR shared/base.js — gleiches Muster wie die beiden Zeilen darüber:
+       die Module dieser Seite lesen ANWEISUNGEN synchron beim Rendern. -->
+  <script src="data/anweisungen.js"></script>
+  <!-- Ersterscheinungs-Daten (erzeugt von tools/seit.mjs). Gleiches defer-Muster
+       wie skills.html:1435 und prompts.html:355. Ohne diese Zeile ist SEIT auf
+       dieser Seite undefiniert, istNeu() liefert immer false und das
+       „Neu"-Fähnchen der Karten kann nie erscheinen — still, ohne Fehler. -->
+  <script src="data/seit.js" defer></script>
   <script src="shared/base.js"></script>
   <script>
     renderNav('vorlagen', {
@@ -894,6 +922,129 @@
       if (hint) hint.textContent = 'Erfundene Übungsdaten — kein echtes Kundenmaterial. Namen, Marken und Zahlen sind anonymisiert bzw. plausibel erfunden.';
     }
 
+    // ===== (d) PROJEKTANWEISUNGEN (kopierfertige CLAUDE.md-Vorlagen) =====
+    function anweisungById(id) { return ANWEISUNGEN.find(a => a.id === id); }
+
+    /* EIGENER Namensraum `copies:anweisung:<id>` — Machart wie localCopies/
+       copyCountOf/refreshCopyCounts der Bausteine, aber getrennter Präfix:
+       sonst teilten sich eine Anweisungs- und eine Baustein-ID mit gleichem
+       Namen still denselben Zähler.
+       Es gibt bewusst KEINEN Seed in den Daten: die Zahl ist rein lokal und
+       damit echt gezählt, nicht demonstriert — deshalb heißt sie auch „von dir
+       kopiert" und nicht „im Team". */
+    function localAnweisungCopies(id) { const n = parseInt(lsGet('copies:anweisung:' + id) || '0', 10); return isNaN(n) ? 0 : n; }
+    function anweisungCopyCountOf(a) { return localAnweisungCopies(a.id); }
+    function refreshAnweisungCopyCounts(a) {
+      document.querySelectorAll(`[data-pa-copies="${a.id}"]`).forEach(el => {
+        el.innerHTML = `${LU.copy}${anweisungCopyCountOf(a)}× von dir kopiert`;
+      });
+    }
+    function copyAnweisung(evt, id) {
+      if (evt) evt.stopPropagation();
+      const a = anweisungById(id); if (!a) return;
+      copyToClipboard(a.text, 'Projektanweisung kopiert — als CLAUDE.md in deinen Projektordner speichern');
+      lsSet('copies:anweisung:' + id, String(localAnweisungCopies(id) + 1));
+      /* Typ EXPLIZIT: markTried(id) ohne zweites Argument fiele auf
+         window.RatingConfig.type zurück — das steht in diesem Reiter auf
+         'baustein', die Anweisung landete also still unter tried:baustein:<id>
+         und stünde in „Deine Sachen" als Baustein da. */
+      markTried(id, 'anweisung');
+      refreshAnweisungCopyCounts(a);
+    }
+
+    /* Suche: gleicher Haystack-Zuschnitt wie bei den Bausteinen — Name,
+       Kurzinfo, Wofür, Tags. Der vollständige CLAUDE.md-Text bleibt bewusst
+       DRAUSSEN, genau wie dort der Baustein-Code: er ist so lang, dass fast
+       jeder Begriff jede Vorlage träfe und der Filter wirkungslos wirkte.
+       (Für die globale Suche zählt er weiter mit — dort mit Gewicht 1.) */
+    function anweisungMatchesSearch(a) {
+      const q = (state.search || '').trim();
+      if (!q) return true;
+      const terms = q.split(/\s+/).filter(Boolean);
+      const hay = (a.name + ' ' + (a.kurz || '') + ' ' + (a.wofuer || '') + ' '
+        + (Array.isArray(a.tags) ? a.tags.join(' ') : '')).toLowerCase();
+      return terms.every(t => hay.includes(t));
+    }
+
+    function anweisungCardHtml(a) {
+      // „Neu" kommt aus data/seit.js (istNeu in base.js), nicht aus den Daten —
+      // gleiche Machart wie die Katalogkarten in skills.html.
+      const neuFlagHtml = (typeof istNeu === 'function' && istNeu('ANWEISUNGEN', a.id)) ? '<span class="card-neu-flag">Neu</span>' : '';
+      const tagsHtml = (a.tags || []).map(t => `<span class="bk-pa-tag">${escHtml(t)}</span>`).join('');
+      const liHtml = arr => (arr || []).map(p => `<li>${escHtml(p)}</li>`).join('');
+      const warumHtml = (a.warum || []).map(w => `<dt>${escHtml(w.abschnitt)}</dt><dd>${escHtml(w.grund)}</dd>`).join('');
+      const zeilen = String(a.text || '').split('\n').length;   // gezählt, nie getippt
+      return `
+        <article class="bk-pa-card" id="bk-pa-${a.id}" data-id="${a.id}">
+          <div class="bk-pa-kopf">
+            <span class="bk-pa-ic">${LU['file-text']}</span>
+            <span class="bk-pa-name">${escHtml(a.name)}</span>
+            ${neuFlagHtml}
+            ${vlFavBtnHtml(a.id, 'anweisung', a.name)}
+          </div>
+          <p class="bk-pa-kurz">${escHtml(a.kurz)}</p>
+          <p class="bk-pa-wofuer">${escHtml(a.wofuer)}</p>
+          <div class="bk-pa-tags">${tagsHtml}</div>
+          <div class="bk-pa-fit">
+            <div class="bk-pa-col -ja">
+              <span class="bk-pa-fit-label">Passt, wenn</span>
+              <ul class="bk-pa-list">${liHtml(a.passt)}</ul>
+            </div>
+            <div class="bk-pa-col -nein">
+              <span class="bk-pa-fit-label">Passt nicht, wenn</span>
+              <ul class="bk-pa-list">${liHtml(a.passtNicht)}</ul>
+            </div>
+          </div>
+          <details class="bk-pa-details">
+            <summary>Warum steht das drin? (${(a.warum || []).length} Abschnitte)</summary>
+            <dl class="bk-pa-warum">${warumHtml}</dl>
+          </details>
+          <details class="bk-pa-details">
+            <summary>Vollständigen Text ansehen (${zeilen} Zeilen)</summary>
+            <pre class="bk-pa-code"><code>${escHtml(a.text)}</code></pre>
+          </details>
+          <div class="bk-pa-meta">
+            <span class="copy-count" data-pa-copies="${a.id}">${LU.copy}${anweisungCopyCountOf(a)}× von dir kopiert</span>
+          </div>
+          <div class="bk-pa-actions">
+            <button type="button" class="lib-btn -primary" data-copy-anweisung="${a.id}" onclick="copyAnweisung(event,'${a.id}')">${LU.copy}Als CLAUDE.md kopieren</button>
+          </div>
+          <div class="bk-pa-rate">
+            <span class="bk-pa-rate-label">Deine Bewertung</span>
+            ${renderInteractiveStars(a.id, 'anweisung')}
+            <p class="bk-pa-rate-hint" id="rating-hint-${a.id}"></p>
+          </div>
+        </article>`;
+    }
+
+    function renderAnweisungen() {
+      const host = document.getElementById('bk-pa-grid');
+      if (!host) return;
+      const list = ANWEISUNGEN.filter(anweisungMatchesSearch);
+      if (!list.length) {
+        host.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">${LU.search}</div>
+            <h3 class="empty-title">Keine Projektanweisung gefunden</h3>
+            <p class="empty-text">Keine der Vorlagen passt zu deiner Suche. Probier einen anderen Begriff oder setz zurück.</p>
+            <button class="c-cta -black-bg" onclick="vlClearSearch()" style="margin-top:2rem">Suche leeren</button>
+          </div>`;
+      } else {
+        host.innerHTML = list.map(anweisungCardHtml).join('');
+      }
+      // Der Zähler nennt IMMER die ANGEZEIGTE Zahl — bei aktiver Suche wäre die
+      // Gesamtzahl schlicht gelogen (siehe tools/qa zaehler).
+      const c = document.getElementById('pa-count');
+      if (c) {
+        const q = (state.search || '').trim();
+        c.textContent = q
+          ? `${list.length} von ${ANWEISUNGEN.length} Vorlagen passen zu „${q}“`
+          : `${ANWEISUNGEN.length} Vorlagen · je eine vollständige CLAUDE.md`;
+      }
+      const hint = document.getElementById('bk-pa-hinweis');
+      if (hint) hint.textContent = 'Der Text, den du kopierst, ist genau der, der als CLAUDE.md in deinem Projektordner landet — keine gekürzte Vorschau. Kopierzähler und Bewertung bleiben lokal in deinem Browser.';
+    }
+
     // ===== MODAL-ENGINE-VERDRAHTUNG: Vorschau · Code · Sag Claude · Bewertungen =====
     function renderBausteinHead(item) {
       document.getElementById('modal-name').textContent = item.name;
@@ -1030,6 +1181,12 @@
              liegen im Bausteine-Tab, der ohnehin der Standard ist. */
           const vd = qs.get('d');
           if (vd && !location.hash) history.replaceState(null, '', location.pathname + location.search + '#bk-data-' + encodeURIComponent(vd));
+          /* ?pa=<id> → Projektanweisung, gleiche Normalisierung wie ?b=/?d=/?a=.
+             Der Aufruf steht bewusst INNERHALB der Bedingung: ein bedingungsloses
+             replaceState schriebe bei jedem Seitenaufruf ohne Parameter einen
+             leeren Hash in die URL und bräche damit e7:10. */
+          const vpa = qs.get('pa');
+          if (vpa && !location.hash) history.replaceState(null, '', location.pathname + location.search + '#bk-pa-' + encodeURIComponent(vpa));
         } catch (e) {}
       }
       if (_hashLock) return;
@@ -1040,6 +1197,20 @@
         let did;
         try { did = decodeURIComponent(md[1]); } catch (e) { return; }
         const el = document.getElementById('bk-data-' + did);   // renderBeispieldaten() lief bereits beim Init
+        if (el) {
+          el.scrollIntoView({ behavior: window.scrollBehavior(), block: 'center' });
+          el.classList.add('-highlight');
+          setTimeout(() => el.classList.remove('-highlight'), 2400);
+        }
+        return;
+      }
+      /* Projektanweisung: vorlagen.html#bk-pa-<id> (aus ?pa= oder direkt geteilt).
+         Kein Modal — die Karte trägt alles, also nur anfahren und hervorheben. */
+      const mp = hash.match(/^#bk-pa-(.+)$/);
+      if (mp) {
+        let pid;
+        try { pid = decodeURIComponent(mp[1]); } catch (e) { return; }
+        const el = document.getElementById('bk-pa-' + pid);   // renderAnweisungen() lief bereits beim Init
         if (el) {
           el.scrollIntoView({ behavior: window.scrollBehavior(), block: 'center' });
           el.classList.add('-highlight');
@@ -1083,7 +1254,8 @@
     document.addEventListener('DOMContentLoaded', () => {
       // Sektions-Icons setzen (Lucide aus der LU-Map)
       const icons = {
-        'bausteine-ic': LU.blocks, 'rank-ic': LU['copy-check'], 'data-ic': LU.database
+        'bausteine-ic': LU.blocks, 'rank-ic': LU['copy-check'], 'data-ic': LU.database,
+        'pa-ic': LU['file-text']
       };
       Object.entries(icons).forEach(([id, svg]) => { const el = document.getElementById(id); if (el) el.innerHTML = svg; });
 
@@ -1091,6 +1263,7 @@
       renderBausteine();
       renderRanking();
       renderBeispieldaten();
+      renderAnweisungen();
 
       // E12: Count-Badge am Bausteine-Tab (identisch zu lernen-hilfe-Zählern)
       const _bc = document.getElementById('vl-count-bausteine');
@@ -1118,12 +1291,16 @@
     window.openBausteinSubmit = openBausteinSubmit;
     window.copyBausteinCode = copyBausteinCode;
     window.copyBausteinPrompt = copyBausteinPrompt;
+    window.copyAnweisung = copyAnweisung;
     window.setKat = setKat;
     window._vlCfg.bausteine = window.ModalConfig;
     // E12: Renderer des aktiven Tabs für das gemeinsame Suchfeld registrieren.
     // renderCats() muss mitlaufen: die Kategorie-Zähler zählen seit dem Zähler-Fix
     // suchabhängig und blieben sonst beim ungefilterten Stand stehen.
-    window._vlSearch.bausteine = function () { renderCats(); renderBausteine(); };
+    // renderAnweisungen() muss mit: der Abschnitt steht im selben Reiter und
+    // bliebe bei aktiver Suche sonst ungefiltert stehen — mit einem Zähler, der
+    // die volle Zahl nennt, während daneben gefilterte Bausteine liegen.
+    window._vlSearch.bausteine = function () { renderCats(); renderBausteine(); renderAnweisungen(); };
     })();
 
     /* ===== MODUL: DESIGN-ASSETS (aus bibliothek.html) ===== */
@@ -1602,7 +1779,7 @@
       if (_hashLock) return;
       const m = (location.hash || '').match(/^#a\/(.+)$/);
       if (!m) {
-        if (/^#(b\/|bk-data-)/.test(location.hash || '')) return;   /* E11: Hash gehört dem Bausteine-Tab */
+        if (/^#(b\/|bk-data-|bk-pa-)/.test(location.hash || '')) return;   /* E11: Hash gehört dem Bausteine-Tab */
         const ov = document.getElementById('modal-overlay');
         if (ov && ov.classList.contains('open')) closeModal();
         return;

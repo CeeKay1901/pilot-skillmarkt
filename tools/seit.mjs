@@ -49,7 +49,7 @@ const WURZEL = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const ZIEL = path.join(WURZEL, 'data', 'seit.js');
 const NUR_PRUEFEN = process.argv.includes('--pruefen');
 
-/* Die zehn Sammlungen und die Datei, in der sie stehen. Schlüssel ist der
+/* Die elf Sammlungen und die Datei, in der sie stehen. Schlüssel ist der
    Global-Name aus GSEARCH_GROUPS.glob — damit findet die Seite ihren Wert
    über genau die Registry, die auch Suche und „Deine Sachen" bedient.
    ASSETS statt FONTS/PALETTES/PATTERNS/ICONSETS: die vereinte Liste trägt
@@ -64,6 +64,7 @@ const SAMMLUNGEN = [
   ['ASSETS',        'assets.js'],
   ['BAUSTEINE',     'bausteine.js'],
   ['BEISPIELDATEN', 'bausteine.js'],
+  ['ANWEISUNGEN',   'anweisungen.js'],
   ['CASES',         'cases.js'],
 ];
 

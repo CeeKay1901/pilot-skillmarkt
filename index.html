@@ -373,6 +373,11 @@
   <script src="data/assets.js" defer></script>
   <!-- Baukasten-Daten (E7), nur für die Live-Zähler — gleiches defer-Muster -->
   <script src="data/bausteine.js" defer></script>
+  <!-- Projektanweisungen (CLAUDE.md-Vorlagen im Vorlagen-Reiter). Muss hier
+       stehen, obwohl die Startseite keinen eigenen Zähler dafür hat: der
+       Neuigkeiten-Block bündelt ALLE Sammlungen, und eine ungeladene Sammlung
+       fällt still aus ihm heraus. -->
+  <script src="data/anweisungen.js" defer></script>
   <!-- Showroom-Daten (E8), nur für die Live-Zähler — gleiches defer-Muster -->
   <script src="data/cases.js" defer></script>
   <!-- Ersterscheinungs-Daten für den Neuigkeiten-Block (erzeugt von tools/seit.mjs).

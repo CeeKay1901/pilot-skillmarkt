@@ -13,7 +13,7 @@
  *   04 · Jedes Datum trägt die Jahreszahl. (Die früheren handgeschriebenen
  *        Meldungen schrieben „23. Juli" ohne Jahr und wären ab 2027 falsch.)
  *   05 · Kein Datum ist erfunden: jedes angezeigte Datum kommt als Wert in SEIT vor.
- *   06 · SEIT deckt ALLE Einträge ALLER zehn Sammlungen ab. Eine stille Lücke
+ *   06 · SEIT deckt ALLE Einträge ALLER elf Sammlungen ab. Eine stille Lücke
  *        würde Einträge dauerhaft aus dem Block fallen lassen, ohne aufzufallen.
  *   07 · Das „Neu"-Fähnchen auf skills.html/prompts.html deckt sich exakt mit
  *        istNeu() — gerendert == abgeleitet, kein Sonderweg.
@@ -131,13 +131,18 @@ async function runViewport(browser, vp) {
       const m = document.getElementById('modal-overlay');
       if (m && m.classList.contains('open')) return 'modal';
       const q = new URLSearchParams(location.search);
-      const id = q.get('a') || q.get('b') || q.get('d') || q.get('skill') || q.get('p')
+      /* VERSCHÄRFUNG (elfte Sammlung): `pa` gehörte in diese Liste, sonst war die
+         Prüfung für den neuen Link BLIND — ein unbekannter Parameter fällt unten
+         auf 'bereichsseite' durch und gälte damit als aufgelöst, auch wenn er ins
+         Leere zeigt. Mit `pa` in der Liste UND 'bk-pa-' in den Ankerpräfixen muss
+         ein ?pa=-Link nachweislich ein Element treffen. */
+      const id = q.get('a') || q.get('b') || q.get('d') || q.get('pa') || q.get('skill') || q.get('p')
         || q.get('case') || q.get('befehl') || q.get('begriff') || q.get('faq') || q.get('r');
       if (!id) return 'bereichsseite';
       if (location.hash && location.hash.length > 1) return 'hash';
       /* location.hash kann „#begriff/cloud" sein — kein gültiger CSS-Selektor.
          Deshalb getElementById statt querySelector. */
-      for (const pre of ['asset-', 'bk-data-', 'case-', 'begriff-', 'r-', 'faq-', 'befehl-'])
+      for (const pre of ['asset-', 'bk-data-', 'bk-pa-', 'case-', 'begriff-', 'r-', 'faq-', 'befehl-'])
         if (document.getElementById(pre + id)) return 'element';
       return null;
     });
@@ -160,7 +165,7 @@ async function runViewport(browser, vp) {
   check('05_kein_erfundenes_datum', iso.length > 0 && fremd.length === 0,
     { fremd, seitTage: [...bekannt].sort() });
 
-  // ---------- (6) SEIT deckt alle zehn Sammlungen lückenlos ----------
+  // ---------- (6) SEIT deckt alle elf Sammlungen lückenlos ----------
   const abdeckung = await page.evaluate(() => {
     if (typeof SEIT === 'undefined' || typeof GSEARCH_GROUPS === 'undefined') return null;
     const globs = [...new Set(GSEARCH_GROUPS.map(g => g.glob))];
@@ -173,8 +178,15 @@ async function runViewport(browser, vp) {
     });
     return { globs: globs.length, proGlob, luecken: luecken.slice(0, 12), lueckenGesamt: luecken.length };
   });
+  /* Die Zahl der Sammlungen ist der Wächter gegen ein STILLES VERSCHWINDEN: fiele
+     eine Gattung aus GSEARCH_GROUPS heraus, wäre sie damit auch aus dieser Prüfung
+     heraus — und die Lücken-Zählung meldete brav 0. Deshalb steht sie als Sollwert
+     im Test und wird ausschliesslich beim BEWUSSTEN Hinzufügen einer Sammlung
+     nachgezogen: 10 → 11 mit den Projektanweisungen (ANWEISUNGEN, Deep-Link
+     vorlagen.html?pa=). Die eigentliche Zusicherung — lueckenGesamt === 0, also
+     SEIT kennt JEDEN Eintrag JEDER Sammlung — bleibt davon unberührt. */
   check('06_seit_deckt_alle_sammlungen',
-    !!abdeckung && abdeckung.globs === 10 && abdeckung.lueckenGesamt === 0, abdeckung || {});
+    !!abdeckung && abdeckung.globs === 11 && abdeckung.lueckenGesamt === 0, abdeckung || {});
 
   // ---------- (7) „Neu"-Fähnchen == istNeu() ----------
   const flaggen = {};

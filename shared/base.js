@@ -491,15 +491,24 @@ function renderStars(rating, interactive = false, skillId = null) {
   return html;
 }
 
-function renderInteractiveStars(skillId) {
-  const current = state.pendingRating[skillId] || getRating(skillId) || 0;
-  let html = `<div class="star-input" id="star-input-${skillId}" data-current="${current}">`;
+/* Zweiter Parameter `type` ist OPTIONAL und wird nur durchgereicht, wenn er
+   angegeben ist — gleiche Machart wie vlFavBtnHtml(id, typ, name) in
+   vorlagen.html. Grund: window.RatingConfig.type ist ein SEITEN-Default, und
+   Seiten mit mehreren bewertbaren Gattungen stellen ihn um (vorlagen.html beim
+   Reiterwechsel: 'baustein' ↔ 'asset'). Eine Gattung, die dort NICHT im
+   Default steht, landete sonst still im falschen Namensraum — der Schlüssel
+   würde geschrieben, der Test bliebe grün und die Bewertung wäre trotzdem am
+   falschen Ort. Ohne Parameter ändert sich nichts (RatingConfig-Default). */
+function renderInteractiveStars(skillId, type) {
+  const current = state.pendingRating[skillId] || getRating(skillId, type) || 0;
+  const typArg = type ? `, '${type}'` : '';
+  let html = `<div class="star-input" id="star-input-${skillId}" data-current="${current}"${type ? ` data-rate-typ="${type}"` : ''}>`;
   for (let i = 1; i <= 5; i++) {
     html += `<button type="button" class="star-btn ${i <= current ? 'filled' : ''}"
       data-val="${i}"
       onmouseenter="hoverStars('${skillId}', ${i})"
       onmouseleave="resetStarHover('${skillId}')"
-      onclick="setRating('${skillId}', ${i})"
+      onclick="setRating('${skillId}', ${i}${typArg})"
       aria-label="${i} Sterne">★</button>`;
   }
   html += '</div>';
@@ -523,8 +532,9 @@ function resetStarHover(skillId) {
   });
 }
 
-function setRating(skillId, stars) {
-  if (!submitRating(skillId, stars)) { showToast('Konnte nicht speichern — privater Modus oder Speicher voll.'); return; }
+// `type` optional — siehe renderInteractiveStars(); das Widget reicht ihn durch.
+function setRating(skillId, stars, type) {
+  if (!submitRating(skillId, stars, type)) { showToast('Konnte nicht speichern — privater Modus oder Speicher voll.'); return; }
   state.pendingRating[skillId] = stars;
   const container = document.getElementById(`star-input-${skillId}`);
   if (container) {
@@ -1357,6 +1367,7 @@ const GSEARCH_SOURCES = [
   { glob: 'RESSOURCEN', src: 'data/ressourcen.js' },
   { glob: 'ASSETS',     src: 'data/assets.js'     },
   { glob: 'BAUSTEINE',  src: 'data/bausteine.js'  },
+  { glob: 'ANWEISUNGEN', src: 'data/anweisungen.js' },
   { glob: 'CASES',      src: 'data/cases.js'      },
 ];
 
@@ -1433,6 +1444,13 @@ const GSEARCH_GROUPS = [
     href: it => 'vorlagen.html?d=' + encodeURIComponent(it.id),
     title: it => it.datei, sub: it => it.beschreibung,
     fields: it => [[it.datei || '', 5], [it.beschreibung || '', 2], [it.format || '', 2], [it.spaltenHinweis || '', 1], [it.uebungstext || '', 1]] },
+  /* Projektanweisungen (die kopierfertigen CLAUDE.md-Vorlagen im Bausteine-Modul).
+     Eigene Quelle data/anweisungen.js — anders als BEISPIELDATEN teilt sich diese
+     Gattung ihre Datei mit keiner anderen, also gehört sie AUCH in GSEARCH_SOURCES. */
+  { key: 'anweisung', label: 'Projektanweisungen', glob: 'ANWEISUNGEN', bereich: 'vorlagen.html',
+    href: it => 'vorlagen.html?pa=' + encodeURIComponent(it.id),
+    title: it => it.name, sub: it => it.kurz,
+    fields: it => [[it.name || '', 5], [(it.tags || []).join(' '), 3], [it.kurz || '', 2], [it.wofuer || '', 1], [it.text || '', 1]] },
   { key: 'case', label: 'Projekte', glob: 'CASES', bereich: 'showroom.html',
     href: it => 'showroom.html?case=' + encodeURIComponent(it.id),
     title: it => it.titel, sub: it => it.kurz,
@@ -1456,6 +1474,7 @@ function _gsGlobal(name) {
       case 'ASSETS':     return (typeof ASSETS     !== 'undefined') ? ASSETS     : undefined;
       case 'BAUSTEINE':  return (typeof BAUSTEINE  !== 'undefined') ? BAUSTEINE  : undefined;
       case 'BEISPIELDATEN': return (typeof BEISPIELDATEN !== 'undefined') ? BEISPIELDATEN : undefined;
+      case 'ANWEISUNGEN': return (typeof ANWEISUNGEN !== 'undefined') ? ANWEISUNGEN : undefined;
       case 'CASES':      return (typeof CASES      !== 'undefined') ? CASES      : undefined;
     }
   } catch (e) {}
@@ -1465,8 +1484,8 @@ function _gsGlobal(name) {
 /* ============================================================
    NEUIGKEITEN — „Neu im Marketplace" unten auf der Startseite.
 
-   TAGESWEISE, NICHT EINTRAGSWEISE. Gemessen am 25.07.2026 über alle 243
-   Einträge: sie verteilen sich auf FÜNF Tage, 219 davon auf den 16. und
+   TAGESWEISE, NICHT EINTRAGSWEISE. Gemessen am 25.07.2026 über alle 246
+   Einträge: sie verteilen sich auf SECHS Tage, 219 davon auf den 16. und
    17. Juli. Eine Liste der „letzten acht Einträge" hätte damit acht
    Glossarbegriffe vom 24. Juli gezeigt — sonst nichts. Ein Tag ist hier die
    Meldung, nicht der Eintrag: das arbeitet mit der Bündelung statt gegen sie,
@@ -1504,6 +1523,7 @@ const NEWS_NAMENSGRENZE = 12;   // bis zu so vielen Einträgen am Tag: Namen sta
    Formuliert so, dass sie nicht verfallen: Rutscht ein Tag in die Sammelmeldung,
    wird seine Überschrift schlicht nicht mehr benutzt, statt falsch zu werden. */
 const NEWS_TITEL = {
+  '2026-07-25': 'Die Projektanweisungen sind da',
   '2026-07-18': 'Der Showroom ist da',
   'sammel': 'Davor: der Aufbau des Marketplace',
 };
@@ -1892,7 +1912,8 @@ function closeAboutModal() {
 const DS_TYPE_LABEL = {
   skill: 'Skill', plugin: 'Plugin', framework: 'Framework', prompt: 'Prompt',
   baustein: 'Baustein', asset: 'Asset', case: 'Projekt', befehl: 'Befehl',
-  begriff: 'Begriff', faq: 'FAQ', ressource: 'Ressource', daten: 'Beispieldatei'
+  begriff: 'Begriff', faq: 'FAQ', ressource: 'Ressource', daten: 'Beispieldatei',
+  anweisung: 'Projektanweisung'
 };
 
 function _dsScan() {

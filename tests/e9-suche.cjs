@@ -41,7 +41,13 @@ const VORLAGEN_TARGET = TARGET.replace(/skills\.html.*$/, 'vorlagen.html');
 // sind seitdem merkbar und damit auch durchsuchbar, und jede suchbare Gruppe braucht
 // laut diesem Vertrag ihren eigenen Deep-Link. Der Sollwert wurde also bewusst
 // erweitert, weil der Bestand echt gewachsen ist — nicht, um den Test grün zu kriegen.
-const DEEPLINK_RE = /(skills\.html\?skill=|prompts\.html\?p=|hilfe\.html\?(befehl|begriff|faq)=|lernen(-hilfe)?\.html\?r=|vorlagen\.html\?a=|vorlagen\.html\?b=|vorlagen\.html\?d=|showroom\.html\?case=)/;
+//
+// Diese Regex ist eine POSITIVLISTE gültiger Deep-Link-Formen, keine Freigabe für
+// „irgendein Link auf vorlagen.html". Ein neuer Inhaltstyp bringt zwangsläufig eine
+// neue gültige Form mit — deshalb kam vorlagen.html?pa= (Projektanweisungen, die
+// elfte Sammlung) hier dazu. Ein Tippfehler wie ?x= oder ein vergessener Parameter
+// fällt weiterhin durch: die Liste zählt Formen auf, statt sie zu erlauben.
+const DEEPLINK_RE = /(skills\.html\?skill=|prompts\.html\?p=|hilfe\.html\?(befehl|begriff|faq)=|lernen(-hilfe)?\.html\?r=|vorlagen\.html\?a=|vorlagen\.html\?b=|vorlagen\.html\?d=|vorlagen\.html\?pa=|showroom\.html\?case=)/;
 
 const VIEWPORTS = [
   { name: 'desktop', viewport: { width: 1280, height: 800 } },

@@ -12,12 +12,13 @@
 // redaktionelle Entstehungszeit und reicht bis Oktober 2025 zurück — vor den
 // ersten Commit dieses Repos.
 //
-// Stand: 243 Einträge auf 5 Tagen.
+// Stand: 246 Einträge auf 6 Tagen.
 //   2026-07-16    66 Einträge
 //   2026-07-17   153 Einträge
 //   2026-07-18    10 Einträge
 //   2026-07-23     6 Einträge
 //   2026-07-24     8 Einträge
+//   2026-07-25     3 Einträge
 //
 // Dass sich viele Einträge einen Tag teilen, ist die Wahrheit und kein Fehler:
 // sie kamen gemeinsam ins Repo. Deshalb gruppiert der Neuigkeiten-Block nach
@@ -25,6 +26,9 @@
 // nur eine einzige Gattung zeigen.
 
 const SEIT = {
+  "ANWEISUNGEN:datenauswertung": "2026-07-25",
+  "ANWEISUNGEN:einseiter": "2026-07-25",
+  "ANWEISUNGEN:kleines-tool": "2026-07-25",
   "ASSETS:akzent-duo": "2026-07-17",
   "ASSETS:crosshatch": "2026-07-17",
   "ASSETS:diagonal": "2026-07-17",

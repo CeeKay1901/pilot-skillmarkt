@@ -1,6 +1,6 @@
 # Implementierungsplan — Bibliothek, Inhalte, Neuigkeiten
 
-**Stand:** 25.07.2026 · **Fassung 3** (Stufen 0 und 1 umgesetzt, Ergebnisse eingetragen)
+**Stand:** 25.07.2026 · **Fassung 4** (Stufen 0 bis 2 umgesetzt, Ergebnisse eingetragen)
 **Grundlage:** Bestandsaufnahme vom 25.07.2026, eine Fragerunde mit sechs Entscheidungsblöcken, und ein Messlauf gegen den Ist-Zustand (Protokoll am Ende).
 
 Dieses Dokument hält fest, **was entschieden ist**, damit es nicht neu verhandelt wird, und **in welcher Reihenfolge gebaut wird**. Es ersetzt keine der harten Regeln aus `CLAUDE.md` — die gelten weiter, besonders „kein Build-Step", „Zahlen-Ehrlichkeit" und „ändere nie einen Test, um ihn grün zu bekommen".
@@ -44,12 +44,12 @@ Die erste Fassung entstand direkt aus der Fragerunde und trug Zahlen aus der Bes
 | Startprojekte | **Drei neue schlanke Gerüste**: Dashboard · Auswerter · Einseiter. Je ein Ordner mit `CLAUDE.md`, `index.html` und Beispieldaten. Im Showroom als dritter Marker neben „Echtes Team-Tool" und „Beispiel-Projekt". |
 | Projektanweisungen | **Kopierbare Vorlagen**, geschnitten **nach Projekttyp** — passend zu den drei Gerüsten. Kein Formular-Baukasten in diesem Durchgang. |
 | Neuigkeiten | Contentorientiert, unten auf der Startseite, **tagesweise gruppiert** statt eintragsweise (Begründung in Stufe 1). Handgepflegte Liste entfällt bis auf **optionale Tages-Überschriften**. |
-| Datumsfeld | Neues Feld **`seit`** = „seit wann auf der Seite", **aus der Git-Historie ermittelt**, für alle zehn Sammlungen. `addedAt` bleibt unverändert die redaktionelle Entstehungszeit. |
+| Datumsfeld | Neues Feld **`seit`** = „seit wann auf der Seite", **aus der Git-Historie ermittelt**, für alle Sammlungen (zehn bei der Entscheidung, seit Stufe 2 elf). `addedAt` bleibt unverändert die redaktionelle Entstehungszeit. |
 | Merken / Bewerten | **Merken überall.** Bewerten nur, wo man etwas wirklich benutzt hat. |
 | Alte Daten und Links | **Sauber vereinheitlichen, Altes verfällt.** Bewusst in Kauf genommen: gespeicherte Merkungen alter Typen und geteilte `?a=`/`?b=`-Links brechen. |
 | Reihenfolge | **Kleines zuerst, Umbau zuletzt.** Jede Stufe geht einzeln live. |
 | Einreichwege | **Vertagt aufs Backend.** Die vier simulierten Flows bleiben vorerst, wie sie sind. |
-| Regressionssuiten | e6, e7 und **e9** werden in Stufe 5 neu geschrieben; jeder verschobene Sollwert bekommt im Test seine Begründung. Stufen 0–4 kommen ohne Teständerung aus — in 0 und 1 nachgewiesen. |
+| Regressionssuiten | e6, e7 und **e9** werden in Stufe 5 neu geschrieben; jeder verschobene Sollwert bekommt im Test seine Begründung. Stufen 0 und 1 kamen ohne Teständerung aus, **Stufe 2 nicht**: e9 und e11 mussten nachgezogen werden, ohne dass eine Zusicherung schwächer wurde (Details in Stufe 2). |
 | Changelog-Reiter | **Streichen.** |
 
 ---
@@ -172,27 +172,75 @@ Check 09 in e11 hält den Vertrag mit den vier fremden `i5`-Prüfungen fest, dam
 
 ---
 
-## Stufe 2 — Projektanweisungen
+## Stufe 2 — Projektanweisungen · **erledigt 25.07.2026**
 
 Drei kopierbare `CLAUDE.md`-Vorlagen, geschnitten nach Projekttyp:
 
-- **Kleines Tool** — ein interaktives Werkzeug für eine Aufgabe
-- **Datenauswertung** — Datei rein, verdichtete Zahlen raus
-- **Website / Einseiter** — eine Seite zum Teilen
+- **Kleines Tool** (`kleines-tool`, 76 Zeilen) — ein interaktives Werkzeug für eine Aufgabe
+- **Datenauswertung** (`datenauswertung`, 92 Zeilen) — Datei rein, verdichtete Zahlen raus
+- **Website / Einseiter** (`einseiter`, 72 Zeilen) — eine Seite zum Teilen
 
-Jede Vorlage ist ausgeschrieben und kommentiert, sodass klar ist, *warum* welcher Abschnitt drinsteht. Sie liegen zunächst als dritter Block im Baukasten-Reiter und wandern mit Stufe 5 in den Reiter „Code".
+Jede Vorlage ist ausgeschrieben und kommentiert, sodass klar ist, *warum* welcher Abschnitt drinsteht: `warum` ist eine Liste aus `abschnitt` + `grund`, und jede der 27 Begründungen nennt **wörtlich** eine `##`-Überschrift aus dem Text. Damit fällt beides auf — eine Begründung ohne Abschnitt und ein Abschnitt ohne Begründung. Die Vorlagen liegen als dritter Block im Baukasten-Reiter und wandern mit Stufe 5 in den Reiter „Code".
 
-**Doppelte Nutzung ohne doppelten Bestand:** Dieselben drei Dateien sind die `CLAUDE.md` der drei Startprojekt-Gerüste aus Stufe 3. Sie liegen einmal im Repo; der Baukasten liest sie, das ZIP packt sie.
+**Der Bestand ist ein Datensatz, keine Datei.** Der Plan sprach von „drei Dateien", die der Baukasten liest und das ZIP packt. Gebaut wurde `data/anweisungen.js` mit dem Volltext im Feld `text`: Eine Datei hätte die Seite per `fetch` nachladen müssen, und unter `file://` ist Fetch blockiert (harte Regel 1). Für Stufe 3 ändert das den Weg, nicht die Zusicherung — die Gerüst-ZIPs müssen ihre `CLAUDE.md` aus demselben Datensatz schreiben, damit es weiterhin genau **einen** Bestand gibt.
 
-Merkbar und bewertbar (man benutzt sie). Neuer Typ in `GSEARCH_GROUPS` — das ist die einzige Stelle, an der ein neuer Typ registriert wird, samt `DS_TYPE_LABEL`.
+### „Testwirkung: keine" war falsch
 
-**Testwirkung:** keine. e7 prüft `BAUSTEINE.length` gegen die Kartenzahl im Baustein-Raster (`#bk-grid .baustein-card`) — ein eigener Abschnitt mit eigener Klasse berührt das nicht.
+Der Plan hatte dieser Stufe keine Testarbeit zugewiesen und begründete das mit e7: Ein eigener Abschnitt mit eigener Klasse berührt `BAUSTEINE.length` nicht. Das stimmt, e7 blieb unverändert grün — nur war e7 die falsche Suite. Ein neuer **Inhaltstyp** wirkt nicht dort, wo er angezeigt wird, sondern dort, wo Typen **aufgezählt** werden. Drei Stellen in zwei bestehenden Suiten mussten nachgezogen werden:
 
-**Abnahme:**
-- Jede Vorlage ist mit einem Klick kopierbar und läuft als `CLAUDE.md` unverändert in einem leeren Ordner.
-- Die drei Dateien liegen genau einmal im Repo (kein zweiter Bestand im Gerüst-Ordner).
-- Suche findet sie (Strg+K), Merken funktioniert, Typ-Label erscheint in „Deine Sachen".
-- e7 bleibt grün (22 Checks).
+1. **`DEEPLINK_RE` in `tests/e9-suche.cjs` ist eine Positivliste** gültiger Deep-Link-Formen, keine Plausibilitätsprüfung. Ein neuer Typ bringt zwangsläufig eine neue gültige Form mit. Eingriff: `vorlagen\.html\?pa=` ergänzt. Das schwächt nichts — die Liste bleibt abschließend, ein Tippfehler wie `?x=` fällt weiter durch.
+2. **`abdeckung.globs === 10` in `tests/e11-neuigkeiten.cjs`** stand als harte Zahl im Test. Sie ist der Wächter gegen das **stille Verschwinden** einer Sammlung: Fiele eine Gattung aus `GSEARCH_GROUPS` heraus, wäre sie damit auch aus der Lücken-Prüfung heraus, und die meldete brav 0. Die Zahl wurde **bewusst auf 11 nachgezogen**, mit Begründung an Ort und Stelle. Die eigentliche Zusicherung `lueckenGesamt === 0` blieb unberührt.
+3. **Check 03 in e11 war für den neuen Link blind.** Die Auflösungsprüfung kannte `a`, `b`, `d`, `skill`, `p` und die übrigen Parameter; ein **unbekannter** Parameter fiel auf „bereichsseite" durch und galt damit als aufgelöst, auch wenn er ins Leere zeigte. `pa` steht jetzt in der Parameterliste und `bk-pa-` in den Ankerpräfixen. Das ist eine **Verschärfung**, kein Nachgeben: Ein `?pa=`-Link muss nachweislich ein Element treffen.
+
+Damit hat die Plan-Regel „in den Stufen 0–4 wird keine bestehende Testdatei angefasst" **nicht gehalten**. Sie war zu grob. Was gehalten hat, ist die Zusicherung dahinter: Keine Prüfung wurde aufgeweicht, keine Zeile geändert, um etwas grün zu bekommen — zwei der drei Eingriffe machen die Prüfung enger als vorher, der dritte ist ein bewusst nachgezogener Sollwert mit Begründung im Test.
+
+### Zwei Ausfälle, die nichts gemeldet hätten
+
+Beide wären ohne Fehlermeldung durchgegangen, und beide hätten grüne Checks hinterlassen:
+
+- **`_gsGlobal()` ist ein `switch` über feste Namen.** Ohne neuen `case` fällt die Sammlung **still** aus dem Neuigkeiten-Block. Die Checks 01, 02 und 09 in e11 wären grün geblieben, weil sie Form und Vollständigkeit des Blocks prüfen, nicht seine Herkunft. Aufgefallen ist das in der Vorab-Simulation, nicht im Test.
+- **`vorlagen.html` lud `data/seit.js` überhaupt nie.** `istNeu()` gab dort also immer `false` zurück, das „Neu"-Fähnchen konnte auf der Seite gar nicht erscheinen. Die naheliegende Prüfung „Fähnchen == `istNeu()`" wäre trotzdem grün geblieben, weil **beide Seiten leer** waren.
+
+**Verallgemeinert, und ab hier für den ganzen Plan gültig:** Eine Gleichheitsprüfung zwischen zwei abgeleiteten Größen ist wertlos, solange nicht mindestens eine Seite **nachweislich ungleich null** ist. Wer „erwartet == gerendert" prüft, muss zusätzlich prüfen, dass „erwartet" überhaupt etwas erwartet.
+
+### Umgesetzt
+
+1. **`data/anweisungen.js`** — drei Einträge mit je neun Feldern (`id`, `name`, `kurz`, `wofuer`, `passt`, `passtNicht`, `tags`, `warum`, `text`). Alle gefüllt, 0 Platzhalter.
+2. **Der neue Typ `anweisung` ist an fünf Stellen registriert:** `GSEARCH_GROUPS`, der `switch` in `_gsGlobal()`, `GSEARCH_SOURCES` (alle drei in `shared/base.js`), `DS_TYPE_LABEL` und `SAMMLUNGEN` in `tools/seit.mjs`. **Der Plan nannte eine Stelle** („das ist die einzige Stelle, an der ein neuer Typ registriert wird, samt `DS_TYPE_LABEL`"). Vier der fünf melden sich nicht, wenn sie fehlen.
+3. **`data/seit.js` nachgezogen:** 243 → **246 Einträge**, fünf → **sechs Inhaltstage**. `tools/seit.mjs --pruefen` meldet 0 Lücken, und die Einfrier-Regel hat gehalten: die 243 vorhandenen Daten wurden unverändert übernommen.
+4. **`vorlagen.html` lädt jetzt `data/seit.js`** — vorher nicht, siehe oben.
+5. **Neuigkeiten-Block:** der 25.07. ist der jüngste Inhaltstag und hat seine optionale Überschrift (`NEWS_TITEL`); der 18.07. rutscht dafür in die Sammelmeldung. Die Rechenprobe unter Stufe 1 ist damit der Stand von vor dieser Stufe.
+6. **Eigener localStorage-Namensraum:** `copies` · `tried` · `rate` · `fav`, je mit `:anweisung:`. Gegengeprüft, weil `window.RatingConfig` auf `vorlagen.html` als Seiten-Default auf `baustein` steht und ein Sterne-Widget ohne expliziten Typ **still** dorthin schreiben würde.
+7. **Deep-Link `?pa=<id>`** scrollt zum Eintrag und hebt ihn hervor, ohne ein Modal zu öffnen.
+
+### Testwirkung
+
+**Zwei bestehende Suiten angefasst**, Begründung oben und jeweils auch im Test selbst. Neu: `tests/e12-anweisungen.cjs`, 13 Checks über zwei Viewports.
+
+| Suite | vorher | nachher |
+|---|---|---|
+| e1 · e3 · e6 · e7 · e8 · e10 | grün | grün, unverändert |
+| e9 | grün | grün, `DEEPLINK_RE` um `vorlagen\.html\?pa=` ergänzt |
+| e11 | grün | grün, `globs` 10 → 11, Check 03 um `pa` und `bk-pa-` verschärft |
+| e12 (neu) | — | grün, 13 Checks, zwei Viewports |
+
+### Abnahme — gemessen
+
+| Kriterium | Ergebnis |
+|---|---|
+| Vorlagen | 3 — `kleines-tool` 76 Zeilen, `datenauswertung` 92, `einseiter` 72 |
+| Pflichtfelder je Vorlage | **9 von 9** gefüllt · Platzhalter **0** |
+| `warum` trifft wörtlich eine `##`-Überschrift | **27 von 27** |
+| Registrierstellen des neuen Typs | **5 von 5** |
+| `SEIT`-Abdeckung | **246 von 246**, 0 Lücken (`--pruefen`), sechs Inhaltstage |
+| Einfrier-Regel | 243 vorhandene Daten unverändert übernommen |
+| Namensraum | `:anweisung:` gesetzt · **0** `:baustein:`-Schlüssel mit Anweisungs-ID |
+| Deep-Link `?pa=<id>` | scrollt, hebt hervor, öffnet kein Modal |
+| Globale Suche | findet unter der Gruppe „Projektanweisungen" |
+| „Deine Sachen" | zeigt das Label „Projektanweisung" |
+| e12 (neu) | grün, 13 Checks × 2 Viewports |
+| alle neun Suiten (e1, e3, e6–e12) | Exit 0 |
+| `qa` kontrast · a11y · zaehler · responsive · robust · links | alle sauber, keine Browser-Waisen |
 
 ---
 
@@ -217,7 +265,9 @@ ZIP-Download je Gerüst. Die ZIP-Funktion liegt bereits in `shared/base.js` und 
 
 *Nicht in diesem Durchgang:* Der bestehende Umfrage-Auswerter im Showroom bekommt keine Formatprüfung — die Entscheidung war, das im Gerüst zu lösen.
 
-**Testwirkung:** keine, genau wegen der eigenen Liste. `e8:03_ehrlichkeits_marker` prüft `EXPECTED_TOTAL = 10`, `EXPECTED_ECHT = 4`, `EXPECTED_BEISPIEL = 6` und dass **jede `.sr-card` genau einen** Marker trägt. Der neue Abschnitt bekommt eine eigene Kartenklasse und lässt diese Zusicherungen unberührt. Wären die Gerüste in `CASES` gewandert, wäre e8:03 rot geworden.
+**Testwirkung:** für e8 keine, genau wegen der eigenen Liste. `e8:03_ehrlichkeits_marker` prüft `EXPECTED_TOTAL = 10`, `EXPECTED_ECHT = 4`, `EXPECTED_BEISPIEL = 6` und dass **jede `.sr-card` genau einen** Marker trägt. Der neue Abschnitt bekommt eine eigene Kartenklasse und lässt diese Zusicherungen unberührt. Wären die Gerüste in `CASES` gewandert, wäre e8:03 rot geworden.
+
+**Diese Aussage ist nach Stufe 2 nicht mehr die ganze Antwort.** Sobald `STARTPROJEKTE` eine eigene Sammlung in `GSEARCH_GROUPS` mit eigenem Deep-Link wird, wiederholen sich zwei der drei Funde aus Stufe 2 unvermeidlich: die Positivliste `DEEPLINK_RE` in e9 und die Sammlungszahl in `e11:06` (dann 11 → 12). Ob das eintritt, hängt daran, ob die Gerüste merkbar und global suchbar sein sollen — das ist vor der Stufe zu entscheiden und **zu messen**, nicht vorherzusagen.
 
 **Abnahme:**
 - Jedes Gerüst läuft per `file://` **und** im iframe (die Showroom-Vorschau ist ein iframe mit `sandbox`).
@@ -290,20 +340,20 @@ Das reduziert Stufe 5 spürbar. Der Umbau bleibt trotzdem die größte Stufe —
 
 Ausgangslage vor dem Start gemessen (25.07.2026, gegen `localhost:8412`): **e6 grün, 24 Checks in 41 Instanzen. e7 grün, 22 Checks in 37 Instanzen.** Exit-Code 0, `failed: []` bei beiden.
 
-| Stufe | e1 | e3 | e6 | e7 | e8 | e9 | e10 | e11 | Neue Tests |
-|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|---|
-| **0 · Sofort-Fixes** ✔ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — | Kontrast/Umbruch je Farbfeld |
-| **1 · `seit` + Neuigkeiten** ✔ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | **neu** | `e11-neuigkeiten` (10 Checks) |
-| 2 · Projektanweisungen | — | — | — | ✓ | — | ✓ | — | — | — |
-| 3 · Startprojekte | — | — | — | — | ✓ | — | — | — | Formaterkennung Auswerter |
-| 4 · Restliste | ✓ | ✓ | — | — | — | — | — | — | Meta-Zahl-Regression |
-| 5 · Umbau | ✓ | — | **✎** | **✎** | — | **✎** | ✓ | ✓ | — |
+| Stufe | e1 | e3 | e6 | e7 | e8 | e9 | e10 | e11 | e12 | Neue Tests |
+|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|---|
+| **0 · Sofort-Fixes** ✔ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | Kontrast/Umbruch je Farbfeld |
+| **1 · `seit` + Neuigkeiten** ✔ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | **neu** | — | `e11-neuigkeiten` (10 Checks) |
+| **2 · Projektanweisungen** ✔ | ✓ | ✓ | ✓ | ✓ | ✓ | **△** | ✓ | **△** | **neu** | `e12-anweisungen` (13 Checks × 2 Viewports) |
+| 3 · Startprojekte | — | — | — | — | ✓ | — | — | — | ? | Formaterkennung Auswerter |
+| 4 · Restliste | ✓ | ✓ | — | — | — | — | — | — | — | Meta-Zahl-Regression |
+| 5 · Umbau | ✓ | — | **✎** | **✎** | — | **✎** | ✓ | ✓ | ? | — |
 
-✔ erledigt · ✓ bleibt unverändert grün · ✎ wird neu geschrieben
+✔ erledigt · ✓ bleibt unverändert grün · △ angepasst, ohne eine Zusicherung aufzuweichen · ✎ wird neu geschrieben · ? Wirkung nicht vorhergesagt, vor der Stufe zu messen
 
-**Regel für den ganzen Plan:** In den Stufen 0–4 wird **keine bestehende Testdatei angefasst** — kein Sollwert verschoben, keine Zeile geändert. Nur neue Tests kommen dazu. Erst Stufe 5 schreibt e6, e7 und e9 neu, und dort bekommt jeder verschobene Sollwert seine Begründung an Ort und Stelle.
+**Die Regel für den ganzen Plan hieß:** In den Stufen 0–4 wird **keine bestehende Testdatei angefasst** — kein Sollwert verschoben, keine Zeile geändert. **In Stufe 2 hat sie nicht gehalten** (e9 und e11, Begründung dort). Sie war zu grob formuliert: Ein neuer Inhaltstyp berührt zwangsläufig jede Liste, die Typen aufzählt, und zwei davon stehen in Tests. Es bleibt die schärfere Fassung: **Kein Sollwert wird verschoben, um etwas grün zu bekommen.** Wird einer bewusst nachgezogen, steht die Begründung an Ort und Stelle im Test — so geschehen bei `globs` 10 → 11. Erst Stufe 5 schreibt e6, e7 und e9 neu.
 
-**In Stufe 0 und 1 hat die Regel gehalten — und zweimal zu einem besseren Entwurf geführt, nicht zu einem Kompromiss:**
+**In Stufe 0 und 1 hat die alte Regel gehalten — und zweimal zu einem besseren Entwurf geführt, nicht zu einem Kompromiss:**
 
 - Stufe 1 wurde **tagesweise** gebaut, weil eintragsweise acht Glossarbegriffe gezeigt hätte.
 - Stufe 1 bekam die **Sammelmeldung**, weil ein reines Zeitfenster den Anfang stillschweigend abschneidet. Dass damit vier fremde `i5`-Prüfungen grün bleiben, ist die Folge, nicht der Zweck — die Prüfungen verlangten das Richtige.
@@ -312,6 +362,8 @@ Ausgangslage vor dem Start gemessen (25.07.2026, gegen `localhost:8412`): **e6 g
 Nicht weil Tests unantastbar wären, sondern weil ein Entwurf, der eine grüne Zusicherung bricht, erst begründen muss, warum die Zusicherung falsch war — und in allen drei Fällen war sie es nicht.
 
 **Eine Lehre aus Stufe 1, die für den Rest gilt:** Ich hatte `e3:i5` und `e8:i5` bei der Planung übersehen, weil ich nach den Namen aus e6/e7 gesucht hatte statt nach dem Muster. Vor jeder weiteren Stufe wird deshalb **über alle Suiten** nach dem betroffenen Selektor gesucht, nicht nach dem erwarteten Check-Namen.
+
+**Eine Lehre aus Stufe 2, die für den Rest gilt:** Eine Gleichheitsprüfung zwischen zwei abgeleiteten Größen ist wertlos, solange nicht mindestens eine Seite nachweislich ungleich null ist. `vorlagen.html` lud `data/seit.js` nie — „Fähnchen == `istNeu()`" wäre dort mit 0 gegen 0 grün geblieben. Und: Der Selektor allein reicht nicht, gesucht wird auch nach den **Aufzählungen** — Positivlisten gültiger Formen und harte Sammlungszahlen kennen den neuen Typ nicht von selbst.
 
 ---
 
@@ -360,7 +412,7 @@ Alle Zahlen im Plan stammen von hier. Methode jeweils dabei, damit sie nachprüf
 | CASES | 10 (4 echt, 6 Beispiel) | `data/cases.js` |
 | **Summe datierbarer Einträge** | **243** | |
 
-Elf Suchtypen in `GSEARCH_GROUPS` über zehn Sammlungen — `SKILLS` bedient `skill` und `plugin`.
+Elf Suchtypen in `GSEARCH_GROUPS` über zehn Sammlungen — `SKILLS` bedient `skill` und `plugin`. *(Stand vor Stufe 2. Seither zwölf Suchtypen über elf Sammlungen: `ANWEISUNGEN` mit dem Typ `anweisung` ist dazugekommen, die Summe datierbarer Einträge liegt bei 246.)*
 
 **Einzelbefunde:**
 

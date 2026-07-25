@@ -1671,13 +1671,101 @@
       border-left: 3px solid var(--c-yellow); padding: .4rem 0 .4rem 1.2rem; margin: 2rem 0 0; max-width: 92ch;
     }
 
+    /* ----- Projektanweisungs-Karten (die kopierfertigen CLAUDE.md-Vorlagen) -----
+       Gebaut nach dem Vorbild der Beispieldaten-Karten darüber: gleiches Raster,
+       gleiche Kartenform, gleicher -highlight für den Deep-Link. Der Unterschied
+       ist der Inhalt — eine Vorlage muss VOR dem Kopieren beurteilbar sein,
+       darum die zwei Spalten „passt / passt nicht" und die zwei Aufklapper
+       (Begründung je Abschnitt, vollständiger Text).
+       Gedämpfter Text ausschließlich über --c-gray-m, NIE über opacity: die
+       Kontrastprüfung rechnet kumulierte Deckkraft ein, und abgeschwächte
+       Deckkraft ist nicht prüfbar. */
+    .bk-pa-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.8rem; }
+    /* Empty-State der Suche füllt die ganze Reihe statt in einer Spalte zu kleben */
+    .bk-pa-grid .empty-state { grid-column: 1 / -1; }
+    .bk-pa-card {
+      display: flex; flex-direction: column; gap: 1rem; min-width: 0;
+      background: var(--paper); border: 1px solid var(--line); border-radius: var(--r-md);
+      padding: 1.8rem 2rem; scroll-margin-top: calc(var(--header-h) + 2.4rem);
+      transition: var(--trans);
+    }
+    .bk-pa-card > * { min-width: 0; }
+    .bk-pa-card.-highlight { border-color: var(--c-yellow); box-shadow: 0 0 0 3px rgba(255,224,94,.45); }
+    .bk-pa-kopf { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+    .bk-pa-ic { display: inline-flex; color: var(--c-black); }
+    .bk-pa-ic .lu { width: 2.2rem; height: 2.2rem; }
+    .bk-pa-name { font-size: 1.55rem; font-weight: 700; overflow-wrap: anywhere; }
+    .bk-pa-kopf .fav-btn { margin-left: auto; }
+    .bk-pa-kurz { font-size: 1.4rem; line-height: 1.55; color: var(--c-ink-body); margin: 0; }
+    .bk-pa-wofuer { font-size: 1.35rem; line-height: 1.55; color: var(--c-gray-m); margin: 0; }
+    .bk-pa-tags { display: flex; gap: .5rem; flex-wrap: wrap; }
+    .bk-pa-tag {
+      font-family: var(--font-mono); font-size: 1.1rem; color: var(--c-gray-m);
+      border: 1px solid var(--line-strong); border-radius: var(--r-pill); padding: .2rem .8rem;
+    }
+    .bk-pa-fit {
+      display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.2rem 1.8rem;
+      border-top: 1px solid var(--line); padding-top: 1.2rem;
+    }
+    .bk-pa-fit-label {
+      display: block; font-family: var(--font-mono); font-size: 1.1rem; font-weight: 600;
+      letter-spacing: .1em; text-transform: uppercase; color: var(--c-gray-m); margin-bottom: .6rem;
+    }
+    .bk-pa-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .5rem; }
+    .bk-pa-list li {
+      position: relative; padding-left: 1.8rem;
+      font-size: 1.3rem; line-height: 1.5; color: var(--c-ink-body);
+    }
+    .bk-pa-list li::before {
+      position: absolute; left: 0; top: 0; font-family: var(--font-mono);
+      font-weight: 700; color: var(--c-gray-m);
+    }
+    .bk-pa-col.-ja .bk-pa-list li::before { content: '+'; }
+    .bk-pa-col.-nein .bk-pa-list li::before { content: '–'; }
+    .bk-pa-details { border-top: 1px solid var(--line); padding-top: 1rem; }
+    .bk-pa-details summary {
+      cursor: pointer; padding: .4rem 0;
+      font-family: var(--font-mono); font-size: 1.2rem; font-weight: 600; color: var(--c-black);
+    }
+    .bk-pa-details summary::marker { color: var(--c-gray-m); }
+    .bk-pa-warum { margin: 1rem 0 0; display: flex; flex-direction: column; gap: 1rem; }
+    .bk-pa-warum dt { font-family: var(--font-mono); font-size: 1.2rem; font-weight: 700; color: var(--c-black); }
+    .bk-pa-warum dd { margin: .3rem 0 0; font-size: 1.3rem; line-height: 1.55; color: var(--c-ink-body); }
+    /* Eigener Scroll-Streifen: der vollständige CLAUDE.md-Text ist lang und hat
+       lange Zeilen. Er scrollt IN der Karte (x und y), damit weder die Karte
+       noch die Seite auf schmalen Geräten überläuft. */
+    .bk-pa-code {
+      margin: 1rem 0 0; max-height: 34rem; overflow: auto; min-width: 0;
+      background: var(--term-bg); border-radius: var(--r-sm); padding: 1.2rem 1.4rem;
+    }
+    .bk-pa-code code {
+      display: block; font-family: var(--font-mono); font-size: 1.2rem; line-height: 1.6;
+      color: var(--term-ink); white-space: pre;
+    }
+    .bk-pa-meta { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+    .bk-pa-actions { display: flex; gap: .8rem; flex-wrap: wrap; margin-top: .2rem; }
+    .bk-pa-rate {
+      display: flex; align-items: center; gap: .8rem 1.2rem; flex-wrap: wrap;
+      border-top: 1px solid var(--line); padding-top: 1rem;
+    }
+    .bk-pa-rate-label {
+      font-family: var(--font-mono); font-size: 1.1rem; font-weight: 600;
+      letter-spacing: .1em; text-transform: uppercase; color: var(--c-gray-m);
+    }
+    .bk-pa-rate-hint { font-size: 1.25rem; color: var(--c-gray-m); margin: 0; flex-basis: 100%; }
+    .bk-pa-hinweis {
+      font-family: var(--font-mono); font-size: 1.15rem; line-height: 1.55; color: var(--c-gray-m);
+      border-left: 3px solid var(--c-yellow); padding: .4rem 0 .4rem 1.2rem; margin: 2rem 0 0; max-width: 92ch;
+    }
+
     /* ----- Responsive ----- */
     @media (max-width: 1023px) {
-      .bk-grid, .bk-data-grid { grid-template-columns: minmax(0, 1fr); }
+      .bk-grid, .bk-data-grid, .bk-pa-grid { grid-template-columns: minmax(0, 1fr); }
       .bk-sort { margin-left: 0; }
     }
     @media (max-width: 640px) {
-      .baustein-body, .bk-data-card { padding: 1.4rem 1.4rem; }
+      .baustein-body, .bk-data-card, .bk-pa-card { padding: 1.4rem 1.4rem; }
+      .bk-pa-fit { grid-template-columns: minmax(0, 1fr); }
       .preview-frame { height: 26rem; }
       .modal-body .preview-frame { height: 32rem; }
     }
