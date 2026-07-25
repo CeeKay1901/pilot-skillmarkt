@@ -49,7 +49,7 @@ const WURZEL = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const ZIEL = path.join(WURZEL, 'data', 'seit.js');
 const NUR_PRUEFEN = process.argv.includes('--pruefen');
 
-/* Die zwölf Sammlungen und die Datei, in der sie stehen. Schlüssel ist der
+/* Die vierzehn Sammlungen und die Datei, in der sie stehen. Schlüssel ist der
    Global-Name aus GSEARCH_GROUPS.glob — damit findet die Seite ihren Wert
    über genau die Registry, die auch Suche und „Deine Sachen" bedient.
    ASSETS statt FONTS/PALETTES/PATTERNS/ICONSETS: die vereinte Liste trägt
@@ -67,6 +67,16 @@ const SAMMLUNGEN = [
   ['ANWEISUNGEN',   'anweisungen.js'],
   ['CASES',         'cases.js'],
   ['STARTPROJEKTE', 'startprojekte.js'],
+  /* BILDER und PAKETE (Vorlagen-Reiter „Daten" bzw. „Pakete"). Beide haben eine
+     eigene Datei, beide schreiben ihre id als `id: 'x'` — die Pickaxe-Regex im
+     Dateikopf (Falle 1) deckt diese Form ab.
+     ACHTUNG bei den zwei Test-SVGs: `testbild-kampagne` und `testbild-produkt`
+     stehen mit derselben id AUCH in BEISPIELDATEN (data/bausteine.js). Das ist
+     kein Konflikt — der Schlüssel ist `<Global>:<id>`, und der Pickaxe sucht je
+     Sammlung in IHRER Datei. Beide bekommen also getrennte, jeweils korrekte
+     Ersterscheinungs-Daten. */
+  ['BILDER',        'bilder.js'],
+  ['PAKETE',        'pakete.js'],
 ];
 
 /* Alle Datendateien in EINEN Kontext laden. Sie deklarieren ihre Globals mit

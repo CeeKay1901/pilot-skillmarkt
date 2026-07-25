@@ -45,10 +45,21 @@ const VORLAGEN_TARGET = TARGET.replace(/skills\.html.*$/, 'vorlagen.html');
 // Diese Regex ist eine POSITIVLISTE gültiger Deep-Link-Formen, keine Freigabe für
 // „irgendein Link auf vorlagen.html". Ein neuer Inhaltstyp bringt zwangsläufig eine
 // neue gültige Form mit — deshalb kam vorlagen.html?pa= (Projektanweisungen, die
-// elfte Sammlung) hier dazu, und showroom.html?g= (Startprojekte, die zwölfte).
+// elfte Sammlung) hier dazu, showroom.html?g= (Startprojekte, die zwölfte) und
+// zuletzt vorlagen.html?bild= (BILDER, dreizehnte) sowie vorlagen.html?paket=
+// (PAKETE, vierzehnte).
 // Ein Tippfehler wie ?x= oder ein vergessener Parameter fällt weiterhin durch:
 // die Liste zählt Formen auf, statt sie zu erlauben.
-const DEEPLINK_RE = /(skills\.html\?skill=|prompts\.html\?p=|hilfe\.html\?(befehl|begriff|faq)=|lernen(-hilfe)?\.html\?r=|vorlagen\.html\?a=|vorlagen\.html\?b=|vorlagen\.html\?d=|vorlagen\.html\?pa=|showroom\.html\?case=|showroom\.html\?g=)/;
+//
+// WARNUNG zur Reichweite dieses Vertrags (gemessen 25.07.2026): geprüft wird nur,
+// was Check 03 tatsächlich eintippt. Der tippt „prompt" — eine Abfrage, die aus
+// BILDER und PAKETE keinen Treffer holt. Die beiden neuen Formen waren dieser
+// Regex also gar nicht erst begegnet; die Suite wäre grün geblieben und blind.
+// Nachgemessen an derselben Regex, bevor sie hier ergänzt wurde: „testbild" holt
+// 4 Treffer, 2 fielen durch; „paket" holt 8, einer fiel durch. Wer die Liste
+// erweitert, sollte die neue Form einmal von Hand gegen eine Abfrage halten, die
+// sie auch trifft — sonst prüft man einen Vertrag, den niemand aufruft.
+const DEEPLINK_RE = /(skills\.html\?skill=|prompts\.html\?p=|hilfe\.html\?(befehl|begriff|faq)=|lernen(-hilfe)?\.html\?r=|vorlagen\.html\?a=|vorlagen\.html\?b=|vorlagen\.html\?d=|vorlagen\.html\?pa=|vorlagen\.html\?bild=|vorlagen\.html\?paket=|showroom\.html\?case=|showroom\.html\?g=)/;
 
 const VIEWPORTS = [
   { name: 'desktop', viewport: { width: 1280, height: 800 } },

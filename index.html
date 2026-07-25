@@ -381,6 +381,13 @@
        verlangt für jede ein geladenes Global. -->
   <script src="data/anweisungen.js" defer></script>
   <script src="data/startprojekte.js" defer></script>
+  <!-- Bilder (Vorlagen-Reiter „Daten") und Pakete (Reiter „Pakete") — aus demselben
+       Grund wie die zwei Zeilen darüber: die Startseite zeigt für beide keinen
+       eigenen Zähler, aber der Neuigkeiten-Block bündelt ALLE Sammlungen, und eine
+       ungeladene fällt still aus ihm heraus. e11:06 meldet das als
+       „BILDER:<Sammlung fehlt>", nicht als fehlendes Datum. -->
+  <script src="data/bilder.js" defer></script>
+  <script src="data/pakete.js" defer></script>
   <!-- Showroom-Daten (E8), nur für die Live-Zähler — gleiches defer-Muster -->
   <script src="data/cases.js" defer></script>
   <!-- Ersterscheinungs-Daten für den Neuigkeiten-Block (erzeugt von tools/seit.mjs).

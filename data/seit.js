@@ -12,13 +12,13 @@
 // redaktionelle Entstehungszeit und reicht bis Oktober 2025 zurück — vor den
 // ersten Commit dieses Repos.
 //
-// Stand: 249 Einträge auf 6 Tagen.
+// Stand: 261 Einträge auf 6 Tagen.
 //   2026-07-16    66 Einträge
 //   2026-07-17   153 Einträge
 //   2026-07-18    10 Einträge
 //   2026-07-23     6 Einträge
 //   2026-07-24     8 Einträge
-//   2026-07-25     6 Einträge
+//   2026-07-25    18 Einträge
 //
 // Dass sich viele Einträge einen Tag teilen, ist die Wahrheit und kein Fehler:
 // sie kamen gemeinsam ins Repo. Deshalb gruppiert der Neuigkeiten-Block nach
@@ -107,6 +107,17 @@ const SEIT = {
   "BEISPIELDATEN:testbild-kampagne": "2026-07-23",
   "BEISPIELDATEN:testbild-produkt": "2026-07-23",
   "BEISPIELDATEN:umfrage-rohdaten": "2026-07-17",
+  "BILDER:baukoerper-himmel": "2026-07-25",
+  "BILDER:besprechungstisch-leer": "2026-07-25",
+  "BILDER:betonwand-lichtkante": "2026-07-25",
+  "BILDER:farbflaechen-wand": "2026-07-25",
+  "BILDER:gebaeude-baeume": "2026-07-25",
+  "BILDER:haftnotizen-wand": "2026-07-25",
+  "BILDER:notizbuch-holztisch": "2026-07-25",
+  "BILDER:notizbuch-stift-umschlag": "2026-07-25",
+  "BILDER:testbild-kampagne": "2026-07-25",
+  "BILDER:testbild-produkt": "2026-07-25",
+  "BILDER:wendeltreppe-oben": "2026-07-25",
   "CASES:flighting-visualisierer": "2026-07-18",
   "CASES:kampagnen-check": "2026-07-18",
   "CASES:moodboard-generator": "2026-07-18",
@@ -176,6 +187,7 @@ const SEIT = {
   "GLOSSAR:url": "2026-07-24",
   "GLOSSAR:vibecoding": "2026-07-17",
   "GLOSSAR:wissen-anbinden": "2026-07-17",
+  "PAKETE:design-system": "2026-07-25",
   "PROMPTS:betreffzeilen-batterie": "2026-07-16",
   "PROMPTS:bildbrief": "2026-07-16",
   "PROMPTS:briefing-zusammenfassung": "2026-07-16",

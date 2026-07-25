@@ -341,6 +341,12 @@ const LU = {
   "footer": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 15h18"/><path d="M7 19h4"/></svg>',
   "hero": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M8 14h8"/><path d="M9 17.5h6"/></svg>',
   "database": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/></svg>',
+  /* Bildbestand und Pakete (Vorlagen-Reiter „Daten" und „Pakete"). Lucide `image`
+     und `package` im Original-Pfadsatz — kein neues Icon-Vokabular, nur die zwei
+     Symbole, die es hier bisher nicht gab. `media` (die Kategorie-Grafik) meint
+     etwas anderes und wäre an einem Foto-Raster missverständlich. */
+  "image": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>',
+  "package": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>',
   "copy-check": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 15 2 2 4-4"/><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>',
   "file-text": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>',
   /* E8 (Showroom) — additive Icons: Hero/Marke, Ansehen/Vorschau, Reaktion,
@@ -1370,6 +1376,10 @@ const GSEARCH_SOURCES = [
   { glob: 'ANWEISUNGEN', src: 'data/anweisungen.js' },
   { glob: 'CASES',      src: 'data/cases.js'      },
   { glob: 'STARTPROJEKTE', src: 'data/startprojekte.js' },
+  // Bilder und Pakete: je eine eigene Datei, also je ein eigener Eintrag (anders
+  // als BEISPIELDATEN, die sich data/bausteine.js mit BAUSTEINE teilen).
+  { glob: 'BILDER',     src: 'data/bilder.js'     },
+  { glob: 'PAKETE',     src: 'data/pakete.js'     },
 ];
 
 /* HIDDEN-Skills (aus der Katalog-Fläche genommen) tauchen auch in der globalen
@@ -1433,6 +1443,18 @@ const GSEARCH_GROUPS = [
     href: it => 'vorlagen.html?a=' + encodeURIComponent(it.id),
     title: it => it.name, sub: it => it.typ,
     fields: it => [[it.name || '', 5], [it.typ || '', 2], [it.kategorie || '', 2]] },
+  /* Pakete (die Bausätze zum Mitnehmen). Steht direkt HINTER den Assets, weil ein
+     Paket genau die Sorte Material bündelt, die dort einzeln liegt — wer nach
+     „farben" sucht, soll erst das einzelne Asset und gleich danach das Paket
+     sehen, das es mitbringt. Eigene Quelle data/pakete.js, also auch ein Eintrag
+     in GSEARCH_SOURCES.
+     `inhalt` ist ein Array und zählt mit Gewicht 1 mit: dort stehen die
+     Dateinamen im Klartext („tokens.css — alle Farben …"), also genau die Wörter,
+     mit denen jemand ein Paket sucht, das er schon einmal benutzt hat. */
+  { key: 'paket', label: 'Pakete', glob: 'PAKETE', bereich: 'vorlagen.html?tab=pakete',
+    href: it => 'vorlagen.html?paket=' + encodeURIComponent(it.id),
+    title: it => it.name, sub: it => it.kurz,
+    fields: it => [[it.name || '', 5], [(it.tags || []).join(' '), 3], [it.kurz || '', 2], [it.wofuer || '', 1], [(it.inhalt || []).join(' '), 1]] },
   { key: 'baustein', label: 'Bausteine', glob: 'BAUSTEINE', bereich: 'vorlagen.html',
     href: it => 'vorlagen.html?b=' + encodeURIComponent(it.id),
     title: it => it.name, sub: it => it.beschreibung,
@@ -1441,10 +1463,26 @@ const GSEARCH_GROUPS = [
      data/bausteine.js, also NICHT in GSEARCH_SOURCES eintragen — der Eintrag
      für BAUSTEINE lädt dieselbe Datei, und zwei Einträge auf eine Quelle sind
      genau die Doppel-Anfrage, vor der der Kommentar bei GLOSSAR/FAQ warnt. */
-  { key: 'daten', label: 'Beispieldaten', glob: 'BEISPIELDATEN', bereich: 'vorlagen.html',
+  /* `bereich` zeigt seit dem Vier-Reiter-Umbau auf ?tab=daten: die Übungsdateien
+     stehen nicht mehr im Code-Reiter (dem Standard-Reiter, den `vorlagen.html`
+     ohne Parameter öffnet), sondern im Daten-Reiter. Der Deep-Link ?d= bleibt
+     unverändert — er schaltet den Reiter selbst um. */
+  { key: 'daten', label: 'Beispieldaten', glob: 'BEISPIELDATEN', bereich: 'vorlagen.html?tab=daten',
     href: it => 'vorlagen.html?d=' + encodeURIComponent(it.id),
     title: it => it.datei, sub: it => it.beschreibung,
     fields: it => [[it.datei || '', 5], [it.beschreibung || '', 2], [it.format || '', 2], [it.spaltenHinweis || '', 1], [it.uebungstext || '', 1]] },
+  /* Bilder (die frei nutzbaren Fotos und Testbilder). Steht direkt hinter den
+     Beispieldaten, weil beide im Daten-Reiter wohnen — die Reihenfolge dieser
+     Liste ist zugleich die Reihenfolge der Trefferschubladen.
+     `urheber` zählt mit Gewicht 1 mit: bei den neun Fotos ist er die einzige
+     Herkunftsangabe auf der Karte, und wer ein Bild wiederfinden will, sucht
+     erfahrungsgemäss nach dem Namen dahinter. `lizenz` bleibt draussen —
+     „Unsplash License" steht bei neun von elf Einträgen gleich und träfe damit
+     fast alles. */
+  { key: 'bild', label: 'Bilder', glob: 'BILDER', bereich: 'vorlagen.html?tab=daten',
+    href: it => 'vorlagen.html?bild=' + encodeURIComponent(it.id),
+    title: it => it.name, sub: it => it.beschreibung,
+    fields: it => [[it.name || '', 5], [(it.tags || []).join(' '), 3], [it.beschreibung || '', 2], [it.urheber || '', 1]] },
   /* Projektanweisungen (die kopierfertigen CLAUDE.md-Vorlagen im Bausteine-Modul).
      Eigene Quelle data/anweisungen.js — anders als BEISPIELDATEN teilt sich diese
      Gattung ihre Datei mit keiner anderen, also gehört sie AUCH in GSEARCH_SOURCES. */
@@ -1491,6 +1529,10 @@ function _gsGlobal(name) {
       // aus „Deine Sachen" — _gsGlobal ist ein switch über feste Namen, ein
       // fehlender Zweig gibt undefined zurück und die Gruppe entfällt lautlos.
       case 'STARTPROJEKTE': return (typeof STARTPROJEKTE !== 'undefined') ? STARTPROJEKTE : undefined;
+      // Gleiche stumme Falle wie bei STARTPROJEKTE: ohne diese zwei Zweige fielen
+      // Bilder und Pakete lautlos aus Neuigkeiten-Block und „Deine Sachen".
+      case 'BILDER':     return (typeof BILDER     !== 'undefined') ? BILDER     : undefined;
+      case 'PAKETE':     return (typeof PAKETE     !== 'undefined') ? PAKETE     : undefined;
     }
   } catch (e) {}
   return undefined;
@@ -1605,7 +1647,14 @@ function newsHtml(anzahlTage) {
        keine Information, sondern Zufall. Die Sammelmeldung ist immer gross. */
     const namentlich = !m.sammel && m.gesamt <= NEWS_NAMENSGRENZE;
     const teile = m.gruppen.map(gr => {
-      const ort = `<a href="${escHtml(gr.bereich)}">${escHtml(gr.label)}</a>`;
+      /* Bei GENAU EINEM Eintrag die Einzahl — „1 Pakete" stand am 25.07.2026
+         sichtbar auf der Startseite, als die erste Sammlung mit nur einem
+         Eintrag dazukam. Die Einzahl steht schon gepflegt in DS_TYPE_LABEL
+         (dieselbe Datei, dieselben Schlüssel), es braucht also keine zweite
+         Liste, die auseinanderlaufen könnte. Fehlt dort ein Schlüssel, bleibt
+         es beim Mehrzahl-Label — schief, aber nie leer. */
+      const einzahl = gr.eintraege.length === 1 && DS_TYPE_LABEL[gr.key];
+      const ort = `<a href="${escHtml(gr.bereich)}">${escHtml(einzahl || gr.label)}</a>`;
       if (!namentlich) return `${gr.eintraege.length} ${ort}`;
       const gezeigt = gr.eintraege.slice(0, NEWS_PRO_GRUPPE)
         .map(e => `<a href="${escHtml(e.href)}">${escHtml(e.titel)}</a>`).join(', ');
@@ -1928,7 +1977,8 @@ const DS_TYPE_LABEL = {
   skill: 'Skill', plugin: 'Plugin', framework: 'Framework', prompt: 'Prompt',
   baustein: 'Baustein', asset: 'Asset', case: 'Projekt', befehl: 'Befehl',
   begriff: 'Begriff', faq: 'FAQ', ressource: 'Ressource', daten: 'Beispieldatei',
-  anweisung: 'Projektanweisung', startprojekt: 'Startprojekt'
+  anweisung: 'Projektanweisung', startprojekt: 'Startprojekt',
+  bild: 'Bild', paket: 'Paket'
 };
 
 function _dsScan() {

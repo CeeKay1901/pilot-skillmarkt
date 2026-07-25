@@ -134,15 +134,22 @@ async function runViewport(browser, vp) {
       /* Jede Sammlung MUSS ihren Parameter hier stehen haben, sonst fällt ihr
          Deep-Link unten auf 'bereichsseite' durch und gilt still als aufgelöst,
          auch wenn er ins Leere zeigt. `pa` kam mit den Projektanweisungen dazu,
-         `g` mit den Startprojekten. */
-      const id = q.get('a') || q.get('b') || q.get('d') || q.get('pa') || q.get('g') || q.get('skill') || q.get('p')
+         `g` mit den Startprojekten, `bild` und `paket` mit Bildern und Paketen.
+         Letztere beiden waren beim Hinzufügen (25.07.2026) noch folgenlos — der
+         Block zeigt für diesen Tag Bereichslinks, keine Einzel-Deep-Links —,
+         gehören aber genau deshalb hierher: die Lücke fällt erst auf, wenn sie
+         schon etwas verdeckt. */
+      const id = q.get('a') || q.get('b') || q.get('d') || q.get('pa') || q.get('g')
+        || q.get('bild') || q.get('paket') || q.get('skill') || q.get('p')
         || q.get('case') || q.get('befehl') || q.get('begriff') || q.get('faq') || q.get('r');
       if (!id) return 'bereichsseite';
       /* ECHTE VERSCHÄRFUNG (gemessen, 25.07.2026): hier stand bis eben
          `if (location.hash) return 'hash'` — und weil FAST JEDE Bereichsseite den
          Query-Parameter beim Laden in einen Hash umschreibt, hat dieser Zweig die
-         Prüfung darunter nie erreicht. Gemessen über alle zwölf Sammlungen mit je
-         einer echten id: 5 endeten auf 'modal', 7 auf 'hash' — die Präfixschleife
+         Prüfung darunter nie erreicht. Gemessen über alle Sammlungen mit je
+         einer echten id (25.07.2026, damals zwölf, heute mehr — die Zahlen unten
+         sind der Messstand von damals, nicht der von heute):
+         5 endeten auf 'modal', 7 auf 'hash' — die Präfixschleife
          lief bei KEINER EINZIGEN. showroom.html?g=gibtsnicht wird zu
          #sp-gibtsnicht und wäre als „aufgelöst" durchgegangen. Ein Hash ist also
          kein Nachweis, sondern nur eine Absichtserklärung der Seite.
@@ -200,10 +207,12 @@ async function runViewport(browser, vp) {
      im Test und wird ausschliesslich beim BEWUSSTEN Hinzufügen einer Sammlung
      nachgezogen: 10 → 11 mit den Projektanweisungen (ANWEISUNGEN, Deep-Link
      vorlagen.html?pa=), 11 → 12 mit den Startprojekten (STARTPROJEKTE, Deep-Link
-     showroom.html?g=). Die eigentliche Zusicherung — lueckenGesamt === 0, also
+     showroom.html?g=), 12 → 14 mit den Bildern (BILDER, Deep-Link
+     vorlagen.html?bild=) und den Paketen (PAKETE, Deep-Link
+     vorlagen.html?paket=). Die eigentliche Zusicherung — lueckenGesamt === 0, also
      SEIT kennt JEDEN Eintrag JEDER Sammlung — bleibt davon unberührt. */
   check('06_seit_deckt_alle_sammlungen',
-    !!abdeckung && abdeckung.globs === 12 && abdeckung.lueckenGesamt === 0, abdeckung || {});
+    !!abdeckung && abdeckung.globs === 14 && abdeckung.lueckenGesamt === 0, abdeckung || {});
 
   // ---------- (7) „Neu"-Fähnchen == istNeu() ----------
   const flaggen = {};

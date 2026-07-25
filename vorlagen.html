@@ -83,6 +83,128 @@
     color: var(--c-ink-body);
   }
 
+  /* ============================================================
+     BILD-KARTEN (Reiter „Daten") und PAKET-KARTEN (Reiter „Pakete")
+
+     Beide sind nach dem Vorbild der Beispieldaten- und Startprojekt-Karten
+     gebaut (.bk-data-* in base.css:1641, .sp-* in base.css:1940): gleiche
+     Kartenform, gleiche Radien, gleicher `-highlight` für den Deep-Link,
+     gleiche Zurückhaltung bei den Farben. Sie stehen HIER und nicht in
+     base.css, weil base.css alle sechs Seiten trägt und diese zwei Karten
+     genau eine brauchen — dieselbe Begründung wie bei den .pv-*-Klassen des
+     Vorschau-Rahmens weiter unten.
+
+     Gedämpfter Text ausschliesslich über --c-gray-m, NIE über opacity: die
+     Kontrastprüfung rechnet kumulierte Deckkraft ein, und abgeschwächte
+     Deckkraft ist nicht prüfbar (siehe tools/qa/index.mjs kontrast).
+     ============================================================ */
+  .bild-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.8rem; }
+  .bild-grid .vl-grid-empty { grid-column: 1 / -1; }
+  .bild-card {
+    display: flex; flex-direction: column; gap: 1rem; min-width: 0;
+    background: var(--paper); border: 1px solid var(--line); border-radius: var(--r-md);
+    overflow: hidden; scroll-margin-top: calc(var(--header-h) + 2.4rem);
+    transition: var(--trans);
+  }
+  .bild-card > * { min-width: 0; }
+  .bild-card.-highlight { border-color: var(--c-yellow); box-shadow: 0 0 0 3px rgba(255,224,94,.45); }
+  /* Der Rahmen der Vorschau trägt die Karo-Fläche, damit ein Bild mit hellem
+     Rand nicht randlos in die Karte ausläuft. Kein fester Ausschnitt: die
+     Seitenverhältnisse sind echt verschieden (quadratisch, quer, hoch), und ein
+     Zuschnitt würde Motive abschneiden, die man gerade beurteilen will. */
+  .bild-vorschau {
+    margin: 0; background: var(--paper-warm); border-bottom: 1px solid var(--line);
+    display: flex; align-items: center; justify-content: center; padding: 1.2rem;
+  }
+  /* width/height stehen als Attribute am <img> (Seitenverhältnis gegen
+     Layout-Sprünge). height:auto ist Pflicht, sonst zerrt das height-Attribut. */
+  .bild-vorschau img { display: block; width: 100%; height: auto; max-height: 26rem; object-fit: contain; border-radius: var(--r-sm); }
+  .bild-body { display: flex; flex-direction: column; gap: 1rem; padding: 0 2rem 1.8rem; min-width: 0; }
+  .bild-kopf { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+  .bild-name { font-size: 1.55rem; font-weight: 700; overflow-wrap: anywhere; }
+  .bild-kopf .fav-btn { margin-left: auto; }
+  .bild-desc { font-size: 1.35rem; line-height: 1.55; color: var(--c-ink-body); margin: 0; }
+  .bild-facts { display: flex; gap: .6rem 1.4rem; flex-wrap: wrap; font-family: var(--font-mono); font-size: 1.2rem; color: var(--c-gray-m); }
+  .bild-tags { display: flex; gap: .5rem; flex-wrap: wrap; }
+  .bild-tag {
+    font-family: var(--font-mono); font-size: 1.1rem; color: var(--c-gray-m);
+    border: 1px solid var(--line-strong); border-radius: var(--r-pill); padding: .2rem .8rem;
+  }
+  /* Lizenz und Urheber sind bei Bildmaterial keine Fussnote, sondern die
+     Bedingung, unter der man es benutzen darf. Deshalb ein eigener, abgesetzter
+     Block auf JEDER Karte — nicht im Modal, nicht in einem Aufklapper. */
+  .bild-lizenz { border-top: 1px solid var(--line); padding-top: 1rem; display: flex; flex-direction: column; gap: .3rem; }
+  .bild-lizenz-label {
+    font-family: var(--font-mono); font-size: 1.1rem; font-weight: 600;
+    letter-spacing: .1em; text-transform: uppercase; color: var(--c-gray-m);
+  }
+  .bild-lizenz-wert { font-size: 1.3rem; line-height: 1.5; color: var(--c-ink-body); overflow-wrap: anywhere; }
+  /* Die zwei Links im Lizenzblock (Lizenztext, „Quelle ansehen") sind kurz und
+     wären als reine Textlinks 16 px hoch. Die Fliesstext-Ausnahme von WCAG 2.5.8
+     greift hier NICHT: sie gilt für Links IN einem Satz, und dieser Block ist
+     eine Angabe, kein Satz — gemessen am 25.07.2026 bei 320/360/390 px als
+     18 Bedienelemente unter 24 px. Der Innenabstand bringt sie auf 26 px, ohne
+     das Schriftbild anzutasten. */
+  .bild-lizenz-wert a { display: inline-block; padding: .5rem 0; color: var(--c-black); font-weight: 600; }
+  .bild-urheber { font-size: 1.3rem; line-height: 1.5; color: var(--c-ink-body); overflow-wrap: anywhere; }
+  .bild-actions { display: flex; gap: .8rem; flex-wrap: wrap; margin-top: .2rem; }
+
+  /* ----- Paket-Karten ----- */
+  .pk-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2rem; }
+  .pk-grid .vl-grid-empty { grid-column: 1 / -1; }
+  .pk-card {
+    display: flex; flex-direction: column; gap: 1rem; min-width: 0;
+    background: var(--paper); border: 1px solid var(--line); border-radius: var(--r-lg);
+    padding: 1.8rem 2rem; scroll-margin-top: calc(var(--header-h) + 2.4rem);
+    transition: var(--trans);
+  }
+  .pk-card > * { min-width: 0; }
+  .pk-card.-highlight { border-color: var(--c-yellow); box-shadow: 0 0 0 3px rgba(255,224,94,.45); }
+  .pk-kopf { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+  .pk-ic { display: inline-flex; color: var(--c-black); }
+  .pk-ic .lu { width: 2.2rem; height: 2.2rem; }
+  .pk-name { font-size: 1.55rem; font-weight: 700; overflow-wrap: anywhere; }
+  .pk-kopf .fav-btn { margin-left: auto; }
+  .pk-kurz { font-size: 1.4rem; line-height: 1.55; color: var(--c-ink-body); margin: 0; }
+  .pk-wofuer { font-size: 1.35rem; line-height: 1.55; color: var(--c-gray-m); margin: 0; }
+  .pk-tags { display: flex; gap: .5rem; flex-wrap: wrap; }
+  .pk-tag {
+    font-family: var(--font-mono); font-size: 1.1rem; color: var(--c-gray-m);
+    border: 1px solid var(--line-strong); border-radius: var(--r-pill); padding: .2rem .8rem;
+  }
+  .pk-block { border-top: 1px solid var(--line); padding-top: 1.2rem; }
+  .pk-label {
+    display: block; font-family: var(--font-mono); font-size: 1.1rem; font-weight: 600;
+    letter-spacing: .1em; text-transform: uppercase; color: var(--c-gray-m); margin-bottom: .6rem;
+  }
+  .pk-liste { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .4rem; }
+  .pk-liste li {
+    position: relative; padding-left: 1.8rem; overflow-wrap: anywhere;
+    font-size: 1.3rem; line-height: 1.5; color: var(--c-ink-body);
+  }
+  .pk-liste li::before { content: '·'; position: absolute; left: .4rem; top: 0; font-weight: 700; color: var(--c-gray-m); }
+  .pk-liste.-mono li { font-family: var(--font-mono); font-size: 1.2rem; }
+  /* Die drei Schriftdateien liegen in keinem Paketordner — sie kommen erst beim
+     Packen dazu. Deshalb NEBEN der Dateiliste und nicht darin: die Liste zeigt
+     den Ordner, diese Zeile zeigt, was hinzukommt (Muster: .sp-dazu). */
+  .pk-dazu { margin: .6rem 0 0; font-size: 1.25rem; line-height: 1.5; color: var(--c-gray-m); overflow-wrap: anywhere; }
+  .pk-verweise { display: flex; gap: .8rem; flex-wrap: wrap; }
+  .pk-actions { display: flex; gap: .8rem; flex-wrap: wrap; margin-top: .2rem; }
+  .pk-status {
+    margin: .4rem 0 0; font-size: 1.3rem; line-height: 1.55; color: var(--c-ink-body);
+    border-left: 3px solid var(--c-yellow); padding-left: 1.2rem;
+  }
+
+  @media (max-width: 1023px) {
+    .bild-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .pk-grid { grid-template-columns: minmax(0, 1fr); }
+  }
+  @media (max-width: 639px) {
+    .bild-grid { grid-template-columns: minmax(0, 1fr); }
+    .bild-body { padding: 0 1.4rem 1.4rem; }
+    .pk-card { padding: 1.4rem 1.4rem; }
+  }
+
   /* ===== Baukasten-Styles (aus baukasten.html) ===== */
     /* ============================================================
        baukasten.html — seitenspezifisch (E7). Das Design-System und
@@ -374,11 +496,39 @@
   </header>
 
   <!-- E12: Tab-Leiste UNTER dem Page-Head, sticky — gleiche Sprache wie
-       skills-subnav / pillar-nav. IDs/Rollen unverändert. -->
+       skills-subnav / pillar-nav.
+
+       ================================================================
+       WARUM DIE IDs NICHT ZUR BESCHRIFTUNG PASSEN — BITTE NICHT „KORRIGIEREN"
+       ================================================================
+       Der Reiter „Design" heisst intern `assets`, der Reiter „Code" heisst
+       intern `bausteine`. Das ist kein Versehen und keine Altlast, sondern ein
+       ausdrücklich gehaltener Vertrag: die IDs `vltab-bausteine`,
+       `panel-bausteine`, `vltab-assets` und `panel-assets` sind in drei
+       Testsuiten WÖRTLICH festgenagelt —
+         e6:16  (bibliothek.html?a=<id> → vltab-assets aktiv, panel-assets sichtbar)
+         e7:14  (baukasten.html?b=<id>  → vltab-bausteine aktiv, panel-bausteine sichtbar)
+         e12:07 (vorlagen.html?pa=<id>  → vltab-bausteine aktiv, panel-bausteine
+                 sichtbar UND panel-assets versteckt)
+       Dasselbe gilt für den URL-Parameter `?tab=assets`: er steht in e6, e7, e8
+       und e11 und muss weiter auf den Design-Reiter führen.
+       Wer die IDs an die neuen Beschriftungen angleicht, färbt drei fremde
+       Suiten rot, ohne dass der Zusammenhang sichtbar wäre. Die Beschriftung ist
+       das, was Kolleg:innen lesen; die ID ist das, worauf Verträge zeigen —
+       beides darf auseinanderlaufen, solange es hier steht.
+       Die zwei NEUEN Reiter tragen deshalb sprechende IDs (`vltab-daten`,
+       `panel-daten`, `vltab-pakete`, `panel-pakete`): dort gibt es keinen
+       Altvertrag, der gehalten werden müsste.
+
+       Reihenfolge Design · Code · Daten · Pakete = der Weg vom Rohmaterial zum
+       fertigen Bausatz. Der STANDARD-Reiter bleibt trotzdem „Code": e7 und e12
+       messen die Seite ohne Parameter und erwarten dort den Baukasten. -->
   <nav class="vl-subnav" aria-label="Vorlagen-Bereiche">
     <div class="vl-tabs" role="tablist" aria-label="Vorlagen-Bereiche">
-      <button type="button" id="vltab-bausteine" class="vl-tab active" role="tab" aria-selected="true" aria-controls="panel-bausteine" onclick="vlShowTab('bausteine', true)">Bausteine <span class="vl-count" id="vl-count-bausteine" hidden></span></button>
-      <button type="button" id="vltab-assets" class="vl-tab" role="tab" aria-selected="false" aria-controls="panel-assets" onclick="vlShowTab('assets', true)">Design-Assets <span class="vl-count" id="vl-count-assets" hidden></span></button>
+      <button type="button" id="vltab-assets" class="vl-tab" role="tab" aria-selected="false" aria-controls="panel-assets" onclick="vlShowTab('assets', true)">Design <span class="vl-count" id="vl-count-assets" hidden></span></button>
+      <button type="button" id="vltab-bausteine" class="vl-tab active" role="tab" aria-selected="true" aria-controls="panel-bausteine" onclick="vlShowTab('bausteine', true)">Code <span class="vl-count" id="vl-count-bausteine" hidden></span></button>
+      <button type="button" id="vltab-daten" class="vl-tab" role="tab" aria-selected="false" aria-controls="panel-daten" onclick="vlShowTab('daten', true)">Daten <span class="vl-count" id="vl-count-daten" hidden></span></button>
+      <button type="button" id="vltab-pakete" class="vl-tab" role="tab" aria-selected="false" aria-controls="panel-pakete" onclick="vlShowTab('pakete', true)">Pakete <span class="vl-count" id="vl-count-pakete" hidden></span></button>
     </div>
   </nav>
 
@@ -432,27 +582,15 @@
       </div>
     </section>
 
-    <!-- (c) BEISPIELDATEN -->
-    <section class="lib-section" aria-labelledby="data-h">
-      <div class="lib-inner">
-        <p class="kicker">Rohmaterial</p>
-        <div class="lib-sec-head">
-          <span class="lib-sec-ic lu-slot" id="data-ic"></span>
-          <h2 id="data-h">Beispieldaten zum Üben</h2>
-          <span class="lib-sec-count" id="data-count"></span>
-        </div>
-        <p class="lib-note">Erfundene, anonymisierte Übungsdaten — kein echtes Kundenmaterial. Lad dir eine Datei herunter, gib sie Claude und probier die Übungsidee aus.</p>
-        <div class="bk-data-grid" id="bk-data-grid"></div>
-        <p class="bk-data-hinweis" id="bk-data-hinweis"></p>
-      </div>
-    </section>
-
-    <!-- (d) PROJEKTANWEISUNGEN — die kopierfertigen CLAUDE.md-Vorlagen.
-         Steht bewusst NACH den Beispieldaten und VOR dem Mitmachen-Band: die
-         Reihenfolge im Reiter folgt dem Arbeitsweg (Baustein → Übungsdaten →
-         eigenes Projekt aufsetzen). Als `-alt` klassifiziert, damit die
-         plain/-alt-Abwechslung des Reiters ohne Umbau des Bestands aufgeht. -->
-    <section class="lib-section -alt" aria-labelledby="pa-h">
+    <!-- (c) PROJEKTANWEISUNGEN — die kopierfertigen CLAUDE.md-Vorlagen.
+         Die Beispieldaten standen bis zum Vier-Reiter-Umbau zwischen dem Ranking
+         und diesem Abschnitt; sie sind in den Reiter „Daten" gezogen, weil sie
+         Rohmaterial sind und kein Code. Der Arbeitsweg dieses Reiters ist damit
+         Baustein → Ranking → eigenes Projekt aufsetzen.
+         Deshalb steht hier jetzt `lib-section` statt `lib-section -alt`: mit einem
+         Abschnitt weniger im Reiter fiele die plain/-alt-Abwechslung sonst auf
+         zwei gleiche Bänder hintereinander. -->
+    <section class="lib-section" aria-labelledby="pa-h">
       <div class="lib-inner">
         <p class="kicker">Projektstart</p>
         <div class="lib-sec-head">
@@ -580,6 +718,72 @@
   </main>
   </div>
 
+  <!-- TAB: DATEN — Rohmaterial zum Üben und Bebildern.
+       Die Beispieldaten-Sektion ist aus dem Code-Reiter hierher gezogen; ihre IDs
+       (#bk-data-grid, #bk-data-<id>, #data-count) bleiben unverändert, weil e7:01,
+       e7:08, e8 und der Deep-Link ?d= darauf zeigen. Nur der Ort im Dokument hat
+       sich geändert, nichts an der Sektion selbst. -->
+  <div id="panel-daten" role="tabpanel" aria-labelledby="vltab-daten" hidden>
+  <main>
+    <!-- (a) BEISPIELDATEN (aus dem Code-Reiter umgezogen, IDs unverändert) -->
+    <section class="lib-section" aria-labelledby="data-h">
+      <div class="lib-inner">
+        <p class="kicker">Rohmaterial</p>
+        <div class="lib-sec-head">
+          <span class="lib-sec-ic lu-slot" id="data-ic"></span>
+          <h2 id="data-h">Beispieldaten zum Üben</h2>
+          <span class="lib-sec-count" id="data-count"></span>
+        </div>
+        <p class="lib-note">Erfundene, anonymisierte Übungsdaten — kein echtes Kundenmaterial. Lad dir eine Datei herunter, gib sie Claude und probier die Übungsidee aus.</p>
+        <div class="bk-data-grid" id="bk-data-grid"></div>
+        <p class="bk-data-hinweis" id="bk-data-hinweis"></p>
+      </div>
+    </section>
+
+    <!-- (b) BILDER -->
+    <section class="lib-section -alt" aria-labelledby="bilder-h">
+      <div class="lib-inner">
+        <p class="kicker">Bildmaterial</p>
+        <div class="lib-sec-head">
+          <span class="lib-sec-ic lu-slot" id="bilder-ic"></span>
+          <h2 id="bilder-h">Bilder zum Weiterverwenden</h2>
+          <span class="lib-sec-count" id="bilder-count"></span>
+        </div>
+        <!-- Kein „zwei Testbilder", keine „neun Fotos": beides käme aus BILDER und
+             würde beim nächsten Eintrag still falsch. Die Zahlen stehen im
+             Abschnittszähler (#bilder-count) und in der Fussnote (#bild-hinweis),
+             beide zur Laufzeit gerechnet. -->
+        <p class="lib-note">Frei nutzbares Bildmaterial für Entwürfe und Übungen: Fotos unter der Unsplash License und selbst gezeichnete Testbilder. Lizenz und Urheber stehen an jeder Karte — die Vorschau ist klein, der Download bringt die große Datei.</p>
+        <div class="bild-grid" id="bild-grid"></div>
+        <!-- .bk-data-hinweis ist die vorhandene Fussnoten-Form unter einem Raster
+             (base.css:1667). Bewusst wiederverwendet statt kopiert: der Name
+             stammt vom ersten Ort, an dem sie gebraucht wurde, die Form ist
+             allgemein. Eine zweite, gleich aussehende Klasse wäre eine Kopie. -->
+        <p class="bk-data-hinweis" id="bild-hinweis"></p>
+      </div>
+    </section>
+  </main>
+  </div>
+
+  <!-- TAB: PAKETE — fertige Bausätze zum Mitnehmen. -->
+  <div id="panel-pakete" role="tabpanel" aria-labelledby="vltab-pakete" hidden>
+  <main>
+    <section class="lib-section" aria-labelledby="pk-h">
+      <div class="lib-inner">
+        <p class="kicker">Bausätze</p>
+        <div class="lib-sec-head">
+          <span class="lib-sec-ic lu-slot" id="pk-ic"></span>
+          <h2 id="pk-h">Pakete zum Mitnehmen</h2>
+          <span class="lib-sec-count" id="pk-count"></span>
+        </div>
+        <p class="lib-note">Ein Paket ist Material für ein Projekt, das es schon gibt: herunterladen, in den Projektordner legen, benutzen. Anders als ein Startprojekt im Showroom baust du es nicht weiter, und anders als eine Projektanweisung ist es nicht nur Text. Das ZIP wird beim Klick frisch gepackt — fehlt eine Datei, bekommst du eine Meldung statt eines halben Pakets.</p>
+        <div class="pk-grid" id="pk-grid"></div>
+        <p class="bk-data-hinweis" id="pk-hinweis"></p>
+      </div>
+    </section>
+  </main>
+  </div>
+
   <!-- DETAIL-MODAL (eine Instanz für beide Tabs — ModalConfig wechselt mit dem Tab) -->
   <!-- BAUSTEIN-DETAIL-MODAL -->
   <div class="modal-overlay" id="modal-overlay">
@@ -603,6 +807,15 @@
        und VOR shared/base.js — gleiches Muster wie die beiden Zeilen darüber:
        die Module dieser Seite lesen ANWEISUNGEN synchron beim Rendern. -->
   <script src="data/anweisungen.js"></script>
+  <!-- Bilder (Reiter „Daten") und Pakete (Reiter „Pakete") — ebenfalls ohne
+       `defer` und VOR shared/base.js: ihre Module rendern synchron beim Start,
+       damit die Karten auch dann im DOM stehen, wenn ihr Reiter gerade versteckt
+       ist (e7:01 und e7:08 zählen die Beispieldaten-Karten genau so).
+       SKILLS und PROMPTS bleiben bewusst draussen — e9:04 (preload.promptsUndef)
+       prüft, dass diese Seite sie nicht vorlädt. Deshalb trägt jeder `verweis`
+       eines Pakets seinen Anzeigenamen selbst (Begründung in data/pakete.js). -->
+  <script src="data/bilder.js"></script>
+  <script src="data/pakete.js"></script>
   <!-- Ersterscheinungs-Daten (erzeugt von tools/seit.mjs). Gleiches defer-Muster
        wie skills.html:1435 und prompts.html:355. Ohne diese Zeile ist SEIT auf
        dieser Seite undefiniert, istNeu() liefert immer false und das
@@ -618,21 +831,55 @@
       footerClaim: 'Von Piloten gebaut, von Piloten empfohlen. Bausteine und freies Material — startklar fürs nächste Projekt.'
     });
 
-    /* ===== TAB-LOGIK (E11) =====
-       Beide Alt-Seiten leben als IIFE-Module weiter; window.ModalConfig wird
-       beim Tab-Wechsel auf die Config des aktiven Tabs gestellt. */
+    /* ===== TAB-LOGIK (E11, seit dem Vier-Reiter-Umbau erweitert) =====
+       Die Alt-Seiten leben als IIFE-Module weiter; window.ModalConfig wird
+       beim Tab-Wechsel auf die Config des aktiven Tabs gestellt.
+
+       EIN Ort für alles, was ein Reiter über sich weiss. Die vier Angaben lagen
+       vorher als zwei Objektliterale und drei Bedingungen verstreut; mit vier
+       Reitern wäre daraus eine Fehlerquelle geworden (ein Reiter, der irgendwo
+       fehlt, fällt still durch).
+         panel   die Panel-ID — für `assets` und `bausteine` festgenagelt, siehe
+                 den langen Kommentar an der Reiterleiste oben.
+         param   der Wert von ?tab=. null = Standard-Reiter, der KEINEN Parameter
+                 schreibt (sonst stünde nach jedem Klick ein ?tab=code in der URL).
+         rating  window.RatingConfig.type, solange dieser Reiter aktiv ist. Das ist
+                 nur der Seiten-Default — jeder Stern und jedes Sterne-Widget
+                 übergibt seinen Typ zusätzlich EXPLIZIT (siehe vlFavBtnHtml). */
+    const VL_TABS = {
+      assets:    { panel: 'panel-assets',    param: 'assets', rating: 'asset' },
+      bausteine: { panel: 'panel-bausteine', param: null,     rating: 'baustein' },
+      daten:     { panel: 'panel-daten',     param: 'daten',  rating: 'daten' },
+      pakete:    { panel: 'panel-pakete',    param: 'pakete', rating: 'paket' },
+    };
+    /* Erlaubte Werte von ?tab=. `assets` ist der Vertragswert aus e6/e7/e8/e11 und
+       bleibt; `design` steht daneben, weil der Reiter so heisst und ein geteilter
+       Link mit dem sichtbaren Namen sonst ins Leere liefe. Gleiches Muster für
+       `code` neben dem internen `bausteine`. */
+    const VL_TAB_ALIAS = {
+      assets: 'assets', design: 'assets',
+      bausteine: 'bausteine', code: 'bausteine',
+      daten: 'daten', pakete: 'pakete',
+    };
     window._vlCfg = {};
     /* base.js-Kontrakt: EIN globales state-Objekt (Modal-/Rating-Engine schreibt
-       activeSkill/activeTab/activeFile/pendingRating). Beide Module ergänzen
+       activeSkill/activeTab/activeFile/pendingRating). Die Module ergänzen
        ihre eigenen Filter-Felder per Object.assign. */
-    // E12: state.search ist zwischen beiden Modulen geteilt (EIN Suchfeld). Jedes
+    // E12: state.search ist zwischen allen Modulen geteilt (EIN Suchfeld). Jedes
     // Modul liest es in seinen Render-Funktionen; die Module registrieren ihre
     // aktive-Tab-Renderfunktion unter window._vlSearch[tab].
     const state = { pendingRating: {}, activeSkill: null, activeTab: 'overview', activeFile: 0, search: '' };
-    window._vlSearch = {};   // { bausteine: fn, assets: fn } — von den Modulen befüllt
+    window._vlSearch = {};   // { assets, bausteine, daten, pakete } — von den Modulen befüllt
+    /* Welcher Reiter ist sichtbar? Gefragt wird das Panel, nicht ein gemerkter
+       Zustand: die Panels sind die Wahrheit, und ein zweiter Speicher könnte von
+       ihr abweichen. `bausteine` ist der Rückfall, weil es der Standard-Reiter
+       ist — er trägt kein hidden, solange niemand umgeschaltet hat. */
     function vlActiveTab() {
-      const pa = document.getElementById('panel-assets');
-      return (pa && !pa.hidden) ? 'assets' : 'bausteine';
+      for (const k in VL_TABS) {
+        const p = document.getElementById(VL_TABS[k].panel);
+        if (p && !p.hidden) return k;
+      }
+      return 'bausteine';
     }
     function vlRerenderActive() {
       const fn = window._vlSearch[vlActiveTab()];
@@ -664,14 +911,19 @@
       a: 'Dieses Design-Asset',
       b: 'Diesen Baustein',
       d: 'Diese Beispieldatei',
-      pa: 'Diese Projektanweisung'
+      pa: 'Diese Projektanweisung',
+      bild: 'Dieses Bild',
+      paket: 'Dieses Paket'
     };
+    /* Die Schlüssel sind zugleich die Query-Parameter, die beim toten Ziel aus der
+       URL fliegen — eine Liste statt zweier, die auseinanderlaufen könnten. */
+    const VL_MISS_PARAMS = Object.keys(VL_MISS_LABEL);
     function vlDeepLinkMiss(kind) {
       const label = VL_MISS_LABEL[kind] || 'Diesen Eintrag';
       showToast(label + ' gibt es hier (noch) nicht — der Link ist vermutlich veraltet.');
       try {
         const qs = new URLSearchParams(location.search);
-        ['a', 'b', 'd', 'pa'].forEach(k => qs.delete(k));
+        VL_MISS_PARAMS.forEach(k => qs.delete(k));
         const q = qs.toString();
         history.replaceState(null, '', location.pathname + (q ? '?' + q : ''));
       } catch (e) { /* History blockiert — dann bleibt nur der Toast */ }
@@ -721,32 +973,62 @@
         state.search = '';
         vlRerenderActive();   // läuft noch auf dem AKTUELL sichtbaren Tab
       }
-      const tabs = { bausteine: 'panel-bausteine', assets: 'panel-assets' };
-      Object.keys(tabs).forEach(k => {
-        const panel = document.getElementById(tabs[k]);
+      if (!VL_TABS[which]) return;
+      Object.keys(VL_TABS).forEach(k => {
+        const panel = document.getElementById(VL_TABS[k].panel);
         const btn = document.getElementById('vltab-' + k);
         if (panel) panel.hidden = (k !== which);
         if (btn) { btn.classList.toggle('active', k === which); btn.setAttribute('aria-selected', k === which ? 'true' : 'false'); }
       });
+      /* Nur zwei Reiter haben ein Detail-Modal (Bausteine, Design-Assets). Die
+         zwei neuen tragen alles auf der Karte — dort bleibt die zuletzt gesetzte
+         Config einfach stehen, weil sie ohne ein geöffnetes Modal nichts tut. */
       if (window._vlCfg[which]) window.ModalConfig = window._vlCfg[which];
-      window.RatingConfig = { type: which === 'assets' ? 'asset' : 'baustein' };
+      window.RatingConfig = { type: VL_TABS[which].rating };
       if (fromClick) {
         try {
           const u = new URL(location.href);
-          if (which === 'assets') u.searchParams.set('tab', 'assets'); else u.searchParams.delete('tab');
+          const p = VL_TABS[which].param;
+          if (p) u.searchParams.set('tab', p); else u.searchParams.delete('tab');
           history.replaceState(null, '', u.pathname + u.search + u.hash);
         } catch (e) {}
       }
     }
-    /* Start-Tab aus der URL: ?tab=assets, ?a= oder #a/… → Assets, sonst Bausteine.
+    /* Start-Reiter aus der URL. Zwei Wege führen hin, und der Parameter gewinnt:
+         (1) ?tab=<wert> — die geteilte Übersicht (siehe VL_TAB_ALIAS)
+         (2) ein Deep-Link auf einen einzelnen Eintrag; der Reiter ergibt sich dann
+             daraus, WO dieser Eintrag wohnt. Ohne das zeigte ?bild=… auf eine
+             Karte in einem versteckten Panel: kein Fehler, aber auch nichts zu
+             sehen — genau die stumme Sorte Defekt, die dieses Repo vermeidet.
        ?f= ist am 25.07.2026 entfallen: der Parameter schaltete zwar den Reiter um,
-       aber sein WERT wurde nirgends gelesen (qs.get('f') kam im ganzen Repo nicht
-       vor) — ein Schalter ohne Wirkung, den auch kein Test kennt. ?tab=assets deckt
-       denselben Zweck ab und ist dokumentiert. */
+       aber sein WERT wurde nirgends gelesen — ein Schalter ohne Wirkung. */
+    const VL_DEEPLINK_TAB = [
+      ['assets',    ['a'],           /^#a\//],
+      ['bausteine', ['b', 'pa'],     /^#(b\/|bk-pa-)/],
+      ['daten',     ['d', 'bild'],   /^#(bk-data-|bild-)/],
+      ['pakete',    ['paket'],       /^#paket-/],
+    ];
+    function vlStartTab() {
+      try {
+        const qs = new URLSearchParams(location.search);
+        const t = qs.get('tab');
+        if (t && VL_TAB_ALIAS[t]) return VL_TAB_ALIAS[t];
+        const h = location.hash || '';
+        for (const [tab, params, hashRe] of VL_DEEPLINK_TAB) {
+          if (params.some(p => qs.has(p)) || hashRe.test(h)) return tab;
+        }
+      } catch (e) {}
+      return 'bausteine';   // Standard-Reiter (e7/e12 messen die Seite ohne Parameter)
+    }
     (function () {
-      const qs = new URLSearchParams(location.search);
-      const wantsAssets = qs.get('tab') === 'assets' || qs.has('a') || /^#a\//.test(location.hash || '');
-      if (wantsAssets) document.addEventListener('DOMContentLoaded', () => vlShowTab('assets', false));
+      const start = vlStartTab();
+      /* Nur umschalten, wenn es etwas umzuschalten gibt: der Standard-Reiter ist
+         im HTML schon aktiv, und ein vlShowTab('bausteine') würde nur unnötig
+         RatingConfig setzen, bevor die Module ihre eigenen Defaults setzen.
+         Dieser Listener wird als ERSTER registriert und läuft deshalb VOR den
+         DOMContentLoaded-Handlern der Module — der Deep-Link findet sein Ziel
+         damit in einem sichtbaren Panel. */
+      if (start !== 'bausteine') document.addEventListener('DOMContentLoaded', () => vlShowTab(start, false));
     })();
 
     /* ===== MODUL: BAUSTEINE (aus baukasten.html) ===== */
@@ -1376,8 +1658,11 @@
           if (v && !location.hash) history.replaceState(null, '', location.pathname + location.search + '#b/' + encodeURIComponent(v));
           /* ?d=<id> → Beispieldatei. Gleiche Normalisierung wie ?b= und ?a=:
              Query-Form für geteilte Links, Hash-Form für die Mechanik. Der
-             #bk-data-Zweig unten scrollt und hebt hervor; die Beispieldaten
-             liegen im Bausteine-Tab, der ohnehin der Standard ist. */
+             #bk-data-Zweig unten scrollt und hebt hervor. Die Beispieldaten
+             stehen seit dem Vier-Reiter-Umbau im Reiter „Daten"; den schaltet
+             vlStartTab() vor diesem Aufruf um (VL_DEEPLINK_TAB). Ohne das läge
+             das Ziel in einem versteckten Panel und scrollIntoView liefe ins
+             Leere — sichtbar wäre nichts, gemeldet auch nichts. */
           const vd = qs.get('d');
           if (vd && !location.hash) history.replaceState(null, '', location.pathname + location.search + '#bk-data-' + encodeURIComponent(vd));
           /* ?pa=<id> → Projektanweisung, gleiche Normalisierung wie ?b=/?d=/?a=.
@@ -1423,7 +1708,11 @@
       }
       const m = hash.match(/^#b\/(.+)$/);
       if (!m) {
-        if (/^#a\//.test(hash)) return;   /* E11: Hash gehört dem Assets-Tab — nicht eingreifen */
+        /* Hash gehört einem anderen Reiter — nicht eingreifen. #a/ ist der
+           Design-Reiter (E11), #bild- und #paket- kamen mit dem Vier-Reiter-Umbau
+           dazu. Ohne sie schlösse dieser Zweig beim Deep-Link auf ein Bild ein
+           (gar nicht offenes) Modal — harmlos, aber irreführend beim Lesen. */
+        if (/^#(a\/|bild-|paket-)/.test(hash)) return;
         const ov = document.getElementById('modal-overlay');
         if (ov && ov.classList.contains('open')) closeModal();
         return;
@@ -1455,7 +1744,9 @@
 
     // ===== INIT =====
     document.addEventListener('DOMContentLoaded', () => {
-      // Sektions-Icons setzen (Lucide aus der LU-Map)
+      // Sektions-Icons setzen (Lucide aus der LU-Map). `data-ic` gehört zur
+      // Beispieldaten-Sektion, die im Daten-Reiter steht — es wird hier gesetzt,
+      // weil ihr Code hier lebt (Begründung an window._vlRenderBeispieldaten unten).
       const icons = {
         'bausteine-ic': LU.blocks, 'rank-ic': LU['copy-check'], 'data-ic': LU.database,
         'pa-ic': LU['file-text']
@@ -1465,6 +1756,9 @@
       renderCats();
       renderBausteine();
       renderRanking();
+      /* Läuft auch dann, wenn der Daten-Reiter versteckt ist: e7:01 und e7:08
+         zählen die Karten in #bk-data-grid auf der Seite OHNE Parameter. Ein
+         Rendern erst beim Reiterwechsel machte diese zwei Prüfungen blind. */
       renderBeispieldaten();
       renderAnweisungen();
 
@@ -1498,17 +1792,28 @@
     window.copyAnweisung = copyAnweisung;
     window.setKat = setKat;
     window._vlCfg.bausteine = window.ModalConfig;
+    /* ===== BEISPIELDATEN: Sektion im Daten-Reiter, Code hier =====
+       Die Sektion ist beim Vier-Reiter-Umbau in den Reiter „Daten" gezogen, der
+       Code ist bewusst in diesem Modul geblieben. Grund: `applyDeepLink` dieses
+       Moduls wertet den #bk-data-Hash aus und hält dabei die Abgrenzung zu #b/,
+       #a/ und #bk-pa- zusammen. Drei Module, die sich gegenseitig ihre Hashes
+       wegnehmen, wären schwerer richtig zu halten als diese eine Naht.
+       Was das Bilder-Modul davon braucht, steht hier als schmale Schnittstelle:
+       einmal rendern, einmal die Trefferzahl. Mehr nicht — mit dem ganzen
+       Modul-Innenleben am window.-Objekt wäre nichts gewonnen. */
+    window._vlRenderBeispieldaten = renderBeispieldaten;
+    window._vlBeispieldatenTreffer = function () { return BEISPIELDATEN.filter(beispieldatenMatchesSearch).length; };
     // E12: Renderer des aktiven Tabs für das gemeinsame Suchfeld registrieren.
     // renderCats() muss mitlaufen: die Kategorie-Zähler zählen seit dem Zähler-Fix
     // suchabhängig und blieben sonst beim ungefilterten Stand stehen.
     // renderAnweisungen() muss mit: der Abschnitt steht im selben Reiter und
     // bliebe bei aktiver Suche sonst ungefiltert stehen — mit einem Zähler, der
     // die volle Zahl nennt, während daneben gefilterte Bausteine liegen.
-    // renderRanking() und renderBeispieldaten() aus demselben Grund seit
-    // 25.07.2026 dazu: sie waren die letzten zwei Abschnitte dieses Reiters, die
-    // bei jeder Suche unverändert stehenblieben.
+    // renderRanking() seit 25.07.2026 aus demselben Grund dazu.
+    // renderBeispieldaten() steht NICHT mehr hier: der Abschnitt gehört seit dem
+    // Vier-Reiter-Umbau zum Daten-Reiter und wird von _vlSearch.daten gerufen.
     window._vlSearch.bausteine = function () {
-      renderCats(); renderBausteine(); renderRanking(); renderBeispieldaten(); renderAnweisungen();
+      renderCats(); renderBausteine(); renderRanking(); renderAnweisungen();
     };
     })();
 
@@ -2215,7 +2520,9 @@
       if (_hashLock) return;
       const m = (location.hash || '').match(/^#a\/(.+)$/);
       if (!m) {
-        if (/^#(b\/|bk-data-|bk-pa-)/.test(location.hash || '')) return;   /* E11: Hash gehört dem Bausteine-Tab */
+        /* Hash gehört einem anderen Reiter: #b/ und #bk-pa- dem Code-Reiter,
+           #bk-data- und #bild- dem Daten-Reiter, #paket- dem Paket-Reiter. */
+        if (/^#(b\/|bk-data-|bk-pa-|bild-|paket-)/.test(location.hash || '')) return;
         const ov = document.getElementById('modal-overlay');
         if (ov && ov.classList.contains('open')) closeModal();
         return;
@@ -2304,13 +2611,435 @@
     window._vlSearch.assets = applyAssetSearch;
     })();
 
-    /* Aktiven Tab initial mit der richtigen Modal-Config versorgen.
-       Bedingung identisch zur Reiter-Vorwahl oben — ?f= ist auch hier entfallen. */
+    /* ===== MODUL: BILDER (Reiter „Daten", zweiter Abschnitt) =====
+       Kein Detail-Modal: eine Bildkarte trägt alles, was man vor dem Herunterladen
+       wissen muss — Vorschau, Motivbeschreibung, Masse, Lizenz, Urheber. Ein Modal
+       darüber wäre ein Klick ohne neuen Inhalt. Deshalb auch kein Eintrag in
+       window._vlCfg. */
     (function () {
-      const qs = new URLSearchParams(location.search);
-      const wantsAssets = qs.get('tab') === 'assets' || qs.has('a') || /^#a\//.test(location.hash || '');
-      window.ModalConfig = window._vlCfg[wantsAssets ? 'assets' : 'bausteine'];
-      window.RatingConfig = { type: wantsAssets ? 'asset' : 'baustein' };
+    /* Suchfeld-Heuhaufen: genau das, was auf der Karte lesbar ist — Name,
+       Beschreibung, Schlagworte, Format, Lizenz, Urheber. Gleicher Zuschnitt wie
+       bei den Beispieldaten nebenan. */
+    function bildMatchesSearch(b) {
+      const q = (state.search || '').trim();
+      if (!q) return true;
+      const terms = q.split(/\s+/).filter(Boolean);
+      const hay = (b.name + ' ' + (b.beschreibung || '') + ' '
+        + (Array.isArray(b.tags) ? b.tags.join(' ') : '') + ' ' + (b.format || '') + ' '
+        + (b.lizenz || '') + ' ' + (b.urheber || '')).toLowerCase();
+      return terms.every(t => hay.includes(t));
+    }
+
+    /* Masse der VORSCHAU-Datei — gerechnet, nicht getippt.
+       Die Vorschauen der Fotos sind auf die längste Kante 400 skaliert (so steht
+       es im Kopf von data/bilder.js); breite/hoehe im Datensatz beschreiben die
+       grosse Datei. Aus beidem folgt die Vorschaugrösse eindeutig. Nachgemessen
+       am 25.07.2026 gegen die WebP-Dateiköpfe aller neun Vorschauen: alle neun
+       Paare stimmen auf den Pixel.
+       Die zwei Test-SVGs haben KEINE eigene Vorschau (vorschau === datei) — dort
+       sind breite/hoehe schon die richtigen Werte, und ein Herunterrechnen wäre
+       schlicht falsch. Das ist die Bedingung, nicht das Format: sie prüft, was
+       tatsächlich gilt, statt aus 'SVG' zu schliessen. */
+    const BILD_VORSCHAU_KANTE = 400;
+    function vorschauMasse(b) {
+      if (b.vorschau === b.datei) return { w: b.breite, h: b.hoehe };
+      const f = BILD_VORSCHAU_KANTE / Math.max(b.breite, b.hoehe);
+      return { w: Math.round(b.breite * f), h: Math.round(b.hoehe * f) };
+    }
+
+    /* alt-Text = der erste Satz der Beschreibung. Der beschreibt in allen elf
+       Einträgen das MOTIV; der Rest der Beschreibung ist Verwendungsrat („nimm es,
+       wenn …") und gehört nicht in ein alt-Attribut, das jemand vorgelesen bekommt.
+       Fällt der Schnitt aus, steht die ganze Beschreibung drin — nie ein leeres alt. */
+    function bildAltText(b) {
+      const t = String(b.beschreibung || '').trim();
+      const m = t.match(/^(.+?\.)(\s|$)/);
+      return (m ? m[1] : t) || b.name;
+    }
+
+    function fmtBildBytes(n) {
+      if (n < 1024) return n + ' B';
+      if (n < 1024 * 1024) return (n / 1024).toFixed(1).replace('.', ',') + ' KB';
+      return (n / (1024 * 1024)).toFixed(1).replace('.', ',') + ' MB';
+    }
+
+    function bildCardHtml(b) {
+      // „Neu" kommt aus data/seit.js (istNeu in base.js), nicht aus den Daten.
+      const neuFlagHtml = (typeof istNeu === 'function' && istNeu('BILDER', b.id)) ? '<span class="card-neu-flag">Neu</span>' : '';
+      const vs = vorschauMasse(b);
+      const tagsHtml = (b.tags || []).map(t => `<span class="bild-tag">${escHtml(t)}</span>`).join('');
+      /* Lizenzname verlinkt, WENN es eine Lizenz-URL gibt. Die zwei Test-SVGs
+         haben keine (lizenzUrl: null) — dort steht der Lizenzsatz als Text, statt
+         eine Adresse zu erfinden. Gleiches bei `quelle`. */
+      const lizenzHtml = b.lizenzUrl
+        ? `<a href="${escHtml(b.lizenzUrl)}" target="_blank" rel="noopener">${escHtml(b.lizenz)}</a>`
+        : escHtml(b.lizenz);
+      const quelleHtml = b.quelle
+        ? ` · <a href="${escHtml(b.quelle)}" target="_blank" rel="noopener">Quelle ansehen</a>`
+        : '';
+      return `
+        <article class="bild-card" id="bild-${b.id}" data-id="${b.id}">
+          <figure class="bild-vorschau">
+            <img src="${escHtml(b.vorschau)}" width="${vs.w}" height="${vs.h}" loading="lazy" decoding="async" alt="${escHtml(bildAltText(b))}">
+          </figure>
+          <div class="bild-body">
+            <div class="bild-kopf">
+              <span class="bild-name">${escHtml(b.name)}</span>
+              ${neuFlagHtml}
+              ${vlFavBtnHtml(b.id, 'bild', b.name)}
+            </div>
+            <p class="bild-desc">${escHtml(b.beschreibung)}</p>
+            <div class="bild-facts">
+              <span>${escHtml(b.format)}</span>
+              <span>${b.breite} × ${b.hoehe} px</span>
+              <span>${escHtml(fmtBildBytes(b.bytes))}</span>
+            </div>
+            <div class="bild-tags">${tagsHtml}</div>
+            <div class="bild-lizenz">
+              <span class="bild-lizenz-label">Lizenz &amp; Herkunft</span>
+              <span class="bild-lizenz-wert">${lizenzHtml}${quelleHtml}</span>
+              <span class="bild-urheber">Urheber: ${escHtml(b.urheber)}</span>
+            </div>
+            <div class="bild-actions">
+              <a class="lib-btn -primary" href="${escHtml(b.datei)}" download>${LU.download}Grosse Datei laden<span class="sr-only"> — ${escHtml(b.name)}</span></a>
+            </div>
+          </div>
+        </article>`;
+    }
+
+    /* Reiter-Zähler „Daten <n>" (.vl-count). Der Reiter trägt ZWEI Sammlungen,
+       also zählt er beide zusammen — Beispieldateien und Bilder. Die Trefferzahl
+       der Beispieldaten kommt aus deren eigenem Heuhaufen (window._vlBeispieldatenTreffer),
+       damit Versprechen und Lieferung dieselbe Quelle haben.
+       Kein `tab-count`-Klassenname: den prüft tools/qa/index.mjs zaehler gegen die
+       Kinder von #bk-grid, und diese Pille zählt eine andere Menge. */
+    function updateDatenTabCount() {
+      const el = document.getElementById('vl-count-daten');
+      if (!el) return;
+      const q = (state.search || '').trim();
+      const gesamt = BEISPIELDATEN.length + BILDER.length;
+      const treffer = (typeof window._vlBeispieldatenTreffer === 'function' ? window._vlBeispieldatenTreffer() : 0)
+        + BILDER.filter(bildMatchesSearch).length;
+      el.textContent = q ? `${treffer} von ${gesamt}` : String(gesamt);
+      el.hidden = false;
+    }
+
+    function renderBilder() {
+      const host = document.getElementById('bild-grid');
+      if (!host) return;
+      const q = (state.search || '').trim();
+      const list = BILDER.filter(bildMatchesSearch);
+      host.innerHTML = list.length
+        ? list.map(bildCardHtml).join('')
+        : `<p class="vl-grid-empty">Kein Bild passt zu „${escHtml(q)}“.</p>`;
+      /* Zähler nennt IMMER die angezeigte Zahl. Die Bestandszahlen kommen aus
+         BILDER_STATS — gerechnet in data/bilder.js, hier nur durchgereicht. */
+      const c = document.getElementById('bilder-count');
+      if (c) c.textContent = q
+        ? `${list.length} von ${BILDER_STATS.total} Bildern passen zu „${q}“`
+        : `${BILDER_STATS.total} Bilder · ${BILDER_STATS.webp} Fotos + ${BILDER_STATS.svg} Testbilder`;
+      const hint = document.getElementById('bild-hinweis');
+      if (hint) hint.textContent = 'Die Fotos stehen unter der Unsplash License: kommerzielle Nutzung erlaubt, Namensnennung nicht verlangt. Trotzdem steht der Urheber an jeder Karte. Die zwei Testbilder sind Eigenarbeit dieses Repos, die Marken darin sind erfunden — kein Kundenmaterial.';
+      updateDatenTabCount();
+    }
+
+    // ===== DEEP-LINK: vorlagen.html?bild=<id> bzw. #bild-<id> =====
+    /* Kein Modal, also auch kein _hashLock und kein buildHash: die Karte trägt
+       alles, der Link fährt sie nur an und hebt sie hervor. Machart wie beim
+       #bk-pa-Zweig der Projektanweisungen. */
+    function applyBildDeepLink(fromLoad) {
+      if (fromLoad) {
+        try {
+          const v = new URLSearchParams(location.search).get('bild');
+          if (v && !location.hash) history.replaceState(null, '', location.pathname + location.search + '#bild-' + encodeURIComponent(v));
+        } catch (e) {}
+      }
+      const m = (location.hash || '').match(/^#bild-(.+)$/);
+      if (!m) return;
+      let id;
+      try { id = decodeURIComponent(m[1]); } catch (e) { return vlDeepLinkMiss('bild'); }
+      const el = document.getElementById('bild-' + id);   // renderBilder() lief beim Init
+      if (!el) return vlDeepLinkMiss('bild');
+      el.scrollIntoView({ behavior: window.scrollBehavior(), block: 'center' });
+      el.classList.add('-highlight');
+      setTimeout(() => el.classList.remove('-highlight'), 2400);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const ic = document.getElementById('bilder-ic');
+      if (ic) ic.innerHTML = LU.image;
+      renderBilder();
+      applyBildDeepLink(true);
+      window.addEventListener('hashchange', () => applyBildDeepLink(false));
+    });
+
+    /* Der Daten-Reiter rendert BEIDE Abschnitte neu, wenn die Suche läuft — sonst
+       bliebe der Nachbarabschnitt ungefiltert stehen, mit einem Zähler, der die
+       volle Zahl nennt. Genau der Fehler, den die anderen Reiter am 25.07.2026
+       abgelegt haben. */
+    window._vlSearch.daten = function () {
+      if (typeof window._vlRenderBeispieldaten === 'function') window._vlRenderBeispieldaten();
+      renderBilder();
+    };
+    })();
+
+    /* ===== MODUL: PAKETE (eigener Reiter) =====
+       Auch hier kein Detail-Modal: die Karte zeigt Inhalt, Dateien und Verweise
+       vollständig, und die einzige Aktion ist der Download. */
+    (function () {
+    function paketById(id) { return PAKETE.find(p => p.id === id); }
+
+    function paketMatchesSearch(p) {
+      const q = (state.search || '').trim();
+      if (!q) return true;
+      const terms = q.split(/\s+/).filter(Boolean);
+      const hay = (p.name + ' ' + (p.kurz || '') + ' ' + (p.wofuer || '') + ' '
+        + (Array.isArray(p.inhalt) ? p.inhalt.join(' ') : '') + ' '
+        + (Array.isArray(p.tags) ? p.tags.join(' ') : '')).toLowerCase();
+      return terms.every(t => hay.includes(t));
+    }
+
+    /* Der Anzeigename eines Verweises kommt AUS DEM VERWEIS (v.name) — nicht aus
+       der Zielsammlung. Diese Seite lädt SKILLS und PROMPTS bewusst nicht vor
+       (e9:04, preload.promptsUndef), und ein Nachschlagen würde sie dazu zwingen.
+       Der LINK dagegen wird aus `typ` über GSEARCH_GROUPS gebaut: die Registry
+       kennt jede Deep-Link-Form, ohne dass Daten geladen sein müssten.
+       Ein unbekannter typ bekommt keinen toten Link, sondern eine reine Textzeile. */
+    function verweisHtml(v) {
+      const g = (typeof GSEARCH_GROUPS !== 'undefined')
+        ? GSEARCH_GROUPS.find(x => x.key === v.typ) : null;
+      const label = `${escHtml(v.name)} <span class="sr-only">(${escHtml((typeof DS_TYPE_LABEL !== 'undefined' && DS_TYPE_LABEL[v.typ]) || v.typ)})</span>`;
+      if (!g) return `<span class="pk-tag">${escHtml(v.name)}</span>`;
+      let href = '#';
+      try { href = g.href({ id: v.id }); } catch (e) { return `<span class="pk-tag">${escHtml(v.name)}</span>`; }
+      return `<a class="lib-btn" href="${escHtml(href)}">${label}</a>`;
+    }
+
+    function paketCardHtml(p) {
+      const neuFlagHtml = (typeof istNeu === 'function' && istNeu('PAKETE', p.id)) ? '<span class="card-neu-flag">Neu</span>' : '';
+      const dateien = p.dateien || [];
+      const inhalt = p.inhalt || [];
+      const verweise = p.verweise || [];
+      const tagsHtml = (p.tags || []).map(t => `<span class="pk-tag">${escHtml(t)}</span>`).join('');
+      /* Angezeigt wird der Pfad OHNE den `ordner`-Präfix — also genau so, wie die
+         Datei später im ZIP liegt. Der volle repo-relative Pfad ist eine Angabe
+         über dieses Repo, nicht über das Paket. */
+      const kurzPfad = d => (p.ordner && d.indexOf(p.ordner) === 0) ? d.slice(p.ordner.length) : d;
+      /* KEINE Zahl für die Schriftdateien: sie stehen in keiner Datenliste,
+         sondern ergeben sich erst beim Packen aus den url(...)-Angaben in
+         schriften.css. Eine getippte Zahl wäre genau die Sorte, die driftet. */
+      const dazuHtml = `<p class="pk-dazu">+ die Schriftdateien aus <code>assets/fonts/</code>, auf die <code>schriften.css</code> zeigt — sie liegen nicht im Paketordner, sondern kommen beim Packen dazu.</p>`;
+      return `
+        <article class="pk-card" id="paket-${p.id}" data-id="${p.id}">
+          <div class="pk-kopf">
+            <span class="pk-ic">${LU.package}</span>
+            <span class="pk-name">${escHtml(p.name)}</span>
+            ${neuFlagHtml}
+            ${vlFavBtnHtml(p.id, 'paket', p.name)}
+          </div>
+          <p class="pk-kurz">${escHtml(p.kurz)}</p>
+          <p class="pk-wofuer">${escHtml(p.wofuer)}</p>
+          <div class="pk-tags">${tagsHtml}</div>
+          <div class="pk-block">
+            <span class="pk-label">Was drinsteckt</span>
+            <ul class="pk-liste">${inhalt.map(i => `<li>${escHtml(i)}</li>`).join('')}</ul>
+          </div>
+          <div class="pk-block">
+            <span class="pk-label">Im Ordner · ${dateien.length} ${dateien.length === 1 ? 'Datei' : 'Dateien'}</span>
+            <ul class="pk-liste -mono">${dateien.map(d => `<li>${escHtml(kurzPfad(d))}</li>`).join('')}</ul>
+            ${dazuHtml}
+          </div>
+          ${verweise.length ? `
+          <div class="pk-block">
+            <span class="pk-label">Benutzt aus der Bibliothek · ${verweise.length}</span>
+            <div class="pk-verweise">${verweise.map(verweisHtml).join('')}</div>
+          </div>` : ''}
+          <div class="pk-actions">
+            <button type="button" class="lib-btn -primary" data-pk-zip="${escHtml(p.id)}" onclick="downloadPaket(event,'${p.id}')">${LU.download}Paket als ZIP<span class="sr-only"> — ${escHtml(p.name)}</span></button>
+          </div>
+          <p class="pk-status" id="pk-status-${p.id}" role="status" aria-live="polite" hidden></p>
+        </article>`;
+    }
+
+    /* Reiter-Zähler „Pakete <n>" — gleiche Machart wie die drei Nachbarn.
+       Kein `tab-count`-Klassenname (siehe updateBausteineTabCount). */
+    function updatePaketeTabCount() {
+      const el = document.getElementById('vl-count-pakete');
+      if (!el) return;
+      const q = (state.search || '').trim();
+      const treffer = PAKETE.filter(paketMatchesSearch).length;
+      el.textContent = q ? `${treffer} von ${PAKETE_STATS.total}` : String(PAKETE_STATS.total);
+      el.hidden = false;
+    }
+
+    function renderPakete() {
+      const host = document.getElementById('pk-grid');
+      if (!host) return;
+      const q = (state.search || '').trim();
+      const list = PAKETE.filter(paketMatchesSearch);
+      host.innerHTML = list.length
+        ? list.map(paketCardHtml).join('')
+        : `<p class="vl-grid-empty">Kein Paket passt zu „${escHtml(q)}“.</p>`;
+      const c = document.getElementById('pk-count');
+      if (c) c.textContent = q
+        ? `${list.length} von ${PAKETE_STATS.total} ${PAKETE_STATS.total === 1 ? 'Paket' : 'Paketen'} passen zu „${q}“`
+        : `${PAKETE_STATS.total} ${PAKETE_STATS.total === 1 ? 'Paket' : 'Pakete'} · ${PAKETE_STATS.dateien} eigene Dateien + ${PAKETE_STATS.verweise} Verweise`;
+      const hint = document.getElementById('pk-hinweis');
+      if (hint) hint.textContent = 'Ein Paket kopiert nichts doppelt: worauf es verweist, liegt weiter dort, wo es hier ohnehin steht. Die Schriftdateien holt der Packer erst beim Klick — deshalb braucht der Download einen Moment.';
+      updatePaketeTabCount();
+    }
+
+    /* ===== PAKET ALS ZIP =====
+       Muster 1:1 aus downloadStartprojekt (showroom.html:720): erst GitHub-Roh,
+       dann repo-relativ. Die Reihenfolge ist kein Zufall — per file:// geöffnet
+       scheitert fetch auf eigene Dateien hart („URL scheme file is not supported"),
+       die Netz-Adresse trägt dort noch. Wer die Seite von einem Arbeitsstand
+       ausliefert, dessen Änderungen noch nicht auf main sind, bekommt im ZIP den
+       GEPUSHTEN Stand; zum Prüfen des Arbeitsstands raw.githubusercontent.com und
+       github.com per page.route(...abort()) blocken.
+
+       Scheitert auch nur eine Datei, gibt es KEIN ZIP, sondern eine sichtbare
+       Meldung an der Karte. Ein Paket, dessen schriften.css ins Leere zeigt, wäre
+       schlimmer als kein Paket: es läge im Projekt, sähe vollständig aus und die
+       Schriften fehlten trotzdem. */
+    const REPO_RAW = 'https://raw.githubusercontent.com/CeeKay1901/pilot-skillmarkt/main';
+
+    async function fetchBytes(pathRel) {
+      for (let versuch = 0; versuch < 2; versuch++) {
+        for (const url of [REPO_RAW + '/' + pathRel, pathRel]) {
+          try {
+            const r = await fetch(url, { cache: 'no-cache' });
+            if (r.ok) { const b = await r.arrayBuffer(); if (b.byteLength) return new Uint8Array(b); }
+          } catch (e) {}
+        }
+        if (versuch === 0) await new Promise(res => setTimeout(res, 300));
+      }
+      return null;
+    }
+
+    function pkStatus(id, text) {
+      const el = document.getElementById('pk-status-' + id);
+      if (!el) return;
+      el.textContent = text || '';
+      el.hidden = !text;
+    }
+
+    /* Die Schrift-Packliste kommt aus schriften.css SELBST, nicht aus einer
+       zweiten Liste. Begründung ausführlich in data/pakete.js: die Datei nennt
+       ihre Schriften als url('assets/fonts/…'), das ist die einzige Stelle, an der
+       sie stehen, und sie ist maschinell lesbar.
+       Die `verweise` des Pakets taugen dafür NICHT: der ASSETS-Eintrag `inter`
+       führt nur inter-variable.woff2, den Kursiv-Schnitt gibt es dort nicht als
+       eigenen Eintrag — gepackt würden also zwei statt drei Dateien, und die
+       Kursiv-Deklaration im Paket zeigte ins Leere. Gemessen am 25.07.2026:
+       schriften.css nennt drei url(...), data/assets.js kennt davon zwei.
+       Nur repo-relative Pfade werden übernommen; ein http(s)-url() im Paket wäre
+       eine externe Abhängigkeit und gehört nicht in ein ZIP zum Mitnehmen. */
+    function schriftPfadeAus(cssText) {
+      const pfade = [];
+      const re = /url\(\s*['"]?([^'")]+)['"]?\s*\)/g;
+      let m;
+      while ((m = re.exec(cssText)) !== null) {
+        const p = m[1].trim();
+        if (/^(https?:|data:|\/\/)/i.test(p)) continue;
+        if (pfade.indexOf(p) === -1) pfade.push(p);
+      }
+      return pfade;
+    }
+
+    async function downloadPaket(evt, id) {
+      if (evt) evt.stopPropagation();
+      const p = paketById(id);
+      if (!p) return;
+      const btn = document.querySelector(`[data-pk-zip="${CSS.escape(id)}"]`);
+      const label = btn ? btn.innerHTML : '';
+      pkStatus(id, '');
+      if (btn) { btn.disabled = true; btn.textContent = 'lädt …'; }
+
+      const liste = p.dateien || [];
+      const entries = [];
+      const fehlend = [];
+      /* (1) Die eigenen Dateien des Pakets. Im ZIP heissen sie `<id>/` + Pfad ohne
+         `ordner`-Präfix — so steht es im Kopf von data/pakete.js. */
+      for (let i = 0; i < liste.length; i++) {
+        if (btn) btn.textContent = `lädt ${i + 1}/${liste.length} …`;
+        const data = await fetchBytes(liste[i]);
+        if (!data) { fehlend.push(liste[i]); continue; }
+        const rel = (p.ordner && liste[i].indexOf(p.ordner) === 0) ? liste[i].slice(p.ordner.length) : liste[i];
+        entries.push({ name: p.id + '/' + rel, data, rel });
+      }
+
+      /* (2) Die Schriftdateien, die schriften.css im Paket anfordert. Gelesen wird
+         die eben GEHOLTE Datei, nicht die auf der Platte — dieselbe Fassung, die
+         im ZIP landet, bestimmt auch die Packliste. */
+      const cssEintrag = entries.find(e => /(^|\/)schriften\.css$/.test(e.rel));
+      if (cssEintrag) {
+        let pfade = [];
+        try { pfade = schriftPfadeAus(new TextDecoder().decode(cssEintrag.data)); } catch (e) { pfade = []; }
+        if (!pfade.length) {
+          // Kein stiller Ausfall: eine schriften.css ohne auffindbare url(...) heisst,
+          // dass die Packliste kaputt ist — nicht, dass keine Schrift gebraucht wird.
+          fehlend.push('schriften.css: keine Schriftdatei gefunden (url(…) fehlt oder ist extern)');
+        }
+        for (let i = 0; i < pfade.length; i++) {
+          if (btn) btn.textContent = `lädt Schrift ${i + 1}/${pfade.length} …`;
+          const data = await fetchBytes(pfade[i]);
+          if (data) entries.push({ name: p.id + '/' + pfade[i], data, rel: pfade[i] });
+          else fehlend.push(pfade[i]);
+        }
+      }
+
+      if (btn) { btn.disabled = false; btn.innerHTML = label; }
+      if (fehlend.length) {
+        pkStatus(id, `Diese Dateien konnten nicht geladen werden: ${fehlend.join(', ')}. Deshalb gibt es kein ZIP — ein halbes Paket wäre schlimmer als keines. Öffne die Seite über einen Server oder über den Marketplace im Netz, dann klappt es.`);
+        showToast('Download abgebrochen — es fehlen Dateien.');
+        return;
+      }
+      triggerDownload(makeZip(entries.map(e => ({ name: e.name, data: e.data }))), p.id + '.zip');
+      pkStatus(id, `${p.id}.zip enthält ${entries.length} Dateien — die ${liste.length} aus dem Paketordner plus die Schriften, die schriften.css anfordert.`);
+      showToast(`${p.id}.zip heruntergeladen (${entries.length} Dateien) ⬇`);
+    }
+    window.downloadPaket = downloadPaket;
+
+    // ===== DEEP-LINK: vorlagen.html?paket=<id> bzw. #paket-<id> =====
+    function applyPaketDeepLink(fromLoad) {
+      if (fromLoad) {
+        try {
+          const v = new URLSearchParams(location.search).get('paket');
+          if (v && !location.hash) history.replaceState(null, '', location.pathname + location.search + '#paket-' + encodeURIComponent(v));
+        } catch (e) {}
+      }
+      const m = (location.hash || '').match(/^#paket-(.+)$/);
+      if (!m) return;
+      let id;
+      try { id = decodeURIComponent(m[1]); } catch (e) { return vlDeepLinkMiss('paket'); }
+      const el = document.getElementById('paket-' + id);   // renderPakete() lief beim Init
+      if (!el) return vlDeepLinkMiss('paket');
+      el.scrollIntoView({ behavior: window.scrollBehavior(), block: 'center' });
+      el.classList.add('-highlight');
+      setTimeout(() => el.classList.remove('-highlight'), 2400);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const ic = document.getElementById('pk-ic');
+      if (ic) ic.innerHTML = LU.package;
+      renderPakete();
+      applyPaketDeepLink(true);
+      window.addEventListener('hashchange', () => applyPaketDeepLink(false));
+    });
+
+    window._vlSearch.pakete = renderPakete;
+    })();
+
+    /* Aktiven Reiter initial mit der richtigen Modal-Config versorgen.
+       Nur zwei Reiter haben eine (Bausteine, Design-Assets); für „Daten" und
+       „Pakete" bleibt die des Standard-Reiters stehen, weil dort kein Modal
+       geöffnet werden kann. RatingConfig folgt dagegen dem Reiter — es ist der
+       Seiten-Default, und jeder Stern übergibt seinen Typ zusätzlich explizit. */
+    (function () {
+      const start = vlStartTab();
+      window.ModalConfig = window._vlCfg[start === 'assets' ? 'assets' : 'bausteine'];
+      window.RatingConfig = { type: (VL_TABS[start] || VL_TABS.bausteine).rating };
     })();
 
     /* ===== E12: EIN Suchfeld für den aktiven Tab verdrahten =====
