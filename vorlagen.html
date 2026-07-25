@@ -188,17 +188,100 @@
        Seite durch die Schwarz-Gelb-Offset-Sprache der Startseite. Kleine
        Kacheln (Icon-Zellen, Hex-Swatches) behalten bewusst ihre dezenten
        Hovers — kein Offset-Schatten auf Miniatur-Elementen. */
-    .font-card, .pal-card, .pat-card, .baustein-card, .bk-data-card {
+    /* .asset-card steht hier mit in der Liste, weil die Icon-Set-Karten seit der
+       gemeinsamen Karte (Stufe 5b) dieselbe Hülle tragen wie Schriften, Paletten
+       und Muster — sie hatten als einzige der vier Asset-Arten keinen Offset-Hover. */
+    .asset-card, .font-card, .pal-card, .pat-card, .baustein-card, .bk-data-card {
       transition: transform .22s cubic-bezier(.2,.7,.2,1), box-shadow .22s ease, border-color .22s ease;
     }
-    .font-card:hover, .pal-card:hover, .pat-card:hover, .baustein-card:hover, .bk-data-card:hover {
+    .asset-card:hover, .font-card:hover, .pal-card:hover, .pat-card:hover, .baustein-card:hover, .bk-data-card:hover {
       transform: translate(-2px, -2px);
       border-color: var(--c-black);
       box-shadow: 6px 6px 0 var(--c-yellow);
     }
     @media (prefers-reduced-motion: reduce) {
-      .font-card, .pal-card, .pat-card, .baustein-card, .bk-data-card { transition: none; }
-      .font-card:hover, .pal-card:hover, .pat-card:hover, .baustein-card:hover, .bk-data-card:hover { transform: none; }
+      .asset-card, .font-card, .pal-card, .pat-card, .baustein-card, .bk-data-card { transition: none; }
+      .asset-card:hover, .font-card:hover, .pal-card:hover, .pat-card:hover, .baustein-card:hover, .bk-data-card:hover { transform: none; }
+    }
+
+    /* ============================================================
+       EINE KARTE FÜR ALLE VIER ASSET-ARTEN (Stufe 5b, 25.07.2026)
+       ============================================================
+       Bis hierher haben vier Renderer vier Karten gebaut — fontCardHtml,
+       palCardHtml, patCardHtml und ein Inline-Template in renderIconsets. Seit
+       Stufe 5a sahen sie sich zum Verwechseln ähnlich, pflegten ihren Aufbau
+       aber jede für sich. Jetzt rendert assetCardHtml(assetModel(a)) alle 30.
+
+       „Eine Karte" heisst: EINE Hülle (.asset-card), EIN Kopf, EINE Bedienleiste.
+       NICHT: eine Vorschau. Eine Schrift zeigt eine Schriftprobe, eine Palette
+       Farbfelder, ein Muster seine Fläche — das ist der Unterschied, um den es
+       geht, und er gehört sichtbar. Deshalb ein typabhängiger Slot (.ac-vorschau)
+       oben und alles Gemeinsame darunter.
+
+       WARUM DIE ALTEN TYPKLASSEN AUF DER HÜLLE BLEIBEN (nicht wegräumen):
+       .font-card / .pal-card / .pat-card / .iconset-card sehen nach Altlast aus,
+       sind aber zwei Dinge zugleich —
+         (1) sie tragen Rahmen, Hintergrund und Hover aus shared/base.css,
+         (2) tests/e6-bibliothek.cjs zählt die vier Raster GENAU über sie
+             (#font-grid .font-card = 9, #pal-grid .pal-card = 7,
+              #pat-grid .pat-card = 10, #iconset-grid .iconset-card = 4),
+             und e6:06 klickt auf `#pal-grid .pal-card .swatch`.
+       Wer sie entfernt, macht die Prüfung blind, ohne dass etwas rot wird —
+       die Selektoren träfen dann schlicht nichts mehr. Also: bleiben.
+
+       Die Hülle setzt Polsterung und Abstand auf 0 und überlässt beides den
+       zwei Zonen darunter; damit sitzt die Musterfläche randlos an der Kante,
+       während Schrift-, Paletten- und Icon-Set-Karten ihre Innenränder behalten.
+       `article.asset-card` statt `.asset-card`, damit die Regel die
+       gleichspezifischen .font-card/.pal-card/.iconset-card aus base.css schlägt. */
+    article.asset-card {
+      display: flex; flex-direction: column; gap: 0; padding: 0; overflow: hidden;
+      scroll-margin-top: calc(var(--header-h) + 2.4rem);
+    }
+    /* Deep-Link-Hervorhebung für ALLE vier Arten — base.css kennt sie nur für
+       .font-card und .pal-card; bei Mustern und Icon-Sets blieb ?a=<id> bisher
+       ohne sichtbare Markierung. */
+    article.asset-card.-highlight { border-color: var(--c-yellow); box-shadow: 0 0 0 3px rgba(255,224,94,.45); }
+    .ac-vorschau { display: flex; flex-direction: column; gap: 1.2rem; padding: 1.8rem 2rem 0; }
+    .pat-card .ac-vorschau { padding: 0; }
+    .ac-body { display: flex; flex-direction: column; gap: .9rem; padding: 1.6rem 2rem 1.6rem; }
+    .ac-vorschau + .ac-body { padding-top: 1.2rem; }
+    .ac-kopf { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+    .ac-name { font-size: 1.7rem; font-weight: 700; letter-spacing: -.01em; overflow-wrap: anywhere; }
+    .ac-badge {
+      font-family: var(--font-mono); font-size: 1.05rem; font-weight: 600;
+      letter-spacing: .08em; text-transform: uppercase; color: var(--c-gray-m); white-space: nowrap;
+    }
+    /* ===== stimmung UND beschreibung auf derselben Karte =====
+       ENTSCHEIDUNG: beide stehen da, in zwei klar verschiedenen Registern —
+       stimmung oben in Fließtextgröße und Textfarbe, beschreibung darunter
+       kleiner und grau, tags darunter als Mono-Pillen. Drei Register, drei
+       Rollen: „wie es wirkt" · „was es ist" · „wonach du suchst".
+       Warum stimmung ZUERST und nicht umgekehrt: stimmung ist ein Satz und
+       liest sich in einem Blick — beschreibung sind zwei bis drei Sätze. Kurzer
+       Aufhänger, dann der Beleg; die umgekehrte Reihenfolge hätte jede Karte mit
+       einem 200-Zeichen-Block begonnen, besonders im dreispaltigen Muster-Raster.
+       Warum nicht gekürzt/aufklappbar: eine abgeschnittene beschreibung wäre für
+       die Suche eine Falle — man findet die Karte über ein Wort, das man dann
+       nicht sieht. Der Größen- und Farbsprung ist die Unterscheidung, nicht das
+       Verstecken. Vollständig steht beides auch im Detail-Modal. */
+    .ac-stimmung { font-size: 1.4rem; line-height: 1.55; color: var(--c-ink-body); margin: 0; }
+    .ac-beschreibung { font-size: 1.25rem; line-height: 1.6; color: var(--c-gray-m); margin: 0; }
+    .ac-tags { display: flex; gap: .5rem; flex-wrap: wrap; }
+    .ac-tag {
+      font-family: var(--font-mono); font-size: 1.1rem; color: var(--c-gray-m);
+      border: 1px solid var(--line-strong); border-radius: var(--r-pill); padding: .2rem .8rem;
+    }
+    .ac-foot { display: flex; align-items: center; gap: .8rem; flex-wrap: wrap; margin-top: .2rem; }
+    /* Die Lizenz-Plakette darf auf der Karte umbrechen: seit die Paletten-Lizenz
+       aus den Daten kommt („Farbwerte sind nicht schutzfähig — frei nutzbar."),
+       ist sie 47 Zeichen lang. Mit dem geerbten white-space: nowrap aus base.css
+       hätte sie bei 320 px waagerecht aus der Karte geschoben. */
+    .asset-card .lib-lic { white-space: normal; overflow-wrap: anywhere; }
+    @media (max-width: 640px) {
+      .ac-vorschau { padding: 1.6rem 1.4rem 0; }
+      .pat-card .ac-vorschau { padding: 0; }
+      .ac-body { padding: 1.4rem 1.4rem 1.4rem; }
     }
 
     /* ===== „Merken“-Stern in den Kartenköpfen =====
@@ -1459,12 +1542,15 @@
       if (/Open Font License/i.test(lic)) return 'OFL 1.1';
       return lic;
     }
+    /* Alle vier Zweige lesen jetzt aus den Daten. Bei Paletten stand hier bis
+       25.07.2026 der getippte Satz „Farbwerte frei nutzbar" — die einzige Lizenz
+       der Seite, die nicht aus data/assets.js kam. Sie steht dort seit dem
+       gemeinsamen Modell (ref.lizenz) und wird hier nur noch durchgereicht;
+       gekürzt wird ausschliesslich bei Schriften, wo „SIL Open Font License 1.1"
+       in jeder Plakette gleich lautet und „OFL 1.1" dasselbe sagt. */
     function assetLicenseLabel(item) {
       if (item.typ === 'font') return shortLic(item.ref.lizenz);
-      if (item.typ === 'iconset') return item.ref.lizenz;
-      if (item.typ === 'pattern') return item.ref.lizenz;
-      if (item.typ === 'palette') return 'Farbwerte frei nutzbar';
-      return '';
+      return item.ref.lizenz || '';
     }
     function typLabel(item) {
       if (item.typ === 'font') return 'Schrift';
@@ -1498,7 +1584,32 @@
     // ===== COPY-HELFER =====
     function copyFontFace(id) { const f = fontById(id); if (f) copyToClipboard(f.fontFaceCss, '@font-face kopiert: ' + f.name); }
     function copyFontPrompt(id) { const f = fontById(id); if (f) copyToClipboard(f.claudePrompt, 'Prompt kopiert — in Claude einfügen'); }
-    function copyPatternCss(id) { const p = patById(id); if (p) copyToClipboard(p.css, 'CSS kopiert: ' + p.name); }
+    /* ===== Muster-CSS, das AUSSERHALB dieses Repos funktioniert =====
+       p.css trägt den repo-relativen Pfad (url('assets/patterns/dots.svg')) —
+       richtig für die Vorschau auf dieser Seite, tot in jedem fremden Projekt.
+       Der Knopf verspricht aber „einfügen und es geht". Deshalb wird die
+       portable Fassung ZUR LAUFZEIT gebaut: derselbe css-String, nur der Pfad
+       durch p.dataUri ersetzt (der eingebettete data:-URI des SVG). Kein
+       zweiter CSS-String in den Daten, der auseinanderlaufen könnte.
+
+       ACHTUNG, hier ist schon einmal etwas kaputtgegangen: p.css benutzt
+       EINFACHE Anführungszeichen. Wer beim Ersetzen url("…") schreibt, zerlegt
+       jedes style="…"-Attribut, in das der Schnipsel eingefügt wird — der
+       Browser bricht das Attribut am ersten " ab, und die Regel kommt gar nicht
+       erst an. Deshalb wird ausschliesslich der Pfad ZWISCHEN den vorhandenen
+       einfachen Anführungszeichen getauscht. Die data:-URIs sind
+       prozentkodiert und enthalten weder ' noch # (geprüft über alle sieben).
+       Ersetzung als Funktion, damit $-Zeichen im URI nicht als $&/$1 gelesen
+       werden.
+
+       Die drei Verläufe haben kein dataUri und brauchen keins — ihr css ist
+       selbsttragend (reine CSS-Verläufe, keine Datei). Sie fallen durch die
+       erste Zeile und bekommen ihr css unverändert. */
+    function patternCssPortabel(p) {
+      if (!p || !p.dataUri) return (p && p.css) || '';
+      return p.css.replace(/url\('[^']*'\)/g, () => "url('" + p.dataUri + "')");
+    }
+    function copyPatternCss(id) { const p = patById(id); if (p) copyToClipboard(patternCssPortabel(p), 'CSS kopiert: ' + p.name); }
     function copyIcon(name) { const i = iconByName(name); if (i) copyToClipboard(i.svg, 'SVG kopiert: ' + name); }
     function copyIconsetPrompt(id) { const s = ICONSETS.find(x => x.id === id); if (s) copyToClipboard(s.claudePrompt, 'Prompt kopiert — in Claude einfügen'); }
     function copyPaletteCss(id) {
@@ -1526,11 +1637,18 @@
     /* Ein Heuhaufen je Asset-Typ, an EINER Stelle definiert: die Render-Funktion
        filtert damit und der Reiter-Zähler zählt damit — Versprechen und Lieferung
        können so nicht auseinanderlaufen. Inhalt jeweils das, was auf der Karte
-       auch wirklich lesbar ist. */
-    function _hayFont(f) { return f.name + ' ' + (f.stimmung || '') + ' ' + (KAT_LABEL[f.kategorie] || f.kategorie); }
-    function _hayIconset(s) { return s.name + ' ' + (s.stil || '') + ' ' + (s.wofuer || '') + ' ' + (s.lizenz || '') + ' Icon-Set'; }
-    function _hayPalette(p) { return p.name + ' ' + (p.stimmung || '') + ' ' + p.farben.map(c => c.name).join(' '); }
-    function _hayPattern(p) { return p.name + ' ' + (p.stimmung || '') + ' ' + (p.typ === 'gradient' ? 'Verlauf' : 'Muster'); }
+       auch wirklich lesbar ist.
+       _hayGemein trägt nach, was seit dem gemeinsamen Modell auf JEDER Karte
+       steht: beschreibung und tags. Beide waren bis 25.07.2026 unsuchbar,
+       obwohl tags genau dafür gedacht sind.
+       Einzige Ausnahme von der Karten-Regel: wofuer bei Icon-Sets steht nur im
+       Modal, nicht auf der Karte. Der Heuhaufen führt es weiter mit — die
+       Alternative wäre, Suchtreffer wegzunehmen, die es heute schon gibt. */
+    function _hayGemein(x) { return ' ' + (x.beschreibung || '') + ' ' + (Array.isArray(x.tags) ? x.tags.join(' ') : ''); }
+    function _hayFont(f) { return f.name + ' ' + (f.stimmung || '') + ' ' + (KAT_LABEL[f.kategorie] || f.kategorie) + _hayGemein(f); }
+    function _hayIconset(s) { return s.name + ' ' + (s.stil || '') + ' ' + (s.wofuer || '') + ' ' + (s.lizenz || '') + ' Icon-Set' + _hayGemein(s); }
+    function _hayPalette(p) { return p.name + ' ' + (p.stimmung || '') + ' ' + p.farben.map(c => c.name).join(' ') + _hayGemein(p); }
+    function _hayPattern(p) { return p.name + ' ' + (p.stimmung || '') + ' ' + (p.typ === 'gradient' ? 'Verlauf' : 'Muster') + _hayGemein(p); }
     // Alle such-abhängigen Asset-Abschnitte neu rendern (vom gemeinsamen Suchfeld
     // aufgerufen). renderIconGrid und renderBrand laufen mit, obwohl sie NICHT
     // filtern: sie blenden ihren „hier filtert die Suche nicht"-Hinweis ein bzw.
@@ -1562,6 +1680,133 @@
       el.hidden = false;
     }
 
+    /* ================================================================
+       EINE KARTE FÜR ALLE VIER ASSET-ARTEN
+       ================================================================
+       assetCardHtml(m) mit m = assetModel(a) rendert Schriften, Paletten,
+       Muster/Verläufe und Icon-Sets. Vorher: vier Renderer (fontCardHtml,
+       palCardHtml, patCardHtml, Inline-Template in renderIconsets), die seit
+       Stufe 5a dasselbe bauten und es viermal pflegten.
+
+       Gemeinsam sind Hülle, Kopf (Name · Typ-Badge · Merken-Stern), stimmung,
+       beschreibung, tags, Lizenz und der Details-Knopf. Typabhängig sind genau
+       zwei Dinge: die Vorschau und die Hauptaktion. Das ist die Trennlinie —
+       eine Schriftprobe ist keine Farbfeld-Reihe, und „woff2 herunterladen" ist
+       kein „CSS kopieren". Alles andere ist überall dasselbe.
+
+       Die Typklasse (.font-card/.pal-card/.pat-card/.iconset-card) bleibt auf
+       der Hülle. Begründung ausführlich im CSS-Block oben: sie trägt die Optik
+       aus base.css UND ist der Zählselektor von tests/e6-bibliothek.cjs
+       (9/7/10/4). Wer sie als Altlast entfernt, macht die Prüfung still blind.
+
+       Der Details-Knopf ist überall ein <button>, nie ein <a>: e6:03 verlangt in
+       #iconset-grid GENAU vier externe a[target=_blank] — das sind die vier
+       „Zur Bibliothek"-Links. Ein Link mehr pro Karte machte daraus acht. */
+    const ASSET_TYP_KLASSE = { font: 'font-card', palette: 'pal-card', pattern: 'pat-card', iconset: 'iconset-card' };
+
+    /* Modell zu einer id — die Render-Funktionen laufen weiter über die vier
+       Quell-Arrays (der Schrift-Kategorie-Filter und die Abschnittszähler
+       brauchen sie), holen die gemeinsame Form aber hier ab, statt sie selbst
+       zusammenzusetzen. 30 Einträge, ASSETS.find ist dabei nicht messbar. */
+    function assetModelById(id) { const a = assetById(id); return a ? assetModel(a) : null; }
+
+    /* Kopf-Badge: sagt in einem Wort, was für ein Ding die Karte zeigt.
+       Schriften nennen ihre Kategorie (Sans/Serif/Display/Mono — danach filtern
+       die Pillen darüber), Icon-Sets ihre reale Set-Größe, Muster und Verläufe
+       ihre Unterart, Paletten schlicht ihre Gattung. */
+    function assetBadgeText(m) {
+      if (m.typ === 'font') return KAT_LABEL[m.kategorie] || m.kategorie || '';
+      if (m.typ === 'iconset') return `${m.ref.anzahl.toLocaleString('de-DE')} Icons`;
+      if (m.typ === 'pattern') return m.kategorie === 'gradient' ? 'Verlauf' : 'Muster';
+      return 'Palette';
+    }
+
+    /* Die „wie es wirkt"-Zeile. Schriften, Paletten und Muster nennen sie
+       stimmung, Icon-Sets stil — dasselbe Register, anderer Feldname in den
+       Daten. Hier einmal zusammengeführt statt in vier Templates. */
+    function assetStimmungText(m) { return m.typ === 'iconset' ? (m.ref.stil || '') : (m.ref.stimmung || ''); }
+
+    /* Der typabhängige Vorschau-Slot.
+       Icon-Sets bekommen bewusst KEINEN: die vier Sets liegen nicht als Dateien
+       im Repo, nur Lucide ist mit 48 Beispiel-Icons im Icon-Browser darunter
+       vertreten. Eine erfundene Vorschau (etwa Lucide-Icons unter jedem Set)
+       würde behaupten, alle vier sähen gleich aus. Auf der Karte steht damit
+       das, was heute schon dort steht — Name, Set-Größe, Stil, Lizenz. */
+    function assetVorschauHtml(m) {
+      const r = m.ref;
+      if (m.typ === 'font') {
+        return `
+          <div class="ac-vorschau">
+            <div class="ff-preview" id="ff-sample-${m.id}" style="font-family:'${r.fontFamily}',sans-serif;font-size:34px" contenteditable="true" spellcheck="false" role="textbox" aria-label="Beispieltext ${escHtml(m.name)} — editierbar">${escHtml(r.beispieltext)}</div>
+            <div class="ff-controls">
+              ${LU['text-size']}
+              <input type="range" class="ff-slider" id="ff-size-${m.id}" min="12" max="90" value="34" aria-label="Schriftgröße ${escHtml(m.name)}"
+                oninput="document.getElementById('ff-sample-${m.id}').style.fontSize=this.value+'px';document.getElementById('ff-size-val-${m.id}').textContent=this.value+' px'">
+              <span class="ff-size-val" id="ff-size-val-${m.id}">34 px</span>
+            </div>
+          </div>`;
+      }
+      if (m.typ === 'palette') {
+        return `<div class="ac-vorschau">${palSwatchesHtml(r)}${palPairsHtml(r)}</div>`;
+      }
+      if (m.typ === 'pattern') {
+        /* Die Vorschau nimmt weiter den repo-relativen Pfad aus r.css — auf
+           dieser Seite liegt die Datei ja daneben. Portabel gemacht wird erst
+           das, was der Kopieren-Knopf herausgibt (patternCssPortabel). */
+        return `<div class="ac-vorschau"><div class="pat-preview" style="${r.css}"></div></div>`;
+      }
+      return '';
+    }
+
+    /* Die typabhängige Hauptaktion — je Karte das, was heute schon da ist.
+       Sie steht in der gemeinsamen Bedienleiste, nicht mehr im Kartenkopf: bei
+       den Paletten saß „CSS-Variablen" bisher oben neben dem Stern, was den Kopf
+       bei 320 px eng machte und die Bedienung als einzige Karte woanders hatte. */
+    function assetHauptaktionHtml(m) {
+      const r = m.ref;
+      if (m.typ === 'font') {
+        return `<a class="lib-btn -primary" href="${r.file}" download>${LU.download}woff2</a>
+            <button class="lib-btn" onclick="copyFontFace('${m.id}')">${LU.copy}@font-face</button>
+            <button class="lib-btn" onclick="copyFontPrompt('${m.id}')">${LU.ai}Sag Claude</button>`;
+      }
+      if (m.typ === 'palette') {
+        return `<button class="lib-btn -primary" onclick="copyPaletteCss('${m.id}')">${LU.copy}CSS-Variablen</button>`;
+      }
+      if (m.typ === 'pattern') {
+        return `<button class="lib-btn -primary" onclick="copyPatternCss('${m.id}')">${LU.copy}CSS kopieren</button>`;
+      }
+      if (m.typ === 'iconset') {
+        return `<a class="lib-btn -primary" href="${r.quelleUrl}" target="_blank" rel="noopener">${LU.extern}Zur Bibliothek</a>
+            <button class="lib-btn" onclick="copyIconsetPrompt('${m.id}')">${LU.ai}Sag Claude</button>`;
+      }
+      return '';
+    }
+
+    function assetCardHtml(m) {
+      if (!m) return '';
+      const badge = assetBadgeText(m);
+      const stimmung = assetStimmungText(m);
+      const tagsHtml = m.tags.map(t => `<span class="ac-tag">${escHtml(t)}</span>`).join('');
+      return `
+        <article class="asset-card ${ASSET_TYP_KLASSE[m.typ] || ''}" id="asset-${m.id}" data-id="${m.id}" data-typ="${m.typ}">
+          ${assetVorschauHtml(m)}
+          <div class="ac-body">
+            <div class="ac-kopf">
+              <span class="ac-name">${escHtml(m.name)}</span>
+              <span class="vl-kopf-rechts">${badge ? `<span class="ac-badge">${escHtml(badge)}</span>` : ''}${vlFavBtnHtml(m.id, 'asset', m.name)}</span>
+            </div>
+            ${stimmung ? `<p class="ac-stimmung">${escHtml(stimmung)}</p>` : ''}
+            ${m.beschreibung ? `<p class="ac-beschreibung">${escHtml(m.beschreibung)}</p>` : ''}
+            ${tagsHtml ? `<div class="ac-tags">${tagsHtml}</div>` : ''}
+            <div class="ac-foot">
+              <span class="lib-lic">${LU.check}${escHtml(assetLicenseLabel(m))}</span>
+              ${assetHauptaktionHtml(m)}
+              <button class="lib-btn" onclick="openModal('${m.id}')">${LU.artikel}Details</button>
+            </div>
+          </div>
+        </article>`;
+    }
+
     // ===== (a) FONTS =====
     function renderFontCats() {
       const host = document.getElementById('font-cats');
@@ -1579,29 +1824,6 @@
       renderFontCats();
       renderFonts();
     }
-    function fontCardHtml(f) {
-      return `
-        <article class="font-card" id="asset-${f.id}" data-id="${f.id}" data-typ="font">
-          <div class="ff-kopf"><span class="ff-name">${escHtml(f.name)}</span><span class="vl-kopf-rechts"><span class="ff-kat">${KAT_LABEL[f.kategorie] || f.kategorie}</span>${vlFavBtnHtml(f.id, 'asset', f.name)}</span></div>
-          <div class="ff-preview" id="ff-sample-${f.id}" style="font-family:'${f.fontFamily}',sans-serif;font-size:34px" contenteditable="true" spellcheck="false" role="textbox" aria-label="Beispieltext ${escHtml(f.name)} — editierbar">${escHtml(f.beispieltext)}</div>
-          <div class="ff-controls">
-            ${LU['text-size']}
-            <input type="range" class="ff-slider" id="ff-size-${f.id}" min="12" max="90" value="34" aria-label="Schriftgröße ${escHtml(f.name)}"
-              oninput="document.getElementById('ff-sample-${f.id}').style.fontSize=this.value+'px';document.getElementById('ff-size-val-${f.id}').textContent=this.value+' px'">
-            <span class="ff-size-val" id="ff-size-val-${f.id}">34 px</span>
-          </div>
-          <p class="ff-stimmung">${escHtml(f.stimmung)}</p>
-          <div class="ff-meta">
-            <span class="lib-lic">${LU.check}${escHtml(shortLic(f.lizenz))}</span>
-          </div>
-          <div class="ff-actions">
-            <a class="lib-btn -primary" href="${f.file}" download>${LU.download}woff2</a>
-            <button class="lib-btn" onclick="copyFontFace('${f.id}')">${LU.copy}@font-face</button>
-            <button class="lib-btn" onclick="copyFontPrompt('${f.id}')">${LU.ai}Sag Claude</button>
-            <button class="lib-btn" onclick="openModal('${f.id}')">${LU.artikel}Details</button>
-          </div>
-        </article>`;
-    }
     function renderFonts() {
       const host = document.getElementById('font-grid');
       if (!host) return;
@@ -1609,7 +1831,7 @@
       let list = state.fontKat ? FONTS.filter(f => f.kategorie === state.fontKat) : FONTS;
       if (terms.length) list = list.filter(f => _vlHay(_hayFont(f), terms));
       host.innerHTML = list.length
-        ? list.map(fontCardHtml).join('')
+        ? list.map(f => assetCardHtml(assetModelById(f.id))).join('')
         : `<p class="vl-grid-empty">Keine Schrift passt zu „${escHtml(state.search.trim())}“.</p>`;
       const c = document.getElementById('fonts-count');
       if (c) c.textContent = terms.length ? `${list.length} von ${FONTS.length} Schriften` : `${FONTS.length} Schriften · alle OFL`;
@@ -1630,21 +1852,7 @@
       const terms = _vlSearchTerms();
       const list = terms.length ? ICONSETS.filter(s => _vlHay(_hayIconset(s), terms)) : ICONSETS;
       host.innerHTML = list.length
-        ? list.map(s => `
-        <div class="iconset-card" id="asset-${s.id}" data-id="${s.id}" data-typ="iconset">
-          <div class="iconset-kopf">
-            <span class="iconset-name">${escHtml(s.name)}</span>
-            <span class="iconset-anzahl">${s.anzahl.toLocaleString('de-DE')} Icons</span>
-            <span class="vl-kopf-rechts">${vlFavBtnHtml(s.id, 'asset', s.name)}</span>
-          </div>
-          <p class="iconset-stil">${escHtml(s.stil)}</p>
-          <div class="iconset-foot">
-            <span class="lib-lic">${LU.check}${escHtml(s.lizenz)}</span>
-            <a class="lib-btn" href="${s.quelleUrl}" target="_blank" rel="noopener">${LU.extern}Zur Bibliothek</a>
-            <button class="lib-btn" onclick="copyIconsetPrompt('${s.id}')">${LU.ai}Sag Claude</button>
-            <button class="lib-btn" onclick="openModal('${s.id}')">${LU.artikel}Details</button>
-          </div>
-        </div>`).join('')
+        ? list.map(s => assetCardHtml(assetModelById(s.id))).join('')
         : `<p class="vl-grid-empty">Kein Icon-Set passt zu „${escHtml(state.search.trim())}“.</p>`;
       updateIconsCount(list.length);
       updateAssetsTabCount();
@@ -1716,25 +1924,13 @@
         </div>`;
       }).join('')}</div>`;
     }
-    /* Der Detail-Knopf sitzt in einer eigenen Zeile UNTER den Farbfeldern, nicht
-       oben neben „CSS-Variablen": die Kopfzeile trägt bei 320 px schon Name,
-       Kopier-Knopf und Stern, ein vierter Bedienpunkt dort hätte sie gesprengt.
+    /* Alle Bedienelemente der Paletten-Karte sitzen jetzt UNTER den Farbfeldern
+       in der gemeinsamen Leiste — auch „CSS-Variablen", das bis 25.07.2026 als
+       einziges oben im Kartenkopf stand. Der Kopf trägt damit bei 320 px nur
+       noch Name, Badge und Stern.
        Wichtig für e6:06 — der Prüfklick geht auf `#pal-grid .pal-card .swatch`.
        Ein <button class="lib-btn"> ist kein `.swatch` und steht ausserdem hinter
        den Farbfeldern, verdeckt den Klickpfad also weder im DOM noch im Layout. */
-    function palCardHtml(p) {
-      return `
-        <article class="pal-card" id="asset-${p.id}" data-id="${p.id}" data-typ="palette">
-          <div class="ff-kopf"><span class="pal-name">${escHtml(p.name)}</span>
-            <span class="vl-kopf-rechts"><button class="lib-btn" onclick="copyPaletteCss('${p.id}')">${LU.copy}CSS-Variablen</button>${vlFavBtnHtml(p.id, 'asset', p.name)}</span></div>
-          <p class="pal-stimmung">${escHtml(p.stimmung)}</p>
-          ${palSwatchesHtml(p)}
-          ${palPairsHtml(p)}
-          <div class="ff-actions">
-            <button class="lib-btn" onclick="openModal('${p.id}')">${LU.artikel}Details</button>
-          </div>
-        </article>`;
-    }
     function renderPalettes() {
       const host = document.getElementById('pal-grid');
       if (!host) return;
@@ -1742,7 +1938,7 @@
       let list = PALETTES;
       if (terms.length) list = list.filter(p => _vlHay(_hayPalette(p), terms));
       host.innerHTML = list.length
-        ? list.map(palCardHtml).join('')
+        ? list.map(p => assetCardHtml(assetModelById(p.id))).join('')
         : `<p class="vl-grid-empty">Keine Palette passt zu „${escHtml(state.search.trim())}“.</p>`;
       const c = document.getElementById('pal-count');
       if (c) c.textContent = terms.length ? `${list.length} von ${PALETTES.length} Paletten` : `${PALETTES.length} Paletten · Kontrast WCAG-geprüft`;
@@ -1750,21 +1946,6 @@
     }
 
     // ===== (d) MUSTER & VERLÄUFE =====
-    function patCardHtml(p) {
-      return `
-        <div class="pat-card" id="asset-${p.id}" data-id="${p.id}" data-typ="pattern">
-          <div class="pat-preview" style="${p.css}"></div>
-          <div class="pat-body">
-            <div class="ff-kopf"><span class="pat-name">${escHtml(p.name)}</span><span class="vl-kopf-rechts"><span class="pat-typ">${p.typ === 'gradient' ? 'Verlauf' : 'Muster'}</span>${vlFavBtnHtml(p.id, 'asset', p.name)}</span></div>
-            <p class="pat-stimmung">${escHtml(p.stimmung)}</p>
-            <div class="pat-foot">
-              <span class="lib-lic">${LU.check}${escHtml(p.lizenz)}</span>
-              <button class="lib-btn" onclick="copyPatternCss('${p.id}')">${LU.copy}CSS kopieren</button>
-              <button class="lib-btn" onclick="openModal('${p.id}')">${LU.artikel}Details</button>
-            </div>
-          </div>
-        </div>`;
-    }
     function renderPatterns() {
       const host = document.getElementById('pat-grid');
       if (!host) return;
@@ -1772,7 +1953,7 @@
       let list = PATTERNS;
       if (terms.length) list = list.filter(p => _vlHay(_hayPattern(p), terms));
       host.innerHTML = list.length
-        ? list.map(patCardHtml).join('')
+        ? list.map(p => assetCardHtml(assetModelById(p.id))).join('')
         : `<p class="vl-grid-empty">Kein Hintergrund passt zu „${escHtml(state.search.trim())}“.</p>`;
       const c = document.getElementById('pat-count');
       if (c) c.textContent = terms.length ? `${list.length} von ${PATTERNS.length} Hintergründen` : `${PATTERNS.length} Hintergründe · ${ASSET_STATS.patternsSvg} Muster + ${ASSET_STATS.gradients} Verläufe`;
@@ -1898,6 +2079,7 @@
 
     function renderAssetEinsatz(item) {
       const r = item.ref;
+      const m = assetModel(item);   // gemeinsame Form — hier gebraucht für dateien[]
       if (item.typ === 'font') {
         return `
           <div class="am-actions">
@@ -1916,13 +2098,30 @@
           <div class="am-actions"><button class="lib-btn -primary" onclick="copyPaletteCss('${item.id}')">${LU.copy}CSS-Variablen kopieren</button></div>
           <span class="am-label">Farbwerte</span>
           <code class="am-code">${r.farben.map(c => `${c.hex}  /* ${c.name} */`).join('\n')}</code>
-          <p class="am-source" style="margin-top:1.4rem">Farbwerte unterliegen keinem Schutz — frei nutzbar. Klick im Vorschau-Tab kopiert einzelne Hex-Codes.</p>`;
+          <p class="am-source" style="margin-top:1.4rem">${escHtml(r.lizenz)} Klick im Vorschau-Tab kopiert einzelne Hex-Codes.</p>`;
       }
       if (item.typ === 'pattern') {
+        /* Der Code-Block zeigt GENAU das, was der Knopf kopiert — bei den sieben
+           SVG-Mustern also die portable Fassung mit eingebettetem data:-URI, nicht
+           mehr den repo-relativen Pfad. Zwei verschiedene Zeichenketten an einer
+           Stelle „CSS" wären genau die Sorte stille Abweichung, die man erst im
+           fremden Projekt merkt. Die drei Verläufe sehen davon nichts: sie haben
+           kein dataUri, patternCssPortabel gibt ihr css unverändert zurück.
+           Der SVG-Download steht daneben, weil manche die Datei wollen statt des
+           Schnipsels. Pfad kommt aus dateien[0] — nicht neu zusammengebaut, sonst
+           gäbe es einen zweiten Ort, an dem er stimmen muss. */
+        const cssPortabel = patternCssPortabel(r);
+        const svgPfad = m.dateien[0] || null;
         return `
-          <div class="am-actions"><button class="lib-btn -primary" onclick="copyPatternCss('${item.id}')">${LU.copy}CSS kopieren</button></div>
+          <div class="am-actions">
+            <button class="lib-btn -primary" onclick="copyPatternCss('${item.id}')">${LU.copy}CSS kopieren</button>
+            ${svgPfad ? `<a class="lib-btn" href="${svgPfad}" download>${LU.download}SVG-Datei</a>` : ''}
+          </div>
           <span class="am-label">CSS</span>
-          <code class="am-code">${escHtml(r.css)}</code>
+          <code class="am-code">${escHtml(cssPortabel)}</code>
+          <p class="am-source">${svgPfad
+            ? 'Das SVG steckt als <code>data:</code>-URI im CSS — darum der lange Block, und darum trägt er in jedem Projekt ohne mitkopierte Datei. Wer die Datei lieber separat ablegt, lädt sie oben herunter und ersetzt den URI durch ihren Pfad.'
+            : 'Reines CSS ohne Bilddatei — einfügen genügt.'}</p>
           <p class="am-source" style="margin-top:1.4rem">Lizenz: ${escHtml(r.lizenz)}. Aus der lokalen design-assets-Bibliothek — frei im pilot-Kontext nutzbar.</p>`;
       }
       if (item.typ === 'iconset') {
