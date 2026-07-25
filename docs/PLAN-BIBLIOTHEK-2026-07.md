@@ -1,6 +1,6 @@
 # Implementierungsplan — Bibliothek, Inhalte, Neuigkeiten
 
-**Stand:** 25.07.2026 · **Fassung 4** (Stufen 0 bis 2 umgesetzt, Ergebnisse eingetragen)
+**Stand:** 25.07.2026 · **Fassung 5** (Stufen 0 bis 4 umgesetzt, Ergebnisse eingetragen; offen ist nur noch Stufe 5)
 **Grundlage:** Bestandsaufnahme vom 25.07.2026, eine Fragerunde mit sechs Entscheidungsblöcken, und ein Messlauf gegen den Ist-Zustand (Protokoll am Ende).
 
 Dieses Dokument hält fest, **was entschieden ist**, damit es nicht neu verhandelt wird, und **in welcher Reihenfolge gebaut wird**. Es ersetzt keine der harten Regeln aus `CLAUDE.md` — die gelten weiter, besonders „kein Build-Step", „Zahlen-Ehrlichkeit" und „ändere nie einen Test, um ihn grün zu bekommen".
@@ -41,7 +41,7 @@ Die erste Fassung entstand direkt aus der Fragerunde und trug Zahlen aus der Bes
 | Design-Systeme | **Mehrere möglich** (pilot-CI, später Kunden-CI, projekttyp-spezifische Regelwerke). Paket-Inhalt: Tokens, Schriften, Muster, Beispielseite **plus CLAUDE.md mit den Designregeln**. Ohne Logos — die bleiben ein eigener Eintrag mit eigener Nutzungsregel. |
 | Kunden-CI | Kommt erst nach dem Umzug in die eigene Organisation (dann privat). Das Modell wird jetzt schon mehrfach-fähig gebaut. |
 | Bilder | Bereich **startet jetzt** mit den zwei vorhandenen Test-SVGs plus echten Fotos aus freien Quellen als Übungsmaterial. Die spätere echte Bildbibliothek wird **verlinkt bzw. aus dem Backend bedient**, nicht ins Repo gelegt. |
-| Startprojekte | **Drei neue schlanke Gerüste**: Dashboard · Auswerter · Einseiter. Je ein Ordner mit `CLAUDE.md`, `index.html` und Beispieldaten. Im Showroom als dritter Marker neben „Echtes Team-Tool" und „Beispiel-Projekt". |
+| Startprojekte | **Drei neue schlanke Gerüste**: Dashboard · Auswerter · Einseiter. Je ein Ordner mit `CLAUDE.md`, `index.html` und Beispieldaten. Im Showroom als dritter Marker neben „Echtes Team-Tool" und „Beispiel-Projekt". *(Gebaut ohne `CLAUDE.md` im Ordner — sie kommt beim Packen aus `data/anweisungen.js`, damit es den Text genau einmal gibt. Begründung in Stufe 3.)* |
 | Projektanweisungen | **Kopierbare Vorlagen**, geschnitten **nach Projekttyp** — passend zu den drei Gerüsten. Kein Formular-Baukasten in diesem Durchgang. |
 | Neuigkeiten | Contentorientiert, unten auf der Startseite, **tagesweise gruppiert** statt eintragsweise (Begründung in Stufe 1). Handgepflegte Liste entfällt bis auf **optionale Tages-Überschriften**. |
 | Datumsfeld | Neues Feld **`seit`** = „seit wann auf der Seite", **aus der Git-Historie ermittelt**, für alle Sammlungen (zehn bei der Entscheidung, seit Stufe 2 elf). `addedAt` bleibt unverändert die redaktionelle Entstehungszeit. |
@@ -49,7 +49,7 @@ Die erste Fassung entstand direkt aus der Fragerunde und trug Zahlen aus der Bes
 | Alte Daten und Links | **Sauber vereinheitlichen, Altes verfällt.** Bewusst in Kauf genommen: gespeicherte Merkungen alter Typen und geteilte `?a=`/`?b=`-Links brechen. |
 | Reihenfolge | **Kleines zuerst, Umbau zuletzt.** Jede Stufe geht einzeln live. |
 | Einreichwege | **Vertagt aufs Backend.** Die vier simulierten Flows bleiben vorerst, wie sie sind. |
-| Regressionssuiten | e6, e7 und **e9** werden in Stufe 5 neu geschrieben; jeder verschobene Sollwert bekommt im Test seine Begründung. Stufen 0 und 1 kamen ohne Teständerung aus, **Stufe 2 nicht**: e9 und e11 mussten nachgezogen werden, ohne dass eine Zusicherung schwächer wurde (Details in Stufe 2). |
+| Regressionssuiten | e6, e7 und **e9** werden in Stufe 5 neu geschrieben; jeder verschobene Sollwert bekommt im Test seine Begründung. Stufen 0 und 1 kamen ohne Teständerung aus, **die Stufen 2, 3 und 4 nicht**: Stufe 2 zog e9 und e11 nach, Stufe 3 erneut e9 und e11 (und verschärfte `e11:03`), Stufe 4 ergänzte einen Check in e1 und zwei Kommentare in e3 — nie wurde dabei eine Zusicherung schwächer (Details in der jeweiligen Stufe). |
 | Changelog-Reiter | **Streichen.** |
 
 ---
@@ -244,13 +244,26 @@ Beide wären ohne Fehlermeldung durchgegangen, und beide hätten grüne Checks h
 
 ---
 
-## Stufe 3 — Startprojekte
+## Stufe 3 — Startprojekte · **erledigt 25.07.2026**
 
-Drei Ordner, je mit `CLAUDE.md`, `index.html` und passenden Beispieldaten:
+Drei Ordner unter `startprojekte/`, je mit `index.html` und passenden Beispieldaten:
 
-1. **Dashboard-Gerüst** — CSV rein, Diagramme raus. Nutzt `beispieldaten/kampagnen-kpis.csv` und knüpft am vorhandenen Chart-Baustein an.
-2. **Auswerter-Gerüst** — Rückläufe verdichten. **Erkennt Breit- und Langformat und schreibt sichtbar hin, welches es erkannt hat.** Das behebt eine gemessene Falle: `beispieldaten/umfrage-rohdaten.csv` ist Breitformat (32 Zeilen, Spalten `Q1_Markenbekanntheit` … `Q5_Zufrieden`), der bestehende Auswerter im Showroom erwartet Langformat und liefert dafür stumm 33 Pseudo-„Fragen" statt einer Fehlermeldung.
-3. **Einseiter-Gerüst** — eine teilbare Seite für Kampagne oder Ergebnis.
+1. **Dashboard-Gerüst** (`dashboard`, 1 Datei) — CSV rein, Diagramme raus. Die Übungsdatei `beispieldaten/kampagnen-kpis.csv` steckt wortgleich als eingebauter String im Gerüst, damit unter `file://` sofort etwas zu sehen ist; eine eigene Datei daneben wäre ein zweiter Bestand.
+2. **Auswerter-Gerüst** (`auswerter`, 4 Dateien) — Rückläufe verdichten. **Erkennt Breit- und Langformat und schreibt sichtbar hin, welches es erkannt hat.** Das behebt eine gemessene Falle: `beispieldaten/umfrage-rohdaten.csv` ist Breitformat (32 Zeilen, Spalten `Q1_Markenbekanntheit` … `Q5_Zufrieden`), der bestehende Auswerter im Showroom erwartet Langformat und liefert dafür stumm 33 Pseudo-„Fragen" statt einer Fehlermeldung.
+3. **Einseiter-Gerüst** (`einseiter`, 2 Dateien) — eine teilbare Seite für Kampagne oder Ergebnis.
+
+Zusammen **7 Dateien**.
+
+**Die `CLAUDE.md` liegt NICHT im Ordner.** Die Vorab-Beschreibung sagte „je mit `CLAUDE.md`, `index.html` und passenden Beispieldaten" — gebaut ist es anders, und zwar aus dem Grund, den Stufe 2 schon festgehalten hat: Der Text der drei Vorlagen ist ein Datensatz (`data/anweisungen.js`), kein Dateibestand. Er wandert beim Packen als String ins ZIP. Damit gibt es ihn **genau einmal**, und ein Gerüst kann nicht mit einer veralteten Kopie seiner eigenen Anleitung ausgeliefert werden. Gemessen: **0** `CLAUDE.md` unter `startprojekte/`. Die Zuordnung ist 1:1 — `einseiter`→`einseiter`, `dashboard`→`kleines-tool`, `auswerter`→`datenauswertung`.
+
+### Der Abnahmemaßstab war die eigene Vorlage, nicht der Augenschein
+
+Geprüft wurde jedes Gerüst gegen die **„Fertig ist es, wenn"-Liste der jeweils EIGENEN Vorlage** aus Stufe 2 — nicht gegen „sieht fertig aus". Der Grund steckt in der Bauform: Gerüst und Vorlage liegen zusammen im ZIP. Ein Gerüst, das gegen seine mitgelieferte `CLAUDE.md` verstößt, ist ab dem ersten Prompt kaputt, weil die Anleitung dann etwas anderes verlangt als der Code danebenliegend vormacht.
+
+**Zwei echte Befunde, beide behoben und nachgeprüft:**
+
+1. **Der Auswerter erfand Fragen, statt das Fehlen zu melden.** Bei einer Langformat-Datei **ohne Antwortspalte** nahm er die Kennungsspalte als Ersatz und gab 32 Pseudo-Fragen `R-0001`…`R-0032` aus — genau der Fehler, gegen den seine eigene Vorlage schreibt („Fehlt eine Spalte, sagst du das"). Der vorhandene Schutz griff nicht: er prüfte `fragen.length === verwertet`, und 32 ≠ 160. Jetzt zusätzlich: eine Spalte **taugt nicht als Antwortspalte**, wenn sie zusammen mit der Fragespalte den vollständigen Schlüssel der Tabelle bildet (gemessen an der Prüfdatei: 32 Kennungen × 5 Fragen = 160 Zeilen). Dazu eine zweite Plausibilitätsprobe, die unabhängig vom Erkennungsweg greift — sie schlägt an, wenn in jeder Frage-Gruppe jeder Antwortwert genau einmal steht und alle Gruppen dieselben Werte tragen. Das ist eine Kreuztabelle, keine Messung.
+2. **Das Dashboard behauptete eine Rechnung, die nicht stattgefunden hatte.** Bei leerer Spalte oder Nenner 0 zeigte die Kachel nur einen Strich, während die Fußnote weiter sagte, die Quote sei aus den Summen berechnet. Jetzt steht dort „keine Zahl" **mit Grund und ohne Einheit**, und der Fuß nennt entweder den Rechenweg oder den Grund — nie beides durcheinander.
 
 ### Eigene Liste statt Eingriff in `CASES`
 
@@ -261,36 +274,153 @@ Die Gerüste kommen als **eigenes Array `STARTPROJEKTE`** in einen **eigenen Abs
 
 Der Marker bleibt trotzdem der dritte in der gemeinsamen visuellen Reihe — der Nutzen der Entscheidung aus der Fragerunde bleibt also erhalten, nur die Datenhaltung ist sauber getrennt.
 
-ZIP-Download je Gerüst. Die ZIP-Funktion liegt bereits in `shared/base.js` und wird nur benutzt.
+**Das hat gehalten.** `e8:03_ehrlichkeits_marker` prüft `EXPECTED_TOTAL = 10`, `EXPECTED_ECHT = 4`, `EXPECTED_BEISPIEL = 6` und dass **jede `.sr-card` genau einen** Marker trägt. Der neue Abschnitt hat eine eigene Kartenklasse (`.sp-card`), liegt ausserhalb `#sr-grid` und lässt diese Zusicherungen unberührt: e8 blieb ohne eine geänderte Zeile grün. Wären die Gerüste in `CASES` gewandert, wäre e8:03 rot geworden.
 
 *Nicht in diesem Durchgang:* Der bestehende Umfrage-Auswerter im Showroom bekommt keine Formatprüfung — die Entscheidung war, das im Gerüst zu lösen.
 
-**Testwirkung:** für e8 keine, genau wegen der eigenen Liste. `e8:03_ehrlichkeits_marker` prüft `EXPECTED_TOTAL = 10`, `EXPECTED_ECHT = 4`, `EXPECTED_BEISPIEL = 6` und dass **jede `.sr-card` genau einen** Marker trägt. Der neue Abschnitt bekommt eine eigene Kartenklasse und lässt diese Zusicherungen unberührt. Wären die Gerüste in `CASES` gewandert, wäre e8:03 rot geworden.
+### Eingebaut: Anker-Muster, nicht Modal + iframe
 
-**Diese Aussage ist nach Stufe 2 nicht mehr die ganze Antwort.** Sobald `STARTPROJEKTE` eine eigene Sammlung in `GSEARCH_GROUPS` mit eigenem Deep-Link wird, wiederholen sich zwei der drei Funde aus Stufe 2 unvermeidlich: die Positivliste `DEEPLINK_RE` in e9 und die Sammlungszahl in `e11:06` (dann 11 → 12). Ob das eintritt, hängt daran, ob die Gerüste merkbar und global suchbar sein sollen — das ist vor der Stufe zu entscheiden und **zu messen**, nicht vorherzusagen.
+Der Abschnitt `#startprojekte` sitzt in `showroom.html` **zwischen den Projekten und dem Meistgewollt-Ranking** (gemessen im DOM: `main-content` → `startprojekte` → Ranking). Er folgt dem Muster der Projektanweisungen — Abschnitt, Karte, `#sp-<id>`, kurze Hervorhebung — und **nicht** dem Case-Muster mit Modal und Vorschau-iframe. Drei Gründe, alle gemessen:
 
-**Abnahme:**
-- Jedes Gerüst läuft per `file://` **und** im iframe (die Showroom-Vorschau ist ein iframe mit `sandbox`).
-- Das ZIP enthält alle Dateien des Ordners und entpackt sich in einen lauffähigen Stand.
-- Der Auswerter erkennt beide Formate nachweislich und **benennt** das erkannte Format sichtbar — geprüft mit `umfrage-rohdaten.csv` (breit) und einer Langformat-Variante.
-- Kein Gerüst hat ein leeres Pflichtfeld.
-- e8 bleibt grün.
+- **`e8:04_detail_modal_story_tabs` nagelt genau vier Modal-Reiter fest** („Überblick", „So ist es entstanden", „Nachbauen", „Vorschau"). Ein fünfter Reiter oder ein zweites Modal-Schema hätte den Test angefasst — die Regel für Stufe 0–4 lautet: kein Sollwert verschieben, um etwas grün zu bekommen.
+- **`loading="lazy"` verzögert hier nichts.** Gemessen auf `showroom.html`: 10 Karten, 10 iframes, `page.frames().length` = **11** (Hauptframe plus zehn). Drei weitere iframes wären drei weitere Frames, nicht drei gesparte.
+- **Für ein Gerüst sagt die Dateiliste mehr als ein geschrumpfter Screenshot.** Eine leere Startseite mit Platzhaltertext ist als Miniatur nicht zu unterscheiden von einer anderen leeren Startseite mit Platzhaltertext. Die Karte zeigt stattdessen, was im Ordner liegt.
+
+### ZIP
+
+Dateiname `<id>.zip`. Die Dateien kommen über das **Hausmuster aus `skills.html`**: erst GitHub-Roh (`REPO_RAW`), dann repo-relativ. Scheitert auch nur eine Datei, gibt es **kein ZIP**, sondern eine sichtbare Meldung an der Karte — ein stillschweigend unvollständiges Gerüst wäre schlimmer als keines. Die `CLAUDE.md` wird nicht geholt, sondern aus `ANWEISUNGEN` in den Puffer geschrieben.
+
+**Bekannter Preis dieser Reihenfolge, als Fallstrick festgehalten:** Wer die Seite lokal von einem Arbeitsstand ausliefert, dessen Änderungen noch nicht auf `main` sind, bekommt im ZIP **den gepushten Stand**, nicht den eigenen. Auf der veröffentlichten Seite sind beide identisch; unter `file://` ist der Netzweg der einzige, der trägt. Der Eintrag steht jetzt auch in `CLAUDE.md` unter den Fallstricken.
+
+### Registrierung: sechs Stellen, nicht fünf
+
+Zu den fünf Pflichtstellen aus `CLAUDE.md` (`GSEARCH_GROUPS`, `switch` in `_gsGlobal()`, `GSEARCH_SOURCES`, `DS_TYPE_LABEL`, `SAMMLUNGEN` in `tools/seit.mjs`) kommt eine sechste: **der Script-Tag auf `index.html`**. Ohne ihn fällt die Sammlung **still** aus dem Neuigkeiten-Block, weil eine nicht geladene Sammlung dort übersprungen wird. Gemeldet hat das `e11:06` als `"STARTPROJEKTE:<Sammlung fehlt>"` — als fehlende **Sammlung**, nicht als fehlendes Datum. Das ist die dritte Variante desselben Musters aus Stufe 2: Eine Registry hilft nur so weit, wie der Wert überhaupt im Fenster liegt.
+
+### Umgesetzt
+
+1. **`data/startprojekte.js`** — drei Einträge mit je neun Feldern (`id`, `name`, `kurz`, `wofuer`, `anweisung`, `ordner`, `liveUrl`, `dateien`, `tags`). `dateien` listet den Ordnerinhalt **ohne** `CLAUDE.md`, weil die nicht auf der Platte liegt.
+2. **Drei Gerüste unter `startprojekte/`**, 7 Dateien, jedes gegen die „Fertig ist es, wenn"-Liste seiner eigenen Vorlage abgenommen.
+3. **Auswerter:** Schlüssel-Prüfung (`versch × verschFrage === zeilen.length`) plus zweite, erkennungsweg-unabhängige Plausibilitätsprobe. Statt Pseudo-Fragen kommt eine Meldung mit Grund und Vorschlag.
+4. **Dashboard:** „keine Zahl" mit Grund statt Strich, Fußnote sagt Rechenweg **oder** Grund.
+5. **Abschnitt `#startprojekte`** in `showroom.html`, Anker-Muster, eigene Klassen `.sp-*`.
+6. **ZIP-Download je Gerüst**, `<id>.zip`, `CLAUDE.md` aus `ANWEISUNGEN`.
+7. **Sechs Registrierstellen**, Deep-Link `showroom.html?g=<id>` → `#sp-<id>`.
+8. **`data/seit.js` nachgezogen:** 246 → **249 Einträge** über **zwölf** Sammlungen, weiter sechs Inhaltstage.
+
+### Testwirkung
+
+**Die Vorhersage aus Fassung 2 ist eingetroffen.** Dort stand: „Sobald `STARTPROJEKTE` eine eigene Sammlung in `GSEARCH_GROUPS` mit eigenem Deep-Link wird, wiederholen sich zwei der drei Funde aus Stufe 2 unvermeidlich: die Positivliste `DEEPLINK_RE` in e9 und die Sammlungszahl in `e11:06` (dann 11 → 12)." Genau so kam es. Dazu kam eine Parameterliste und ein Ankerpräfix in `e11:03` — und **ein unvorhergesehener Fund**:
+
+**`e11:03` („jeder Link löst auf") hat nie geprüft, ob der Hash irgendwo hinzeigt.** Die Prüfung stand auf `if (location.hash) return 'hash'`. Weil fast jede Bereichsseite ihren Query-Parameter beim Laden in einen Hash umschreibt, hat dieser Zweig die eigentliche Ankersuche darunter **nie erreicht**. Gemessen mit je einer echten id über alle zwölf Sammlungen: **5 endeten auf `modal`, 7 auf `hash`, die Präfixschleife lief bei keiner einzigen.** `showroom.html?g=gibtsnicht` wäre als „aufgelöst" durchgegangen. Ein Hash ist eben kein Nachweis, sondern nur eine Absichtserklärung der Seite. Jetzt muss der Hash sich ausweisen: entweder er **ist** die id eines Elements, oder der zugehörige Anker muss über die Präfixliste auffindbar sein. Dabei fielen **zwei Präfixe auf, die selbst blind waren**: `r-` heisst in Wahrheit `res-`, `faq-` heisst `faqcard-`. Beide korrigiert. **Rot-Nachweis:** kappt man beide Wege für die Startprojekte, meldet Check 03 genau die drei `?g=`-Links als tot.
+
+Das ist dieselbe Lehre wie in Stufe 2, eine Ebene tiefer: Eine Prüfung, die auf halbem Weg „gut genug" zurückgibt, ist keine Prüfung. Sie war seit ihrer ersten Zeile grün, ohne je etwas zu prüfen.
+
+| Suite | vorher | nachher |
+|---|---|---|
+| e1 · e3 · e6 · e7 · e8 · e10 · e12 | grün | grün, unverändert |
+| e9 | grün | grün, `DEEPLINK_RE` um `showroom\.html\?g=` ergänzt |
+| e11 | grün | grün, `globs` 11 → 12, Check 03 um `g`/`sp-` ergänzt **und** von „Hash genügt" auf „Hash muss sich ausweisen" verschärft |
+| e13 (neu) | — | grün, 15 Checks, zwei Viewports |
+
+`tests/e13-startprojekte.cjs` prüft die Dateiliste **in beiden Richtungen** gegen die Platte (Datenliste ohne Datei und Datei ohne Datenlisten-Eintrag fallen beide auf) und **entpackt das ZIP byteweise**. Genau dort liegt die Fehlerklasse, die kein DOM-Test findet: eine Dateiliste, die neben der Platte herläuft, sieht auf der Seite tadellos aus und liefert ein kaputtes ZIP. Die Zähne der Suite sind per Mutationstest nachgewiesen — sieben Mutanten, jeder färbte exakt die ihm zugeordneten Checks rot.
+
+### Abnahme — gemessen
+
+| Kriterium | Ergebnis |
+|---|---|
+| Gerüste auf der Platte | 3 Ordner, **7 Dateien** (`einseiter` 2 · `dashboard` 1 · `auswerter` 4) |
+| `CLAUDE.md` im Ordner | **0** — kommt beim Packen aus `data/anweisungen.js` |
+| Zuordnung Gerüst → Vorlage | **3 von 3**, 1:1 |
+| Dateiliste gegen die Platte | in **beiden** Richtungen deckungsgleich (`e13:05`) |
+| Pflichtfelder je Gerüst | **9 von 9** gefüllt, keine Platzhalter (`e13:01`) |
+| Läuft per `file://` | **3 von 3** — **0** `fetch`/`XMLHttpRequest` in den Gerüsten, 0 externe Ressourcen (Dateien kommen über `FileReader`/Ablegen herein) |
+| Abnahme gegen die eigene „Fertig ist es, wenn"-Liste | **3 von 3** bestanden, nach den zwei Korrekturen oben |
+| Auswerter, Langformat ohne Antwortspalte | meldet das Fehlen · **0** erfundene Fragen (vorher 32: `R-0001`…`R-0032`; Prüfdatei 160 Zeilen = 32 × 5) |
+| Auswerter, beide Formate | erkannt und **sichtbar benannt** — Breitformat 32 Zeilen, Langformat 160 Zeilen |
+| ZIP | `<id>.zip`, byteweise entpackt und gegen die Platte verglichen (`e13:11`) |
+| ZIP im Fehlerfall | kein halbes ZIP, sondern sichtbare Meldung an der Karte (`e13:11b`) |
+| Showroom-Vorschau | **kein `sandbox`-Attribut** an 10 von 10 iframes — die Planannahme war falsch, Korrektur direkt unter dieser Tabelle |
+| Startprojekt-Abschnitt | 3 `.sp-card` und **0** iframes (im DOM gezählt); ausserhalb `#sr-grid`, ohne Sterne-Widget (`e13:04`) |
+| Abschnittsreihenfolge | `main-content` → `startprojekte` → Meistgewollt |
+| Registrierstellen des neuen Typs | **6 von 6** |
+| `SEIT`-Abdeckung | **249 von 249** über zwölf Sammlungen, 0 Lücken (`--pruefen`), sechs Inhaltstage |
+| e13 (neu) | grün, 15 Checks × 2 Viewports |
+| alle zehn Suiten (e1, e3, e6–e13) | Exit 0, `failed: []` |
+
+**Eine Planannahme war falsch und wird hier ausdrücklich korrigiert.** Die Abnahme dieser Stufe verlangte ursprünglich: „Jedes Gerüst läuft per `file://` **und** im iframe (die Showroom-Vorschau ist ein iframe mit `sandbox`)." Der Klammersatz stimmt nicht. Gemessen auf `showroom.html`: **kein einziges** `sandbox`-Attribut, und `tests/e8-showroom.cjs:120` verlangt dessen Abwesenheit ausdrücklich (`allNoSandbox`, mit Begründung vom 22.07.2026 im Test: die Kombination `allow-scripts allow-same-origin` bot bei eigenen lokalen Dateien faktisch keine Isolation und erzeugte je iframe eine Konsolenwarnung). Die Einschränkung im Raster ist **rein visuell**: `pointer-events: none`, dazu `aria-hidden` und `tabindex="-1"`. Wer sich beim Bauen auf die Klammer verlassen hätte, hätte eine Isolation angenommen, die es nicht gibt.
 
 ---
 
-## Stufe 4 — Restliste aus der Bestandsaufnahme
+## Stufe 4 — Restliste aus der Bestandsaufnahme · **erledigt 25.07.2026**
 
-1. **Changelog-Reiter streichen.** Der Reiter wird **allen 35 sichtbaren Skills** zugeteilt und ist vollständig erfunden: `renderModalChangelog()` erzeugt den Text aus der Versionsnummer. 25 der 35 stehen auf `1.0.0` und bekommen damit denselben Zweizeiler („Erste öffentliche Version", „Basis-Funktionalität implementiert"). Der Reiter weist im ersten Satz selbst darauf hin, dass die echten Änderungen im Repo stehen. Zu entfernen: der Eintrag in `modalTabsFor()`, `renderModalChangelog()`, der Eintrag in `MODAL_TABS`, die Zeile in der Tab-Zuordnung und die sechs `.changelog-*`-Regeln.
-2. **Meta-Zahl absichern.** „35 echte Skills" steht dreimal fest in den Meta-Tags von `skills.html` (`description`, `og:description`, `twitter:description`) und kein Test schützt sie. Laufzeit-Berechnung hilft hier nicht, weil Suchmaschinen und Link-Vorschauen das statische HTML lesen — also ein Regressionstest, der rot wird, sobald eine der drei Zahlen von `VISIBLE_SKILL_COUNT` abweicht. Die vierte Fundstelle (`#page-sub-count`, Zeile 950) wird zur Laufzeit gefüllt und ist bereits abgesichert.
-3. **Prompt-Baukasten kennzeichnen.** 5 von 23 Prompts haben `builder`, `variants` und `preview` (dieselben fünf); auf der Karte ist das nicht erkennbar. Erst kennzeichnen, Ausrollen auf weitere Prompts danach entscheiden.
+### 1 · Changelog-Reiter — ersatzlos entfernt
 
-**Testwirkung:** keine. Nachgemessen: **kein einziger Test erwähnt `changelog`** (0 Treffer über alle sieben Suiten). `e1` liest zwar die komplette Reiterleiste aus, prüft davon aber nur „Dateien & Download" und „Bewertungen". Der Reiter kann ersatzlos verschwinden.
+Der Reiter wurde **allen 35 sichtbaren Skills** zugeteilt und war vollständig erfunden: `renderModalChangelog()` erzeugte den Text aus der Versionsnummer. Er wies im ersten Satz selbst darauf hin, dass die echten Änderungen im Repo stehen — eine Rubrik, die ihre eigene Wertlosigkeit ankündigt, gehört nicht auf eine Seite, deren Maßstab Verlässlichkeit ist.
 
-**Abnahme:**
-- Kein Modal zeigt noch einen Changelog-Reiter; keine Leiche im CSS (`grep -c changelog skills.html` = 0).
-- Der neue Meta-Test wird rot, wenn man `VISIBLE_SKILL_COUNT` verändert, ohne die drei Meta-Tags nachzuziehen — einmal nachgewiesen.
-- Die fünf Prompts mit Baukasten sind auf der Karte erkennbar, die anderen 18 nicht.
-- e1 und e3 grün.
+Gemessen nach dem Ausbau: `grep -ric changelog` repo-weit (ohne `.git`, ohne `docs/`) = **0**. `skills.html` ist von **4.130 auf 4.075 Zeilen** geschrumpft, netto **−55**. Die Reiterleiste eines Skills hieß vorher „Übersicht · Dateien & Download · Bewertungen · Piloten · Changelog", jetzt ohne den letzten; Plugin und Framework sind unverändert. Nachgewiesen, dass kein Reiter ohne Renderer übrigbleibt.
+
+Geteilte Links der Form `skills.html#<id>/changelog` fallen **still** auf „Übersicht" zurück — gemessen, und genau so, wie es vorher schon bei Typen ohne diesen Reiter war: die Hash-Auflösung filtert über `MODAL_TABS` **und** über `modalTabsFor(skill)` und fällt sonst auf `'overview'` zurück. Eine sichtbare Meldung für tote Deep-Links ist Punkt 8 in Stufe 5 und wurde hier bewusst **nicht** vorgebaut: sie gehört an eine Stelle, nicht an fünf.
+
+**Der Plan lag bei den Fundstellen daneben.** Er nannte fünf: Eintrag in `modalTabsFor()`, `renderModalChangelog()`, Eintrag in `MODAL_TABS`, Zeile in der Tab-Zuordnung, die `.changelog-*`-Regeln. Gemessen waren es **sieben Blöcke** (`git show -U0 … -- skills.html | grep -c '^@@'` = 7). Ihm fehlten:
+
+- **der statische Reiter-Knopf im Modal-Markup** (`<button … data-tab="changelog">Changelog</button>`) — ein Reiter, den `modalTabsFor()` gar nicht mehr ausgibt, wäre als Leiche im HTML stehengeblieben;
+- **ein dreizeiliger Kommentar über `modalTabsFor()`**, der die Plugin-Abweichung über den Changelog erklärte und zusätzlich behauptete „Skills behalten ihre 5 Tabs" — nach dem Umbau sind es 4. Der Kommentar wäre nicht nur übrig, sondern **falsch** gewesen.
+
+Mit der Plan-Liste wäre die eigene Abnahme dieser Stufe (`grep -c changelog` = 0) fehlgeschlagen. Das ist die dritte Wiederholung desselben Musters: Eine aus dem Kopf geschriebene Fundstellenliste ist eine Vermutung, kein Messergebnis.
+
+**Ebenfalls zu korrigieren:** Der Plan schrieb „25 der 35 stehen auf `1.0.0` und bekommen damit denselben Zweizeiler". Die 25 stimmt — aber den Zweizeiler bekamen **26**. `renderModalChangelog()` verzweigte über `patch > 0 ? … : minor > 0 ? … : ['Erste öffentliche Version', 'Basis-Funktionalität implementiert']`, und `campaign-check` steht auf `2.0.0`: Minor und Patch sind dort ebenfalls 0, der Major spielt in der Verzweigung keine Rolle. Wer nach der Versionszeichenkette zählt statt nach dem Zweig, zählt einen zu wenig. Pikant daran: Die richtige Zahl stand die ganze Zeit im **eigenen Messprotokoll** dieses Plans („26 Skills erzeugen einen Eintrag, 9 erzeugen zwei"). Die Stufenbeschreibung hat sie nicht von dort übernommen, sondern neu aus dem Kopf gebildet.
+
+### 2 · Meta-Zahl — abgesichert
+
+Neuer Check **`01b_meta_bestandszahl_stimmt`** in `tests/e1-regression.cjs`. Er vergleicht die Zahl in `description`, `og:description` und `twitter:description` von `skills.html` mit `VISIBLE_SKILL_COUNT` — **zur Laufzeit aus der Seite geholt, nicht in den Test getippt**. Damit kann der Test nicht mitdriften: eine falsche Zahl in den Meta-Tags lässt sich nicht dadurch grün bekommen, dass man den Sollwert im Test nachzieht, denn es gibt dort keinen.
+
+Verglichen wird ausdrücklich **nicht** gegen die Kartenzahl im Reiter „Alle": die ist **37**, weil Merge-Karten als eine Karte zählen (Check 02 nagelt genau das fest). Wer hier die Kartenzahl einsetzt, baut einen Test, der von Tag eins rot ist — und zieht dann die Meta-Tags auf einen falschen Wert nach.
+
+Verlangt wird **genau eine Zahl je Tag**. Eine zweite Zahl in der Beschreibung machte unentscheidbar, welche die Bestandszahl ist; wer eine zweite braucht, muss diesen Test bewusst anfassen. Dazu eine Untergrenze (`soll > 0`, drei gefundene Tags), damit nicht „keine Zahl == keine Zahl" grün wird — die Lehre aus Stufe 2, hier vorbeugend angewandt.
+
+**Rot-Nachweis geführt:** Setzt man die Meta-Zahl auf 34, wird **genau dieser eine** Check rot, alle anderen bleiben grün.
+
+### 3 · Baukasten-Prompts gekennzeichnet — und die Planannahme widerlegt
+
+Der Plan sagte: „5 von 23 Prompts haben `builder`, `variants` und `preview` (dieselben fünf); **auf der Karte ist das nicht erkennbar**." Der erste Teil stimmt, der zweite nicht. Gemessen: Die fünf trugen **bereits ein Fähnchen** — beschriftet „Highlight", gespeist aus einem handgepflegten Set `PROMPT_SPOTLIGHT` in `data/prompts.js`, das **exakt dieselben fünf IDs** enthielt.
+
+Es fehlte also kein Marker. Es fehlten zwei andere Dinge:
+
+- Das Wort sagte nicht, was man tun kann. „Highlight" ist eine redaktionelle Meinung; „Baukasten" ist eine Fähigkeit.
+- Daneben stand ein **zweiter Bestand**. Zwei Listen mit derselben Mitgliedschaft laufen genau bis zum ersten neuen Eintrag parallel — und dann lautlos auseinander. Der erste Prompt mit `builder`, den jemand ergänzt hätte, wäre ohne Fähnchen erschienen, ohne Fehlermeldung.
+
+**Entschieden und umgesetzt:** `PROMPT_SPOTLIGHT` ersatzlos entfernt (`typeof PROMPT_SPOTLIGHT` = `undefined`, 0 Vorkommen im Repo). Fähnchen, Kartenrand und Sortierung hängen jetzt alle drei an **`p.builder`** — an der Fähigkeit selbst, nicht an einer Liste über sie. Beschriftung **„Baukasten"**, mit einem erklärenden Satz als `title` und zusätzlich als `.sr-only`-Text, damit der Hinweis nicht nur an der Maus hängt. Die Klassen `-spot`/`.card-spot-flag` heißen jetzt `-baukasten`/`.card-baukasten-flag`, damit der Selektor dasselbe Wort trägt wie die Karte — ein Test, der `.card-spot-flag` sucht, während auf der Karte „Baukasten" steht, ist beim nächsten Lesen eine Rätselaufgabe.
+
+### Testwirkung
+
+Die Vorhersage „keine" hat für den Changelog gehalten und für die anderen beiden Punkte nicht — beide Male aber ohne dass eine Zusicherung aufgeweicht wurde.
+
+| Suite | vorher | nachher |
+|---|---|---|
+| e1 | grün, 16 Checks | grün, **17** — `01b_meta_bestandszahl_stimmt` dazu, sonst keine Zeile geändert |
+| e3 | grün, 18 Checks | grün, **18** — zwei Kommentare nachgezogen, die auf die gelöschte Konstante `PROMPT_SPOTLIGHT` zeigten; kein Sollwert, kein Selektor, keine Zusicherung berührt |
+| e6 · e7 · e8 · e9 · e10 · e11 · e12 · e13 | grün | grün, unverändert |
+
+**Die Zahl im Plan war überholt.** Dort stand „0 Treffer über alle sieben Suiten". Das Ergebnis stimmt weiterhin — `grep -ic changelog tests/*.cjs` meldet für jede Datei 0 —, aber die Grundgesamtheit sind inzwischen **zehn** Suiten (e1, e3, e6–e13). Sieben war der Stand vor den Stufen 1, 2 und 3.
+
+### Abnahme — gemessen
+
+| Kriterium | Ergebnis |
+|---|---|
+| `changelog` im Repo (ohne `.git`, ohne `docs/`) | **0** Treffer, `grep -ric` |
+| `changelog` in den Suiten | **0** in allen **zehn** |
+| `skills.html` | 4.130 → **4.075** Zeilen, netto **−55** |
+| Fundstellen | **7** Blöcke — der Plan nannte 5 |
+| Reiterleiste Skill | vorher 5, nachher **4** (Übersicht · Dateien & Download · Bewertungen · Piloten) |
+| Reiterleiste Plugin / Framework | unverändert |
+| Reiter ohne Renderer | **0** |
+| `#<id>/changelog` | fällt **still** auf „Übersicht" zurück, wie vorher schon bei Typen ohne den Reiter |
+| Meta-Zahl in `description` · `og:` · `twitter:` | 3 × **35** == `VISIBLE_SKILL_COUNT`, zur Laufzeit geholt |
+| Rot-Nachweis Meta-Test | Meta-Zahl auf 34 → **genau** `01b` rot, alles andere grün |
+| Prompts mit `builder` / `variants` / `preview` | **5 / 5 / 5**, dieselben fünf IDs |
+| `PROMPT_SPOTLIGHT` | **entfernt**, 0 Vorkommen |
+| Fähnchen, Kartenrand, Sortierung | alle drei an `p.builder` |
+| e1 · e3 | grün, 17 bzw. 18 Checks |
 
 ---
 
@@ -340,18 +470,20 @@ Das reduziert Stufe 5 spürbar. Der Umbau bleibt trotzdem die größte Stufe —
 
 Ausgangslage vor dem Start gemessen (25.07.2026, gegen `localhost:8412`): **e6 grün, 24 Checks in 41 Instanzen. e7 grün, 22 Checks in 37 Instanzen.** Exit-Code 0, `failed: []` bei beiden.
 
-| Stufe | e1 | e3 | e6 | e7 | e8 | e9 | e10 | e11 | e12 | Neue Tests |
-|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|---|
-| **0 · Sofort-Fixes** ✔ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | Kontrast/Umbruch je Farbfeld |
-| **1 · `seit` + Neuigkeiten** ✔ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | **neu** | — | `e11-neuigkeiten` (10 Checks) |
-| **2 · Projektanweisungen** ✔ | ✓ | ✓ | ✓ | ✓ | ✓ | **△** | ✓ | **△** | **neu** | `e12-anweisungen` (13 Checks × 2 Viewports) |
-| 3 · Startprojekte | — | — | — | — | ✓ | — | — | — | ? | Formaterkennung Auswerter |
-| 4 · Restliste | ✓ | ✓ | — | — | — | — | — | — | — | Meta-Zahl-Regression |
-| 5 · Umbau | ✓ | — | **✎** | **✎** | — | **✎** | ✓ | ✓ | ? | — |
+| Stufe | e1 | e3 | e6 | e7 | e8 | e9 | e10 | e11 | e12 | e13 | Neue Tests |
+|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|---|
+| **0 · Sofort-Fixes** ✔ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | — | Kontrast/Umbruch je Farbfeld |
+| **1 · `seit` + Neuigkeiten** ✔ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | **neu** | — | — | `e11-neuigkeiten` (10 Checks) |
+| **2 · Projektanweisungen** ✔ | ✓ | ✓ | ✓ | ✓ | ✓ | **△** | ✓ | **△** | **neu** | — | `e12-anweisungen` (13 Checks × 2 Viewports) |
+| **3 · Startprojekte** ✔ | ✓ | ✓ | ✓ | ✓ | ✓ | **△** | ✓ | **△** | ✓ | **neu** | `e13-startprojekte` (15 Checks × 2 Viewports) |
+| **4 · Restliste** ✔ | **△** | **△** | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | `e1:01b` Meta-Zahl-Regression |
+| 5 · Umbau | ✓ | — | **✎** | **✎** | — | **✎** | ✓ | ✓ | ? | ? | — |
 
 ✔ erledigt · ✓ bleibt unverändert grün · △ angepasst, ohne eine Zusicherung aufzuweichen · ✎ wird neu geschrieben · ? Wirkung nicht vorhergesagt, vor der Stufe zu messen
 
-**Die Regel für den ganzen Plan hieß:** In den Stufen 0–4 wird **keine bestehende Testdatei angefasst** — kein Sollwert verschoben, keine Zeile geändert. **In Stufe 2 hat sie nicht gehalten** (e9 und e11, Begründung dort). Sie war zu grob formuliert: Ein neuer Inhaltstyp berührt zwangsläufig jede Liste, die Typen aufzählt, und zwei davon stehen in Tests. Es bleibt die schärfere Fassung: **Kein Sollwert wird verschoben, um etwas grün zu bekommen.** Wird einer bewusst nachgezogen, steht die Begründung an Ort und Stelle im Test — so geschehen bei `globs` 10 → 11. Erst Stufe 5 schreibt e6, e7 und e9 neu.
+**Reale Check-Zahlen nach Stufe 4**, gezählt mit dem in `CLAUDE.md` dokumentierten Kommando: e1 **17** · e3 **18** · e6 **17** · e7 **15** · e8 **15** · e9 **8** · e10 **7** · e11 **10** · e12 **13** · e13 **15**. Alle zehn Exit 0.
+
+**Die Regel für den ganzen Plan hieß:** In den Stufen 0–4 wird **keine bestehende Testdatei angefasst** — kein Sollwert verschoben, keine Zeile geändert. **Sie hat in drei von fünf Stufen nicht gehalten** (Stufe 2: e9 und e11 · Stufe 3: e9 und e11 · Stufe 4: e1 und e3, jeweils Begründung dort). Sie war zu grob formuliert: Ein neuer Inhaltstyp berührt zwangsläufig jede Liste, die Typen aufzählt, und zwei davon stehen in Tests; ein entfernter Bestand berührt jeden Kommentar, der auf ihn zeigt. Es bleibt die schärfere Fassung: **Kein Sollwert wird verschoben, um etwas grün zu bekommen.** Wird einer bewusst nachgezogen, steht die Begründung an Ort und Stelle im Test — so geschehen bei `globs` 10 → 11 → 12. Diese Fassung hat über alle fünf Stufen gehalten: kein Eingriff hat eine Prüfung geschwächt, drei haben sie verschärft (`?pa=`, `?g=`, und der Hash-Nachweis in `e11:03`). Erst Stufe 5 schreibt e6, e7 und e9 neu.
 
 **In Stufe 0 und 1 hat die alte Regel gehalten — und zweimal zu einem besseren Entwurf geführt, nicht zu einem Kompromiss:**
 
@@ -387,7 +519,7 @@ Nicht weil Tests unantastbar wären, sondern weil ein Entwurf, der eine grüne Z
 - **Git-Historie als Datumsquelle** funktioniert (243 von 243 Einträgen datiert, Autor- und Commit-Datum über alle 91 Commits identisch), liefert aber grobe Cluster: fünf Tage, davon zwei mit 90 % der Einträge. Die tagesweise Form macht daraus eine Stärke — aber der Block wird nur dann neu, wenn wirklich ein neuer Inhaltstag dazukommt. Das ist ehrlich und zugleich der Preis: an ruhigen Wochen steht dort dasselbe wie letzte Woche.
 - **`badge: "neu"` ist von 28 auf 2 geschrumpft** (erledigt). Wer die alte Zahl erwartet, wird sie vermissen. Sie war nur nie wahr.
 - ~~**Zeitbombe im Neuigkeiten-Block**~~ — in Fassung 2 stand hier, dass die Bereichslinks irgendwann aus dem Zeitfenster fallen und vier Prüfungen rot färben. Mit der Sammelmeldung aus Stufe 1 kann das nicht mehr passieren: sie nimmt jeden herausfallenden Tag auf. **Erledigt, nicht vertagt.**
-- **`skills.html` wächst in diesem Plan nicht** — die Projektanweisungen landen bewusst in `vorlagen.html`, obwohl der Skill-Baukasten die passende Maschine hätte. Grund: 4.124 Zeilen und drei Views in einer Datei sind bereits die Stelle mit dem höchsten Risiko für ungewollte Nebenwirkungen.
+- **`skills.html` wächst in diesem Plan nicht** — die Projektanweisungen landen bewusst in `vorlagen.html`, obwohl der Skill-Baukasten die passende Maschine hätte. Grund: über 4.000 Zeilen und drei Views in einer Datei sind bereits die Stelle mit dem höchsten Risiko für ungewollte Nebenwirkungen. *(Die Zahl im Text lautete „4.124" und war schon bei der Niederschrift überholt. Gemessen mit `wc -l`: vor Stufe 4 **4.130**, danach **4.075** — die Datei ist als einzige in diesem Plan geschrumpft, um die 55 Zeilen des Changelog-Reiters.)*
 - **Stufe 5 ist die einzige Stufe, die nicht in einem Zug live gehen sollte.** Modell, Karten und Pakete sind drei eigene Auslieferungen. Wer sie bündelt, hat im Fehlerfall keinen Punkt zum Zurückgehen.
 
 ---
@@ -412,7 +544,7 @@ Alle Zahlen im Plan stammen von hier. Methode jeweils dabei, damit sie nachprüf
 | CASES | 10 (4 echt, 6 Beispiel) | `data/cases.js` |
 | **Summe datierbarer Einträge** | **243** | |
 
-Elf Suchtypen in `GSEARCH_GROUPS` über zehn Sammlungen — `SKILLS` bedient `skill` und `plugin`. *(Stand vor Stufe 2. Seither zwölf Suchtypen über elf Sammlungen: `ANWEISUNGEN` mit dem Typ `anweisung` ist dazugekommen, die Summe datierbarer Einträge liegt bei 246.)*
+Elf Suchtypen in `GSEARCH_GROUPS` über zehn Sammlungen — `SKILLS` bedient `skill` und `plugin`. *(Stand vor Stufe 2. Seither **dreizehn Suchtypen über zwölf Sammlungen**, gemessen aus `shared/base.js`: `ANWEISUNGEN`/`anweisung` kam mit Stufe 2 dazu, `STARTPROJEKTE`/`startprojekt` mit Stufe 3. Die Summe datierbarer Einträge liegt bei **249** — `tools/seit.mjs --pruefen`: „249 Einträge, 6 Tage, 0 nicht im Bestand".)*
 
 **Einzelbefunde:**
 
@@ -438,4 +570,4 @@ Elf Suchtypen in `GSEARCH_GROUPS` über zehn Sammlungen — `SKILLS` bedient `sk
 - `e8:03_ehrlichkeits_marker` — `EXPECTED_TOTAL = 10`, `EXPECTED_ECHT = 4`, `EXPECTED_BEISPIEL = 6`, jede `.sr-card` mit genau **einem** Marker.
 - `e9` — `DEEPLINK_RE` mit fest verdrahteten `vorlagen.html?a=`, `?b=`, `?d=`.
 - `e7:01` — Kartenzahl in `#bk-grid .baustein-card` gleich `BAUSTEINE.length`.
-- **Changelog:** 0 Treffer über alle sieben Suiten. `e1` liest die Reiterleiste aus, prüft aber nur „Dateien & Download" und „Bewertungen" — der Reiter ist ungeschützt und kann ersatzlos weg.
+- **Changelog:** 0 Treffer über alle sieben Suiten. `e1` liest die Reiterleiste aus, prüft aber nur „Dateien & Download" und „Bewertungen" — der Reiter ist ungeschützt und kann ersatzlos weg. *(„Sieben Suiten" ist der Stand dieses Messprotokolls vom 25.07.2026, vor e11, e12 und e13. Bei der Umsetzung in Stufe 4 gegen alle **zehn** nachgemessen — weiterhin 0 Treffer.)*

@@ -14,14 +14,14 @@ Die Seite richtet sich an Kolleg:innen **ohne Software-Hintergrund**, die von La
 |---|---|
 | **Katalog** (`skills.html`) | Geprüfte Skills, Plugins und Frameworks — mit Blick in die echten Dateien, Startprompt und Download. Dazu der Onepager „Was sind Skills?" und ein Baukasten für eigene Skills. |
 | **Prompts** (`prompts.html`) | Kopierfertige Prompts mit Platzhaltern, Varianten und Live-Baukasten — plus der Erklärung, *warum* sie funktionieren. |
-| **Vorlagen** (`vorlagen.html`) | Asset-Bibliothek (Schriften, Icons, Farbpaletten, Muster — Lizenz an jedem Asset sichtbar) und Code-Bausteine mit Live-Vorschau. |
-| **Showroom** (`showroom.html`) | Echte Team-Tools und Beispiel-Projekte, jeweils mit der ehrlichen Geschichte, wie sie entstanden sind — und einem Weg zum Nachbauen. |
+| **Vorlagen** (`vorlagen.html`) | Asset-Bibliothek (Schriften, Icons, Farbpaletten, Muster — Lizenz an jedem Asset sichtbar), Code-Bausteine mit Live-Vorschau und drei kopierfertige Projektanweisungen (`CLAUDE.md`-Vorlagen, geschnitten nach Projekttyp). |
+| **Showroom** (`showroom.html`) | Echte Team-Tools und Beispiel-Projekte, jeweils mit der ehrlichen Geschichte, wie sie entstanden sind — und einem Weg zum Nachbauen. Dazu drei **Startprojekte**: leere Gerüste, die man als ZIP mitnimmt, inklusive der passenden Projektanweisung als `CLAUDE.md`. |
 | **Lernen & Hilfe** (`lernen-hilfe.html`) | Geprüfte Lern-Ressourcen, Befehle im Team-Ranking, Glossar und Schritt-für-Schritt-Lösungen für typische Blocker. |
 | **Startseite** (`index.html`) | Verteiler auf alles, mit Live-Zählern und „Deine Sachen". |
 
 Über allem liegt eine **globale Suche** (Strg/Cmd + K) über alle Ressourcentypen hinweg.
 
-**Bestand, Stand 24.07.2026:** 35 sichtbare Skills (dazu 4 Plugins, 3 Frameworks) · 23 Prompts · 30 Assets · 12 Bausteine · 10 Projekte (4 davon echte Team-Tools) · 28 Lern-Ressourcen · 28 Befehle · 49 Glossar-Begriffe · 10 FAQ. Die Seite rechnet diese Zahlen live aus den Daten aus — die Angabe hier ist eine Momentaufnahme.
+**Bestand, Stand 25.07.2026:** 35 sichtbare Skills (dazu 4 Plugins, 3 Frameworks) · 23 Prompts · 30 Assets · 12 Bausteine · 8 Beispieldaten · 3 Projektanweisungen · 10 Projekte (4 davon echte Team-Tools) · 3 Startprojekte zum Weiterbauen · 28 Lern-Ressourcen · 28 Befehle · 49 Glossar-Begriffe · 10 FAQ. Die Seite rechnet diese Zahlen live aus den Daten aus — die Angabe hier ist eine Momentaufnahme.
 
 ---
 
@@ -55,7 +55,7 @@ python3 -m http.server 8401
 - **Inhalte** liegen in `data/*.js` — klassische Scripts mit globalen Konstanten, direkt editierbar.
 - **Skill-Dateien** liegen unter `skills/<id>/`. Nach Änderungen `node build-skills.mjs` laufen lassen (schreibt `manifest.json` und `files-all.json` neu).
 - **Design und Engine** liegen zentral in `shared/base.css` und `shared/base.js` — Änderungen dort wirken auf allen sechs Seiten.
-- **Vor jedem Push** die neun Regressionssuiten laufen lassen (siehe `CLAUDE.md`).
+- **Vor jedem Push** die zehn Regressionssuiten laufen lassen (siehe `CLAUDE.md`).
 
 **Push auf `main` veröffentlicht sofort** (GitHub Pages).
 
