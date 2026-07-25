@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>pilot-Design-Paket — Beispielseite</title>
+<meta name="description" content="Zeigt die Bausteine des pilot-Design-Systems an echten Elementen: Kopfbereich, Überschriften, Knöpfe, Karte, Tabelle, Formular, Hinweiskasten.">
+
+<!-- Die Tokens. Relativer Pfad, liegt neben dieser Datei.
+     Diese Seite lädt sonst nichts: kein CDN, kein fetch, keine fremde Adresse.
+     Sie funktioniert per Doppelklick und mit ausgeschaltetem Netz. -->
+<link rel="stylesheet" href="tokens.css">
+
+<!-- Die Schriften sind bewusst NICHT eingebunden.
+     Grund: die drei .woff2-Dateien liegen nicht in diesem Paket (siehe
+     schriften.md). Eine @font-face-Regel würde den Browser trotzdem losschicken,
+     und die Konsole meldete beim Öffnen zwei Fehler.
+     Sobald du assets/fonts/ danebengelegt hast, nimm die Kommentarzeichen der
+     nächsten Zeile weg — dann ist die Seite in Inter gesetzt.
+
+<link rel="stylesheet" href="schriften.css">
+-->
+
+
+<style>
+/* ============================================================
+   Bausteine dieser Beispielseite.
+   Jede Regel benutzt die Tokens aus tokens.css. Wo ein Baustein
+   aus shared/base.css des Marketplace stammt, steht die Zeile
+   dabei. Wo keine Zeile steht, ist es ein Vorschlag.
+   ============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; }
+body, h1, h2, h3, p, ul, ol, li, figure, table, th, td, fieldset, legend { margin: 0; padding: 0; }
+ul, ol { list-style: none; }
+
+/* base.css:154-160 */
+body {
+  font-family: var(--font-sans);
+  font-weight: 500;
+  background: var(--c-bg-deep);
+  color: var(--c-black);
+  padding-top: var(--header-h);
+  min-height: 100vh;
+  /* Gegen seitliches Schieben auf schmalen Fenstern. */
+  overflow-x: hidden;
+}
+h1, h2, h3 { text-wrap: balance; overflow-wrap: anywhere; }
+::selection { background: var(--c-yellow); color: var(--c-black); }   /* base.css:147 */
+
+.wrap { max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-d); }
+
+/* ----- Kopfbereich, fest oben (base.css:169-190) ----- */
+.site-header {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: var(--header-h);
+  background: var(--c-black);
+  display: flex; align-items: center;
+}
+.header-inner {
+  width: 100%; max-width: var(--max-w); margin: 0 auto;
+  padding: 0 var(--pad-d);
+  display: flex; align-items: baseline; gap: 1rem; flex-wrap: wrap;
+}
+.logo-mark {
+  font-size: 2.1rem; font-weight: 700; color: var(--c-white);
+  letter-spacing: -.02em; line-height: 1;
+}
+/* Gelb als Textfarbe — erlaubt, weil der Grund schwarz ist. base.css:187-190 */
+.overline {
+  font-size: 1.1rem; font-weight: 500; text-transform: uppercase;
+  letter-spacing: .1em; color: var(--c-yellow);
+}
+
+/* ----- Seitenkopf (base.css:223-241) ----- */
+.page-head { padding: 5.6rem 0 1.2rem; }
+.kicker {
+  display: flex; align-items: center; gap: 1.1rem;
+  font-family: var(--font-mono); font-size: 1.15rem; font-weight: 600;
+  letter-spacing: .18em; text-transform: uppercase; color: var(--c-gray-m);
+  margin: 0 0 1.4rem;
+}
+.kicker::before { content: ''; width: 2rem; height: 1rem; background: var(--c-yellow); flex-shrink: 0; }
+.page-head h1 {
+  font-size: clamp(3.2rem, 2.2rem + 2.2vw, 5rem);
+  font-weight: 700; letter-spacing: -.032em; line-height: 1.04;
+  color: var(--c-black);
+}
+.page-sub {
+  margin-top: 1.2rem; font-size: 1.65rem; line-height: 1.55;
+  color: var(--c-gray-m); max-width: 64rem;
+}
+/* Textmarker — sparsam, ein Moment pro Sichtbereich. base.css:247-253 */
+.mk {
+  background: linear-gradient(transparent 56%, var(--c-yellow) 56%, var(--c-yellow) 93%, transparent 93%);
+  padding: 0 .08em; margin: 0 -.02em;
+}
+@media (max-width: 1023px) { .page-head { padding: 3.6rem 0 .8rem; } }
+@media (max-width: 480px) { .kicker { font-size: 1.02rem; letter-spacing: .13em; gap: .9rem; } }
+
+/* ----- Das Token-Etikett -----------------------------------
+   Klein und leise: es sagt, woher eine Farbe oder Größe kommt,
+   ohne den Baustein zu übertönen. Form aus base.css:1308-1315
+   (.lib-lic), Farbe auf --c-gray-m statt auf einem festen Grau. */
+.tk {
+  display: inline-block;
+  font-family: var(--font-mono); font-size: 1.05rem; font-weight: 600;
+  letter-spacing: .04em; color: var(--c-gray-m);
+  background: rgba(38,38,38,.06); border-radius: var(--r-pill);
+  padding: .2rem .8rem; white-space: nowrap;
+  vertical-align: middle;
+}
+.tk-row { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .9rem; }
+
+/* ----- Abschnitte ----- */
+.sec { padding: 4.4rem 0 0; }
+.sec:last-of-type { padding-bottom: 5.6rem; }
+.sec > .wrap > h2 {
+  font-size: var(--fs-h2); font-weight: 640; letter-spacing: -.02em;
+  margin-bottom: .6rem;
+}
+.sec-note {
+  font-size: 1.5rem; line-height: 1.65; color: var(--c-gray-m);
+  max-width: 72ch; margin-bottom: 2.4rem;
+}
+
+/* ----- Fließtext ----- */
+.prose h3 {
+  font-size: 2.1rem; font-weight: 700; letter-spacing: -.02em;
+  margin: 2.8rem 0 .8rem; color: var(--c-black);
+}
+.prose p { font-size: 1.6rem; line-height: 1.7; color: var(--c-ink-strong); max-width: 68ch; margin-bottom: 1.4rem; }
+.prose p.-body { color: var(--c-ink-body); }
+.prose p.-meta { color: var(--c-gray-m); font-size: 1.4rem; }
+.prose code {
+  font-family: var(--font-mono); font-size: .92em;
+  background: rgba(38,38,38,.06); border-radius: var(--r-xs); padding: .1rem .5rem;
+}
+
+/* ----- Knopf (base.css:621-637) ----- */
+.c-cta {
+  display: inline-block;
+  border: .3rem solid; border-radius: var(--r-pill);
+  font-size: 1.6rem; font-weight: var(--fw-semi); font-family: inherit;
+  padding: 1rem 2.7rem; cursor: pointer;
+  text-align: center; text-decoration: none;
+  transition: transform .18s ease, background .2s, border-color .2s, color .2s, box-shadow .2s;
+}
+.c-cta.-yellow-bg { background: var(--c-yellow); border-color: var(--c-yellow); color: var(--c-black); }
+.c-cta.-black-bg { background: var(--c-black); border-color: var(--c-black); color: var(--c-white); }
+.c-cta.-black-border { background: transparent; border-color: var(--c-black); color: var(--c-black); }
+.c-cta.-yellow-border { background: transparent; border-color: var(--c-yellow); color: var(--c-yellow); }
+.c-cta:disabled { opacity: .5; cursor: not-allowed; }
+.c-cta.-yellow-bg:hover, .c-cta.-yellow-bg.is-hover {
+  background: #e6ca55; border-color: #e6ca55;
+  box-shadow: 0 10px 24px -10px rgba(255,224,94,.7); transform: translateY(-2px);
+}
+.c-cta.-black-bg:hover, .c-cta.-black-bg.is-hover {
+  background: var(--c-black-soft); border-color: var(--c-black-soft); transform: translateY(-2px);
+}
+.c-cta.-black-border:hover, .c-cta.-black-border.is-hover { background: var(--c-black); color: var(--c-white); }
+.c-cta:focus-visible, .c-cta.is-focus { outline: 2px solid var(--c-black); outline-offset: 3px; }
+
+/* Zustands-Tafel: zeigt Ruhe, Zeiger-drüber, Fokus und Deaktiviert
+   nebeneinander. Die .is-hover / .is-focus-Klassen setzen dieselben
+   Werte wie :hover und :focus-visible — damit man alle vier Zustände
+   gleichzeitig sieht, ohne die Maus bewegen zu müssen. */
+.state-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: 2rem 1.6rem; align-items: start;
+}
+.state-cell { display: flex; flex-direction: column; align-items: flex-start; gap: .8rem; }
+.state-name {
+  font-family: var(--font-mono); font-size: 1.1rem; font-weight: 600;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--c-gray-m);
+}
+.btn-row { display: flex; flex-wrap: wrap; gap: 1.2rem; margin-bottom: 2.8rem; }
+
+/* ----- Karte (base.css:281-311, 1817-1826) ----- */
+.card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(26rem, 1fr)); gap: 2rem; }
+.card {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  padding: 2.6rem 2.6rem 2.2rem;
+  display: flex; flex-direction: column; gap: 1rem;
+  box-shadow: var(--shadow-sm);
+  transition: transform .22s cubic-bezier(.2,.7,.2,1), box-shadow .22s ease, border-color .22s ease;
+}
+/* Die Karten-Hover-Sprache: harter versetzter Block in Gelb, schwarzer
+   Rand, Karte rückt zwei Pixel auf. base.css:307-311 */
+.card:hover, .card:focus-within, .card.is-hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 var(--c-yellow);
+  border-color: var(--c-black);
+}
+.card h3 { font-size: 2.1rem; font-weight: 700; line-height: 1.2; letter-spacing: -.02em; }
+.card p { font-size: 1.5rem; font-weight: 500; line-height: 1.5; color: var(--c-gray-m); }
+.card-foot {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 1rem; flex-wrap: wrap; margin-top: auto; padding-top: .6rem;
+}
+/* Gelbe Fläche trägt immer schwarzen Text — 11,58:1. base.css:325-335 */
+.flag {
+  font-family: var(--font-mono); font-size: 1rem; font-weight: 700;
+  letter-spacing: .14em; text-transform: uppercase;
+  background: var(--c-yellow); color: var(--c-black);
+  border-radius: var(--r-pill); padding: .3rem .8rem .25rem;
+  white-space: nowrap;
+}
+.stars { font-size: 1.4rem; letter-spacing: .1em; }
+.stars .filled { color: var(--c-yellow); }      /* base.css:380 */
+.stars .empty  { color: var(--c-gray-l); }      /* base.css:381 */
+.card-meta { font-size: 1.3rem; color: var(--c-gray-m); }
+
+/* ----- Tabelle — VORSCHLAG ---------------------------------
+   In shared/base.css gibt es keine Tabellen-Komponente. Diese
+   hier ist aus vorhandenen Tokens zusammengesetzt und deshalb
+   ein Vorschlag, kein Bestand. */
+.table-scroll {
+  overflow-x: auto;
+  border: 1px solid var(--line); border-radius: var(--r-lg);
+  background: var(--paper);
+  -webkit-overflow-scrolling: touch;
+}
+table { border-collapse: collapse; width: 100%; min-width: 42rem; font-size: 1.45rem; }
+thead th {
+  font-family: var(--font-mono); font-size: 1.1rem; font-weight: 600;
+  letter-spacing: .12em; text-transform: uppercase; color: var(--c-gray-m);
+  text-align: left; background: var(--paper-warm);
+  padding: 1.1rem 1.8rem; border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+tbody td { padding: 1.2rem 1.8rem; border-bottom: 1px solid var(--line); color: var(--c-ink-body); }
+tbody tr:last-child td { border-bottom: 0; }
+th.-num, td.-num { text-align: right; font-variant-numeric: tabular-nums; font-family: var(--font-mono); }
+tbody td.-name { color: var(--c-black); font-weight: 600; }
+
+/* ----- Formularfeld (base.css:1179-1189) ----- */
+.form { display: grid; gap: 1.6rem; max-width: 52rem; }
+.field { display: flex; flex-direction: column; gap: .5rem; }
+.field label { font-size: 1.35rem; font-weight: 700; color: var(--c-black); }
+.field .opt { color: var(--c-gray-m); font-weight: 400; }
+.field input, .field textarea, .field select {
+  width: 100%; font-family: inherit; font-size: 1.5rem; line-height: 1.5;
+  border: 1px solid var(--c-gray-l); border-radius: var(--r-sm);
+  padding: 1rem 1.2rem; background: var(--c-white); color: var(--c-black);
+  resize: vertical;
+}
+.field input:focus, .field textarea:focus, .field select:focus { outline: none; border-color: var(--c-black); }
+.field input::placeholder, .field textarea::placeholder { color: var(--c-gray-m); }
+.hint { font-size: 1.25rem; color: var(--c-gray-m); line-height: 1.45; margin: 0; }
+
+/* ----- Hinweiskasten (base.css:1154-1161) -----
+   Gestrichelter Rand heißt im Bestand: Hinweis, nicht Inhalt. */
+.note {
+  display: flex; gap: 1rem; align-items: flex-start;
+  font-family: var(--font-mono); font-size: 1.15rem; line-height: 1.6;
+  color: var(--c-gray-m); background: var(--c-bg);
+  border: 1px dashed var(--line-strong); border-radius: var(--r-sm);
+  padding: 1.2rem 1.6rem; margin: 0 0 1.6rem;
+}
+.note.-warn { color: var(--c-warn); border-color: var(--c-warn); }
+.note.-err  { color: var(--c-err);  border-color: var(--c-err);  }
+.note p { margin: 0; }
+.note p + p { margin-top: .8rem; }
+.note strong { color: var(--c-black); }
+.note.-warn strong { color: var(--c-warn); }
+.note.-err strong { color: var(--c-err); }
+
+/* ----- Dunkles Band (base.css:1498-1510) -----
+   Ein bis zwei dunkle Momente pro Seite, nicht mehr. */
+.band { background: var(--c-black); padding: 6.8rem 0 7.2rem; margin-top: 5.6rem; }
+.band-inner { max-width: 72rem; margin: 0 auto; padding: 0 var(--pad-d); text-align: center; }
+.band .label {
+  font-size: 1.4rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .08em; color: var(--c-yellow);
+}
+.band h2 {
+  font-size: clamp(2.6rem, 2.2rem + 1vw, 3.4rem); font-weight: 700;
+  letter-spacing: -.025em; margin: .6rem 0 1rem; color: var(--c-white);
+}
+.band p { font-size: 1.6rem; line-height: 1.6; color: rgba(252,252,252,.72); max-width: 62ch; margin: 0 auto 2.4rem; }
+.band .band-note { font-family: var(--font-mono); font-size: 1.15rem; color: rgba(252,252,252,.55); margin: 1.4rem 0 0; }
+
+/* ----- Fußbereich (base.css:509-541) ----- */
+footer {
+  background: var(--c-black); color: rgba(252,252,252,.72);
+  padding: 5rem 0 3rem; font-size: 1.4rem;
+  border-top: 1px solid rgba(255,255,255,.1);
+}
+.footer-brand .logo-mark { font-size: 2.4rem; font-weight: 800; }
+.footer-brand .logo-sub {
+  display: block; font-family: var(--font-mono); font-size: 1.1rem;
+  letter-spacing: .22em; color: var(--c-yellow); text-transform: uppercase; margin-top: .2rem;
+}
+.footer-legal {
+  border-top: 1px solid rgba(255,255,255,.08); padding-top: 2rem; margin-top: 3.2rem;
+  color: rgba(252,252,252,.55); line-height: 1.6;
+}
+
+/* Trefffläche auf Zeigergeräten ohne feinen Zeiger: mindestens 44px.
+   base.css:1043-1051 */
+@media (hover: none) {
+  .c-cta { min-height: 4.4rem; }
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <span class="logo-mark">pilot</span>
+    <span class="overline">Design-Paket</span>
+  </div>
+</header>
+
+<main>
+
+  <section class="page-head">
+    <div class="wrap">
+      <p class="kicker">Beispielseite · Bausteine im Einsatz</p>
+      <h1>So sieht <span class="mk">pilot</span> aus</h1>
+      <p class="page-sub">
+        Diese Seite zählt keine Farben auf, sondern benutzt sie. Jeder Baustein steht hier so,
+        wie du ihn übernehmen kannst — und daneben in Klein, aus welchem Token er seine Farbe
+        oder Größe holt.
+      </p>
+      <div class="tk-row">
+        <span class="tk">--c-yellow</span>
+        <span class="tk">--font-mono</span>
+        <span class="tk">--c-gray-m</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="wrap">
+      <div class="note">
+        <div>
+          <p><strong>Das hier ist kein offizielles Brand-Material.</strong>
+          Verbindliche Vorlagen, Logo-Guidelines und Schriftlizenzen kommen ausschließlich vom
+          pilot-Brand- und KI-Enablement-Team. Dieser Bausatz bildet nur die Tokens und Logos ab,
+          die im pilot AI Marketplace real benutzt werden.</p>
+          <p>Die offizielle pilot-Brand-Schrift ist <strong>Centra No1</strong>. Sie ist kommerziell
+          lizenziert und liegt diesem Paket <strong>nicht</strong> bei. Der freie Ersatz, den der
+          Marketplace real benutzt, heißt <strong>Inter</strong>.</p>
+          <p><strong>Und noch ehrlicher:</strong> Solange der Ordner
+          <strong>assets/fonts/</strong> hier nicht danebenliegt, siehst du gerade auch kein Inter,
+          sondern die Ausweichschrift deines Geräts. Alles andere auf dieser Seite — Farben,
+          Abstände, Ecken, Schatten — stimmt trotzdem. Wie du Inter einschaltest, steht in
+          <strong>schriften.md</strong>.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Überschriften und Fließtext ===== -->
+  <section class="sec">
+    <div class="wrap">
+      <h2>Überschriften und Text</h2>
+      <p class="sec-note">
+        Drei Stufen reichen. Die Größen kommen aus der clamp-Skala, das heißt: sie wachsen mit
+        dem Fenster mit, statt in festen Sprüngen umzuschalten.
+      </p>
+
+      <div class="prose">
+        <h3>Eine Zwischenüberschrift</h3>
+        <p>
+          Fließtext steht auf <code>--c-ink-strong</code>. Das ist dunkler als Grau und ruhiger
+          als reines Schwarz — angenehm für lange Absätze. Zeilenlänge bei rund 68 Zeichen,
+          Zeilenhöhe 1,7. Wer weiter liest als bis hierhin, soll dabei nicht die Zeile verlieren.
+        </p>
+        <p class="-body">
+          Text in einer Karte steht eine Spur heller, auf <code>--c-ink-body</code>. Der Unterschied
+          ist klein und soll klein sein: die Karte hat schon einen Rahmen, sie braucht nicht noch
+          einen zweiten Kontrastsprung.
+        </p>
+        <p class="-meta">
+          Nebeninformationen stehen auf <code>--c-gray-m</code>. Das ist die hellste Farbe, die für
+          Text erlaubt ist — gemessen 5,86:1 auf Weiß. Alles Hellere fällt unter die
+          Lesbarkeitsgrenze und ist damit keine Gestaltungsfrage mehr.
+        </p>
+        <div class="tk-row">
+          <span class="tk">--fs-h2</span>
+          <span class="tk">--c-ink-strong</span>
+          <span class="tk">--c-ink-body</span>
+          <span class="tk">--c-gray-m</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Knöpfe ===== -->
+  <section class="sec">
+    <div class="wrap">
+      <h2>Knöpfe</h2>
+      <p class="sec-note">
+        Eine Form, vier Varianten. Der gelbe ist der wichtigste Knopf — davon gibt es genau einen
+        pro Seite. Der schwarze steht daneben, wenn zwei Wege gleich gültig sind. Die umrandeten
+        sind für alles Weitere.
+      </p>
+
+      <div class="btn-row">
+        <button type="button" class="c-cta -yellow-bg">Herunterladen</button>
+        <button type="button" class="c-cta -black-bg">Ansehen</button>
+        <button type="button" class="c-cta -black-border">Abbrechen</button>
+      </div>
+
+      <h3 class="state-name" style="margin-bottom:1.4rem">Die vier Zustände nebeneinander</h3>
+      <div class="state-grid">
+        <div class="state-cell">
+          <span class="state-name">Ruhe</span>
+          <button type="button" class="c-cta -yellow-bg">Knopf</button>
+        </div>
+        <div class="state-cell">
+          <span class="state-name">Zeiger darüber</span>
+          <button type="button" class="c-cta -yellow-bg is-hover">Knopf</button>
+        </div>
+        <div class="state-cell">
+          <span class="state-name">Tastatur-Fokus</span>
+          <button type="button" class="c-cta -yellow-bg is-focus">Knopf</button>
+        </div>
+        <div class="state-cell">
+          <span class="state-name">Deaktiviert</span>
+          <button type="button" class="c-cta -yellow-bg" disabled>Knopf</button>
+        </div>
+      </div>
+
+      <div class="tk-row">
+        <span class="tk">--c-yellow</span>
+        <span class="tk">--c-black</span>
+        <span class="tk">--r-pill</span>
+        <span class="tk">--fw-semi</span>
+      </div>
+
+      <div class="note" style="margin-top:2.4rem">
+        <p>Die mittleren beiden zeigen ihren Zustand fest an, damit du alle vier auf einmal siehst.
+        Im echten Betrieb kommen sie von <strong>:hover</strong> und <strong>:focus-visible</strong>
+        und sehen genauso aus — es sind dieselben Werte.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Karte ===== -->
+  <section class="sec">
+    <div class="wrap">
+      <h2>Karte</h2>
+      <p class="sec-note">
+        Die Inhaltskarte im Raster: helle Fläche auf <code>--paper</code>, eine Haarlinie als Rand,
+        16 Pixel Eckenradius. Beim Zeiger darüber rückt sie zwei Pixel auf, bekommt einen schwarzen
+        Rand und einen harten gelben Block dahinter. Fahr mit der Maus über die erste Karte — die
+        zweite zeigt den Zustand fest an.
+      </p>
+
+      <div class="card-grid">
+        <article class="card">
+          <h3>Ruhezustand</h3>
+          <p>Papierfläche, Haarlinie, weicher kleiner Schatten. So liegt die Karte da, solange
+          niemand sie anfasst.</p>
+          <div class="card-foot">
+            <span class="stars"><span class="filled">★★★★</span><span class="empty">★</span></span>
+            <span class="card-meta">4,2 · 18 Stimmen</span>
+          </div>
+        </article>
+
+        <article class="card is-hover">
+          <h3>Zeiger darüber</h3>
+          <p>Der gelbe Block ist kein weicher Schatten, sondern eine harte Kante. Das ist die
+          Karten-Sprache des Marketplace.</p>
+          <div class="card-foot">
+            <span class="flag">Neu</span>
+            <span class="card-meta">seit 25.07.2026</span>
+          </div>
+        </article>
+      </div>
+
+      <div class="tk-row">
+        <span class="tk">--paper</span>
+        <span class="tk">--line</span>
+        <span class="tk">--r-lg</span>
+        <span class="tk">--shadow-sm</span>
+        <span class="tk">--c-yellow</span>
+        <span class="tk">--c-gray-l</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Tabelle ===== -->
+  <section class="sec">
+    <div class="wrap">
+      <h2>Tabelle</h2>
+      <p class="sec-note">
+        Kopfzeile in Mono und Versalien, Zeilen durch Haarlinien getrennt, Zahlen rechtsbündig und
+        in gleicher Zeichenbreite, damit die Stellen untereinander stehen. Auf schmalen Fenstern
+        schiebt die Tabelle in ihrem eigenen Kasten zur Seite, nicht die ganze Seite.
+      </p>
+
+      <div class="note">
+        <p><strong>Vorschlag, kein Bestand.</strong> Für Tabellen gibt es in
+        <strong>shared/base.css</strong> keine Komponente. Diese hier ist aus vorhandenen Tokens
+        zusammengesetzt. Du kannst sie übernehmen, aber sie hat keinen gewachsenen Bestand hinter
+        sich — anders als alles andere auf dieser Seite.</p>
+      </div>
+
+      <div class="table-scroll">
+        <table>
+          <caption class="sr-only">Beispieltabelle mit erfundenen Platzhalterwerten</caption>
+          <thead>
+            <tr>
+              <th scope="col">Token</th>
+              <th scope="col">Wofür</th>
+              <th scope="col" class="-num">Pixel</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="-name">--r-sm</td>
+              <td>Eingabefeld, Hinweiskasten</td>
+              <td class="-num">8</td>
+            </tr>
+            <tr>
+              <td class="-name">--r-lg</td>
+              <td>Inhaltskarte im Raster</td>
+              <td class="-num">16</td>
+            </tr>
+            <tr>
+              <td class="-name">--r-pill</td>
+              <td>Knopf, Chip, Etikett</td>
+              <td class="-num">30</td>
+            </tr>
+            <tr>
+              <td class="-name">--header-h</td>
+              <td>Höhe des festen Kopfbereichs</td>
+              <td class="-num">64</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="tk-row">
+        <span class="tk">--font-mono</span>
+        <span class="tk">--paper-warm</span>
+        <span class="tk">--line</span>
+        <span class="tk">--c-ink-body</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Formular ===== -->
+  <section class="sec">
+    <div class="wrap">
+      <h2>Formularfeld</h2>
+      <p class="sec-note">
+        Jedes Feld hat eine sichtbare Beschriftung darüber — nicht nur einen Platzhaltertext im
+        Feld, denn der verschwindet beim Tippen. Im Fokus wird der Rand schwarz. Klick in ein Feld
+        oder spring mit der Tabulatortaste hinein, dann siehst du es.
+      </p>
+
+      <form class="form" onsubmit="return false">
+        <div class="field">
+          <label for="f-titel">Titel</label>
+          <input type="text" id="f-titel" name="titel" placeholder="Kurz und eindeutig">
+          <p class="hint">Der Name, unter dem andere es später wiederfinden.</p>
+        </div>
+
+        <div class="field">
+          <label for="f-bereich">Bereich</label>
+          <select id="f-bereich" name="bereich">
+            <option>Katalog</option>
+            <option>Prompts</option>
+            <option>Vorlagen</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="f-text">Beschreibung <span class="opt">(freiwillig)</span></label>
+          <textarea id="f-text" name="text" rows="3" placeholder="Zwei Sätze reichen"></textarea>
+          <p class="hint">Wofür ist das gut, und wann würde jemand es benutzen.</p>
+        </div>
+
+        <div class="btn-row" style="margin-bottom:0">
+          <button type="submit" class="c-cta -yellow-bg">Speichern</button>
+          <button type="button" class="c-cta -black-border">Verwerfen</button>
+        </div>
+      </form>
+
+      <div class="tk-row">
+        <span class="tk">--c-white</span>
+        <span class="tk">--c-gray-l</span>
+        <span class="tk">--r-sm</span>
+        <span class="tk">--c-black</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Hinweiskästen ===== -->
+  <section class="sec">
+    <div class="wrap">
+      <h2>Hinweiskasten</h2>
+      <p class="sec-note">
+        Der gestrichelte Rand bedeutet: Das hier ist ein Hinweis, kein Inhalt. Text in Mono, damit
+        er sich vom Fließtext absetzt, ohne lauter zu werden. Für Warnung und Fehler gibt es zwei
+        Farbtoken — sonst nichts. Erfinde kein weiteres Rot und kein Grün dazu.
+      </p>
+
+      <div class="note">
+        <p>Neutral. Für alles, was man wissen sollte, aber nicht sofort tun muss.</p>
+      </div>
+
+      <div class="note -warn">
+        <p><strong>Achtung.</strong> Für Dinge, die schiefgehen können, wenn man sie übersieht.
+        Farbe: <strong>--c-warn</strong>.</p>
+      </div>
+
+      <div class="note -err">
+        <p><strong>Fehler.</strong> Für etwas, das schiefgegangen ist und behoben werden muss.
+        Farbe: <strong>--c-err</strong>.</p>
+      </div>
+
+      <div class="tk-row">
+        <span class="tk">--c-bg</span>
+        <span class="tk">--line-strong</span>
+        <span class="tk">--c-warn</span>
+        <span class="tk">--c-err</span>
+        <span class="tk">--font-mono</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Dunkles Band ===== -->
+  <section class="band">
+    <div class="band-inner">
+      <p class="label">Ein dunkler Moment</p>
+      <h2>Schwarz, gelbes Label, gelber Knopf</h2>
+      <p>
+        Das dunkle Band ist der Anker einer Seite. Ein bis zwei davon, nicht mehr — sonst ist es
+        kein Anker, sondern ein Muster. Hier ist auch der Ort, an dem Gelb als Textfarbe erlaubt
+        ist: der Grund ist schwarz.
+      </p>
+      <button type="button" class="c-cta -yellow-bg">Der eine wichtige Knopf</button>
+      <p class="band-note">--c-black · --c-yellow · --c-white</p>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-brand">
+      <span class="logo-mark">pilot</span>
+      <span class="logo-sub">Design-Paket</span>
+    </div>
+    <div class="footer-legal">
+      <p>
+        Alle Werte dieser Seite stammen aus <strong>shared/base.css</strong> des pilot AI
+        Marketplace. Verbindliches Brand-Material kommt vom pilot-Brand- und KI-Enablement-Team,
+        nicht von hier. Die offizielle Brand-Schrift Centra No1 ist kommerziell und liegt diesem
+        Paket nicht bei.
+      </p>
+    </div>
+  </div>
+</footer>
+
+<style>
+/* base.css:385 — nur für Bildschirmleser sichtbar */
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+</style>
+
+</body>
+</html>

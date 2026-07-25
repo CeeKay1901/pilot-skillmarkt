@@ -1,0 +1,60 @@
+/* ============================================================
+   pilot-Design-Paket — schriften.css
+
+   Die drei @font-face-Blöcke, wörtlich aus `shared/base.css`
+   des pilot AI Marketplace (Zeilen 7–27). Nur die Pfade sind an
+   dieses Paket angepasst: sie zeigen auf `assets/fonts/` neben
+   dieser Datei statt auf `../assets/fonts/`.
+
+   ----- Bevor du diese Datei einbindest -----------------------
+
+   Die drei .woff2-Dateien liegen NICHT in diesem Paket. Warum
+   nicht und woher du sie bekommst, steht in `schriften.md`.
+
+   Reihenfolge:
+     1. Leg die drei Dateien unter `assets/fonts/` ab — der Ordner
+        muss NEBEN dieser Datei liegen, nicht darüber.
+     2. Ergänze im <head> deiner Seite, NACH tokens.css:
+
+          <link rel="stylesheet" href="tokens.css">
+          <link rel="stylesheet" href="schriften.css">
+
+   Bindest du diese Datei ein, OHNE die Schriftdateien abzulegen,
+   meldet die Browser-Konsole `net::ERR_FILE_NOT_FOUND`. Das ist
+   kein Absturz, aber es ist ein Fehler, und er steht dann bei
+   jedem Öffnen da.
+
+   ----- Lizenz ------------------------------------------------
+
+   Beide Schriften stehen unter der SIL Open Font License 1.1.
+   Inter: Rasmus Andersson. JetBrains Mono: JetBrains s.r.o.
+   Vollständige Angaben und Bezugsquellen in `schriften.md`.
+
+   Die offizielle pilot-Brand-Schrift ist „Centra No1", ist
+   kommerziell lizenziert und liegt diesem Paket NICHT bei.
+   Inter ist der freie Ersatz, den der Marketplace real benutzt.
+   ============================================================ */
+
+@font-face {
+  font-family: 'Inter';
+  src: url('assets/fonts/inter-variable.woff2') format('woff2-variations');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Inter';
+  src: url('assets/fonts/inter-variable-italic.woff2') format('woff2-variations');
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: url('assets/fonts/jetbrains-mono-variable.woff2') format('woff2-variations');
+  font-weight: 100 800;
+  font-style: normal;
+  font-display: swap;
+}

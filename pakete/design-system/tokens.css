@@ -1,0 +1,176 @@
+/* ============================================================
+   pilot-Design-Paket — tokens.css
+
+   Die Farben, Größen, Radien und Schatten des pilot AI Marketplace
+   als CSS-Variablen. Jeder Wert ist aus `shared/base.css` (Block
+   `:root`, Zeilen 30–140) abgeschrieben — nicht gerundet, nicht
+   umgerechnet, nicht neu erfunden. Die Zeilenangaben in den
+   Kommentaren beziehen sich auf diese Datei.
+
+   So bindest du sie ein:
+
+     <link rel="stylesheet" href="tokens.css">
+
+   und benutzt die Werte danach als var(--name), zum Beispiel
+   `background: var(--paper)`.
+
+   ACHTUNG, sonst stimmt keine einzige Größe: Diese Datei setzt
+   `html { font-size: 10px }` (base.css:151). Dadurch ist 1rem
+   genau 10 Pixel. Ohne diese Zeile wäre jeder rem-Wert um Faktor
+   1,6 zu groß. Sie steht deshalb unten in dieser Datei mit drin.
+
+   NICHT ÜBERNOMMEN, mit Begründung:
+   - `--ad: .6s` (base.css:134). Gemessen 0 Verwendungen im ganzen
+     Marketplace inklusive demo/ und tools/. Ein totes Token.
+   - `--fade`. Steht nicht in `:root`, sondern lokal an den drei
+     Bauteilen, die es brauchen: `.cat-tabs` / `.modal-tabs`
+     (base.css:444) und, nur im Schmal-Zweig, `.main-nav`
+     (base.css:1232). Es ist ein Bauteil-Wert für auslaufende
+     Leisten, kein Design-Token.
+   ============================================================ */
+
+
+/* ===== WO DIE SCHRIFTEN STEHEN ===============================
+   Diese Datei enthält absichtlich KEINE @font-face-Blöcke. Die
+   stehen in `schriften.css` daneben, und zwar aus einem Grund:
+
+   Eine @font-face-Regel schickt den Browser sofort los, die Datei
+   zu holen. Die drei .woff2-Dateien liegen aber NICHT in diesem
+   Ordner (warum nicht, steht in `schriften.md`). Stünden die Regeln
+   hier, meldete die Browser-Konsole beim Öffnen zwei Fehler —
+   gemessen: `net::ERR_FILE_NOT_FOUND`, zweimal. Ein Paket, das die
+   eigene Regel „null Fehler in der Konsole" beim ersten Öffnen
+   bricht, ist ab dem ersten Blick unglaubwürdig.
+
+   Deshalb ist das Einschalten ein bewusster Schritt: Sobald
+   `assets/fonts/` neben dieser Datei liegt, ergänzt du im <head>
+   eine Zeile:
+
+     <link rel="stylesheet" href="schriften.css">
+
+   Vorher greift die Ausweichliste in --font-sans. Die Seite bleibt
+   vollständig lesbar, sieht aber nicht nach pilot aus.
+   ============================================================= */
+
+
+:root {
+
+  /* ----- Kernfarben (pilot-CI) --------------------------------
+     Die sechs Töne, die der Marketplace als CI-Spickzettel führt,
+     plus die Papierflächen, auf denen alles liegt. (base.css:32–38) */
+  --c-black:       #262626;   /* Text, Header, schwarze Flächen */
+  --c-white:       #fcfcfc;   /* Text auf Schwarz, helle Kontraste */
+  --c-yellow:      #ffe05e;   /* Akzent — Regeln dazu in CLAUDE.md */
+  --c-bg:          #f1f1ec;   /* Basis-Papier (CI-Beige) */
+  --c-bg-deep:     #eeede5;   /* Grundfläche der Seite (body) */
+  --paper:         #fbfbf7;   /* helle Karten- und Panel-Fläche */
+  --paper-warm:    #f4f1ea;   /* warme Zwischenfläche, z. B. Leisten */
+
+  /* ----- Grau- und Textfarben ---------------------------------
+     Auf Lesbarkeit geprüft, und zwar gegen ALLE Papierflächen —
+     nicht nur gegen Weiß. Maßgeblich ist der schlechteste Grund,
+     auf dem die Farbe real steht. (base.css:70–80)
+     --c-gray-m ist die hellste Farbe, die für Text erlaubt ist. */
+  --c-gray-l:      #bab8ab;   /* Linien und leere Sterne — KEIN Text */
+  --c-star-empty:  #86847a;   /* leerer Klick-Stern: 3,20:1 (WCAG 1.4.11) */
+  --c-gray-m:      #66655d;   /* Meta und Nebentext: 5,86:1 auf Weiß, 4,99:1 im schlechtesten Fall */
+  --c-ink-strong:  #444;      /* dunkler Fließtext (lange Beschreibungen) */
+  --c-ink-body:    #555;      /* Karten- und Zitattext */
+  --c-black-soft:  #3d3d3d;   /* Hover-Abdunklung schwarzer Flächen */
+  --line:          #e4e2d6;   /* Haarlinie: Kartenrand, Zeilentrenner */
+  --line-strong:   #d8d3c4;   /* kräftigere Linie: Chips, gestrichelte Kästen */
+
+  /* ----- Status ------------------------------------------------
+     Nur die zwei Rollen, die im Marketplace real vorkommen. Es gibt
+     bewusst kein --c-ok und kein --c-info: die wurden dort entfernt,
+     weil sie 0 Verwendungen hatten. (base.css:82–88) */
+  --c-warn:        #9a6a00;
+  --c-err:         #b3362c;
+
+  /* ----- Terminal und Code ------------------------------------
+     Für dunkle Code- und Terminal-Blöcke. (base.css:90–97) */
+  --term-bg:       #14140f;
+  --term-ink:      #d4d4d4;
+  --term-ink-soft: #cfcfc7;
+  --term-ok:       #7ac59a;
+  --term-key:      #6aa9e8;
+  --term-dim:      #6a6a60;
+
+  /* ----- Layout ------------------------------------------------
+     --header-h ist die Höhe eines fest oben stehenden Kopfbereichs.
+     Wenn dein Projekt keinen hat, brauchst du den Wert nicht — er
+     bleibt hier drin, damit die Skala vollständig ist.
+     (base.css:99–103) */
+  --header-h:      6.4rem;    /* 64px */
+  --max-w:         144rem;    /* 1440px — größte Inhaltsbreite */
+  --pad-d:         8rem;      /* 80px — Seitenrand am Desktop */
+  --pad-m:         2rem;      /* 20px — Seitenrand mobil */
+
+  /* ----- Ecken (Radien-Skala) ---------------------------------
+     Sechs Stufen, lückenlos. Benutz nur diese sechs.
+     (base.css:105–111) */
+  --r-xs:          .4rem;     /* 4px  — Fokusring-Ecke, Mini-Chip */
+  --r-sm:          .8rem;     /* 8px  — Eingabefeld, Hinweiskasten */
+  --r-md:          1.2rem;    /* 12px — Panel */
+  --r-lg:          1.6rem;    /* 16px — Inhaltskarte im Raster (base.css:1819) */
+  --r-xl:          2rem;      /* 20px — große Fläche */
+  --r-pill:        3rem;      /* 30px — Knopf, Chip, Etikett */
+
+  /* ----- Schrift -----------------------------------------------
+     Inter für alles Normale, JetBrains Mono für Technisches und
+     für kleine Etiketten. Die offizielle pilot-Brand-Schrift ist
+     „Centra No1" — kommerziell und NICHT in diesem Paket.
+     (base.css:117–124)
+
+     Zu den Gewichten: --fw-reg und --fw-semi stehen hier, weil sie
+     im Bestand definiert sind. Benutzt werden sie dort aber nur an
+     fünf Stellen. Real in Gebrauch sind 500, 600 und 700 als feste
+     Zahlen — in base.css nachgezählt 16-mal, 40-mal und 49-mal.
+     (Das sind Häufigkeiten, keine Zeilennummern.) */
+  --font-sans:     'Inter', 'Helvetica Neue', Arial, sans-serif;
+  --font-mono:     'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  --fw-reg:        450;
+  --fw-semi:       640;
+  --fs-display:    clamp(4.8rem, 1.6rem + 5.4vw, 8.4rem);    /* größte Überschrift */
+  --fs-display-sm: clamp(4.4rem, 2.4rem + 3.2vw, 6.4rem);    /* kleinere große Überschrift */
+  --fs-h2:         clamp(3.2rem, 1.84rem + 2vw, 4.4rem);     /* Abschnitts-H2 */
+
+  /* ----- Bewegung ----------------------------------------------
+     --trans ist der Standard für Hover und Bedienelemente.
+     (base.css:130–133) */
+  --trans:         all .2s cubic-bezier(.17,.67,.83,.67);
+  --ease-out:      cubic-bezier(.16,.84,.44,1);   /* Einblenden beim Scrollen */
+  --ae:            cubic-bezier(.22, 1, .36, 1);  /* Auftritt-Effekte */
+
+  /* ----- Schatten ----------------------------------------------
+     Getönt auf Ink (rgba(38,38,38,…)), nicht auf reines Schwarz.
+     Karten liegen im Ruhezustand auf --shadow-sm. (base.css:136–139)
+     Der Karten-Hover ist KEIN weicher Schatten, sondern ein harter
+     versetzter Block — siehe CLAUDE.md. */
+  --shadow-sm:     0 1px 2px rgba(38,38,38,.05), 0 1px 1px rgba(38,38,38,.03);
+  --shadow-md:     0 8px 24px -10px rgba(38,38,38,.16);
+  --shadow-lg:     0 24px 50px -18px rgba(38,38,38,.26);
+}
+
+
+/* ===== SCHMALE FENSTER =======================================
+   Der Marketplace setzt genau diese zwei Werte herunter, sobald
+   das Fenster 1023 Pixel oder schmaler ist. (base.css:814–818) */
+@media (max-width: 1023px) {
+  :root {
+    --header-h: 5.6rem;
+    --pad-d:    2rem;
+  }
+}
+
+
+/* ===== DIE GRUNDLAGE ALLER rem-WERTE =========================
+   10 Pixel Grundschriftgröße, damit 1rem = 10px ist. Ohne diese
+   Zeile stimmt keine Größe aus dieser Datei. (base.css:151) */
+html {
+  font-size: 10px;
+  scroll-behavior: smooth;
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
