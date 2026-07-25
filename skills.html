@@ -371,8 +371,12 @@
     .changelog-list { margin: 0; padding-left: 2rem; display: flex; flex-direction: column; gap: .6rem; }
     .changelog-list li { font-size: 1.4rem; color: var(--c-black); line-height: 1.5; }
 
-    /* Tastatur-Fokus für per role=button/tabindex bedienbare Container & Chips */
-    .pilot-card:focus-visible, .ex-starter-card:focus-visible, .pilot-skill-chip:focus-visible { outline: 2px solid var(--c-black); outline-offset: 2px; }
+    /* Hier stand eine Fokus-Kompensation für .pilot-card/.ex-starter-card/
+       .pilot-skill-chip. Sie glich aus, dass base.css in .pilots-section einen
+       GELBEN Fokusring vergab — auf der inzwischen hellen Fläche nur 1,15:1.
+       Der Gelb-Selektor ist raus, der globale :focus-visible liefert dasselbe
+       Ergebnis (gemessen: rgb(38,38,38), 2px solid, Versatz 2px). Nicht wieder
+       einfügen, ohne vorher zu messen. */
 
     button.card-trigger-chip { cursor: pointer; font-family: var(--font-mono); }
     button.card-trigger-chip:hover { background: var(--c-yellow); border-color: var(--c-yellow); color: var(--c-black); }

@@ -135,10 +135,15 @@
       color: var(--c-gray-m); margin: 0 0 2.4rem; max-width: 88ch;
     }
     .res-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.8rem; align-items: start; }
+    /* Karten-Primitive: --paper + --r-lg, wie .skill-card, .area-card,
+       .pilot-card und .sr-card. Die drei Kartentypen dieser Seite (.res-card,
+       .g-card, .faq-card) waren zusammen die letzte Ausnahme (--c-white +
+       --r-md). Alle drei angeglichen, damit die Seite weder intern noch
+       gegenueber den Schwesterseiten aus der Reihe faellt. */
     .res-card {
       position: relative;
       display: grid; grid-template-columns: 6.2rem 1fr;
-      background: var(--c-white); border: 1px solid var(--line); border-radius: var(--r-md);
+      background: var(--paper); border: 1px solid var(--line); border-radius: var(--r-lg);
       transition: transform .22s cubic-bezier(.2,.7,.2,1), box-shadow .22s ease, border-color .22s ease;
     }
     /* Editorial-Pass: Karten-Hover-Sprache der Startseite (Offset-Schatten in Gelb) */
@@ -175,6 +180,9 @@
     .res-title {
       display: inline; font-size: 1.8rem; font-weight: 700; letter-spacing: -.01em;
       line-height: 1.35; color: var(--c-black); margin: 0;
+      /* Lange Komposita sonst hart am Kartenrand abgeschnitten — gleiche
+         Behandlung wie .skill-name, .sr-name und .modal-header h2. */
+      overflow-wrap: anywhere;
     }
     a.res-title { text-decoration: none; }
     a.res-title:hover { text-decoration: underline; text-decoration-color: var(--c-yellow); text-decoration-thickness: 2px; text-underline-offset: 3px; }
@@ -481,7 +489,7 @@
     .g-letter::before { content: ''; width: 1.8rem; height: .9rem; background: var(--c-yellow); flex-shrink: 0; }
     .g-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .8rem 1.6rem; align-items: start; }
     .g-card {
-      background: var(--c-white); border: 1px solid var(--line); border-radius: var(--r-md);
+      background: var(--paper); border: 1px solid var(--line); border-radius: var(--r-lg);
       transition: border-color .25s ease, box-shadow .25s ease;
     }
     .g-card:hover { border-color: var(--c-black); }
@@ -543,7 +551,7 @@
     .faq-sub { font-size: 1.6rem; line-height: 1.6; color: var(--c-ink-body); max-width: 62ch; margin: 0; }
     .faq-list { display: flex; flex-direction: column; gap: 1.2rem; margin-top: 3.2rem; }
     .faq-card {
-      background: var(--c-white); border: 1px solid var(--line); border-radius: var(--r-md);
+      background: var(--paper); border: 1px solid var(--line); border-radius: var(--r-lg);
       transition: border-color .25s ease, box-shadow .25s ease;
     }
     .faq-card:hover { border-color: var(--c-black); }
