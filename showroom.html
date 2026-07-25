@@ -36,7 +36,14 @@
 
     /* Ehrlichkeits-Marker liegt im Karten-Körper (statisch), NICHT mehr über dem
        Live-Thumbnail — dort kollidierte er mit Logos/Badges der Demos selbst. */
-    .sr-marker-row { display: flex; align-items: center; }
+    /* Ehrlichkeits-Marker links, Merken-Knopf rechts in derselben Zeile. */
+    .sr-marker-row { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+    /* .fav-btn bringt aus base.css negative Margins mit, die auf das Padding der
+       Skill-Karte abgestimmt sind (-1,6rem). In der Case-Karte würde das den Stern
+       aus dem Kartenkopf in die Vorschau ziehen: hier nur so viel Zug, dass die
+       ≥44px-Trefffläche (Padding aus base.css) die Zeilenhöhe nicht aufbläht und
+       der Stern optisch am rechten Innenrand sitzt. */
+    .sr-marker-row .fav-btn { margin: -1.2rem -.7rem -1.2rem 0; }
 
     /* Feedback-Geste an das kanonische Vote-Muster angeglichen (LU.vote + Zähl-Chip),
        damit die „Will ich auch“-Reaktion aussieht wie die Zustimmungs-Votes in
@@ -344,6 +351,35 @@
         ${LU.vote}<span class="sr-react-label">Will ich auch</span>
         <span class="sr-react-count" data-react-count="${c.id}">${reactVotes(c)}</span>${mitTitel ? `<span class="sr-only"> — ${escHtml(c.titel)}</span>` : ''}</button>`;
     }
+    // ===== MERKEN (Favoriten, fav:case:<id>) =====
+    /* Mechanik kommt aus shared/base.js. Der Typ 'case' MUSS hier explizit
+       übergeben werden: diese Seite setzt bewusst kein window.RatingConfig
+       (siehe Kommentar oben — Cases haben keine Sterne), ohne Typ fiele die
+       Engine auf den Standard 'skill' zurück und die Merkung landete still im
+       falschen Namensraum (fav:skill:<id>). Dann fände „Deine Sachen“ zwar
+       einen Eintrag, aber unter der Typ-Bezeichnung „Skill“.
+       aria-label trägt den Projektnamen — im Grid heißen sonst alle Merken-
+       Knöpfe gleich (dasselbe Problem wie bei „Will ich auch“ darunter). */
+    function favBtnHtml(c) {
+      const fav = isFavorite(c.id, 'case');
+      return `<button type="button" class="fav-btn${fav ? ' active' : ''}" data-fav-id="${c.id}"
+        onclick="toggleFavorite(event,'${c.id}','case')"
+        aria-pressed="${fav}"
+        aria-label="${escHtml(c.titel)} ${fav ? 'aus Favoriten entfernen' : 'zu Favoriten hinzufügen'}">${fav ? '★' : '☆'}</button>`;
+    }
+
+    /* Zustand gezielt nachziehen statt neu zu rendern: der Fokus bleibt auf dem
+       Knopf (Tastatur) und die Vorschau-iframes werden nicht neu geladen. */
+    window.onFavoritesChanged = (id, isNowFav) => {
+      const c = caseById(id);
+      document.querySelectorAll(`.fav-btn[data-fav-id="${id}"]`).forEach(btn => {
+        btn.classList.toggle('active', isNowFav);
+        btn.setAttribute('aria-pressed', String(isNowFav));
+        btn.textContent = isNowFav ? '★' : '☆';
+        btn.setAttribute('aria-label', `${c ? c.titel : 'Projekt'} ${isNowFav ? 'aus Favoriten entfernen' : 'zu Favoriten hinzufügen'}`);
+      });
+    };
+
     function toggleReaction(evt, id) {
       if (evt) evt.stopPropagation();
       const now = toggleVote('reaktion', id);
@@ -432,7 +468,7 @@
                     tabindex="-1" aria-hidden="true" title="Vorschau (nicht interaktiv): ${escHtml(c.titel)}"></iframe>
           </div>
           <div class="sr-body">
-            <div class="sr-marker-row">${markerHtml(c)}</div>
+            <div class="sr-marker-row">${markerHtml(c)}${favBtnHtml(c)}</div>
             <div class="sr-kopf">
               <!-- h3: Karten-Titel als Überschrift unter der Sektions-h2 — ergibt
                    h1→h2→h3 ohne Sprung und macht das Grid per Überschriften-

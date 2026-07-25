@@ -223,6 +223,26 @@
     .res-card .vote-btn.voted { background: var(--c-yellow); border-color: var(--c-yellow); color: var(--c-black); }
     .res-card .vote-count { background: rgba(38,38,38,.08); color: var(--c-black); }
     .res-card .vote-btn.voted .vote-count { background: rgba(38,38,38,.15); }
+
+    /* „Merken“-Stern im Ressourcen-Kartenkopf. Gestalt kommt fertig aus base.css
+       (.fav-btn), hier nur die Einpassung:
+       — margin-left:auto schiebt ihn an den rechten Rand der Kopfzeile;
+       — position/z-index sind PFLICHT, nicht Deko: der Titel darunter ist ein
+         Inline-Link mit vergrößerter ::after-Trefferfläche (inset:-1.2rem 0, im
+         Coarse-Pointer-Block weiter unten). Die ragt 12px nach oben in die
+         Kopfzeile und überlappt dort messbar die untere linke Ecke des Sterns.
+         Ohne position:relative liegt der Stern als reiner Inline-Inhalt UNTER
+         dem positionierten ::after — ein Tipp auf diese Ecke öffnete dann auf
+         dem Handy die verlinkte Seite, statt zu merken. Gegenprobe gemacht:
+         mit der Regel treffen alle neun Rasterpunkte des Knopfes den Knopf,
+         ohne sie zwei davon den Link bzw. die Quellenangabe darüber.
+         z-index 3 liegt über dem „Start hier“-Band (z-index 2).
+       Die negativen Ränder ersetzen die aus base.css (dort für den Katalog-
+       Kartenkopf gerechnet); die ≥44px-Trefferfläche bleibt unangetastet. */
+    .res-card .fav-btn {
+      position: relative; z-index: 3; font-size: 1.9rem;
+      margin: -1.1rem -1.1rem -1.1rem auto;
+    }
     .res-toggle {
       background: none; border: none; color: var(--c-gray-d);
       font-family: inherit; font-size: 1.3rem; font-weight: 600;
@@ -1112,6 +1132,31 @@
       return h;
     }
 
+    /* ===== MERKEN (Favoriten) — nur Ressourcen =====
+       Mechanik komplett aus shared/base.js (isFavorite/toggleFavorite,
+       Speicherschlüssel fav:<typ>:<id>); es fehlte nur das Bedienelement.
+       Der Typ 'ressource' MUSS hier explizit übergeben werden: diese Seite hat
+       bewusst KEIN window.RatingConfig (siehe Kopf des Seiten-Scripts), weil sie
+       drei Typen nebeneinander führt. Ohne expliziten Typ fiele base.js auf den
+       Standard 'skill' zurück und die Merkung landete still unter fav:skill:<id>.
+       aria-label trägt den Titel, weil im Regal sonst Dutzende Sterne identisch
+       „Zu Favoriten hinzufügen“ hießen. */
+    function resFavBtnHtml(r) {
+      const fav = isFavorite(r.id, 'ressource');
+      return `<button type="button" class="fav-btn${fav ? ' active' : ''}" data-fav-id="${escHtml(r.id)}" onclick="toggleFavorite(event,'${r.id}','ressource')" aria-pressed="${fav}" aria-label="${escHtml(r.titel)} ${fav ? 'aus Favoriten entfernen' : 'zu Favoriten hinzufügen'}">${fav ? '★' : '☆'}</button>`;
+    }
+    /* Zustand gezielt nachziehen statt neu zu rendern: der Fokus bleibt auf dem
+       Knopf (Tastaturbedienung), aufgeklappte Karten bleiben stehen. */
+    window.onFavoritesChanged = function (id, isNowFav) {
+      document.querySelectorAll(`.fav-btn[data-fav-id="${CSS.escape(id)}"]`).forEach(btn => {
+        const r = resById(id);
+        btn.classList.toggle('active', isNowFav);
+        btn.setAttribute('aria-pressed', String(isNowFav));
+        btn.textContent = isNowFav ? '★' : '☆';
+        btn.setAttribute('aria-label', `${r ? r.titel : 'Ressource'} ${isNowFav ? 'aus Favoriten entfernen' : 'zu Favoriten hinzufügen'}`);
+      });
+    };
+
     function resCardHtml(r, idx, isStart) {
       const open = _resExpanded.has(r.id);
       const voted = hasVoted('ressource', r.id);
@@ -1133,6 +1178,7 @@
               <span class="res-typ">${TYP_CARD_LABEL[r.typ] || r.typ}</span>
               <span class="res-quelle">${escHtml(r.quelle)}</span>
               ${r.intern ? '<span class="intern-tag">Link folgt</span>' : ''}
+              ${resFavBtnHtml(r)}
             </div>
             ${titleHtml}
             <p class="res-fuerdich"><strong>Für dich, wenn</strong> ${escHtml(r.fuerDich)}</p>

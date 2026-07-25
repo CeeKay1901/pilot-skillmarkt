@@ -192,6 +192,16 @@
       .font-card:hover, .pal-card:hover, .pat-card:hover, .baustein-card:hover, .bk-data-card:hover { transform: none; }
     }
 
+    /* ===== „Merken“-Stern in den Kartenköpfen =====
+       Die Gestalt kommt fertig aus base.css (.fav-btn) — hier wird nur die
+       rechte Kopfgruppe gebildet: Badge/Button und Stern stehen zusammen am
+       rechten Rand, damit der Kartentitel links seine Grundlinie behält.
+       Die negativen Ränder von .fav-btn (dort für den Katalog-Kartenkopf
+       gerechnet) werden auf die hiesigen Kopfzeilen angepasst; die ≥44px-
+       Trefferfläche aus base.css bleibt dabei unangetastet. */
+    .vl-kopf-rechts { display: inline-flex; align-items: center; gap: .8rem; margin-left: auto; }
+    .vl-kopf-rechts .fav-btn { font-size: 1.9rem; margin: -1.1rem -1.1rem -1.1rem -.4rem; }
+
     /* Editorial-Pass: Sektions-Überschriften kräftiger (Startseiten-Sprache) */
     .lib-sec-head h2 { font-weight: 700; }
 
@@ -497,6 +507,37 @@
     }
     window.vlClearSearch = vlClearSearch;
 
+    /* ===== MERKEN (Favoriten) — gemeinsam für BEIDE Module dieser Seite =====
+       Die Mechanik kommt vollständig aus shared/base.js (isFavorite/toggleFavorite,
+       Speicherschlüssel fav:<typ>:<id>); hier fehlten nur die Bedienelemente.
+
+       Der Typ wird IMMER EXPLIZIT übergeben und NIE aus window.RatingConfig
+       abgeleitet: Diese Seite trägt zwei Module und schaltet RatingConfig beim
+       Reiterwechsel um (vlShowTab: 'asset' bzw. 'baustein', dazu die Defaults in
+       den beiden Modul-IIFEs). Ein impliziter Typ landete also in dem Namensraum,
+       dessen Reiter zuletzt aktiv war — ein gemerkter Baustein würde dann still
+       unter fav:asset:<id> abgelegt und stünde in „Deine Sachen“ falsch da.
+       aria-label trägt den Namen, weil im Grid sonst Dutzende Sterne identisch
+       „Zu Favoriten hinzufügen“ hießen. */
+    function vlFavBtnHtml(id, typ, name) {
+      const fav = isFavorite(id, typ);
+      return `<button type="button" class="fav-btn${fav ? ' active' : ''}" data-fav-id="${escHtml(id)}" data-fav-typ="${typ}" data-fav-name="${escHtml(name)}" onclick="toggleFavorite(event,'${id}','${typ}')" aria-pressed="${fav}" aria-label="${escHtml(name)} ${fav ? 'aus Favoriten entfernen' : 'zu Favoriten hinzufügen'}">${fav ? '★' : '☆'}</button>`;
+    }
+    /* Zustand gezielt nachziehen statt das Grid neu zu rendern: der Fokus bleibt
+       auf dem Knopf (Tastaturbedienung) und die Karten springen nicht.
+       Gelesen wird pro Knopf mit SEINEM data-fav-typ — der Rückruf aus base.js
+       liefert nur die id, und dieselbe id könnte theoretisch in beiden Modulen
+       vorkommen. So bleibt jeder Stern in seinem eigenen Namensraum korrekt. */
+    window.onFavoritesChanged = function (id) {
+      document.querySelectorAll(`.fav-btn[data-fav-id="${CSS.escape(id)}"]`).forEach(btn => {
+        const now = isFavorite(id, btn.dataset.favTyp);
+        btn.classList.toggle('active', now);
+        btn.setAttribute('aria-pressed', String(now));
+        btn.textContent = now ? '★' : '☆';
+        btn.setAttribute('aria-label', `${btn.dataset.favName || ''} ${now ? 'aus Favoriten entfernen' : 'zu Favoriten hinzufügen'}`);
+      });
+    };
+
     function vlShowTab(which, fromClick) {
       /* E12 — Tab-Wechsel-Verhalten: das Suchfeld gehört zu KEINEM Panel, darum
          wird es beim Wechsel GELEERT (einfachstes, konsistentes Verhalten — kein
@@ -734,7 +775,7 @@
           <div class="baustein-body">
             <div class="baustein-kopf">
               <span class="baustein-name">${escHtml(b.name)}</span>
-              <span class="baustein-schwer">${escHtml(kategorieLabel(b))}</span>
+              <span class="vl-kopf-rechts"><span class="baustein-schwer">${escHtml(kategorieLabel(b))}</span>${vlFavBtnHtml(b.id, 'baustein', b.name)}</span>
             </div>
             <p class="baustein-desc">${escHtml(b.beschreibung)}</p>
             <div class="baustein-meta">
@@ -1180,7 +1221,7 @@
     function fontCardHtml(f) {
       return `
         <article class="font-card" id="asset-${f.id}" data-id="${f.id}" data-typ="font">
-          <div class="ff-kopf"><span class="ff-name">${escHtml(f.name)}</span><span class="ff-kat">${KAT_LABEL[f.kategorie] || f.kategorie}</span></div>
+          <div class="ff-kopf"><span class="ff-name">${escHtml(f.name)}</span><span class="vl-kopf-rechts"><span class="ff-kat">${KAT_LABEL[f.kategorie] || f.kategorie}</span>${vlFavBtnHtml(f.id, 'asset', f.name)}</span></div>
           <div class="ff-preview" id="ff-sample-${f.id}" style="font-family:'${f.fontFamily}',sans-serif;font-size:34px" contenteditable="true" spellcheck="false" role="textbox" aria-label="Beispieltext ${escHtml(f.name)} — editierbar">${escHtml(f.beispieltext)}</div>
           <div class="ff-controls">
             ${LU['text-size']}
@@ -1222,6 +1263,7 @@
           <div class="iconset-kopf">
             <span class="iconset-name">${escHtml(s.name)}</span>
             <span class="iconset-anzahl">${s.anzahl.toLocaleString('de-DE')} Icons</span>
+            <span class="vl-kopf-rechts">${vlFavBtnHtml(s.id, 'asset', s.name)}</span>
           </div>
           <p class="iconset-stil">${escHtml(s.stil)}</p>
           <div class="iconset-foot">
@@ -1275,7 +1317,7 @@
       return `
         <article class="pal-card" id="asset-${p.id}" data-id="${p.id}" data-typ="palette">
           <div class="ff-kopf"><span class="pal-name">${escHtml(p.name)}</span>
-            <button class="lib-btn" onclick="copyPaletteCss('${p.id}')">${LU.copy}CSS-Variablen</button></div>
+            <span class="vl-kopf-rechts"><button class="lib-btn" onclick="copyPaletteCss('${p.id}')">${LU.copy}CSS-Variablen</button>${vlFavBtnHtml(p.id, 'asset', p.name)}</span></div>
           <p class="pal-stimmung">${escHtml(p.stimmung)}</p>
           ${palSwatchesHtml(p)}
           ${palPairsHtml(p)}
@@ -1300,7 +1342,7 @@
         <div class="pat-card" id="asset-${p.id}" data-id="${p.id}" data-typ="pattern">
           <div class="pat-preview" style="${p.css}"></div>
           <div class="pat-body">
-            <div class="ff-kopf"><span class="pat-name">${escHtml(p.name)}</span><span class="pat-typ">${p.typ === 'gradient' ? 'Verlauf' : 'Muster'}</span></div>
+            <div class="ff-kopf"><span class="pat-name">${escHtml(p.name)}</span><span class="vl-kopf-rechts"><span class="pat-typ">${p.typ === 'gradient' ? 'Verlauf' : 'Muster'}</span>${vlFavBtnHtml(p.id, 'asset', p.name)}</span></div>
             <p class="pat-stimmung">${escHtml(p.stimmung)}</p>
             <div class="pat-foot">
               <span class="lib-lic">${LU.check}${escHtml(p.lizenz)}</span>

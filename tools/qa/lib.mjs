@@ -20,6 +20,21 @@ export const basis = (arg) => (arg || 'http://localhost:8401/').replace(/\/?$/, 
 export const browser = () => chromium.launch({ args: ['--no-sandbox'] });
 
 /**
+ * FALLE 0 — laufende Einblend-Animationen verfälschen JEDE Farbmessung.
+ *
+ * `.card-in { animation: cardIn .4s ease both }` (base.css:890) läuft mit
+ * gestaffelter Verzögerung pro Karte. Wer mitten hinein misst, sieht Deckkraft
+ * 0.44 statt 1 und bekommt Hunderte Phantom-Kontrastfehler — real gemessen:
+ * 232 „Befunde", die sich sämtlich in Luft auflösten.
+ *
+ * Statt noch eine Klasse zu erzwingen, wird der Ausweg genutzt, den das Projekt
+ * selbst vorsieht: base.css:891 schaltet bei `prefers-reduced-motion: reduce`
+ * die Animation ab. Deshalb laufen ALLE Messkontexte mit reducedMotion.
+ */
+export const messKontext = (b, opts = {}) =>
+  b.newContext({ reducedMotion: 'reduce', ...opts });
+
+/**
  * FALLE 1 — Einblend-Animationen.
  * Die Seite blendet Inhalte per IntersectionObserver ein: `.anim-reveal` bekommt
  * `.in-view`, auf skills.html heißt das Paar `.cat-reveal`/`.in`. Wer das nicht

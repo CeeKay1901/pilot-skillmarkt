@@ -77,7 +77,15 @@ for t in e1-regression e3-prompts e6-bibliothek e7-baukasten e8-showroom e9-such
 done
 ```
 
-**Sollwerte (alle grün, 0 Fehler):** e1 35 · e3 46 · e6 45 · e7 41 · e8 39 · e9 16 · e10 24
+**Maßgeblich ist der Exit-Code (0 = alle Checks grün) und `"failed": []`** — nicht eine gezählte Zahl.
+
+Zur Warnung, weil es schon zu falschen Berichten geführt hat: `grep -c '"pass": true'` zählt **keine Checks**, sondern Zeichenketten-Treffer inklusive verschachtelter Teilergebnisse. Dieselbe Suite kommt damit auf 46, während sie real 18 Checks hat. Wenn du eine Zahl brauchen solltest:
+
+```bash
+node tests/e3-prompts.cjs http://localhost:8412/ | grep -oE '"[0-9]{2}[a-z]?_[a-z0-9_]+":' | sort -u | wc -l
+```
+
+Reale Check-Zahlen: e1 16 · e3 18 · e6 17 · e7 15 · e8 15 · e9 8 · e10 7.
 
 Playwright-Aufruf in eigenen Skripten:
 ```js

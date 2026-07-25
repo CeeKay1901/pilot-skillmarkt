@@ -22,7 +22,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { execSync } from 'node:child_process';
-import { chromium, SEITEN, basis, browser, oeffne, AUFDECKEN, KONTRAST_IM_BROWSER, zeile, bilanz } from './lib.mjs';
+import { chromium, SEITEN, basis, browser, messKontext, oeffne, AUFDECKEN, KONTRAST_IM_BROWSER, zeile, bilanz } from './lib.mjs';
 
 const WURZEL = path.resolve(path.dirname(new URL(import.meta.url).pathname), '../..');
 const [, , pruefung, urlArg] = process.argv;
@@ -31,7 +31,7 @@ const BASIS = basis(urlArg);
 /* ------------------------------------------------------------------ kontrast */
 async function kontrast() {
   const b = await browser();
-  const ctx = await b.newContext({ viewport: { width: 1440, height: 900 } });
+  const ctx = await messKontext(b, { viewport: { width: 1440, height: 900 } });
   const alle = [];
   for (const s of SEITEN) {
     const { p } = await oeffne(ctx, BASIS + s);
@@ -66,7 +66,7 @@ const SUCHWOERTER = ['design', 'briefing', 'excel'];
 
 async function zaehler() {
   const b = await browser();
-  const ctx = await b.newContext({ viewport: { width: 1440, height: 900 } });
+  const ctx = await messKontext(b, { viewport: { width: 1440, height: 900 } });
   const luegen = [];
   for (const [seite, cfg] of Object.entries(ZAEHLER_SEITEN)) {
     const { p } = await oeffne(ctx, BASIS + (cfg.url || seite));
@@ -143,7 +143,7 @@ async function robust() {
   for (const [seite, raster, schluessel] of GIFT_ZIELE) {
     for (const k of schluessel) {
       for (const v of GIFT) {
-        const ctx = await b.newContext();
+        const ctx = await messKontext(b);
         const { p, fehler } = await oeffne(ctx, BASIS + seite, { aufdecken: false });
         await p.evaluate(([kk, vv]) => localStorage.setItem(kk, vv), [k, v]);
         await p.reload({ waitUntil: 'networkidle' });
@@ -173,7 +173,7 @@ async function responsive() {
   const b = await browser();
   const treffer = [];
   for (const vp of VIEWPORTS) {
-    const ctx = await b.newContext({ viewport: { width: vp.w, height: vp.h }, isMobile: vp.w < 500, hasTouch: vp.w < 500 });
+    const ctx = await messKontext(b, { viewport: { width: vp.w, height: vp.h }, isMobile: vp.w < 500, hasTouch: vp.w < 500 });
     for (const s of SEITEN) {
       const { p, fehler } = await oeffne(ctx, BASIS + s);
       const r = await p.evaluate(() => {
@@ -339,7 +339,7 @@ async function a11y() {
     return false;
   }
   const b = await browser();
-  const ctx = await b.newContext({ viewport: { width: 1440, height: 900 } });
+  const ctx = await messKontext(b, { viewport: { width: 1440, height: 900 } });
   const alle = [];
   try {
     for (const s of SEITEN) {

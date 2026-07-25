@@ -247,6 +247,12 @@
       background: var(--c-yellow); color: var(--c-black);
       padding: .3em .7em .25em; white-space: nowrap; flex-shrink: 0;
     }
+
+    /* Merken-Knopf sitzt rechts in der Kartenkopfzeile, Eyebrow + Highlight-Flag
+       links daneben. Gleiche Aufteilung wie im Skill-Katalog (dort heißt die
+       Gruppe ebenfalls .card-top-left); .card-top selbst ist bereits ein Flex mit
+       space-between (base.css). Seitenlokal, weil base.css fremdes Eigentum ist. */
+    .card-top-left { display: inline-flex; align-items: center; gap: .8rem; min-width: 0; }
   </style>
 </head>
 <body>
@@ -668,6 +674,36 @@
       render();
     }
 
+    // ===== MERKEN (Favoriten) =====
+    /* Mechanik kommt komplett aus shared/base.js (isFavorite/toggleFavorite,
+       Speicherschlüssel fav:<typ>:<id>). Der Typ 'prompt' wird EXPLIZIT
+       übergeben, obwohl window.RatingConfig ihn hier ohnehin auflösen würde:
+       das dokumentiert den Namensraum direkt am Aufruf und bleibt richtig,
+       falls die Seite später ohne RatingConfig oder mit gemischten Typen
+       arbeitet. Ein falscher Typ landete sonst still unter fav:skill:<id>.
+       aria-label trägt den Prompt-Namen, weil im Grid sonst 30 Knöpfe
+       identisch „Zu Favoriten hinzufügen“ heißen (gleiches Muster wie beim
+       Kopier-Chip daneben). */
+    function favBtnHtml(p) {
+      const fav = isFavorite(p.id, 'prompt');
+      return `<button type="button" class="fav-btn${fav ? ' active' : ''}" data-fav-id="${p.id}"
+        onclick="toggleFavorite(event,'${p.id}','prompt')"
+        aria-pressed="${fav}"
+        aria-label="${escHtml(p.name)} ${fav ? 'aus Favoriten entfernen' : 'zu Favoriten hinzufügen'}">${fav ? '★' : '☆'}</button>`;
+    }
+
+    /* Zustand gezielt nachziehen statt das Grid neu zu rendern: der Fokus bleibt
+       auf dem Knopf (Tastaturbedienung) und die Karten springen nicht. */
+    window.onFavoritesChanged = (id, isNowFav) => {
+      document.querySelectorAll(`.fav-btn[data-fav-id="${id}"]`).forEach(btn => {
+        const p = PROMPTS.find(x => x.id === id);
+        btn.classList.toggle('active', isNowFav);
+        btn.setAttribute('aria-pressed', String(isNowFav));
+        btn.textContent = isNowFav ? '★' : '☆';
+        btn.setAttribute('aria-label', `${p ? p.name : 'Prompt'} ${isNowFav ? 'aus Favoriten entfernen' : 'zu Favoriten hinzufügen'}`);
+      });
+    };
+
     // ===== RENDER CARD =====
     /* E11 Karten-Diät: Titel + ein Satz + Aufgaben-Gruppe + kompakte Bewertung +
        Kopierchip. Prompt-Vorschau, Schwierigkeit, Plattformen und Kopier-Zähler
@@ -684,8 +720,11 @@
       return `
         <article class="skill-card prompt-card${isSpot ? ' -spot' : ''}${state._noCardAnim ? '' : ' card-in'}" style="animation-delay:${state._noCardAnim ? 0 : delay}ms" onclick="openModal('${p.id}')" tabindex="0" role="button" aria-label="${escHtml(p.name)} öffnen" onkeydown="if((event.key==='Enter'||event.key===' ')&&event.target===this){event.preventDefault();openModal('${p.id}')}">
           <div class="card-top">
-            <span class="card-sub">${escHtml(groupLabel(p.taskGroup))}</span>
-            ${isSpot ? '<span class="card-spot-flag" aria-label="Highlight-Prompt">Highlight</span>' : ''}
+            <span class="card-top-left">
+              <span class="card-sub">${escHtml(groupLabel(p.taskGroup))}</span>
+              ${isSpot ? '<span class="card-spot-flag" aria-label="Highlight-Prompt">Highlight</span>' : ''}
+            </span>
+            ${favBtnHtml(p)}
           </div>
           <h3 class="skill-name">${escHtml(p.name)}</h3>
           <p class="skill-tagline">${escHtml(p.tagline)}</p>
