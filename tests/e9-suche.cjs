@@ -37,7 +37,11 @@ const PROMPTS_TARGET = TARGET.replace(/skills\.html.*$/, 'prompts.html');
 const VORLAGEN_TARGET = TARGET.replace(/skills\.html.*$/, 'vorlagen.html');
 
 // Deep-Link-Muster je Typ (Vertrag). Ein gültiger Treffer-href matcht genau eines davon.
-const DEEPLINK_RE = /(skills\.html\?skill=|prompts\.html\?p=|hilfe\.html\?(befehl|begriff|faq)=|lernen(-hilfe)?\.html\?r=|vorlagen\.html\?a=|vorlagen\.html\?b=|showroom\.html\?case=)/;
+// vorlagen.html?d= (Beispieldaten) kam am 25.07.2026 dazu: die acht Übungsdateien
+// sind seitdem merkbar und damit auch durchsuchbar, und jede suchbare Gruppe braucht
+// laut diesem Vertrag ihren eigenen Deep-Link. Der Sollwert wurde also bewusst
+// erweitert, weil der Bestand echt gewachsen ist — nicht, um den Test grün zu kriegen.
+const DEEPLINK_RE = /(skills\.html\?skill=|prompts\.html\?p=|hilfe\.html\?(befehl|begriff|faq)=|lernen(-hilfe)?\.html\?r=|vorlagen\.html\?a=|vorlagen\.html\?b=|vorlagen\.html\?d=|showroom\.html\?case=)/;
 
 const VIEWPORTS = [
   { name: 'desktop', viewport: { width: 1280, height: 800 } },

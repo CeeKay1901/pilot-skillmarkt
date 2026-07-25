@@ -1420,6 +1420,14 @@ const GSEARCH_GROUPS = [
     href: it => 'vorlagen.html?b=' + encodeURIComponent(it.id),
     title: it => it.name, sub: it => it.beschreibung,
     fields: it => [[it.name || '', 5], [(it.tags || []).join(' '), 3], [it.beschreibung || '', 2], [it.einsatz || '', 1]] },
+  /* Beispieldaten (die 8 Übungsdateien im Bausteine-Modul). Sie liegen in
+     data/bausteine.js, also NICHT in GSEARCH_SOURCES eintragen — der Eintrag
+     für BAUSTEINE lädt dieselbe Datei, und zwei Einträge auf eine Quelle sind
+     genau die Doppel-Anfrage, vor der der Kommentar bei GLOSSAR/FAQ warnt. */
+  { key: 'daten', label: 'Beispieldaten', glob: 'BEISPIELDATEN',
+    href: it => 'vorlagen.html?d=' + encodeURIComponent(it.id),
+    title: it => it.datei, sub: it => it.beschreibung,
+    fields: it => [[it.datei || '', 5], [it.beschreibung || '', 2], [it.format || '', 2], [it.spaltenHinweis || '', 1], [it.uebungstext || '', 1]] },
   { key: 'case', label: 'Projekte', glob: 'CASES',
     href: it => 'showroom.html?case=' + encodeURIComponent(it.id),
     title: it => it.titel, sub: it => it.kurz,
@@ -1442,6 +1450,7 @@ function _gsGlobal(name) {
       case 'RESSOURCEN': return (typeof RESSOURCEN !== 'undefined') ? RESSOURCEN : undefined;
       case 'ASSETS':     return (typeof ASSETS     !== 'undefined') ? ASSETS     : undefined;
       case 'BAUSTEINE':  return (typeof BAUSTEINE  !== 'undefined') ? BAUSTEINE  : undefined;
+      case 'BEISPIELDATEN': return (typeof BEISPIELDATEN !== 'undefined') ? BEISPIELDATEN : undefined;
       case 'CASES':      return (typeof CASES      !== 'undefined') ? CASES      : undefined;
     }
   } catch (e) {}
@@ -1734,7 +1743,7 @@ function closeAboutModal() {
 const DS_TYPE_LABEL = {
   skill: 'Skill', plugin: 'Plugin', framework: 'Framework', prompt: 'Prompt',
   baustein: 'Baustein', asset: 'Asset', case: 'Projekt', befehl: 'Befehl',
-  begriff: 'Begriff', faq: 'FAQ', ressource: 'Ressource'
+  begriff: 'Begriff', faq: 'FAQ', ressource: 'Ressource', daten: 'Beispieldatei'
 };
 
 function _dsScan() {

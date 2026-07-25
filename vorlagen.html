@@ -204,6 +204,12 @@
        base.css die 44px seit der Korrektur per min-width/min-height fest,
        unabhängig von der Schriftgröße. Diese Zeile darf also verkleinern. */
     .vl-kopf-rechts { display: inline-flex; align-items: center; gap: .8rem; margin-left: auto; }
+    /* Merken-Stern in der Kopfzeile der Beispieldaten-Karte: schiebt sich an den
+       rechten Rand, ohne den Dateinamen zu verdrängen (der darf umbrechen). Die
+       negativen Ränder holen das 1.2rem-Padding aus base.css wieder herein, damit
+       der Stern nicht aus der Zeile wächst — die 44px-Trefferfläche bleibt,
+       die hält base.css jetzt per min-width/min-height fest. */
+    .bk-data-kopf .fav-btn { margin: -1.1rem -1.1rem -1.1rem auto; font-size: 1.9rem; }
     .vl-kopf-rechts .fav-btn { font-size: 1.9rem; margin: -1.1rem -1.1rem -1.1rem -.4rem; }
 
     /* Editorial-Pass: Sektions-Überschriften kräftiger (Startseiten-Sprache) */
@@ -863,6 +869,7 @@
             <span class="bk-data-ic">${d.format === 'Markdown' ? LU['file-text'] : (d.format === 'SVG' ? LU.palette : LU.database)}</span>
             <span class="bk-data-name">${escHtml(d.datei)}</span>
             <span class="bk-data-format">${escHtml(d.format)}</span>
+            ${vlFavBtnHtml(d.id, 'daten', d.datei)}
           </div>
           <div class="bk-data-facts">${facts.map(f => `<span>${escHtml(f)}</span>`).join('')}</div>
           <p class="bk-data-desc">${escHtml(d.beschreibung)}</p>
@@ -1017,6 +1024,12 @@
           const qs = new URLSearchParams(location.search);
           const v = qs.get('b');
           if (v && !location.hash) history.replaceState(null, '', location.pathname + location.search + '#b/' + encodeURIComponent(v));
+          /* ?d=<id> → Beispieldatei. Gleiche Normalisierung wie ?b= und ?a=:
+             Query-Form für geteilte Links, Hash-Form für die Mechanik. Der
+             #bk-data-Zweig unten scrollt und hebt hervor; die Beispieldaten
+             liegen im Bausteine-Tab, der ohnehin der Standard ist. */
+          const vd = qs.get('d');
+          if (vd && !location.hash) history.replaceState(null, '', location.pathname + location.search + '#bk-data-' + encodeURIComponent(vd));
         } catch (e) {}
       }
       if (_hashLock) return;
@@ -1385,6 +1398,12 @@
       // .logo-thumb in base.css (8rem × 4rem) — die Attribute sind die Rückfall-
       // ebene, damit der Platz auch ohne geladenes Stylesheet reserviert ist und
       // loading="lazy" keinen Sprung verursachen kann.
+      /* BEWUSST OHNE Merken-Stern — im Gegensatz zu Fonts, Iconsets, Paletten,
+         Patterns und Beispieldaten. Merken löst das Problem „ich finde es in
+         einer großen Menge nicht wieder". Hier sind es ZWEI Logos, die
+         unfilterbar und ungefiltert im Marken-Panel stehen und direkt am Knopf
+         herunterladbar sind — ein Stern wäre Rauschen, kein Nutzen.
+         Ändert sich die Zahl deutlich, gilt die Abwägung neu. */
       const logos = BRAND.logos.map(l => `
         <div class="logo-card">
           <img class="logo-thumb${l.id === 'pilot-logo-dark' ? ' -dark' : ''}" src="${l.datei}" alt="${escHtml(l.name)}" width="91" height="45" loading="lazy">
