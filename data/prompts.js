@@ -1,9 +1,14 @@
 // pilot AI Marketplace — Prompt-Sammlung (ausgelagerte Daten, Etappe E3).
 // Klassisches Script, definiert globale Konstanten:
-//   PROMPTS           — alle Einträge (5 Leuchttürme mit builder/variants/preview + 18 Breite-Einträge)
+//   PROMPTS           — alle Einträge (Leuchttürme mit builder/variants/preview + Breite-Einträge)
 //   PROMPT_PLATFORMS  — Plattform-Liste (eigene Kopie; skills.js wird auf prompts.html nicht geladen)
-//   PROMPT_SPOTLIGHT  — Set der 5 Leuchtturm-IDs
 //   PROMPT_START      — „Fang hier an“-Kandidat der Redaktion
+// Ein Leuchtturm ist kein eigener Bestand mehr: Wer ein `builder`-Feld hat, IST einer.
+// Bis Juli 2026 stand hier zusätzlich ein handgepflegtes Set der fünf Leuchtturm-IDs —
+// eine Liste neben einer Eigenschaft, die dasselbe sagt. Zwei Bestände, die zufällig
+// deckungsgleich sind, laufen beim ersten neuen Baukasten-Prompt lautlos auseinander.
+// Darum entfällt die Liste; Fähnchen, Kartenrand und Sortierung in prompts.html
+// hängen alle an `p.builder`.
 // Platzhalter-Konvention: [GROSSBUCHSTABEN] in eckigen Klammern — werden im UI gelb
 // markiert und beim Kopieren UNVERÄNDERT mitkopiert. rating/copyCount sind Demo-Seeds
 // (zentral im Footer gekennzeichnet), Kommentare sind seeded Stimmen der PILOTS-Personas.
@@ -12,14 +17,6 @@ const PROMPT_PLATFORMS = [
   { id: 'code',     label: 'Claude Code', short: 'Code' },
   { id: 'langdock', label: 'Langdock',    short: 'Langdock' }
 ];
-
-const PROMPT_SPOTLIGHT = new Set([
-  'briefing-zusammenfassung',
-  'excel-formel-erklaerer',
-  'vibecoding-kickoff',
-  'feedback-formulierer',
-  'claim-werkstatt'
-]);
 
 const PROMPT_START = 'meeting-todos';
 

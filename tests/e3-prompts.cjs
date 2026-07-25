@@ -25,7 +25,7 @@ const INDEX_TARGET = TARGET.replace(/prompts\.html.*$/, 'index.html');
 
 // Soll-Werte (Stand E3, 2026-07-16), abgeleitet aus data/prompts.js:
 // 23 Einträge gesamt — loslegen 3, bauen 4, texten 7, gestalten 2,
-// praesentieren 4, media 3. 5 Leuchttürme (PROMPT_SPOTLIGHT) mit Builder.
+// praesentieren 4, media 3. 5 davon haben einen Baukasten (Feld `builder`).
 const EXPECTED_TOTAL = 23;
 const EXPECTED_TAB_COUNTS = {
   'Alle': 23,
@@ -36,7 +36,10 @@ const EXPECTED_TAB_COUNTS = {
   'Präsentieren': 4,
   'Media': 3,
 };
-// Leuchttürme für die Detail-Checks (siehe PROMPT_SPOTLIGHT in data/prompts.js):
+/* Baukasten-Prompts für die Detail-Checks. Bis Juli 2026 stand daneben ein
+   handgepflegtes Set PROMPT_SPOTLIGHT in data/prompts.js; es enthielt exakt
+   dieselben fünf IDs wie das Feld `builder` und ist deshalb entfallen. Wer einen
+   Baukasten hat, IST ein Leuchtturm — es gibt keine zweite Liste mehr. */
 const CHAT_LIGHTHOUSE = 'briefing-zusammenfassung';   // preview.mode 'chat', Builder-Feld 'kunde', Varianten Kurz/Ausführlich
 const TERMINAL_LIGHTHOUSE = 'vibecoding-kickoff';     // preview.mode 'terminal'
 const PLAIN_PROMPT = 'meeting-todos';                 // Breite-Eintrag ohne Varianten/Builder (PROMPT_START)

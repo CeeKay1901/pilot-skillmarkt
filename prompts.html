@@ -238,21 +238,43 @@
        Gewicht und Tracking als das base.css-Soll — Editorial-Anker der Karte. */
     .prompt-card .card-sub { font-weight: 600; letter-spacing: .14em; }
 
-    /* Highlight-Karten (PROMPT_SPOTLIGHT): Mono-Eyebrow „Highlight“ in
-       Schwarz auf Gelb + eine Spur kräftigerer Ruhe-Rand. Bewusst dezent. */
-    .prompt-card.-spot { border-color: var(--line-strong); }
-    .card-spot-flag {
+    /* Baukasten-Karten: Mono-Eyebrow „Baukasten“ in Schwarz auf Gelb
+       (11,58:1, gemessen) + eine Spur kräftigerer Ruhe-Rand. Bewusst dezent.
+       Beides hängt an der Fähigkeit selbst — `p.builder` —, nicht an einer
+       gepflegten Liste. Das Fähnchen hieß bis Juli 2026 „Highlight“ und wurde
+       aus einem handgepflegten ID-Set in data/prompts.js gesetzt, das es nicht
+       mehr gibt. Zwei Gründe für den Wechsel:
+       „Highlight“ sagt der Leserin nichts darüber, was sie hier tun kann —
+       „Baukasten“ schon. Und die Liste enthielt exakt die fünf Prompts, die
+       ohnehin ein `builder`-Feld hatten: ein zweiter Bestand, der beim ersten
+       neuen Baukasten-Prompt lautlos auseinandergelaufen wäre. Auch die
+       Klassennamen tragen jetzt das Wort, das auf der Karte steht — ein
+       Selektor namens „-spot“ neben der Beschriftung „Baukasten“ wäre dieselbe
+       stille Drift eine Ebene tiefer. Beide Selektoren gibt es nur hier. */
+    .prompt-card.-baukasten { border-color: var(--line-strong); }
+    .card-baukasten-flag {
       font-family: var(--font-mono); font-size: 1rem; font-weight: 600;
       letter-spacing: .14em; text-transform: uppercase;
       background: var(--c-yellow); color: var(--c-black);
       padding: .3em .7em .25em; white-space: nowrap; flex-shrink: 0;
     }
+    /* Die Erklärung fürs Fähnchen liegt als .sr-only-Text IM Fähnchen (siehe
+       renderCard). Uppercase und Sperrsatz müssen dort zurückgesetzt werden:
+       manche Screenreader buchstabieren per CSS großgeschriebenen Text. */
+    .card-baukasten-flag .flag-erklaerung { text-transform: none; letter-spacing: normal; }
 
-    /* Merken-Knopf sitzt rechts in der Kartenkopfzeile, Eyebrow + Highlight-Flag
+    /* Merken-Knopf sitzt rechts in der Kartenkopfzeile, Eyebrow + Fähnchen
        links daneben. Gleiche Aufteilung wie im Skill-Katalog (dort heißt die
        Gruppe ebenfalls .card-top-left); .card-top selbst ist bereits ein Flex mit
-       space-between (base.css). Seitenlokal, weil base.css fremdes Eigentum ist. */
-    .card-top-left { display: inline-flex; align-items: center; gap: .8rem; min-width: 0; }
+       space-between (base.css). Seitenlokal, weil base.css fremdes Eigentum ist.
+       `flex-wrap` ist kein Schmuck: auf 320-px-Karten stehen im Kopf bis zu drei
+       Dinge nebeneinander (Aufgaben-Gruppe, „Baukasten“, „Neu“). Ohne Umbruch
+       schrumpfte stattdessen die Aufgaben-Gruppe und riss mitten im Label um
+       („Präsentieren & / Daten“) — gemessen bei 320 und 360 px. Mit Umbruch
+       rutschen die beiden Fähnchen als Ganzes in die zweite Zeile. */
+    .card-top-left { display: inline-flex; flex-wrap: wrap; align-items: center; gap: .8rem; row-gap: .6rem; min-width: 0; }
+    /* Klammer um „Baukasten“ + „Neu“: umzieht als Paar, statt einzeln zu zerfallen. */
+    .card-flaggen { display: inline-flex; align-items: center; gap: .8rem; flex-shrink: 0; }
   </style>
 </head>
 <body>
@@ -355,7 +377,7 @@
   <script src="data/seit.js" defer></script>
   <script src="shared/base.js"></script>
   <script>
-    // ===== DATA ===== (data/prompts.js: PROMPTS, PROMPT_PLATFORMS, PROMPT_SPOTLIGHT, PROMPT_START)
+    // ===== DATA ===== (data/prompts.js: PROMPTS, PROMPT_PLATFORMS, PROMPT_START)
     // ===== ENGINE ===== (Nav, Modal, Rating, Utils: shared/base.js)
 
     // Rating-/Favoriten-/Tried-Engine dieser Seite arbeitet im prompt-Namespace
@@ -562,9 +584,12 @@
           if (d) return d;
         }
         if (state.sort === 'recommended') {
-          const aSpot = PROMPT_SPOTLIGHT.has(a.id) ? 1 : 0;
-          const bSpot = PROMPT_SPOTLIGHT.has(b.id) ? 1 : 0;
-          if (bSpot !== aSpot) return bSpot - aSpot;
+          // Prompts mit Baukasten nach vorn. Kriterium ist die Fähigkeit selbst,
+          // nicht eine gepflegte Liste daneben — ein neuer Baukasten-Prompt steht
+          // damit sofort vorn, ohne dass jemand eine zweite Stelle nachzieht.
+          const aBau = a.builder ? 1 : 0;
+          const bBau = b.builder ? 1 : 0;
+          if (bBau !== aBau) return bBau - aBau;
           return bayesScore(b) - bayesScore(a);
         }
         if (state.sort === 'copies') return copyCountOf(b) - copyCountOf(a);
@@ -707,6 +732,19 @@
       });
     };
 
+    /* Ein Wort erklärt niemandem, was er tun kann. „Baukasten“ ist die
+       Beschriftung, der Satz daneben sagt, was dahintersteckt — für Kolleg:innen,
+       die zum ersten Mal auf der Seite sind. Er steht zweimal: als `title` für die
+       Maus und als .sr-only-Text im Fähnchen für Screenreader. Deshalb genau
+       einmal formuliert und von hier verteilt, damit die beiden Fassungen nicht
+       auseinanderlaufen. (Ein aria-label täte es nicht: auf einem <span> ohne
+       Rolle ist es laut ARIA-in-HTML unzulässig und wird nicht verlässlich
+       vorgelesen — sichtbarer Text plus .sr-only ist die robuste Form.) */
+    const BAUKASTEN_ERKLAERUNG = 'Hier trägst du deine Angaben in Felder ein und wählst eine Variante. Der fertige Prompt stellt sich daraus zusammen — du musst die Platzhalter nicht von Hand ersetzen.';
+    function baukastenFlagHtml() {
+      return `<span class="card-baukasten-flag" title="Baukasten: ${escHtml(BAUKASTEN_ERKLAERUNG)}">Baukasten<span class="flag-erklaerung sr-only">: ${escHtml(BAUKASTEN_ERKLAERUNG)}</span></span>`;
+    }
+
     // ===== RENDER CARD =====
     /* E11 Karten-Diät: Titel + ein Satz + Aufgaben-Gruppe + kompakte Bewertung +
        Kopierchip. Prompt-Vorschau, Schwierigkeit, Plattformen und Kopier-Zähler
@@ -717,16 +755,25 @@
     function renderCard(p, idx = 0) {
       const eff = getEffectiveRating(p);
       const delay = Math.min(idx, 11) * 35;
-      // Rein visuell (Editorial-Pass): Leuchttürme tragen ein „Highlight“-Flag —
-      // Sortierung/Filter bleiben unberührt.
-      const isSpot = PROMPT_SPOTLIGHT.has(p.id);
+      // Das Fähnchen ist abgeleitet, nicht gepflegt: Es trägt genau die Prompts,
+      // die einen Baukasten HABEN. Filter und Zähler bleiben unberührt — der
+      // Marker sortiert nur nach vorn (siehe filterPrompts) und färbt den Rand.
+      const hatBaukasten = !!p.builder;
+      /* „Baukasten“ und „Neu“ bleiben zusammen. Ohne die Klammer bricht auf
+         schmalen Karten mal das eine, mal das andere allein in die zweite Zeile
+         (gemessen bei 360 und 390 px) — zwei Fähnchen, die zusammengehören,
+         sollen als Paar umziehen. Die Klammer entsteht nur, wenn wirklich ein
+         Fähnchen darin steht: eine leere Klammer erzeugte sonst eine Lücke,
+         weil `gap` zwischen Flex-Kindern auch für 0 px breite gilt. */
+      const neuFlagHtml = (typeof istNeu === 'function' && istNeu('PROMPTS', p.id))
+        ? '<span class="card-neu-flag">Neu</span>' : '';
+      const flaggen = `${hatBaukasten ? baukastenFlagHtml() : ''}${neuFlagHtml}`;
       return `
-        <article class="skill-card prompt-card${isSpot ? ' -spot' : ''}${state._noCardAnim ? '' : ' card-in'}" style="animation-delay:${state._noCardAnim ? 0 : delay}ms" onclick="openModal('${p.id}')">
+        <article class="skill-card prompt-card${hatBaukasten ? ' -baukasten' : ''}${state._noCardAnim ? '' : ' card-in'}" style="animation-delay:${state._noCardAnim ? 0 : delay}ms" onclick="openModal('${p.id}')">
           <div class="card-top">
             <span class="card-top-left">
               <span class="card-sub">${escHtml(groupLabel(p.taskGroup))}</span>
-              ${isSpot ? '<span class="card-spot-flag" aria-label="Highlight-Prompt">Highlight</span>' : ''}
-              ${(typeof istNeu === 'function' && istNeu('PROMPTS', p.id)) ? '<span class="card-neu-flag">Neu</span>' : ''}
+              ${flaggen ? `<span class="card-flaggen">${flaggen}</span>` : ''}
             </span>
             ${favBtnHtml(p)}
           </div>
