@@ -131,21 +131,34 @@ async function runViewport(browser, vp) {
       const m = document.getElementById('modal-overlay');
       if (m && m.classList.contains('open')) return 'modal';
       const q = new URLSearchParams(location.search);
-      /* VERSCHÄRFUNG (elfte Sammlung): `pa` gehörte in diese Liste, sonst war die
-         Prüfung für den neuen Link BLIND — ein unbekannter Parameter fällt unten
-         auf 'bereichsseite' durch und gälte damit als aufgelöst, auch wenn er ins
-         Leere zeigt. Mit `pa` in der Liste UND 'bk-pa-' in den Ankerpräfixen muss
-         ein ?pa=-Link nachweislich ein Element treffen.
-         Dieselbe Verschärfung für die zwölfte Sammlung: `g` (Startprojekte) in der
-         Liste, 'sp-' in den Ankerpräfixen. Ohne beides wäre showroom.html?g=xyz
-         still als „Bereichsseite" durchgegangen. */
+      /* Jede Sammlung MUSS ihren Parameter hier stehen haben, sonst fällt ihr
+         Deep-Link unten auf 'bereichsseite' durch und gilt still als aufgelöst,
+         auch wenn er ins Leere zeigt. `pa` kam mit den Projektanweisungen dazu,
+         `g` mit den Startprojekten. */
       const id = q.get('a') || q.get('b') || q.get('d') || q.get('pa') || q.get('g') || q.get('skill') || q.get('p')
         || q.get('case') || q.get('befehl') || q.get('begriff') || q.get('faq') || q.get('r');
       if (!id) return 'bereichsseite';
-      if (location.hash && location.hash.length > 1) return 'hash';
-      /* location.hash kann „#begriff/cloud" sein — kein gültiger CSS-Selektor.
-         Deshalb getElementById statt querySelector. */
-      for (const pre of ['asset-', 'bk-data-', 'bk-pa-', 'sp-', 'case-', 'begriff-', 'r-', 'faq-', 'befehl-'])
+      /* ECHTE VERSCHÄRFUNG (gemessen, 25.07.2026): hier stand bis eben
+         `if (location.hash) return 'hash'` — und weil FAST JEDE Bereichsseite den
+         Query-Parameter beim Laden in einen Hash umschreibt, hat dieser Zweig die
+         Prüfung darunter nie erreicht. Gemessen über alle zwölf Sammlungen mit je
+         einer echten id: 5 endeten auf 'modal', 7 auf 'hash' — die Präfixschleife
+         lief bei KEINER EINZIGEN. showroom.html?g=gibtsnicht wird zu
+         #sp-gibtsnicht und wäre als „aufgelöst" durchgegangen. Ein Hash ist also
+         kein Nachweis, sondern nur eine Absichtserklärung der Seite.
+         Jetzt muss der Hash sich ausweisen: entweder er IST die id eines Elements
+         (#sp-einseiter, #bk-pa-kleines-tool, #bk-data-…), oder — bei den Formen mit
+         Schrägstrich, die das Seiten-Script selbst auswertet (#begriff/agent,
+         #r/…, #faq/…, #befehl/…) — der zugehörige Anker muss über die Präfixliste
+         auffindbar sein. Bleibt beides aus, ist der Link tot.
+         Dabei fielen zwei Präfixe auf, die NIE gegriffen haben und damit selbst
+         blind waren: 'r-' (der Anker heisst res-<id>, lernen-hilfe.html:1803) und
+         'faq-' (er heisst faqcard-<id>, :1835). Beide korrigiert.
+         location.hash kann „#begriff/cloud" sein — kein gültiger CSS-Selektor.
+         Deshalb durchweg getElementById statt querySelector. */
+      const roh = (location.hash || '').slice(1);
+      if (roh && document.getElementById(roh)) return 'hash-element';
+      for (const pre of ['asset-', 'bk-data-', 'bk-pa-', 'sp-', 'case-', 'begriff-', 'res-', 'faqcard-', 'befehl-'])
         if (document.getElementById(pre + id)) return 'element';
       return null;
     });
