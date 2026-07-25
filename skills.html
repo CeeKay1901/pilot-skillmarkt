@@ -362,15 +362,6 @@
     .similar-name { font-size: 1.4rem; font-weight: 600; color: var(--c-black); }
     .similar-cat { font-size: 1.2rem; color: var(--c-gray-m); }
 
-    /* ===== FEATURE 4: CHANGELOG ===== */
-    .changelog { display: flex; flex-direction: column; gap: 2.4rem; }
-    .changelog-entry { border-left: 3px solid var(--c-yellow); padding-left: 2rem; }
-    .changelog-header { display: flex; align-items: center; gap: 1.6rem; margin-bottom: 1rem; }
-    .changelog-version { font-size: 1.6rem; font-weight: 700; color: var(--c-black); font-family: var(--font-mono); }
-    .changelog-date { font-size: 1.3rem; color: var(--c-gray-m); }
-    .changelog-list { margin: 0; padding-left: 2rem; display: flex; flex-direction: column; gap: .6rem; }
-    .changelog-list li { font-size: 1.4rem; color: var(--c-black); line-height: 1.5; }
-
     /* Hier stand eine Fokus-Kompensation für .pilot-card/.ex-starter-card/
        .pilot-skill-chip. Sie glich aus, dass base.css in .pilots-section einen
        GELBEN Fokusring vergab — auf der inzwischen hellen Fläche nur 1,15:1.
@@ -1419,7 +1410,6 @@ Gib einen priorisierten Report aus:
         <button class="tab-btn" role="tab" aria-selected="false" data-tab="files" onclick="switchTab('files')">Dateien &amp; Download</button>
         <button class="tab-btn" role="tab" aria-selected="false" data-tab="ratings" onclick="switchTab('ratings')">Bewertungen</button>
         <button class="tab-btn" role="tab" aria-selected="false" data-tab="pilots" onclick="switchTab('pilots')">Piloten</button>
-        <button class="tab-btn" role="tab" aria-selected="false" data-tab="changelog" onclick="switchTab('changelog')">Changelog</button>
       </div>
       <div class="modal-body" id="modal-body"></div>
     </div>
@@ -1484,8 +1474,7 @@ Gib einen priorisierten Report aus:
         installation: item => renderModalInstall(item),
         arbeiten:     item => { stopTermScript(); return renderModalWorkflow(item); },
         ratings:      item => { stopTermScript(); removeTriedCta(); return renderModalRatings(item); },
-        pilots:       item => { stopTermScript(); return renderModalPilots(item); },
-        changelog:    item => { stopTermScript(); return renderModalChangelog(item); }
+        pilots:       item => { stopTermScript(); return renderModalPilots(item); }
       },
       updateURL: () => updateURL(),
       pushURL:   () => pushURL(),
@@ -2236,9 +2225,12 @@ Gib einen priorisierten Report aus:
     // Modal-Engine (openModal/closeModal/switchTab/renderModalBody): shared/base.js.
     // Hier bleibt nur der skill-spezifische Modal-Kopf (Name, Trigger, Meta-Zeile).
 
-    // Typabhängige Tab-Leiste (E2): Skills behalten ihre 5 Tabs; Plugins bekommen
-    // „Installation“ (kein Changelog, Dateien nur wenn wirklich im Repo gespiegelt),
-    // Frameworks bekommen „So arbeitest du damit“ — kein Download, keine Dateien.
+    // Typabhängige Tab-Leiste (E2): Grundleiste sind Übersicht · Dateien & Download ·
+    // Bewertungen · Piloten. Plugins schieben „Installation“ davor und bekommen den
+    // Dateien-Tab nur, wenn die Dateien wirklich im Repo gespiegelt sind
+    // (filesMirrored) — sonst erschiene dort eine generierte Vorschau-SKILL.md, die es
+    // gar nicht gibt. Frameworks ersetzen die Dateien durch „So arbeitest du damit“:
+    // kein Download, keine Dateien.
     function modalTabsFor(item) {
       const t = itemType(item);
       if (t === 'plugin') {
@@ -2250,7 +2242,7 @@ Gib einen priorisierten Report aus:
       if (t === 'framework') {
         return [['overview', 'Übersicht'], ['arbeiten', 'So arbeitest du damit'], ['ratings', 'Bewertungen'], ['pilots', 'Piloten']];
       }
-      return [['overview', 'Übersicht'], ['files', 'Dateien & Download'], ['ratings', 'Bewertungen'], ['pilots', 'Piloten'], ['changelog', 'Changelog']];
+      return [['overview', 'Übersicht'], ['files', 'Dateien & Download'], ['ratings', 'Bewertungen'], ['pilots', 'Piloten']];
     }
 
     function renderModalHead(skill) {
@@ -3378,53 +3370,6 @@ Mehr Skills und alle Details: pilot AI Marketplace.
       `;
     }
 
-    function renderModalChangelog(skill) {
-      // Generiere einen plausiblen Changelog basierend auf version + updatedAt
-      const vParts = (skill.version || '1.0.0').split('.');
-      const major = parseInt(vParts[0]);
-      const minor = parseInt(vParts[1]);
-      const patch = parseInt(vParts[2]);
-
-      const entries = [];
-
-      // Aktuelle Version
-      entries.push({
-        version: skill.version,
-        date: skill.updatedAt,
-        changes: patch > 0
-          ? ['Stabilität verbessert', 'Ausgabe-Qualität verfeinert']
-          : minor > 0
-          ? ['Neue Funktion: Erweiterte Ausgabe-Optionen', 'Verbesserte Fehlerbehandlung', 'Dokumentation aktualisiert']
-          : ['Erste öffentliche Version', 'Basis-Funktionalität implementiert']
-      });
-
-      // Frühere Version (wenn nicht 1.0.0)
-      if (minor > 0 || patch > 0) {
-        const prevMinor = patch > 0 ? minor : minor - 1;
-        const prevPatch = patch > 0 ? patch - 1 : 0;
-        entries.push({
-          version: `${major}.${prevMinor}.${prevPatch}`,
-          date: skill.addedAt,
-          changes: ['Erste Veröffentlichung im pilot AI Marketplace', 'Basierend auf internem Pilot-Feedback entwickelt']
-        });
-      }
-
-      const entriesHtml = entries.map(e => `
-        <div class="changelog-entry">
-          <div class="changelog-header">
-            <span class="changelog-version">v${escHtml(e.version)}</span>
-            <span class="changelog-date">${formatDate(e.date)}</span>
-          </div>
-          <ul class="changelog-list">
-            ${e.changes.map(c => `<li>${escHtml(c)}</li>`).join('')}
-          </ul>
-        </div>
-      `).join('');
-
-      return `
-        <p class="files-intro-text" style="margin-bottom:1.6rem">Hinweis: Diese Historie ist aus der Versionsnummer abgeleitet — die echten Änderungen stehen im Repo (Tab „Dateien &amp; Download“ → „Auf GitHub ansehen“).</p><div class="changelog">${entriesHtml}</div>`;
-    }
-
     // ===== PLUGIN: TAB „INSTALLATION“ (E2) =====
     // Echte /plugin-Mechanik aus Claude Code: offizieller Katalog ist vorinstalliert,
     // Install-Befehl → Scope-Auswahl → /reload-plugins. Die Terminal-Demo nutzt die
@@ -3570,7 +3515,7 @@ Mehr Skills und alle Details: pilot AI Marketplace.
     // ===== URL HASH =====
     // ===== DEEP-LINKING: #skill[/tab[/datei[:L8-10]]] =====
     let _hashLock = false;
-    const MODAL_TABS = ['overview', 'files', 'installation', 'arbeiten', 'ratings', 'pilots', 'changelog'];
+    const MODAL_TABS = ['overview', 'files', 'installation', 'arbeiten', 'ratings', 'pilots'];
 
     function currentFileRel() {
       const files = state._files || [];
