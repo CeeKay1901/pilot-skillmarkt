@@ -7,8 +7,12 @@
   <meta name="robots" content="noindex, follow">
   <!-- E11-IA: Die Asset-Bibliothek ist im Bereich „Vorlagen" (vorlagen.html, Tab
        Design-Assets) aufgegangen. Diese Seite hält Bookmarks und Deep-Links am
-       Leben: ?a=/?f= und #a/… werden 1:1 übergeben; ohne Parameter landet man
-       auf dem Assets-Tab. <meta refresh> ist der Fallback ohne JS. -->
+       Leben: ?a= und #a/… werden 1:1 übergeben; ohne Parameter landet man
+       auf dem Assets-Tab. <meta refresh> ist der Fallback ohne JS.
+       ?f= stand hier bis zum 25.07.2026 mit im Satz — der Parameter ist in
+       vorlagen.html entfallen (er schaltete nur den Reiter um, den dieser Stub
+       ohnehin selbst setzt). Weitergereicht wird er weiterhin unverändert wie
+       jeder andere Fremdparameter; er tut auf der Zielseite nur nichts mehr. -->
   <script>
     (function () {
       try {

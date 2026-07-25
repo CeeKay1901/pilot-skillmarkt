@@ -74,6 +74,15 @@
      hat (spannt die ganze Grid-Breite, wie .icon-empty aber grid-tauglich). */
   .vl-grid-empty { grid-column: 1 / -1; font-size: 1.4rem; color: var(--c-gray-m); padding: 2rem 0; }
 
+  /* Zwei Abschnitte dieser Seite filtern bewusst NICHT mit (Icon-Browser: eigenes
+     Suchfeld; Brand-Spickzettel: fester Satz ohne Raster). Ein Abschnitt, der bei
+     aktiver Suche unverändert dasteht, sieht aus wie ein Fehler — deshalb sagt er
+     es hier selbst. Kein Warnton (das ist kein Fehler), aber deutlich abgesetzt. */
+  .vl-unfiltered-note {
+    border-left: 3px solid var(--c-yellow); padding-left: 1.2rem;
+    color: var(--c-ink-body);
+  }
+
   /* ===== Baukasten-Styles (aus baukasten.html) ===== */
     /* ============================================================
        baukasten.html — seitenspezifisch (E7). Das Design-System und
@@ -333,6 +342,7 @@
         <div class="lib-sec-head">
           <span class="lib-sec-ic lu-slot" id="rank-ic"></span>
           <h2 id="rank-h">Meistkopiert im Team</h2>
+          <span class="lib-sec-count" id="rank-count"></span>
         </div>
         <p class="lib-note">Ein kleines Ranking nach Kopien — die Startwerte sind ehrliche Demo-Seeds, jede Kopie zählt lokal dazu. Klick einen Eintrag an, um den Baustein zu öffnen.</p>
         <div class="bk-rank-wrap"><div class="bk-rank" id="bk-rank"></div></div>
@@ -415,6 +425,11 @@
         </div>
         <p class="lib-note">Vier freie Icon-Bibliotheken im Überblick — plus eine Auswahl der wichtigsten Lucide-Icons zum direkten Kopieren. Klick ein Icon an, das SVG landet in deiner Zwischenablage.</p>
         <div class="iconset-grid" id="iconset-grid"></div>
+        <!-- Wird von renderIconGrid() gefüllt, sobald die Seitensuche läuft: das
+             Icon-Raster darunter filtert bewusst NICHT mit (Begründung dort im
+             Code-Kommentar), und das gehört sichtbar gesagt. Steht direkt über
+             dem zuständigen Feld, damit der Hinweis gleich darauf zeigt. -->
+        <p class="lib-note vl-unfiltered-note" id="icon-unfiltered" hidden></p>
         <div class="icon-search-wrap">
           <input type="search" id="icon-search" aria-label="Icons durchsuchen" placeholder="Icon suchen (z. B. kalender, herunterladen, blitz) …" autocomplete="off">
         </div>
@@ -460,6 +475,10 @@
           <h2 id="brand-h">pilot-Brand-Spickzettel</h2>
         </div>
         <p class="lib-note">Der reale CI-Spickzettel dieses Marketplace — die Design-Tokens, die er selbst verwendet (nachprüfbar in <code>shared/base.css</code>), plus die zwei vorliegenden pilot-Logo-SVGs. Kein erfundenes offizielles Brand-Material.</p>
+        <!-- Wird von renderBrand() gefüllt, sobald eine Suche läuft: dieser Abschnitt
+             ist bewusst NICHT filterbar (Begründung dort im Code-Kommentar), und das
+             gehört sichtbar gesagt statt stumm übergangen. -->
+        <p class="lib-note vl-unfiltered-note" id="brand-suchhinweis" hidden></p>
         <div class="brand-block" id="brand-block"></div>
         <p class="brand-hinweis" id="brand-hinweis"></p>
       </div>
@@ -545,6 +564,37 @@
     }
     window.vlClearSearch = vlClearSearch;
 
+    /* ===== TOTES DEEP-LINK-ZIEL: melden statt schweigen =====
+       Hausmuster übernommen aus lernen-hilfe.html (deepLinkMiss) und skills.html.
+       Vorher gemessen: „vorlagen.html?a=gibtsnicht" setzte brav den Hash
+       (?a=gibtsnicht#a/gibtsnicht) und tat dann nichts — der weitergeleitete Link
+       SAH aus, als hätte er funktioniert. Jetzt: kurze Meldung, dann fliegen der
+       auslösende Parameter UND der Hash raus, damit niemand die kaputte URL
+       weiterteilt. Übrige Query-Parameter (utm, tab) bleiben erhalten — genau wie
+       in lernen-hilfe.html; „alles löschen" wäre schärfer als das Hausmuster.
+       Ein _hashLock wie in skills.html braucht es hier nicht: history.replaceState
+       löst laut Spezifikation KEIN hashchange aus, ein Re-Entry ist also gar nicht
+       möglich. Die Meldung feuert ausschließlich dann, wenn der Hash die richtige
+       FORM hat und die id trotzdem unbekannt ist — nie nach einer normalen
+       Bedienhandlung, und der Toast blendet sich nach 2,5 s selbst wieder aus. */
+    const VL_MISS_LABEL = {
+      a: 'Dieses Design-Asset',
+      b: 'Diesen Baustein',
+      d: 'Diese Beispieldatei',
+      pa: 'Diese Projektanweisung'
+    };
+    function vlDeepLinkMiss(kind) {
+      const label = VL_MISS_LABEL[kind] || 'Diesen Eintrag';
+      showToast(label + ' gibt es hier (noch) nicht — der Link ist vermutlich veraltet.');
+      try {
+        const qs = new URLSearchParams(location.search);
+        ['a', 'b', 'd', 'pa'].forEach(k => qs.delete(k));
+        const q = qs.toString();
+        history.replaceState(null, '', location.pathname + (q ? '?' + q : ''));
+      } catch (e) { /* History blockiert — dann bleibt nur der Toast */ }
+    }
+    window.vlDeepLinkMiss = vlDeepLinkMiss;
+
     /* ===== MERKEN (Favoriten) — gemeinsam für BEIDE Module dieser Seite =====
        Die Mechanik kommt vollständig aus shared/base.js (isFavorite/toggleFavorite,
        Speicherschlüssel fav:<typ>:<id>); hier fehlten nur die Bedienelemente.
@@ -605,10 +655,14 @@
         } catch (e) {}
       }
     }
-    /* Start-Tab aus der URL: ?tab=assets, ?a=/?f= oder #a/… → Assets, sonst Bausteine */
+    /* Start-Tab aus der URL: ?tab=assets, ?a= oder #a/… → Assets, sonst Bausteine.
+       ?f= ist am 25.07.2026 entfallen: der Parameter schaltete zwar den Reiter um,
+       aber sein WERT wurde nirgends gelesen (qs.get('f') kam im ganzen Repo nicht
+       vor) — ein Schalter ohne Wirkung, den auch kein Test kennt. ?tab=assets deckt
+       denselben Zweck ab und ist dokumentiert. */
     (function () {
       const qs = new URLSearchParams(location.search);
-      const wantsAssets = qs.get('tab') === 'assets' || qs.has('a') || qs.has('f') || /^#a\//.test(location.hash || '');
+      const wantsAssets = qs.get('tab') === 'assets' || qs.has('a') || /^#a\//.test(location.hash || '');
       if (wantsAssets) document.addEventListener('DOMContentLoaded', () => vlShowTab('assets', false));
     })();
 
@@ -862,19 +916,59 @@
           ? `${list.length} von ${BAUSTEINE.length} Bausteinen passen zu „${q}“`
           : `${BAUSTEINE.length} Bausteine · ${BAUKASTEN_STATS.leuchttuerme} Highlights`;
       }
+      updateBausteineTabCount();
+    }
+
+    /* Reiter-Zähler „Bausteine <n>" (E12-Badge, .vl-count in der Reiterleiste).
+       Bis 25.07.2026 stand hier stur BAUSTEINE.length — der Reiter versprach 12,
+       während die Suche darunter 3 lieferte. Er zeigt jetzt die Zahl SEINES
+       Reiters im aktuellen Filterzustand; Wortlaut kurzgefasst wie „3 von 12",
+       weil die Langform der Abschnittszähler („… Bausteinen passen zu …") in eine
+       Pille nicht passt. Der andere Reiter bleibt bewusst auf seiner vollen Zahl:
+       vlShowTab LEERT das Suchfeld beim Wechsel, dort gilt also gleich wieder die
+       volle Menge — und renderBausteine/applyAssetSearch laufen beim Wechsel noch
+       einmal, sodass keine gefilterte Zahl stehenbleibt.
+       Kein `tab-count`-Klassenname: den prüft tools/qa/index.mjs zaehler gegen die
+       Kinder von #bk-grid, und diese Pille zählt eine andere Menge. */
+    function updateBausteineTabCount() {
+      const el = document.getElementById('vl-count-bausteine');
+      if (!el) return;
+      const q = (state.search || '').trim();
+      const treffer = BAUSTEINE.filter(bausteinMatchesSearch).length;
+      el.textContent = q ? `${treffer} von ${BAUSTEINE.length}` : String(BAUSTEINE.length);
+      el.hidden = false;
     }
 
     // ===== (b) MEISTKOPIERT-RANKING =====
+    /* ENTSCHEIDUNG (25.07.2026): Dieser Abschnitt WIRD gefiltert.
+       Er listet dieselben Objekte wie das Raster darüber (BAUSTEINE), steht im
+       selben Reiter unter demselben Suchfeld und war der einzige Ort, an dem ein
+       Klick einen Baustein geöffnet hätte, den die Suche gerade ausgeschlossen
+       hat. Gefiltert beantwortet er die nützlichere Frage: „welcher meiner Treffer
+       wird am meisten kopiert". Die Kopierzahlen selbst bleiben die echten aus dem
+       ganzen Team — gefiltert wird die Auswahl, nicht die Zahl. */
     function renderRanking() {
       const host = document.getElementById('bk-rank');
       if (!host) return;
-      const top = BAUSTEINE.slice().sort((a, b) => copyCountOf(b) - copyCountOf(a) || a.name.localeCompare(b.name, 'de')).slice(0, 5);
-      host.innerHTML = top.map((b, i) => `
+      const q = (state.search || '').trim();
+      const treffer = BAUSTEINE.filter(bausteinMatchesSearch);
+      const top = treffer.slice().sort((a, b) => copyCountOf(b) - copyCountOf(a) || a.name.localeCompare(b.name, 'de')).slice(0, 5);
+      host.innerHTML = top.length
+        ? top.map((b, i) => `
         <button type="button" class="bk-rank-item" onclick="openModal('${b.id}')">
           <span class="bk-rank-pos">${i + 1}</span>
           <span class="bk-rank-name">${escHtml(b.name)}</span>
           <span class="copy-count bk-rank-copies" data-copies="${b.id}">${LU.copy}${copyCountOf(b)}× kopiert</span>
-        </button>`).join('');
+        </button>`).join('')
+        : `<p class="vl-grid-empty">Kein Baustein passt zu „${escHtml(q)}“ — deshalb steht hier gerade kein Ranking.</p>`;
+      const c = document.getElementById('rank-count');
+      if (c) {
+        c.textContent = !q
+          ? `Top ${top.length} von ${BAUSTEINE.length} Bausteinen`
+          : (treffer.length
+            ? `Top ${top.length} von ${treffer.length} ${treffer.length === 1 ? 'Treffer' : 'Treffern'} zu „${q}“`
+            : `Kein Treffer zu „${q}“`);
+      }
     }
 
     // ===== (c) BEISPIELDATEN =====
@@ -912,12 +1006,34 @@
           </div>
         </article>`;
     }
+    /* ENTSCHEIDUNG (25.07.2026): Dieser Abschnitt WIRD gefiltert.
+       Die acht Übungsdateien sind eine eigene, merkbare Sammlung mit eigenem
+       Deep-Link (?d=<id>) und eigenem Eintrag in der globalen Suche — also eine
+       Menge, in der man etwas sucht, kein Beiwerk. Bis 25.07.2026 blieben alle
+       acht Karten bei jeder Suche stehen, während direkt darüber gefilterte
+       Bausteine lagen; der Zähler nannte dazu ungerührt „8 Dateien".
+       Haystack wie bei den Bausteinen: Dateiname, Format, Beschreibung, Übungs-
+       idee und Spaltenhinweis — also alles, was auf der Karte auch lesbar ist. */
+    function beispieldatenMatchesSearch(d) {
+      const q = (state.search || '').trim();
+      if (!q) return true;
+      const terms = q.split(/\s+/).filter(Boolean);
+      const hay = (d.datei + ' ' + d.format + ' ' + (d.beschreibung || '') + ' '
+        + (d.uebungstext || '') + ' ' + (d.spaltenHinweis || '')).toLowerCase();
+      return terms.every(t => hay.includes(t));
+    }
     function renderBeispieldaten() {
       const host = document.getElementById('bk-data-grid');
       if (!host) return;
-      host.innerHTML = BEISPIELDATEN.map(dataCardHtml).join('');
+      const q = (state.search || '').trim();
+      const list = BEISPIELDATEN.filter(beispieldatenMatchesSearch);
+      host.innerHTML = list.length
+        ? list.map(dataCardHtml).join('')
+        : `<p class="vl-grid-empty">Keine Beispieldatei passt zu „${escHtml(q)}“.</p>`;
       const c = document.getElementById('data-count');
-      if (c) c.textContent = `${BEISPIELDATEN.length} Dateien · ${BEISPIELDATEN_STATS.csv} CSV + ${BEISPIELDATEN_STATS.markdown} Markdown + ${BEISPIELDATEN_STATS.svg} SVG`;
+      if (c) c.textContent = q
+        ? `${list.length} von ${BEISPIELDATEN.length} Dateien passen zu „${q}“`
+        : `${BEISPIELDATEN.length} Dateien · ${BEISPIELDATEN_STATS.csv} CSV + ${BEISPIELDATEN_STATS.markdown} Markdown + ${BEISPIELDATEN_STATS.svg} SVG`;
       const hint = document.getElementById('bk-data-hinweis');
       if (hint) hint.textContent = 'Erfundene Übungsdaten — kein echtes Kundenmaterial. Namen, Marken und Zahlen sind anonymisiert bzw. plausibel erfunden.';
     }
@@ -1201,6 +1317,8 @@
           el.scrollIntoView({ behavior: window.scrollBehavior(), block: 'center' });
           el.classList.add('-highlight');
           setTimeout(() => el.classList.remove('-highlight'), 2400);
+        } else {
+          vlDeepLinkMiss('d');   // id unbekannt: melden + URL aufräumen statt schweigen
         }
         return;
       }
@@ -1215,6 +1333,8 @@
           el.scrollIntoView({ behavior: window.scrollBehavior(), block: 'center' });
           el.classList.add('-highlight');
           setTimeout(() => el.classList.remove('-highlight'), 2400);
+        } else {
+          vlDeepLinkMiss('pa');
         }
         return;
       }
@@ -1226,9 +1346,9 @@
         return;
       }
       let id;
-      try { id = decodeURIComponent(m[1]); } catch (e) { return; }
+      try { id = decodeURIComponent(m[1]); } catch (e) { return vlDeepLinkMiss('b'); }
       const item = bausteinById(id);
-      if (!item) return;
+      if (!item) return vlDeepLinkMiss('b');
       // Baustein liegt evtl. hinter einem Kategorie-Filter — für den Deep-Link lösen
       if (state.kat && item.kategorie !== state.kat) { state.kat = null; renderCats(); renderBausteine(); }
       openModal(id, { fromHash: true });
@@ -1265,9 +1385,10 @@
       renderBeispieldaten();
       renderAnweisungen();
 
-      // E12: Count-Badge am Bausteine-Tab (identisch zu lernen-hilfe-Zählern)
-      const _bc = document.getElementById('vl-count-bausteine');
-      if (_bc) { _bc.textContent = BAUSTEINE.length; _bc.hidden = false; }
+      // E12: Count-Badge am Bausteine-Tab — gesetzt von updateBausteineTabCount(),
+      // das renderBausteine() bei JEDEM Rendern aufruft. Der frühere feste
+      // BAUSTEINE.length an dieser Stelle war genau der Zähler, der die Suche
+      // ignorierte; renderBausteine() lief oben schon, die Zahl steht also bereits.
 
       const sortSel = document.getElementById('bk-sort');
       if (sortSel) sortSel.addEventListener('change', e => setSort(e.target.value));
@@ -1300,7 +1421,12 @@
     // renderAnweisungen() muss mit: der Abschnitt steht im selben Reiter und
     // bliebe bei aktiver Suche sonst ungefiltert stehen — mit einem Zähler, der
     // die volle Zahl nennt, während daneben gefilterte Bausteine liegen.
-    window._vlSearch.bausteine = function () { renderCats(); renderBausteine(); renderAnweisungen(); };
+    // renderRanking() und renderBeispieldaten() aus demselben Grund seit
+    // 25.07.2026 dazu: sie waren die letzten zwei Abschnitte dieses Reiters, die
+    // bei jeder Suche unverändert stehenblieben.
+    window._vlSearch.bausteine = function () {
+      renderCats(); renderBausteine(); renderRanking(); renderBeispieldaten(); renderAnweisungen();
+    };
     })();
 
     /* ===== MODUL: DESIGN-ASSETS (aus bibliothek.html) ===== */
@@ -1382,18 +1508,59 @@
     }
 
     // ===== E12: SEITEN-SUCHE (aktiver Tab = Assets) =====
-    // Das eine Seiten-Suchfeld filtert hier Schriften, Paletten und Muster/Verläufe
-    // (die drei Karten-Grids mit Name + Stimmung). Der Icon-Browser behält bewusst
-    // seine EIGENE Suche (#icon-search) — zwei konkurrierende Suchen auf demselben
-    // Icon-Grid wären verwirrend. Mehrere Begriffe = UND; kombiniert mit dem
-    // Schrift-Kategorie-Filter ebenfalls per UND.
+    // Das eine Seiten-Suchfeld filtert hier alle VIER Asset-Raster: Schriften,
+    // Icon-SETS, Paletten und Muster/Verläufe — das sind zusammen genau die 30
+    // Einträge von ASSETS. Die Icon-Sets kamen am 25.07.2026 dazu: sie sind vier
+    // der 30 Assets und blieben als einziges Raster bei jeder Suche stehen.
+    // Der Icon-BROWSER (#icon-grid, 48 einzelne Icons) behält bewusst seine
+    // EIGENE Suche (#icon-search) — zwei konkurrierende Suchen auf demselben Grid
+    // wären verwirrend, und die 48 Icons sind keine Assets, sondern der Inhalt
+    // EINES Assets (Lucide). Neu ist nur: das steht jetzt sichtbar auf der Seite
+    // (renderIconGrid), statt stumm zu bleiben.
+    // Mehrere Begriffe = UND; kombiniert mit dem Schrift-Kategorie-Filter auch.
     function _vlSearchTerms() {
       const q = (state.search || '').trim().toLowerCase();
       return q ? q.split(/\s+/).filter(Boolean) : [];
     }
     function _vlHay(hay, terms) { const h = hay.toLowerCase(); return terms.every(t => h.includes(t)); }
-    // Alle such-abhängigen Asset-Grids neu rendern (vom gemeinsamen Suchfeld aufgerufen).
-    function applyAssetSearch() { renderFonts(); renderPalettes(); renderPatterns(); }
+    /* Ein Heuhaufen je Asset-Typ, an EINER Stelle definiert: die Render-Funktion
+       filtert damit und der Reiter-Zähler zählt damit — Versprechen und Lieferung
+       können so nicht auseinanderlaufen. Inhalt jeweils das, was auf der Karte
+       auch wirklich lesbar ist. */
+    function _hayFont(f) { return f.name + ' ' + (f.stimmung || '') + ' ' + (KAT_LABEL[f.kategorie] || f.kategorie); }
+    function _hayIconset(s) { return s.name + ' ' + (s.stil || '') + ' ' + (s.wofuer || '') + ' ' + (s.lizenz || '') + ' Icon-Set'; }
+    function _hayPalette(p) { return p.name + ' ' + (p.stimmung || '') + ' ' + p.farben.map(c => c.name).join(' '); }
+    function _hayPattern(p) { return p.name + ' ' + (p.stimmung || '') + ' ' + (p.typ === 'gradient' ? 'Verlauf' : 'Muster'); }
+    // Alle such-abhängigen Asset-Abschnitte neu rendern (vom gemeinsamen Suchfeld
+    // aufgerufen). renderIconGrid und renderBrand laufen mit, obwohl sie NICHT
+    // filtern: sie blenden ihren „hier filtert die Suche nicht"-Hinweis ein bzw.
+    // wieder aus, und der müsste sonst stehenbleiben.
+    function applyAssetSearch() {
+      renderFonts(); renderIconsets(); renderIconGrid(); renderPalettes(); renderPatterns(); renderBrand();
+    }
+
+    /* Reiter-Zähler „Design-Assets <n>" (E12-Badge, .vl-count in der Reiterleiste).
+       Bis 25.07.2026 stand hier stur ASSETS.length. Er zählt jetzt, wie viele der
+       30 Assets zur Suche passen — über alle vier Typen hinweg und aus denselben
+       Heuhaufen wie die vier Raster.
+       BEWUSST OHNE den Schrift-Kategorie-Filter: der Reiter beantwortet „wie viel
+       findet deine Suche in diesem Reiter", die Kategorie-Pillen darunter tragen
+       ihre eigenen Zähler für „davon in dieser Kategorie". Genau wie beim
+       Bausteine-Badge, damit beide Reiter dieselbe Sprache sprechen.
+       Kein `tab-count`-Klassenname — siehe updateBausteineTabCount(). */
+    function updateAssetsTabCount() {
+      const el = document.getElementById('vl-count-assets');
+      if (!el) return;
+      const terms = _vlSearchTerms();
+      const treffer = terms.length
+        ? FONTS.filter(f => _vlHay(_hayFont(f), terms)).length
+        + ICONSETS.filter(s => _vlHay(_hayIconset(s), terms)).length
+        + PALETTES.filter(p => _vlHay(_hayPalette(p), terms)).length
+        + PATTERNS.filter(p => _vlHay(_hayPattern(p), terms)).length
+        : ASSETS.length;
+      el.textContent = terms.length ? `${treffer} von ${ASSETS.length}` : String(ASSETS.length);
+      el.hidden = false;
+    }
 
     // ===== (a) FONTS =====
     function renderFontCats() {
@@ -1440,20 +1607,31 @@
       if (!host) return;
       const terms = _vlSearchTerms();
       let list = state.fontKat ? FONTS.filter(f => f.kategorie === state.fontKat) : FONTS;
-      if (terms.length) list = list.filter(f => _vlHay(f.name + ' ' + (f.stimmung || '') + ' ' + (KAT_LABEL[f.kategorie] || f.kategorie), terms));
+      if (terms.length) list = list.filter(f => _vlHay(_hayFont(f), terms));
       host.innerHTML = list.length
         ? list.map(fontCardHtml).join('')
         : `<p class="vl-grid-empty">Keine Schrift passt zu „${escHtml(state.search.trim())}“.</p>`;
       const c = document.getElementById('fonts-count');
       if (c) c.textContent = terms.length ? `${list.length} von ${FONTS.length} Schriften` : `${FONTS.length} Schriften · alle OFL`;
+      updateAssetsTabCount();
     }
 
     // ===== (b) ICONS =====
+    /* ENTSCHEIDUNG (25.07.2026), Teil 1 — die ICON-SET-Karten WERDEN gefiltert.
+       Sie sind vier der 30 Design-Assets, haben Deep-Link, Stern und Detail-Modal
+       wie Schriften, Paletten und Muster — und waren das einzige der vier
+       Asset-Raster, das bei jeder Suche unverändert stehenblieb.
+       Der Detail-Knopf ist ein <button>, KEIN <a>: e6:03 verlangt in
+       #iconset-grid genau ICONSETS.length externe a[target=_blank] (die
+       „Zur Bibliothek"-Links). Ein Link mehr pro Karte würde daraus 8 machen. */
     function renderIconsets() {
       const host = document.getElementById('iconset-grid');
       if (!host) return;
-      host.innerHTML = ICONSETS.map(s => `
-        <div class="iconset-card">
+      const terms = _vlSearchTerms();
+      const list = terms.length ? ICONSETS.filter(s => _vlHay(_hayIconset(s), terms)) : ICONSETS;
+      host.innerHTML = list.length
+        ? list.map(s => `
+        <div class="iconset-card" id="asset-${s.id}" data-id="${s.id}" data-typ="iconset">
           <div class="iconset-kopf">
             <span class="iconset-name">${escHtml(s.name)}</span>
             <span class="iconset-anzahl">${s.anzahl.toLocaleString('de-DE')} Icons</span>
@@ -1464,11 +1642,34 @@
             <span class="lib-lic">${LU.check}${escHtml(s.lizenz)}</span>
             <a class="lib-btn" href="${s.quelleUrl}" target="_blank" rel="noopener">${LU.extern}Zur Bibliothek</a>
             <button class="lib-btn" onclick="copyIconsetPrompt('${s.id}')">${LU.ai}Sag Claude</button>
+            <button class="lib-btn" onclick="openModal('${s.id}')">${LU.artikel}Details</button>
           </div>
-        </div>`).join('');
-      const c = document.getElementById('icons-count');
-      if (c) c.textContent = `${ICONSETS.length} Sets · ${LUCIDE_ICONS.length} Icons zum Kopieren`;
+        </div>`).join('')
+        : `<p class="vl-grid-empty">Kein Icon-Set passt zu „${escHtml(state.search.trim())}“.</p>`;
+      updateIconsCount(list.length);
+      updateAssetsTabCount();
     }
+    /* Der Abschnittszähler steht über BEIDEN Teilen des Icon-Abschnitts: über den
+       filterbaren Sets und über dem nicht filterbaren Icon-Browser. Er nennt
+       deshalb beide Zahlen und sagt dazu, warum die zweite nicht mitwandert. */
+    function updateIconsCount(sets) {
+      const c = document.getElementById('icons-count');
+      if (!c) return;
+      const q = (state.search || '').trim();
+      c.textContent = q
+        ? `${sets} von ${ICONSETS.length} Sets passen zu „${q}“ · ${LUCIDE_ICONS.length} Icons mit eigenem Suchfeld`
+        : `${ICONSETS.length} Sets · ${LUCIDE_ICONS.length} Icons zum Kopieren`;
+    }
+    /* ENTSCHEIDUNG (25.07.2026), Teil 2 — der ICON-BROWSER bleibt UNGEFILTERT.
+       Begründung: die 48 Zellen sind keine Assets, sondern der Inhalt EINES
+       Assets (Lucide), und sie haben mit #icon-search ein eigenes, sichtbares
+       Suchfeld direkt darüber, das nach Icon-Namen und deutschen Tags sucht. Zwei
+       Suchfelder, die dasselbe Raster filtern, wären für Einsteiger:innen genau
+       die Sorte Doppeldeutigkeit, die diese Seite vermeiden will.
+       Was sich ändert: das steht ab sofort SICHTBAR da. Vorher blieben bei
+       „zzzqqq" 48 Zellen kommentarlos stehen, während ringsum alles leer lief —
+       das sah nach einem Fehler aus. Jetzt sagt der Abschnitt, dass hier ein
+       anderes Feld zuständig ist, und zeigt gleich darauf. */
     function renderIconGrid() {
       const host = document.getElementById('icon-grid');
       const note = document.getElementById('icon-note');
@@ -1484,6 +1685,14 @@
         note.textContent = terms.length
           ? `${list.length} von ${LUCIDE_ICONS.length} Icons passen zu „${state.iconQuery.trim()}“.`
           : `${LUCIDE_ICONS.length} handverlesene Lucide-Icons — die volle Lucide-Bibliothek umfasst ${lucide ? lucide.anzahl.toLocaleString('de-DE') : '1.747'}. Klick kopiert das Inline-SVG.`;
+      }
+      const seitensuche = (state.search || '').trim();
+      const hint = document.getElementById('icon-unfiltered');
+      if (hint) {
+        hint.textContent = seitensuche
+          ? `Der Icon-Browser filtert nicht mit „${seitensuche}“ — er hat sein eigenes Suchfeld direkt darüber. Alle ${LUCIDE_ICONS.length} Icons bleiben deshalb sichtbar.`
+          : '';
+        hint.hidden = !seitensuche;
       }
       host.innerHTML = list.length
         ? list.map(i => `<button class="icon-cell" onclick="copyIcon('${i.name}')" title="${escHtml(i.name)} — SVG kopieren" aria-label="${escHtml(i.name)} kopieren">${i.svg}<span class="icon-cell-name">${escHtml(i.name)}</span></button>`).join('')
@@ -1507,6 +1716,12 @@
         </div>`;
       }).join('')}</div>`;
     }
+    /* Der Detail-Knopf sitzt in einer eigenen Zeile UNTER den Farbfeldern, nicht
+       oben neben „CSS-Variablen": die Kopfzeile trägt bei 320 px schon Name,
+       Kopier-Knopf und Stern, ein vierter Bedienpunkt dort hätte sie gesprengt.
+       Wichtig für e6:06 — der Prüfklick geht auf `#pal-grid .pal-card .swatch`.
+       Ein <button class="lib-btn"> ist kein `.swatch` und steht ausserdem hinter
+       den Farbfeldern, verdeckt den Klickpfad also weder im DOM noch im Layout. */
     function palCardHtml(p) {
       return `
         <article class="pal-card" id="asset-${p.id}" data-id="${p.id}" data-typ="palette">
@@ -1515,6 +1730,9 @@
           <p class="pal-stimmung">${escHtml(p.stimmung)}</p>
           ${palSwatchesHtml(p)}
           ${palPairsHtml(p)}
+          <div class="ff-actions">
+            <button class="lib-btn" onclick="openModal('${p.id}')">${LU.artikel}Details</button>
+          </div>
         </article>`;
     }
     function renderPalettes() {
@@ -1522,12 +1740,13 @@
       if (!host) return;
       const terms = _vlSearchTerms();
       let list = PALETTES;
-      if (terms.length) list = list.filter(p => _vlHay(p.name + ' ' + (p.stimmung || '') + ' ' + p.farben.map(c => c.name).join(' '), terms));
+      if (terms.length) list = list.filter(p => _vlHay(_hayPalette(p), terms));
       host.innerHTML = list.length
         ? list.map(palCardHtml).join('')
         : `<p class="vl-grid-empty">Keine Palette passt zu „${escHtml(state.search.trim())}“.</p>`;
       const c = document.getElementById('pal-count');
       if (c) c.textContent = terms.length ? `${list.length} von ${PALETTES.length} Paletten` : `${PALETTES.length} Paletten · Kontrast WCAG-geprüft`;
+      updateAssetsTabCount();
     }
 
     // ===== (d) MUSTER & VERLÄUFE =====
@@ -1541,6 +1760,7 @@
             <div class="pat-foot">
               <span class="lib-lic">${LU.check}${escHtml(p.lizenz)}</span>
               <button class="lib-btn" onclick="copyPatternCss('${p.id}')">${LU.copy}CSS kopieren</button>
+              <button class="lib-btn" onclick="openModal('${p.id}')">${LU.artikel}Details</button>
             </div>
           </div>
         </div>`;
@@ -1550,12 +1770,13 @@
       if (!host) return;
       const terms = _vlSearchTerms();
       let list = PATTERNS;
-      if (terms.length) list = list.filter(p => _vlHay(p.name + ' ' + (p.stimmung || '') + ' ' + (p.typ === 'gradient' ? 'Verlauf' : 'Muster'), terms));
+      if (terms.length) list = list.filter(p => _vlHay(_hayPattern(p), terms));
       host.innerHTML = list.length
         ? list.map(patCardHtml).join('')
         : `<p class="vl-grid-empty">Kein Hintergrund passt zu „${escHtml(state.search.trim())}“.</p>`;
       const c = document.getElementById('pat-count');
       if (c) c.textContent = terms.length ? `${list.length} von ${PATTERNS.length} Hintergründen` : `${PATTERNS.length} Hintergründe · ${ASSET_STATS.patternsSvg} Muster + ${ASSET_STATS.gradients} Verläufe`;
+      updateAssetsTabCount();
     }
 
     // ===== (e) pilot-BRAND =====
@@ -1609,6 +1830,22 @@
         </div>`;
       const hint = document.getElementById('brand-hinweis');
       if (hint) hint.textContent = BRAND.hinweis;
+      /* ENTSCHEIDUNG (25.07.2026): Dieser Abschnitt bleibt UNGEFILTERT.
+         Er ist der einzige Asset-Abschnitt ohne Raster und ohne Sammlung: ein
+         fester CI-Spickzettel aus den Design-Tokens dieser Seite und den zwei
+         real vorliegenden Logo-Dateien. Eine Suche kann hier nichts „finden",
+         sie könnte den Spickzettel nur halbieren — und ein halber Spickzettel
+         ist keiner. Dieselbe Abwägung wie beim fehlenden Merken-Stern oben.
+         Neu ist nur, dass er es sagt: vorher standen die zwei Logos bei „zzzqqq"
+         kommentarlos da, während ringsum alles leer lief. */
+      const suchhinweis = document.getElementById('brand-suchhinweis');
+      if (suchhinweis) {
+        const q = (state.search || '').trim();
+        suchhinweis.textContent = q
+          ? `Dieser Abschnitt filtert nicht mit „${q}“ — er ist ein fester Spickzettel, kein durchsuchbarer Bestand: die CI-Tokens dieser Seite und die zwei vorliegenden Logo-Dateien.`
+          : '';
+        suchhinweis.hidden = !q;
+      }
     }
 
     // ===== MODAL-ENGINE-VERDRAHTUNG =====
@@ -1785,9 +2022,9 @@
         return;
       }
       let id;
-      try { id = decodeURIComponent(m[1]); } catch (e) { return; }
+      try { id = decodeURIComponent(m[1]); } catch (e) { return vlDeepLinkMiss('a'); }
       const item = assetById(id);
-      if (!item) return;
+      if (!item) return vlDeepLinkMiss('a');
       // Fonts liegen evtl. hinter einem Kategorie-Filter — für den Deep-Link lösen
       if (item.typ === 'font' && state.fontKat && item.ref.kategorie !== state.fontKat) {
         state.fontKat = null; renderFontCats(); renderFonts();
@@ -1829,15 +2066,16 @@
       renderPatterns();
       renderBrand();
 
-      // E12: Count-Badge am Design-Assets-Tab.
+      // E12: Count-Badge am Design-Assets-Tab — gesetzt von updateAssetsTabCount(),
+      // das die vier Renderer oben bei jedem Rendern aufrufen.
       // Gemessen 24.07.2026: zeigte 39 statt 30. ASSETS ENTHÄLT die Schriften
       // bereits (data/assets.js: [...FONTS.map(…), ...PALETTES, ...PATTERNS,
       // ...ICONSETS]) — „FONTS.length + ASSETS.length“ zählte die 9 Schriften
       // doppelt. ASSETS.length allein = 30 und deckt sich mit den Abschnitts-
       // zählern (9 Schriften + 4 Icon-Sets + 7 Paletten + 10 Hintergründe)
-      // und mit der Zahl auf der Startseite.
-      const _ac = document.getElementById('vl-count-assets');
-      if (_ac) { _ac.textContent = ASSETS.length; _ac.hidden = false; }
+      // und mit der Zahl auf der Startseite. Seit 25.07.2026 folgt die Zahl
+      // zusätzlich der Suche (vorher stand sie stur auf 30).
+      updateAssetsTabCount();
 
       initModalEngine();
       initModalSwipe();
@@ -1867,10 +2105,11 @@
     window._vlSearch.assets = applyAssetSearch;
     })();
 
-    /* Aktiven Tab initial mit der richtigen Modal-Config versorgen */
+    /* Aktiven Tab initial mit der richtigen Modal-Config versorgen.
+       Bedingung identisch zur Reiter-Vorwahl oben — ?f= ist auch hier entfallen. */
     (function () {
       const qs = new URLSearchParams(location.search);
-      const wantsAssets = qs.get('tab') === 'assets' || qs.has('a') || qs.has('f') || /^#a\//.test(location.hash || '');
+      const wantsAssets = qs.get('tab') === 'assets' || qs.has('a') || /^#a\//.test(location.hash || '');
       window.ModalConfig = window._vlCfg[wantsAssets ? 'assets' : 'bausteine'];
       window.RatingConfig = { type: wantsAssets ? 'asset' : 'baustein' };
     })();
