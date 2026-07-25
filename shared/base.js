@@ -1369,6 +1369,7 @@ const GSEARCH_SOURCES = [
   { glob: 'BAUSTEINE',  src: 'data/bausteine.js'  },
   { glob: 'ANWEISUNGEN', src: 'data/anweisungen.js' },
   { glob: 'CASES',      src: 'data/cases.js'      },
+  { glob: 'STARTPROJEKTE', src: 'data/startprojekte.js' },
 ];
 
 /* HIDDEN-Skills (aus der Katalog-Fläche genommen) tauchen auch in der globalen
@@ -1455,6 +1456,16 @@ const GSEARCH_GROUPS = [
     href: it => 'showroom.html?case=' + encodeURIComponent(it.id),
     title: it => it.titel, sub: it => it.kurz,
     fields: it => [[it.titel || '', 5], [it.kurz || '', 2], [it.persona || '', 1], [it.saeule || '', 1]] },
+  /* Startprojekte (die drei herunterladbaren Gerüste). Steht direkt hinter den
+     Projekten, weil beide auf showroom.html wohnen — die Reihenfolge dieser
+     Liste ist zugleich die Reihenfolge der Trefferschubladen und der Gattungen
+     im Neuigkeiten-Block. Eigene Quelle data/startprojekte.js, also auch ein
+     Eintrag in GSEARCH_SOURCES. `wofuer` zählt mit Gewicht 1 mit: es ist der
+     Satz, in dem der Anwendungsfall steht („Rückblick", „Umfrage"). */
+  { key: 'startprojekt', label: 'Startprojekte', glob: 'STARTPROJEKTE', bereich: 'showroom.html',
+    href: it => 'showroom.html?g=' + encodeURIComponent(it.id),
+    title: it => it.name, sub: it => it.kurz,
+    fields: it => [[it.name || '', 5], [(it.tags || []).join(' '), 3], [it.kurz || '', 2], [it.wofuer || '', 1]] },
 ];
 
 // WICHTIG: die data/*.js deklarieren ihre Globals mit `const` (SKILLS, PROMPTS, …).
@@ -1476,6 +1487,10 @@ function _gsGlobal(name) {
       case 'BEISPIELDATEN': return (typeof BEISPIELDATEN !== 'undefined') ? BEISPIELDATEN : undefined;
       case 'ANWEISUNGEN': return (typeof ANWEISUNGEN !== 'undefined') ? ANWEISUNGEN : undefined;
       case 'CASES':      return (typeof CASES      !== 'undefined') ? CASES      : undefined;
+      // Ohne diesen case fällt STARTPROJEKTE STILL aus dem Neuigkeiten-Block und
+      // aus „Deine Sachen" — _gsGlobal ist ein switch über feste Namen, ein
+      // fehlender Zweig gibt undefined zurück und die Gruppe entfällt lautlos.
+      case 'STARTPROJEKTE': return (typeof STARTPROJEKTE !== 'undefined') ? STARTPROJEKTE : undefined;
     }
   } catch (e) {}
   return undefined;
@@ -1913,7 +1928,7 @@ const DS_TYPE_LABEL = {
   skill: 'Skill', plugin: 'Plugin', framework: 'Framework', prompt: 'Prompt',
   baustein: 'Baustein', asset: 'Asset', case: 'Projekt', befehl: 'Befehl',
   begriff: 'Begriff', faq: 'FAQ', ressource: 'Ressource', daten: 'Beispieldatei',
-  anweisung: 'Projektanweisung'
+  anweisung: 'Projektanweisung', startprojekt: 'Startprojekt'
 };
 
 function _dsScan() {

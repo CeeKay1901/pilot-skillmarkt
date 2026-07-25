@@ -135,14 +135,17 @@ async function runViewport(browser, vp) {
          Prüfung für den neuen Link BLIND — ein unbekannter Parameter fällt unten
          auf 'bereichsseite' durch und gälte damit als aufgelöst, auch wenn er ins
          Leere zeigt. Mit `pa` in der Liste UND 'bk-pa-' in den Ankerpräfixen muss
-         ein ?pa=-Link nachweislich ein Element treffen. */
-      const id = q.get('a') || q.get('b') || q.get('d') || q.get('pa') || q.get('skill') || q.get('p')
+         ein ?pa=-Link nachweislich ein Element treffen.
+         Dieselbe Verschärfung für die zwölfte Sammlung: `g` (Startprojekte) in der
+         Liste, 'sp-' in den Ankerpräfixen. Ohne beides wäre showroom.html?g=xyz
+         still als „Bereichsseite" durchgegangen. */
+      const id = q.get('a') || q.get('b') || q.get('d') || q.get('pa') || q.get('g') || q.get('skill') || q.get('p')
         || q.get('case') || q.get('befehl') || q.get('begriff') || q.get('faq') || q.get('r');
       if (!id) return 'bereichsseite';
       if (location.hash && location.hash.length > 1) return 'hash';
       /* location.hash kann „#begriff/cloud" sein — kein gültiger CSS-Selektor.
          Deshalb getElementById statt querySelector. */
-      for (const pre of ['asset-', 'bk-data-', 'bk-pa-', 'case-', 'begriff-', 'r-', 'faq-', 'befehl-'])
+      for (const pre of ['asset-', 'bk-data-', 'bk-pa-', 'sp-', 'case-', 'begriff-', 'r-', 'faq-', 'befehl-'])
         if (document.getElementById(pre + id)) return 'element';
       return null;
     });
@@ -183,10 +186,11 @@ async function runViewport(browser, vp) {
      heraus — und die Lücken-Zählung meldete brav 0. Deshalb steht sie als Sollwert
      im Test und wird ausschliesslich beim BEWUSSTEN Hinzufügen einer Sammlung
      nachgezogen: 10 → 11 mit den Projektanweisungen (ANWEISUNGEN, Deep-Link
-     vorlagen.html?pa=). Die eigentliche Zusicherung — lueckenGesamt === 0, also
+     vorlagen.html?pa=), 11 → 12 mit den Startprojekten (STARTPROJEKTE, Deep-Link
+     showroom.html?g=). Die eigentliche Zusicherung — lueckenGesamt === 0, also
      SEIT kennt JEDEN Eintrag JEDER Sammlung — bleibt davon unberührt. */
   check('06_seit_deckt_alle_sammlungen',
-    !!abdeckung && abdeckung.globs === 11 && abdeckung.lueckenGesamt === 0, abdeckung || {});
+    !!abdeckung && abdeckung.globs === 12 && abdeckung.lueckenGesamt === 0, abdeckung || {});
 
   // ---------- (7) „Neu"-Fähnchen == istNeu() ----------
   const flaggen = {};

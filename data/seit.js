@@ -12,13 +12,13 @@
 // redaktionelle Entstehungszeit und reicht bis Oktober 2025 zurück — vor den
 // ersten Commit dieses Repos.
 //
-// Stand: 246 Einträge auf 6 Tagen.
+// Stand: 249 Einträge auf 6 Tagen.
 //   2026-07-16    66 Einträge
 //   2026-07-17   153 Einträge
 //   2026-07-18    10 Einträge
 //   2026-07-23     6 Einträge
 //   2026-07-24     8 Einträge
-//   2026-07-25     3 Einträge
+//   2026-07-25     6 Einträge
 //
 // Dass sich viele Einträge einen Tag teilen, ist die Wahrheit und kein Fehler:
 // sie kamen gemeinsam ins Repo. Deshalb gruppiert der Neuigkeiten-Block nach
@@ -272,4 +272,7 @@ const SEIT = {
   "SKILLS:webaudit": "2026-07-16",
   "SKILLS:webseite-bauen": "2026-07-16",
   "SKILLS:xlsx": "2026-07-16",
+  "STARTPROJEKTE:auswerter": "2026-07-25",
+  "STARTPROJEKTE:dashboard": "2026-07-25",
+  "STARTPROJEKTE:einseiter": "2026-07-25",
 };

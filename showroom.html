@@ -238,8 +238,54 @@
       </div>
     </section>
 
-    <!-- (b) MEISTGEWOLLT -->
-    <section class="lib-section -alt" aria-labelledby="rank-h">
+    <!-- (b) STARTPROJEKTE — Gerüste zum Herunterladen.
+         PLATZ: zwischen Projekten und Ranking mit Absicht. Oben steht, was
+         andere gebaut haben; hier steht der Schritt vom Anschauen zum
+         Selbermachen; das Ranking darunter ist Ausblick.
+
+         BAUFORM: Anker-Muster wie die Projektanweisungen in vorlagen.html
+         (Abschnitt + Karte + #-Anker + Hervorhebung), NICHT das Case-Muster
+         mit Vorschau-iframe und Modal. Zwei Gründe, beide gemessen: das
+         Case-Modal hat vier gepinnte Reiter (e8:04) und passt inhaltlich
+         nicht auf ein leeres Gerüst, und bei einem Ordner zum Mitnehmen sagt
+         die Dateiliste mehr als ein auf 50 % geschrumpftes Thumbnail.
+         Keine Sterne-Bewertung: ein leerer Ordner ist erst beurteilbar,
+         wenn etwas drin steht — gemerkt wird er trotzdem (fav:startprojekt:).
+
+         MARKER: eigene Klasse .sp-marker, NICHT .sr-badge. Die beiden
+         .sr-badge-Varianten „echt/Beispiel“ beantworten eine andere Frage
+         (ist das ein Team-Tool oder eine Inszenierung); hier geht es darum,
+         dass der Ordner absichtlich leer ist. Getrennte Frage, getrennte
+         Klasse — dann sieht man den Unterschied auch im Code.
+
+         HINTERGRUND, gemessen statt geraten. Die Seite lebt von der Abwechslung
+         plain/-alt; ein eingeschobener Abschnitt kippt sie zwangsläufig. Beide
+         naheliegenden Fassungen wurden im Browser nachgemessen:
+           mit `-alt` hier:  transparent · warm · warm · dunkel
+           ohne `-alt` hier: transparent · transparent · warm · dunkel
+         Beide legen zwei gleiche Flächen nebeneinander, nur an verschiedener
+         Stelle. Gewählt: `-alt` HIER und dafür `-alt` bei „Meistgewollt"
+         entfernt — dann steht wieder transparent · warm · transparent · dunkel,
+         und die warme Fläche liegt auf dem Abschnitt, der zum Selbermachen
+         auffordert. -->
+    <section class="lib-section -alt" aria-labelledby="sp-h" id="startprojekte">
+      <div class="lib-inner">
+        <p class="kicker">Selber anfangen</p>
+        <div class="lib-sec-head">
+          <span class="lib-sec-ic lu-slot" id="sp-ic"></span>
+          <h2 id="sp-h">Startprojekte</h2>
+          <span class="lib-sec-count" id="sp-count"></span>
+        </div>
+        <p class="lib-note">Ein Gerüst ist ein Ordner, der schon läuft, aber noch nichts von dir weiß: Doppelklick auf die <code>index.html</code>, und es passiert etwas — mit Beispielinhalt, den du ersetzt. Kein Server, keine Installation, kein Netz. Lade den Ordner als ZIP, pack ihn aus, öffne Claude Code darin und sag, was daraus werden soll. Die passende Anleitung liegt als <code>CLAUDE.md</code> schon bei.</p>
+        <div class="sp-grid" id="sp-grid"></div>
+        <p class="sp-hinweis" id="sp-hinweis"></p>
+      </div>
+    </section>
+
+    <!-- (c) MEISTGEWOLLT — `-alt` entfallen, weil der Abschnitt darüber es jetzt
+         trägt. Sonst stünden zwei warme Flächen direkt hintereinander (gemessen,
+         Begründung im Kommentar oben). -->
+    <section class="lib-section" aria-labelledby="rank-h">
       <div class="lib-inner">
         <p class="kicker">Ranking</p>
         <div class="lib-sec-head">
@@ -284,6 +330,17 @@
   <script src="data/cases.js"></script>          <!-- CASES + CASE_STATS -->
   <script src="data/contributors.js"></script>   <!-- PILOTS (Personas der inszenierten Cases) -->
   <script src="data/skills.js"></script>          <!-- SKILLS — Skill-Namen in der Fakten-Box -->
+  <script src="data/startprojekte.js"></script>   <!-- STARTPROJEKTE — der Abschnitt „Startprojekte“ -->
+  <!-- ANWEISUNGEN wird HIER gebraucht, nicht nur in vorlagen.html: der `text` einer
+       Vorlage ist die CLAUDE.md, die beim ZIP-Packen beigelegt wird. Als String ist
+       er überall verfügbar — auch per file://, wo fetch auf eigene Dateien scheitert.
+       29 KB, eager: ein zweiter Bestand als String-Kopie im Gerüst-Ordner wäre die
+       Alternative gewesen und würde garantiert auseinanderlaufen. -->
+  <script src="data/anweisungen.js"></script>     <!-- ANWEISUNGEN — Quelle der CLAUDE.md im ZIP -->
+  <!-- data/seit.js fehlte auf dieser Seite. Ohne die Datei ist istNeu() IMMER falsch,
+       das „Neu“-Fähnchen erschiene also nie — und zwar lautlos, ohne Fehler.
+       Reihenfolge egal (klassisches Script, gelesen wird erst beim Rendern). -->
+  <script src="data/seit.js"></script>            <!-- SEIT — Grundlage für istNeu() -->
   <!-- BEWUSST NICHT eager geladen: data/prompts.js (97 KB) und data/bausteine.js (103 KB).
        Die Seite nutzt keines dieser Globals — Querverweise arbeiten nur mit den Labels aus
        data/cases.js. Die globale Suche (Strg+K) lädt fehlende data-Dateien selbst lazy nach. -->
@@ -363,23 +420,34 @@
        einen Eintrag, aber unter der Typ-Bezeichnung „Skill“.
        aria-label trägt den Projektnamen — im Grid heißen sonst alle Merken-
        Knöpfe gleich (dasselbe Problem wie bei „Will ich auch“ darunter). */
-    function favBtnHtml(c) {
-      const fav = isFavorite(c.id, 'case');
-      return `<button type="button" class="fav-btn${fav ? ' active' : ''}" data-fav-id="${c.id}"
-        onclick="toggleFavorite(event,'${c.id}','case')"
+    function favBtnHtml(c) { return srFavBtnHtml(c.id, 'case', c.titel); }
+
+    /* Ein Merken-Knopf für BEIDE Typen dieser Seite (case | startprojekt).
+       data-fav-typ und data-fav-name hängen am Knopf, weil der Rückruf aus
+       base.js nur die id liefert — siehe onFavoritesChanged darunter. */
+    function srFavBtnHtml(id, typ, name) {
+      const fav = isFavorite(id, typ);
+      return `<button type="button" class="fav-btn${fav ? ' active' : ''}" data-fav-id="${escHtml(id)}" data-fav-typ="${typ}" data-fav-name="${escHtml(name)}"
+        onclick="toggleFavorite(event,'${id}','${typ}')"
         aria-pressed="${fav}"
-        aria-label="${escHtml(c.titel)} ${fav ? 'aus Favoriten entfernen' : 'zu Favoriten hinzufügen'}">${fav ? '★' : '☆'}</button>`;
+        aria-label="${escHtml(name)} ${fav ? 'aus Favoriten entfernen' : 'zu Favoriten hinzufügen'}">${fav ? '★' : '☆'}</button>`;
     }
 
     /* Zustand gezielt nachziehen statt neu zu rendern: der Fokus bleibt auf dem
-       Knopf (Tastatur) und die Vorschau-iframes werden nicht neu geladen. */
-    window.onFavoritesChanged = (id, isNowFav) => {
-      const c = caseById(id);
-      document.querySelectorAll(`.fav-btn[data-fav-id="${id}"]`).forEach(btn => {
-        btn.classList.toggle('active', isNowFav);
-        btn.setAttribute('aria-pressed', String(isNowFav));
-        btn.textContent = isNowFav ? '★' : '☆';
-        btn.setAttribute('aria-label', `${c ? c.titel : 'Projekt'} ${isNowFav ? 'aus Favoriten entfernen' : 'zu Favoriten hinzufügen'}`);
+       Knopf (Tastatur) und die Vorschau-iframes werden nicht neu geladen.
+       TYPFEST seit Stufe 3: die Seite trägt jetzt ZWEI merkbare Typen. Der
+       Rückruf liefert nur die id, und die frühere Fassung schlug sie
+       ausschliesslich in CASES nach — ein gemerktes Startprojekt hätte den
+       aria-label-Rückfall „Projekt“ bekommen, also einen falschen Namen am
+       richtigen Knopf. Gelesen wird deshalb pro Knopf mit SEINEM data-fav-typ
+       (Muster aus vorlagen.html:569). */
+    window.onFavoritesChanged = function (id) {
+      document.querySelectorAll(`.fav-btn[data-fav-id="${CSS.escape(id)}"]`).forEach(btn => {
+        const now = isFavorite(id, btn.dataset.favTyp);
+        btn.classList.toggle('active', now);
+        btn.setAttribute('aria-pressed', String(now));
+        btn.textContent = now ? '★' : '☆';
+        btn.setAttribute('aria-label', `${btn.dataset.favName || ''} ${now ? 'aus Favoriten entfernen' : 'zu Favoriten hinzufügen'}`);
       });
     };
 
@@ -536,7 +604,156 @@
     }
     window.resetShowroomFilters = resetShowroomFilters;
 
-    // ===== (b) MEISTGEWOLLT-RANKING (nach Reaktionen) =====
+    /* ============================================================
+       (b) STARTPROJEKTE — Gerüste zum Herunterladen (data/startprojekte.js)
+
+       Eigenständiges Modul neben dem Case-Grid: eigene Klassen (.sp-*),
+       eigenes Raster, eigener Marker. Es hängt an KEINEM der Filter oben —
+       #sr-cats, #sr-art, #sr-sort und die Seiten-Suche gehören den Projekten
+       und bleiben unberührt. Drei Gerüste sind eine überschaubare Menge; ein
+       Filter darüber wäre Bedienung ohne Nutzen.
+       ============================================================ */
+
+    function startprojektById(id) { return STARTPROJEKTE.find(s => s.id === id); }
+    function anweisungFuer(sp) {
+      return (typeof ANWEISUNGEN !== 'undefined' && Array.isArray(ANWEISUNGEN))
+        ? ANWEISUNGEN.find(a => a.id === sp.anweisung) : null;
+    }
+
+    function startprojektCardHtml(sp) {
+      // „Neu" kommt aus data/seit.js (istNeu in base.js), nicht aus den Daten —
+      // gleiche Machart wie in skills.html und vorlagen.html. Die Datei wird auf
+      // dieser Seite seit Stufe 3 geladen; ohne sie wäre istNeu() lautlos immer falsch.
+      const neuFlagHtml = (typeof istNeu === 'function' && istNeu('STARTPROJEKTE', sp.id)) ? '<span class="card-neu-flag">Neu</span>' : '';
+      const dateien = sp.dateien || [];
+      // Zahl gezählt, nie getippt (Zahlen-Ehrlichkeit).
+      const tagsHtml = (sp.tags || []).map(t => `<span class="sp-tag">${escHtml(t)}</span>`).join('');
+      const a = anweisungFuer(sp);
+      const anleitungLabel = a ? `Anleitung: ${a.name}` : 'Anleitung ansehen';
+      /* Die CLAUDE.md steht bewusst NEBEN der Liste, nicht darin: <ul class="sp-dateien">
+         zeigt genau den Ist-Zustand des Ordners (== sp.dateien), sonst zählte die
+         sichtbare Liste etwas anderes als die Daten. Dass beim Packen eine Datei
+         dazukommt, ist eine andere Aussage und bekommt deshalb eine eigene Zeile. */
+      const dazuHtml = a
+        ? `<p class="sp-dazu">+ CLAUDE.md — kommt beim Packen dazu, aus der Anleitung „${escHtml(a.name)}“</p>`
+        : '';
+      return `
+        <article class="sp-card" id="sp-${sp.id}" data-id="${sp.id}">
+          <div class="sp-kopf">
+            <span class="sp-ic">${LU.folder}</span>
+            <span class="sp-name">${escHtml(sp.name)}</span>
+            ${neuFlagHtml}
+          </div>
+          <p class="sp-kurz">${escHtml(sp.kurz)}</p>
+          <p class="sp-wofuer">${escHtml(sp.wofuer)}</p>
+          <div class="sp-tags">${tagsHtml}</div>
+          <div class="sp-dateien-block">
+            <span class="sp-dateien-label">Im Ordner · ${dateien.length} ${dateien.length === 1 ? 'Datei' : 'Dateien'}</span>
+            <ul class="sp-dateien">${dateien.map(d => `<li>${escHtml(d)}</li>`).join('')}</ul>
+            ${dazuHtml}
+          </div>
+          <div class="sp-marker-row">
+            <span class="sp-marker">${LU.blocks}Leeres Gerüst — kein fertiges Projekt</span>
+            ${srFavBtnHtml(sp.id, 'startprojekt', sp.name)}
+          </div>
+          <div class="sp-actions">
+            <a class="lib-btn" href="${sp.liveUrl}" target="_blank" rel="noopener">${LU.eye}Ansehen<span class="sr-only"> — ${escHtml(sp.name)} in neuem Tab</span></a>
+            <button type="button" class="lib-btn -primary" data-sp-zip="${sp.id}" onclick="downloadStartprojekt(event,'${sp.id}')">${LU.download}Ordner als ZIP<span class="sr-only"> — ${escHtml(sp.name)}</span></button>
+            <a class="lib-btn" href="vorlagen.html?pa=${encodeURIComponent(sp.anweisung)}">${LU['file-text']}${escHtml(anleitungLabel)}</a>
+          </div>
+          <p class="sp-status" id="sp-status-${sp.id}" role="status" aria-live="polite" hidden></p>
+        </article>`;
+    }
+
+    function renderStartprojekte() {
+      const host = document.getElementById('sp-grid');
+      if (!host || typeof STARTPROJEKTE === 'undefined') return;
+      host.innerHTML = STARTPROJEKTE.map(startprojektCardHtml).join('');
+      // Zähler nennt die angezeigte Menge — hier filtert nichts, also ist das
+      // zugleich die Bestandszahl (siehe tools/qa zaehler).
+      const c = document.getElementById('sp-count');
+      if (c) c.textContent = `${STARTPROJEKTE.length} Gerüste · je mit passender CLAUDE.md`;
+      const hint = document.getElementById('sp-hinweis');
+      if (hint) hint.textContent = 'Im ZIP liegt der Ordner so, wie er hier steht, plus die CLAUDE.md. Die stammt aus derselben Quelle wie die Projektanweisungen unter „Vorlagen“ — es gibt keine zweite Fassung, die auseinanderlaufen könnte. Fehlt beim Packen auch nur eine Datei, bekommst du eine Meldung statt eines unvollständigen ZIP.';
+    }
+
+    /* ===== ORDNER ALS ZIP =====
+       Muster aus skills.html: erst GitHub-Roh, dann repo-relativ. Die Reihenfolge
+       ist kein Zufall — per file:// geöffnet scheitert fetch auf eigene Dateien
+       hart („URL scheme file is not supported"), die Netz-Adresse trägt dort noch.
+       REPO_RAW und fetchBytes stehen bewusst HIER und nicht in shared/base.js:
+       base.js trägt alle sechs Seiten, und dieses Muster braucht genau eine.
+
+       Die CLAUDE.md wird NICHT geladen. Sie liegt in keinem Gerüst-Ordner, sondern
+       nur als `text` in data/anweisungen.js und wird als String beigelegt. Damit
+       gibt es sie genau einmal, und sie ist auch dann da, wenn kein Netz und kein
+       Server verfügbar ist.
+
+       Scheitert auch nur eine Datei, gibt es KEIN ZIP, sondern eine sichtbare
+       Meldung an der Karte. Ein stillschweigend unvollständiges Gerüst wäre
+       schlimmer als keines: es liefe, sähe aber falsch aus, und niemand wüsste warum. */
+    const REPO_RAW = 'https://raw.githubusercontent.com/CeeKay1901/pilot-skillmarkt/main';
+
+    async function fetchBytes(pathRel) {
+      // Zwei Anläufe statt der vier aus skills.html: dort holt ein Klick bis zu
+      // 20 Dateien, hier höchstens vier. Zwei fangen den einen wackligen ersten
+      // Versuch ab, ohne den Fehlerfall (file://) minutenlang hinzuziehen.
+      for (let versuch = 0; versuch < 2; versuch++) {
+        for (const url of [REPO_RAW + '/' + pathRel, pathRel]) {
+          try {
+            const r = await fetch(url, { cache: 'no-cache' });
+            if (r.ok) { const b = await r.arrayBuffer(); if (b.byteLength) return new Uint8Array(b); }
+          } catch (e) {}
+        }
+        if (versuch === 0) await new Promise(res => setTimeout(res, 300));
+      }
+      return null;
+    }
+
+    function spStatus(id, text) {
+      const el = document.getElementById('sp-status-' + id);
+      if (!el) return;
+      el.textContent = text || '';
+      el.hidden = !text;
+    }
+
+    async function downloadStartprojekt(evt, id) {
+      if (evt) evt.stopPropagation();
+      const sp = startprojektById(id);
+      if (!sp) return;
+      const a = anweisungFuer(sp);
+      const btn = document.querySelector(`[data-sp-zip="${CSS.escape(id)}"]`);
+      const label = btn ? btn.innerHTML : '';
+      if (!a) {   // kann nur passieren, wenn `anweisung` auf eine unbekannte id zeigt
+        spStatus(id, 'Die zugehörige Anleitung wurde nicht gefunden — ohne CLAUDE.md wird nichts gepackt.');
+        showToast('Download nicht möglich — Anleitung fehlt.');
+        return;
+      }
+      spStatus(id, '');
+      if (btn) { btn.disabled = true; btn.textContent = 'lädt …'; }
+      const liste = sp.dateien || [];
+      const entries = [];
+      const fehlend = [];
+      for (let i = 0; i < liste.length; i++) {
+        if (btn) btn.textContent = `lädt ${i + 1}/${liste.length} …`;
+        const data = await fetchBytes(sp.ordner + liste[i]);
+        if (data) entries.push({ name: sp.id + '/' + liste[i], data });
+        else fehlend.push(liste[i]);
+      }
+      if (btn) { btn.disabled = false; btn.innerHTML = label; }
+      if (fehlend.length) {
+        spStatus(id, `Diese Dateien konnten nicht geladen werden: ${fehlend.join(', ')}. Deshalb gibt es kein ZIP — ein unvollständiges Gerüst wäre schlimmer als keines. Öffne die Seite über einen Server oder über den Marketplace im Netz, dann klappt es.`);
+        showToast('Download abgebrochen — es fehlen Dateien.');
+        return;
+      }
+      // CLAUDE.md aus ANWEISUNGEN — String, kein Netz, kein zweiter Bestand.
+      entries.push({ name: sp.id + '/CLAUDE.md', data: new TextEncoder().encode(a.text) });
+      triggerDownload(makeZip(entries), sp.id + '.zip');
+      spStatus(id, `${sp.id}.zip enthält ${entries.length} Dateien, davon die CLAUDE.md aus der Vorlage „${a.name}“.`);
+      showToast(`${sp.id}.zip heruntergeladen (${entries.length} Dateien, inkl. CLAUDE.md) ⬇`);
+    }
+
+    // ===== (c) MEISTGEWOLLT-RANKING (nach Reaktionen) =====
     function renderRanking() {
       const host = document.getElementById('sr-rank');
       if (!host) return;
@@ -679,6 +896,15 @@
           const qs = new URLSearchParams(location.search);
           const v = qs.get('case');
           if (v && !location.hash) history.replaceState(null, '', location.pathname + location.search + '#case/' + encodeURIComponent(v));
+          /* ?g=<id> → Startprojekt, gleiche Normalisierung wie ?case=: Query-Form
+             für geteilte Links, Hash-Form für die Mechanik. Der Aufruf steht
+             bewusst INNERHALB von `fromLoad` UND hinter `!location.hash` — ein
+             bedingungsloses replaceState schriebe bei jedem Aufruf ohne Parameter
+             einen leeren Hash in die URL. Und weil ?case= eine Zeile vorher schon
+             einen Hash gesetzt hat, behält der bestehende Zweig bei ?case=&g=
+             die Oberhand (e8:08 prüft den Case-Weg unverändert). */
+          const vg = qs.get('g');
+          if (vg && !location.hash) history.replaceState(null, '', location.pathname + location.search + '#sp-' + encodeURIComponent(vg));
         } catch (e) {}
       }
       if (_hashLock) return;
@@ -686,6 +912,21 @@
       if (!m) {
         const ov = document.getElementById('modal-overlay');
         if (ov && ov.classList.contains('open')) closeModal();
+        /* Startprojekt: showroom.html#sp-<id> (aus ?g= oder direkt geteilt).
+           Kein Modal — die Karte trägt alles, also nur anfahren und hervorheben.
+           Steht NACH dem #case/-Zweig, damit der unverändert zuerst greift.
+           Unbekannte id: still zurückkehren, wie beim Case darunter. */
+        const mg = (location.hash || '').match(/^#sp-(.+)$/);
+        if (mg) {
+          let gid;
+          try { gid = decodeURIComponent(mg[1]); } catch (e) { return; }
+          const el = document.getElementById('sp-' + gid);   // renderStartprojekte() lief bereits beim Init
+          if (el) {
+            el.scrollIntoView({ behavior: window.scrollBehavior(), block: 'center' });
+            el.classList.add('-highlight');
+            setTimeout(() => el.classList.remove('-highlight'), 2400);
+          }
+        }
         return;
       }
       let id;
@@ -726,13 +967,17 @@
     // ===== INIT =====
     document.addEventListener('DOMContentLoaded', () => {
       // Sektions-Icons setzen (Lucide aus der LU-Map)
-      const icons = { 'cases-ic': LU.rocket, 'rank-ic': LU.trophy };
+      const icons = { 'cases-ic': LU.rocket, 'sp-ic': LU.bauen, 'rank-ic': LU.trophy };
       Object.entries(icons).forEach(([id, svg]) => { const el = document.getElementById(id); if (el) el.innerHTML = svg; });
 
       renderCats();
       fillSelect('sr-art', ART_ORDER, ART_LABEL, 'Alle Arten');
       fillSelect('sr-aufwand', AUFWAND_ORDER, AUFWAND_LABEL, 'Jeder Aufwand');
       renderCases();
+      // VOR applyDeepLink: der #sp-Zweig sucht die Karte per getElementById und
+      // kehrt bei einer noch leeren Liste still zurück — der Deep-Link führte
+      // dann ins Nichts, ohne Fehlermeldung.
+      renderStartprojekte();
       renderRanking();
 
       const artSel = document.getElementById('sr-art');

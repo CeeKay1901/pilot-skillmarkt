@@ -1925,19 +1925,106 @@
     .sr-rank-count { margin-left: auto; display: inline-flex; align-items: center; gap: .4rem; font-family: var(--font-mono); font-size: 1.2rem; color: var(--c-gray-m); }
     .sr-rank-count .lu { width: 1.4rem; height: 1.4rem; color: var(--c-gray-m); }
 
+    /* ----- Startprojekt-Karten (die herunterladbaren Gerüste, Stufe 3) -----
+       Gebaut nach dem Vorbild der Projektanweisungs-Karten in vorlagen.html
+       (.bk-pa-*): gleiche Kartenform, gleicher -highlight für den Deep-Link,
+       gleiche Zurückhaltung bei den Farben. Bewusst KEIN .sr-card-Klon: die
+       Case-Karte ist um ein Vorschau-iframe herum gebaut, das es hier nicht
+       gibt, und ihre Marker beantworten eine andere Frage.
+       Gedämpfter Text ausschliesslich über --c-gray-m, NIE über opacity — die
+       Kontrastprüfung rechnet kumulierte Deckkraft ein, und abgeschwächte
+       Deckkraft ist nicht prüfbar. */
+    /* Kein align-items: start — die Karten dehnen sich wie in .sr-grid und
+       .bk-pa-grid auf gleiche Höhe. Bei drei Karten mit sehr verschieden langen
+       Dateilisten ist die bündige Unterkante der ruhigere Anblick. */
+    .sp-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2rem; }
+    .sp-card {
+      display: flex; flex-direction: column; gap: 1rem; min-width: 0;
+      background: var(--paper); border: 1px solid var(--line); border-radius: var(--r-lg);
+      padding: 1.8rem 2rem; scroll-margin-top: calc(var(--header-h) + 2.4rem);
+      transition: var(--trans);
+    }
+    .sp-card > * { min-width: 0; }
+    .sp-card.-highlight { border-color: var(--c-yellow); box-shadow: 0 0 0 3px rgba(255,224,94,.45); }
+    .sp-kopf { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+    .sp-ic { display: inline-flex; color: var(--c-black); }
+    .sp-ic .lu { width: 2.2rem; height: 2.2rem; }
+    .sp-name { font-size: 1.55rem; font-weight: 700; overflow-wrap: anywhere; }
+    .sp-kurz { font-size: 1.4rem; line-height: 1.55; color: var(--c-ink-body); margin: 0; }
+    .sp-wofuer { font-size: 1.35rem; line-height: 1.55; color: var(--c-gray-m); margin: 0; }
+    .sp-tags { display: flex; gap: .5rem; flex-wrap: wrap; }
+    .sp-tag {
+      font-family: var(--font-mono); font-size: 1.1rem; color: var(--c-gray-m);
+      border: 1px solid var(--line-strong); border-radius: var(--r-pill); padding: .2rem .8rem;
+    }
+    .sp-dateien-block { border-top: 1px solid var(--line); padding-top: 1.2rem; }
+    .sp-dateien-label {
+      display: block; font-family: var(--font-mono); font-size: 1.1rem; font-weight: 600;
+      letter-spacing: .1em; text-transform: uppercase; color: var(--c-gray-m); margin-bottom: .6rem;
+    }
+    .sp-dateien { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .4rem; }
+    .sp-dateien li {
+      position: relative; padding-left: 1.8rem; overflow-wrap: anywhere;
+      font-family: var(--font-mono); font-size: 1.2rem; line-height: 1.5; color: var(--c-ink-body);
+    }
+    .sp-dateien li::before { content: '·'; position: absolute; left: .4rem; top: 0; font-weight: 700; color: var(--c-gray-m); }
+    /* Die CLAUDE.md liegt in keinem Gerüst-Ordner auf der Platte — sie entsteht
+       erst beim Packen. Deshalb steht sie NEBEN der Dateiliste und nicht darin:
+       die Liste zeigt den Ordner, diese Zeile zeigt, was dazukommt. */
+    .sp-dazu {
+      margin: .6rem 0 0; font-size: 1.25rem; line-height: 1.5; color: var(--c-gray-m);
+      overflow-wrap: anywhere;
+    }
+    .sp-marker-row {
+      display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+      border-top: 1px solid var(--line); padding-top: 1rem;
+    }
+    /* .fav-btn bringt eine 44px-Trefffläche und viel Padding mit (base.css:906).
+       Der negative Zug holt den Stern optisch an den Innenrand der Karte, ohne
+       die Trefffläche selbst anzutasten — gleiche Korrektur wie in .sr-marker-row. */
+    .sp-marker-row .fav-btn { margin: -1.2rem -.7rem -1.2rem 0; }
+    .sp-marker {
+      display: inline-flex; align-items: center; gap: .5rem;
+      font-family: var(--font-mono); font-size: 1.05rem; font-weight: 700;
+      letter-spacing: .05em; text-transform: uppercase;
+      background: var(--paper-warm); color: var(--c-black);
+      border: 1px solid var(--line-strong); border-radius: var(--r-pill); padding: .3rem .9rem;
+    }
+    .sp-marker .lu { width: 1.3rem; height: 1.3rem; }
+    .sp-actions { display: flex; gap: .8rem; flex-wrap: wrap; margin-top: .2rem; }
+    /* Meldung, wenn eine Datei fehlt (kein ZIP) oder eines fertig ist. Steht in
+       der Karte, nicht im Toast: ein Toast verschwindet, und die Begründung für
+       ein NICHT erfolgtes ZIP muss lesbar bleiben. */
+    .sp-status {
+      margin: .4rem 0 0; font-size: 1.25rem; line-height: 1.55; color: var(--c-ink-body);
+      border-left: 3px solid var(--c-yellow); padding: .3rem 0 .3rem 1rem;
+    }
+    .sp-hinweis {
+      font-family: var(--font-mono); font-size: 1.15rem; line-height: 1.55; color: var(--c-gray-m);
+      border-left: 3px solid var(--c-yellow); padding: .4rem 0 .4rem 1.2rem; margin: 2rem 0 0; max-width: 92ch;
+    }
+
     /* ----- Responsive ----- */
     @media (max-width: 1023px) {
       .sr-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .sr-selects { margin-left: 0; }
+      .sp-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
     @media (max-width: 640px) {
       .sr-grid { grid-template-columns: minmax(0, 1fr); }
       .sr-body { padding: 1.4rem 1.4rem; }
       .sr-facts { grid-template-columns: minmax(0, 1fr); }
+      .sp-grid { grid-template-columns: minmax(0, 1fr); }
+      .sp-card { padding: 1.4rem 1.4rem; }
+      /* Bei 320px reissen drei Knöpfe nebeneinander die Karte auf; untereinander
+         bleiben sie voll breit und behalten ihre Trefffläche. */
+      .sp-actions { flex-direction: column; align-items: stretch; }
+      .sp-actions .lib-btn { justify-content: center; }
     }
     @media (prefers-reduced-motion: reduce) {
       .sr-card, .sr-cat, .sr-react, .sr-rank-item { transition: none; }
       .sr-card:hover { transform: none; }
+      .sp-card { transition: none; }
     }
 
     /* ===== GLOBAL SEARCH (E9, additiv) ===== */
