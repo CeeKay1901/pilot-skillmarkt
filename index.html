@@ -124,6 +124,42 @@
        Signalfarbe direkt neben dem gelben CTA derselben Karte und schwächte den
        eigentlichen Handlungsanker. Kommt je wieder ein Bereich im Bau dazu,
        gehört das Label dorthin — nicht auf die fertigen.) */
+    /* ===== MOTIVE =====================================================
+       Generierte Risographie-Motive, siehe assets/motive/HERKUNFT.md.
+       Bewusst als CSS-Hintergrund und NICHT als <img>: die Motive sind rein
+       dekorativ und haben in der Vorlesereihenfolge nichts verloren. Die
+       Karten bleiben dadurch strukturell unveraendert — kein zusaetzliches
+       Element, keine neue Verschachtelung, kein alt-Text der nichts sagt. */
+    .area-card { overflow: hidden; }
+    .area-card[data-motiv]::before {
+      content: ""; display: block;
+      height: 11rem; margin: -2.2rem -2.2rem 1.4rem;
+      border-bottom: 1px solid var(--line);
+      background-color: var(--c-bg);
+      background-repeat: no-repeat; background-position: center 46%; background-size: cover;
+    }
+    .area-card[data-motiv="katalog"]::before    { background-image: url(assets/motive/katalog.webp); }
+    .area-card[data-motiv="prompts"]::before    { background-image: url(assets/motive/prompts.webp); }
+    .area-card[data-motiv="bibliothek"]::before { background-image: url(assets/motive/bibliothek.webp); }
+    .area-card[data-motiv="baukasten"]::before  { background-image: url(assets/motive/baukasten.webp); }
+    .area-card[data-motiv="showroom"]::before   { background-image: url(assets/motive/showroom.webp); }
+    .area-card[data-motiv="lernen"]::before     { background-image: url(assets/motive/lernen.webp); }
+    @media (max-width: 1023px) {
+      .area-card[data-motiv]::before { height: 9rem; margin: -2.2rem -2rem 1.2rem; }
+    }
+
+    /* Auftakt-Band: nur der beschnittene untere Teil des Motivs, damit man
+       Bewegung und Papierkorn sieht statt eines Bildmotivs mit Aussage. */
+    .idx-band {
+      height: 18rem; margin-top: 4.4rem;
+      /* 50% statt bottom: „bottom" zeigte nur das Halbton-Rauschen unter den
+         Fliegern — bei 18rem Bandhoehe ist von einem 1400x422-Bild nur gut ein
+         Drittel sichtbar, der Ausschnitt muss also bewusst gesetzt werden. */
+      background: url(assets/motive/auftakt.webp) center 50% / cover no-repeat, var(--c-bg);
+      border-bottom: 1px solid var(--line);
+    }
+    @media (max-width: 1023px) { .idx-band { height: 11rem; margin-top: 3.2rem; } }
+
     .area-text { font-size: 1.45rem; line-height: 1.55; color: var(--c-ink-body); }
     .area-count { display: flex; align-items: baseline; gap: 1rem; margin: .6rem 0 0; }
     .area-count-num { font-size: 3.2rem; font-weight: 700; letter-spacing: -.03em; line-height: 1; font-variant-numeric: tabular-nums; }
@@ -193,6 +229,7 @@
         <h1>Ein Ort für alles,<br>was ihr <span class="mk">mit KI baut</span>.</h1>
         <p class="idx-stats" id="idx-stats"></p>
       </div>
+      <div class="idx-band" aria-hidden="true"></div>
     </header>
 
     <!-- ===== BEREICHS-RASTER ===== -->
@@ -202,7 +239,7 @@
         <h2 id="areas-h">Die sechs Bereiche</h2>
 
         <div class="areas-grid">
-          <article class="area-card area-live anim-reveal">
+          <article data-motiv="katalog" class="area-card area-live anim-reveal">
             <div class="area-head">
               <span class="area-ic"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg></span>
               <h3>Skill-Katalog</h3>
@@ -224,7 +261,7 @@
             </div>
           </article>
 
-          <article class="area-card area-live-sm anim-reveal">
+          <article data-motiv="prompts" class="area-card area-live-sm anim-reveal">
             <div class="area-head">
               <span class="area-ic"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M7 9h10"/><path d="M7 13h6"/></svg></span>
               <h3>Prompt-Sammlung</h3>
@@ -245,7 +282,7 @@
             </div>
           </article>
 
-          <article class="area-card area-live-sm anim-reveal">
+          <article data-motiv="bibliothek" class="area-card area-live-sm anim-reveal">
             <div class="area-head">
               <span class="area-ic"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 6 4 14"/><path d="M12 6v14"/><path d="M8 8v12"/><path d="M4 4v16"/></svg></span>
               <h3>Asset-Bibliothek</h3>
@@ -267,7 +304,7 @@
             </div>
           </article>
 
-          <article class="area-card area-live-sm anim-reveal">
+          <article data-motiv="baukasten" class="area-card area-live-sm anim-reveal">
             <div class="area-head">
               <span class="area-ic"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="7" height="7" x="14" y="3" rx="1"/><path d="M10 21V8a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-5a1 1 0 0 0-1-1H3"/></svg></span>
               <h3>Baukasten</h3>
@@ -289,7 +326,7 @@
             </div>
           </article>
 
-          <article class="area-card area-live-sm anim-reveal">
+          <article data-motiv="showroom" class="area-card area-live-sm anim-reveal">
             <div class="area-head">
               <span class="area-ic"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 7.75a.75.75 0 0 1 1.142-.638l3.664 2.249a.75.75 0 0 1 0 1.278l-3.664 2.25a.75.75 0 0 1-1.142-.64z"/><path d="M12 17v4"/><path d="M8 21h8"/><rect x="2" y="3" width="20" height="14" rx="2"/></svg></span>
               <h3>Showroom</h3>
@@ -311,7 +348,7 @@
             </div>
           </article>
 
-          <article class="area-card area-live-sm anim-reveal">
+          <article data-motiv="lernen" class="area-card area-live-sm anim-reveal">
             <div class="area-head">
               <span class="area-ic"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/></svg></span>
               <h3>Lernen &amp; Hilfe</h3>

@@ -221,6 +221,31 @@
        Viewport. Editorial-Sprache: Mono-Kicker mit gelbem Marker-Block als
        Dachzeile, kräftige H1-Skala (700, eng), Subline eine Stufe dunkler. */
     .page-head { padding: 5.6rem 0 1.2rem; }
+
+    /* ===== SEITENKOPF-MOTIVE ==========================================
+       Dasselbe Motiv wie auf der zugehoerigen Startseiten-Karte, hier als
+       schmales Band rechts neben der Ueberschrift. Zweck ist Wiedererkennung:
+       Wer auf der Startseite auf ein Bild geklickt hat, sieht es auf der
+       Zielseite wieder. Rein dekorativ, deshalb CSS-Hintergrund statt <img>.
+       Unter 900px faellt das Band weg — dort ist der Platz fuer die
+       Ueberschrift wichtiger als die Wiedererkennung. */
+    .page-head[data-motiv] .page-head-inner { position: relative; }
+    @media (min-width: 900px) {
+      .page-head[data-motiv] .page-head-inner::after {
+        content: ""; position: absolute; right: var(--pad-d); top: 50%;
+        transform: translateY(-50%);
+        width: 22rem; height: 8.4rem;
+        border: 1px solid var(--line); border-radius: var(--r-md);
+        background-color: var(--c-bg);
+        background-repeat: no-repeat; background-position: center 46%; background-size: cover;
+        pointer-events: none;
+      }
+      .page-head[data-motiv="katalog"] .page-head-inner::after    { background-image: url(../assets/motive/katalog.webp); }
+      .page-head[data-motiv="prompts"] .page-head-inner::after    { background-image: url(../assets/motive/prompts.webp); }
+      .page-head[data-motiv="vorlagen"] .page-head-inner::after   { background-image: url(../assets/motive/bibliothek.webp); }
+      .page-head[data-motiv="showroom"] .page-head-inner::after   { background-image: url(../assets/motive/showroom.webp); }
+      .page-head[data-motiv="lernen"] .page-head-inner::after      { background-image: url(../assets/motive/lernen.webp); }
+    }
     .page-head-inner { max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-d); }
     .kicker {
       display: flex; align-items: center; gap: 1.1rem;
@@ -273,6 +298,22 @@
       padding: 4.4rem 2.4rem; text-align: center;
       border: 1px dashed var(--line-strong); border-radius: var(--r-lg);
       color: var(--c-gray-m); font-size: 1.5rem; line-height: 1.6;
+    }
+
+    /* Ein leerer Zustand soll nach „hier ist noch nichts“ aussehen und nicht
+       nach „hier ist etwas kaputt“. Das Motiv zeigt genau das: ein leeres
+       Fach. Dekorativ, deshalb Hintergrund statt <img>. */
+    .empty-note::before {
+      content: ""; display: block;
+      width: 14rem; height: 10.4rem; margin: 0 auto 1.8rem;
+      background: url(../assets/motive/leer-treffer.webp) center / contain no-repeat;
+      opacity: .85;
+    }
+    .jr-empty::before {
+      content: ""; display: block;
+      width: 16rem; height: 12rem; margin: 0 0 2rem;
+      background: url(../assets/motive/leer-sachen.webp) center / contain no-repeat;
+      opacity: .85;
     }
 
     /* ===== CARD-MIN (E11: minimale Karte — Titel, Satz, 1–2 Meta) =====
@@ -1512,7 +1553,26 @@
     /* Editorial-Pass Juli 2026: das Band ist der dunkle Anker jeder Seite —
        Schwarz, gelbes Label, gelber CTA. (Farbklima-Entscheidung: 1–2 dunkle
        Momente pro Seite; Kontraste AA: Weiß .72/.55 auf #262626.) */
-    .submit-band { background: var(--c-black); padding: 6.8rem 0 7.2rem; }
+    /* Papierkorn auf dem dunklen Band: dieselbe Materialwelt wie die Motive,
+       nur als Textur. Sehr niedrige Deckkraft — es soll die Flaeche beleben,
+       nicht sichtbar sein. Die Kachel ist eine Graustufe; die Farbe kommt
+       vom Schwarz darunter. */
+    .submit-band { background: var(--c-black); padding: 6.8rem 0 7.2rem; position: relative; }
+    /* Papierkorn als eigene Ebene mit sehr niedriger Deckkraft — NICHT per
+       background-blend-mode. Der erste Versuch mischte die Kachel in voller
+       Staerke ins Schwarz: Das Band wirkte schmutzig und hob den Untergrund so
+       weit an, dass der Textkontrast litt. Der Kontrastpruefer meldete das
+       nicht, weil er Farb-Tokens gegeneinander rechnet und nicht die
+       tatsaechlich gemischten Pixel — deshalb hier per Hand am Screenshot
+       nachgemessen (siehe assets/motive/HERKUNFT.md). 6% traegt die Textur,
+       ohne den Grund messbar aufzuhellen. */
+    .submit-band::before {
+      content: ""; position: absolute; inset: 0; pointer-events: none;
+      background: url(../assets/motive/korn.webp) repeat;
+      background-size: 40rem;
+      opacity: .06;
+    }
+    .submit-band > * { position: relative; }
     /* E12 N2: Inhalt zentriert statt linksbündig — vorher füllte das Band nur die
        linke Hälfte (~50% Void). Moderat, kein Redesign: Textspalte begrenzt & mittig. */
     /* max-width in rem, nicht ch: die Sektion erbt die 10px-Root-Schrift, wodurch
