@@ -3,8 +3,15 @@
    Klassisches Script (kein Modul), definiert globale Konstanten für
    baukasten.html und die Startseiten-Zähler auf index.html.
 
+   KURATION (03.08.2026): Aus 12 Bausteinen sind 8 geworden. Gestrichen sind
+   cta-band, feature-liste, preis-karten und testimonial-zitat — vier reine
+   Inhalts-Bänder, die sich in Aufbau und Anpass-Aufwand kaum unterschieden und
+   die Auswahl eher verlängert als erweitert haben. Preis-Karten war einer von
+   vier Leuchttürmen; übrig bleiben drei (header-hero, kontaktformular,
+   chart-setup), gezählt von BAUKASTEN_STATS, nicht gepflegt.
+
    Definierte Globals:
-     BAUSTEINE          — 12 selbst-enthaltene HTML+CSS-Bausteine als
+     BAUSTEINE          — selbst-enthaltene HTML+CSS-Bausteine als
                           Ausgangspunkt. Jeder Baustein ist ein Startpunkt,
                           den Claude für dich anpasst — deshalb trägt jeder
                           einen kopierfertigen „Sag Claude einfach: …“-Prompt.
@@ -15,16 +22,39 @@
                           (vollständiges Vorschau-Dokument für die iframe-
                           Live-Vorschau, system-ui-Schrift, kein Netzwerk),
                           claudePrompt, seedKopien (Demo-Startwert „so oft
-                          kopiert"), seedRating { schnitt, anzahl }. Ergänzt
-                          um die normalisierten Felder rating {average,count}
-                          und copyCount (siehe unten) — nur umbenannt, nichts
-                          erfunden.
-     BEISPIELDATEN      — 8 erfundene, anonymisierte Übungsdateien unter
-                          beispieldaten/ (4 CSV + 2 Markdown + 2 SVG-
-                          Testbilder). KEIN echtes Kundenmaterial. Größen/
-                          Zeilen/Spalten sind real aus den Dateien gezählt.
-                          Jede Datei trägt eine Übungsidee mit Querverweis
-                          auf den passenden Baustein bzw. Skill/Prompt.
+                          kopiert"), seedRating { schnitt, anzahl },
+                          votesRecent. Ergänzt um die normalisierten Felder
+                          rating {average,count} und copyCount (siehe unten) —
+                          nur umbenannt, nichts erfunden.
+                          votesRecent ist der Demo-Seed „Stimmen der letzten
+                          90 Tage" und damit eine TEILMENGE von
+                          seedRating.anzahl (dieselbe Konvention wie in
+                          data/prompts.js und data/ressourcen.js). Gelesen wird
+                          es nur von bestRated() in shared/base.js: dessen
+                          Rotations-Pool ist „Top-n gesamt" VEREINIGT mit
+                          „Top-n zuletzt". Die beiden Ranglisten sind deshalb
+                          bewusst verschieden gestaffelt — ohne das fielen sie
+                          zusammen, der Pool schrumpfte auf n und die
+                          „Bestbewertete"-Fläche der Startseite stünde still.
+     BEISPIELDATEN      — erfundene, anonymisierte Übungsdateien unter
+                          beispieldaten/ (CSV + Markdown). KEIN echtes
+                          Kundenmaterial. Größen/Zeilen/Spalten sind real aus
+                          den Dateien gezählt. Jede Datei trägt eine Übungsidee
+                          mit Querverweis auf den passenden Baustein bzw.
+                          Skill/Prompt.
+                          NICHT MEHR HIER: die zwei Test-SVGs
+                          (testbild-produkt, testbild-kampagne) standen bis zum
+                          03.08.2026 doppelt — einmal hier als Übungsdatei und
+                          einmal in data/bilder.js als Bild. Beide Abschnitte
+                          liegen im SELBEN Reiter („Daten"), man sah also
+                          dieselbe Datei zweimal untereinander. Quelle ist jetzt
+                          data/bilder.js: dort steht, was man vor dem Benutzen
+                          eines Bildes wissen muss (Vorschau, Maße, Lizenz,
+                          Urheber) — Angaben, die eine Übungsdatei-Karte gar
+                          nicht führt. Der Beispieldaten-Abschnitt verweist
+                          stattdessen dorthin (bk-data-hinweis in
+                          vorlagen.html). Die Dateien selbst liegen unverändert
+                          unter beispieldaten/.
      BAUKASTEN_STATS    — real gezählte Kennzahlen (Bausteine, Leuchttürme,
                           Kategorien, Beispieldateien) für die Hero-Zahlen.
      BEISPIELDATEN_STATS— real gezählte Kennzahlen der Übungsdateien.
@@ -145,7 +175,8 @@ const BAUSTEINE = [
 </body></html>`,
     claudePrompt: 'Nutze diesen Baustein als Ausgangspunkt und passe ihn an: Behalte die Struktur (Nav-Leiste oben, große Schlagzeile, Untertitel, zwei Buttons). Ersetze das Logo durch „[dein Projektname]“, die Navigationspunkte durch [deine Menüpunkte], die Schlagzeile durch „[deine Aussage]“ mit dem hervorgehobenen Akzentwort „[Wort]“, und die Button-Texte durch „[Button 1]“ und „[Button 2]“. Wenn du eine andere Markenfarbe brauchst, ändere die CSS-Variable --akzent. Tipp: Für den passenden Ton hilft dir der Skill frontend-design.',
     seedKopien: 34,
-    seedRating: { schnitt: 4.8, anzahl: 11 }
+    seedRating: { schnitt: 4.8, anzahl: 11 },
+    votesRecent: 3
   },
 
   /* ============================================================ *
@@ -252,7 +283,8 @@ const BAUSTEINE = [
 </body></html>`,
     claudePrompt: 'Nutze diesen Baustein als Ausgangspunkt und passe ihn an: Behalte das Karten-Raster, aber mach [Anzahl] Karten daraus. Setze die Überschrift auf „[deine Überschrift]“ und befülle jede Karte mit Titel und einem Satz zu [dein Thema, z. B. deine Leistungen]. Die Icons darfst du passend austauschen. Farben nur ändern, wenn nötig, über die CSS-Variablen oben.',
     seedKopien: 28,
-    seedRating: { schnitt: 4.6, anzahl: 9 }
+    seedRating: { schnitt: 4.6, anzahl: 9 },
+    votesRecent: 2
   },
 
   /* ============================================================ *
@@ -352,7 +384,8 @@ const BAUSTEINE = [
 </body></html>`,
     claudePrompt: 'Nutze diesen Baustein als Ausgangspunkt und passe ihn an: Behalte den Zwei-Spalten-Aufbau (Bild links, Text rechts). Setze die Überschrift auf „[deine Überschrift]“, den Absatz auf [worum es geht] und ersetze die drei Häkchen-Punkte durch [deine drei Vorteile]. Wenn du ein echtes Bild hast, tausche die Platzhalter-Grafik gegen ein <img>-Tag aus. Für die Reihenfolge Bild rechts statt links gib dem Media-Block order:2.',
     seedKopien: 19,
-    seedRating: { schnitt: 4.4, anzahl: 7 }
+    seedRating: { schnitt: 4.4, anzahl: 7 },
+    votesRecent: 5
   },
 
   /* ============================================================ *
@@ -463,398 +496,12 @@ const BAUSTEINE = [
 </body></html>`,
     claudePrompt: 'Nutze diesen Baustein als Ausgangspunkt und passe ihn an: Behalte den dunklen Footer mit Linkspalten und der unteren Zeile. Ersetze Logo und Claim durch „[dein Projekt]“ und [dein Claim], benenne die drei Linkspalten in [deine Rubriken] um und passe die Links an. Impressum und Datenschutz bitte auf deine echten Seiten verlinken. Farben nur bei Bedarf über die CSS-Variablen ändern.',
     seedKopien: 22,
-    seedRating: { schnitt: 4.5, anzahl: 8 }
+    seedRating: { schnitt: 4.5, anzahl: 8 },
+    votesRecent: 1
   },
 
   /* ============================================================ *
-   * 5 · CTA-BAND                                                 *
-   * ============================================================ */
-  {
-    id: 'cta-band',
-    name: 'CTA-Band',
-    kategorie: 'inhalt',
-    leuchtturm: false,
-    schwierigkeit: 'einfach',
-    beschreibung: 'Ein breites, dunkles Aufforderungs-Band mit kräftiger Aussage und einem Button. Setzt einen klaren Handlungsimpuls zwischen zwei Abschnitten. Löst „jetzt soll die Besucherin etwas tun“.',
-    einsatz: 'Trennt Abschnitte auf einer Landingpage und schiebt zur nächsten Aktion — etwa „Beratungstermin anfragen“ nach der Leistungsübersicht.',
-    tags: ['cta', 'call to action', 'band', 'aufforderung', 'button', 'aktion', 'abschluss'],
-    code: `<style>
-  .pi-cta {
-    --akzent:  #ffe05e;   /* Button & Akzentwort */
-    --dunkel:  #262626;   /* Band-Hintergrund */
-    --hell:    #ffffff;
-    --schrift: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    background: var(--dunkel); color: var(--hell); font-family: var(--schrift);
-    padding: 4rem 1.5rem;
-  }
-  .pi-cta * { box-sizing: border-box; }
-  .pi-cta__inner { max-width:900px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:2rem; flex-wrap:wrap; }
-  .pi-cta__text { flex:1; min-width:260px; }
-  .pi-cta__text h2 { font-size:clamp(1.6rem,4vw,2.4rem); letter-spacing:-.02em; line-height:1.1; margin:0 0 .6rem; font-weight:800; }
-  .pi-cta__text h2 mark { background:var(--akzent); color:var(--dunkel); padding:0 .12em; border-radius:.15em; }
-  .pi-cta__text p { margin:0; color:rgba(255,255,255,.7); font-size:1.05rem; }
-  .pi-cta__btn { font:inherit; font-weight:700; font-size:1.05rem; padding:1rem 2rem; border-radius:.6rem; border:none; background:var(--akzent); color:var(--dunkel); cursor:pointer; text-decoration:none; white-space:nowrap; transition:transform .15s ease; }
-  .pi-cta__btn:hover { transform:translateY(-2px); }
-</style>
-
-<section class="pi-cta">
-  <div class="pi-cta__inner">
-    <div class="pi-cta__text">
-      <!-- Aussage & Akzentwort anpassen -->
-      <h2>Bereit für die <mark>nächste Kampagne</mark>?</h2>
-      <p>Wir melden uns innerhalb eines Werktags.</p>
-    </div>
-    <a href="#" class="pi-cta__btn">Beratung anfragen</a>
-  </div>
-</section>`,
-    srcdoc: `<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>*{box-sizing:border-box}body{margin:0}</style></head><body>
-<style>
-  .pi-cta{--akzent:#ffe05e;--dunkel:#262626;--hell:#fff;--schrift:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--dunkel);color:var(--hell);font-family:var(--schrift);padding:4rem 1.5rem}
-  .pi-cta *{box-sizing:border-box}
-  .pi-cta__inner{max-width:900px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:2rem;flex-wrap:wrap}
-  .pi-cta__text{flex:1;min-width:260px}
-  .pi-cta__text h2{font-size:clamp(1.6rem,4vw,2.4rem);letter-spacing:-.02em;line-height:1.1;margin:0 0 .6rem;font-weight:800}
-  .pi-cta__text h2 mark{background:var(--akzent);color:var(--dunkel);padding:0 .12em;border-radius:.15em}
-  .pi-cta__text p{margin:0;color:rgba(255,255,255,.7);font-size:1.05rem}
-  .pi-cta__btn{font:inherit;font-weight:700;font-size:1.05rem;padding:1rem 2rem;border-radius:.6rem;border:none;background:var(--akzent);color:var(--dunkel);cursor:pointer;text-decoration:none;white-space:nowrap;transition:transform .15s ease}
-  .pi-cta__btn:hover{transform:translateY(-2px)}
-</style>
-<section class="pi-cta">
-  <div class="pi-cta__inner">
-    <div class="pi-cta__text"><h2>Bereit für die <mark>nächste Kampagne</mark>?</h2><p>Wir melden uns innerhalb eines Werktags.</p></div>
-    <a href="#" class="pi-cta__btn">Beratung anfragen</a>
-  </div>
-</section>
-</body></html>`,
-    claudePrompt: 'Nutze diesen Baustein als Ausgangspunkt und passe ihn an: Behalte das dunkle Band mit Text links und Button rechts. Setze die Aussage auf „[deine Frage/Aussage]“ mit dem hervorgehobenen Wort „[Akzentwort]“, den kleinen Zusatz auf [Detail] und den Button auf „[Button-Text]“. Verlinke den Button auf [dein Ziel, z. B. dein Kontaktformular].',
-    seedKopien: 17,
-    seedRating: { schnitt: 4.3, anzahl: 6 }
-  },
-
-  /* ============================================================ *
-   * 6 · FEATURE-LISTE                                            *
-   * ============================================================ */
-  {
-    id: 'feature-liste',
-    name: 'Feature-Liste',
-    kategorie: 'inhalt',
-    leuchtturm: false,
-    schwierigkeit: 'einfach',
-    beschreibung: 'Ein flaches Raster aus Merkmalen — je Eintrag ein Icon, ein Titel und ein Satz. Ohne Kartenrahmen, ruhiger als das Karten-Grid. Löst „mehrere Vorteile knapp aufzählen“.',
-    einsatz: 'Vorteile eines Angebots oder Funktionen eines internen Tools kompakt auflisten, etwa unter dem Hero.',
-    tags: ['features', 'liste', 'vorteile', 'merkmale', 'icons', 'aufzählung', 'raster'],
-    code: `<style>
-  .pi-feat {
-    --akzent:  #ffe05e;
-    --dunkel:  #262626;
-    --papier:  #f1f1ec;
-    --leise:   #6b6b6b;
-    --schrift: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    background: var(--papier); color: var(--dunkel); font-family: var(--schrift);
-    padding: 4rem 1.5rem;
-  }
-  .pi-feat * { box-sizing: border-box; }
-  .pi-feat__head { max-width:900px; margin:0 auto 2.8rem; text-align:center; }
-  .pi-feat__head h2 { font-size:clamp(1.8rem,4vw,2.6rem); letter-spacing:-.02em; margin:0 0 .5rem; font-weight:800; }
-  .pi-feat__head p { color:var(--leise); font-size:1.1rem; margin:0; }
-  .pi-feat__list { max-width:900px; margin:0 auto; display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:2rem 2.5rem; }
-  .pi-feat__item { display:flex; gap:1rem; align-items:flex-start; }
-  .pi-feat__ic { width:2.6rem; height:2.6rem; flex:none; border-radius:.6rem; background:var(--dunkel); display:flex; align-items:center; justify-content:center; }
-  .pi-feat__ic svg { width:1.4rem; height:1.4rem; stroke:var(--akzent); fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
-  .pi-feat__item h3 { margin:.1rem 0 .35rem; font-size:1.1rem; font-weight:700; }
-  .pi-feat__item p { margin:0; color:var(--leise); font-size:.98rem; line-height:1.55; }
-</style>
-
-<section class="pi-feat">
-  <div class="pi-feat__head">
-    <h2>Warum pilot</h2>
-    <p>Was du bei jeder Zusammenarbeit bekommst.</p>
-  </div>
-  <div class="pi-feat__list">
-    <!-- Ein Item kopieren, Icon/Titel/Text anpassen -->
-    <div class="pi-feat__item">
-      <div class="pi-feat__ic"><svg viewBox="0 0 24 24"><path d="M13 2 3 14h7l-1 8 10-12h-7z"/></svg></div>
-      <div><h3>Schnell startklar</h3><p>Vom Briefing zum ersten Plan in wenigen Tagen.</p></div>
-    </div>
-    <div class="pi-feat__item">
-      <div class="pi-feat__ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
-      <div><h3>Immer aktuell</h3><p>Live-Reporting statt Monatsende-Überraschungen.</p></div>
-    </div>
-    <div class="pi-feat__item">
-      <div class="pi-feat__ic"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></div>
-      <div><h3>Nachweisbar wirksam</h3><p>Jede Maßnahme wird gemessen und belegt.</p></div>
-    </div>
-    <div class="pi-feat__item">
-      <div class="pi-feat__ic"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-8 0v2"/><circle cx="12" cy="7" r="4"/></svg></div>
-      <div><h3>Feste Ansprechpartner</h3><p>Ein Team, das dein Projekt wirklich kennt.</p></div>
-    </div>
-  </div>
-</section>`,
-    srcdoc: `<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>*{box-sizing:border-box}body{margin:0}</style></head><body>
-<style>
-  .pi-feat{--akzent:#ffe05e;--dunkel:#262626;--papier:#f1f1ec;--leise:#6b6b6b;--schrift:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--papier);color:var(--dunkel);font-family:var(--schrift);padding:4rem 1.5rem}
-  .pi-feat *{box-sizing:border-box}
-  .pi-feat__head{max-width:900px;margin:0 auto 2.8rem;text-align:center}
-  .pi-feat__head h2{font-size:clamp(1.8rem,4vw,2.6rem);letter-spacing:-.02em;margin:0 0 .5rem;font-weight:800}
-  .pi-feat__head p{color:var(--leise);font-size:1.1rem;margin:0}
-  .pi-feat__list{max-width:900px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:2rem 2.5rem}
-  .pi-feat__item{display:flex;gap:1rem;align-items:flex-start}
-  .pi-feat__ic{width:2.6rem;height:2.6rem;flex:none;border-radius:.6rem;background:var(--dunkel);display:flex;align-items:center;justify-content:center}
-  .pi-feat__ic svg{width:1.4rem;height:1.4rem;stroke:var(--akzent);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-  .pi-feat__item h3{margin:.1rem 0 .35rem;font-size:1.1rem;font-weight:700}
-  .pi-feat__item p{margin:0;color:var(--leise);font-size:.98rem;line-height:1.55}
-</style>
-<section class="pi-feat">
-  <div class="pi-feat__head"><h2>Warum pilot</h2><p>Was du bei jeder Zusammenarbeit bekommst.</p></div>
-  <div class="pi-feat__list">
-    <div class="pi-feat__item"><div class="pi-feat__ic"><svg viewBox="0 0 24 24"><path d="M13 2 3 14h7l-1 8 10-12h-7z"/></svg></div><div><h3>Schnell startklar</h3><p>Vom Briefing zum ersten Plan in wenigen Tagen.</p></div></div>
-    <div class="pi-feat__item"><div class="pi-feat__ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div><div><h3>Immer aktuell</h3><p>Live-Reporting statt Monatsende-Überraschungen.</p></div></div>
-    <div class="pi-feat__item"><div class="pi-feat__ic"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></div><div><h3>Nachweisbar wirksam</h3><p>Jede Maßnahme wird gemessen und belegt.</p></div></div>
-    <div class="pi-feat__item"><div class="pi-feat__ic"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-8 0v2"/><circle cx="12" cy="7" r="4"/></svg></div><div><h3>Feste Ansprechpartner</h3><p>Ein Team, das dein Projekt wirklich kennt.</p></div></div>
-  </div>
-</section>
-</body></html>`,
-    claudePrompt: 'Nutze diesen Baustein als Ausgangspunkt und passe ihn an: Behalte das Icon-Titel-Text-Raster. Setze die Überschrift auf „[deine Überschrift]“ und ersetze die vier Einträge durch [deine Vorteile/Funktionen] mit je einem kurzen Satz. Passende Icons darfst du wählen. Wenn du mehr Einträge brauchst, kopiere einen pi-feat__item-Block.',
-    seedKopien: 15,
-    seedRating: { schnitt: 4.4, anzahl: 6 }
-  },
-
-  /* ============================================================ *
-   * 7 · PREIS-/PAKET-KARTEN  — LEUCHTTURM                        *
-   * ============================================================ */
-  {
-    id: 'preis-karten',
-    name: 'Preis- und Paket-Karten',
-    kategorie: 'inhalt',
-    leuchtturm: true,
-    schwierigkeit: 'mittel',
-    beschreibung: 'Drei Pakete nebeneinander, das mittlere hervorgehoben mit Empfehlungs-Fähnchen. Je Paket Name, Preis, Leistungs-Häkchen und Button. Löst die klassische „welches Paket passt“-Entscheidung.',
-    einsatz: 'Leistungspakete einer Agentur transparent zeigen, oder Stufen eines internen Angebots (etwa Support-Level) vergleichbar machen.',
-    tags: ['preise', 'pakete', 'tarife', 'pricing', 'vergleich', 'plan', 'empfohlen', 'karten'],
-    code: `<style>
-  .pi-preis {
-    --akzent:  #ffe05e;   /* Hervorhebung des empfohlenen Pakets */
-    --dunkel:  #262626;
-    --papier:  #f4f1ea;
-    --karte:   #ffffff;
-    --leise:   #6b6b6b;
-    --linie:   #e6e3da;
-    --schrift: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    background: var(--papier); color: var(--dunkel); font-family: var(--schrift);
-    padding: 4rem 1.5rem;
-  }
-  .pi-preis * { box-sizing: border-box; }
-  .pi-preis__head { text-align:center; max-width:640px; margin:0 auto 2.8rem; }
-  .pi-preis__head h2 { font-size:clamp(1.8rem,4vw,2.6rem); letter-spacing:-.02em; margin:0 0 .5rem; font-weight:800; }
-  .pi-preis__head p { color:var(--leise); font-size:1.1rem; margin:0; }
-  .pi-preis__row { max-width:1000px; margin:0 auto; display:grid; grid-template-columns:repeat(3,1fr); gap:1.5rem; align-items:stretch; }
-  .pi-plan { background:var(--karte); border:1px solid var(--linie); border-radius:1rem; padding:2rem 1.8rem; display:flex; flex-direction:column; position:relative; }
-  /* Hervorgehobenes Paket: Klasse pi-plan--top am mittleren Element */
-  .pi-plan--top { border:2px solid var(--dunkel); box-shadow:0 16px 40px rgba(38,38,38,.12); }
-  .pi-plan__fahne { position:absolute; top:-.85rem; left:50%; transform:translateX(-50%); background:var(--akzent); color:var(--dunkel); font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.1em; padding:.35rem .8rem; border-radius:2rem; white-space:nowrap; }
-  .pi-plan__name { font-size:1.15rem; font-weight:700; margin:0 0 .4rem; }
-  .pi-plan__preis { font-size:2.6rem; font-weight:800; letter-spacing:-.02em; line-height:1; margin:.3rem 0 .2rem; }
-  .pi-plan__preis span { font-size:1rem; font-weight:500; color:var(--leise); }
-  .pi-plan__hint { color:var(--leise); font-size:.9rem; margin:0 0 1.4rem; }
-  .pi-plan__list { list-style:none; padding:0; margin:0 0 1.8rem; display:grid; gap:.7rem; flex:1; }
-  .pi-plan__list li { display:flex; gap:.55rem; align-items:flex-start; font-size:.95rem; line-height:1.4; }
-  .pi-plan__list svg { width:1.15rem; height:1.15rem; flex:none; margin-top:.1rem; }
-  .pi-plan__btn { font:inherit; font-weight:600; font-size:1rem; padding:.85rem 1rem; border-radius:.55rem; border:2px solid var(--dunkel); background:transparent; color:var(--dunkel); cursor:pointer; text-align:center; text-decoration:none; transition:background .15s, color .15s; }
-  .pi-plan__btn:hover { background:var(--dunkel); color:#fff; }
-  .pi-plan--top .pi-plan__btn { background:var(--dunkel); color:#fff; }
-  .pi-plan--top .pi-plan__btn:hover { background:var(--akzent); color:var(--dunkel); border-color:var(--akzent); }
-  @media (max-width:760px) { .pi-preis__row { grid-template-columns:1fr; max-width:400px; } }
-</style>
-
-<section class="pi-preis">
-  <div class="pi-preis__head">
-    <h2>Pakete, die mitwachsen</h2>
-    <p>Fair kalkuliert, jederzeit wechselbar.</p>
-  </div>
-  <div class="pi-preis__row">
-    <!-- Paket-Karte kopieren; das mittlere trägt die Klasse pi-plan--top -->
-    <div class="pi-plan">
-      <h3 class="pi-plan__name">Start</h3>
-      <div class="pi-plan__preis">990&thinsp;&euro; <span>/ Monat</span></div>
-      <p class="pi-plan__hint">Für erste Kampagnen.</p>
-      <ul class="pi-plan__list">
-        <li><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#ffe05e"/><path d="m8 12 3 3 5-6" fill="none" stroke="#262626" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg> 1 Kanal</li>
-        <li><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#ffe05e"/><path d="m8 12 3 3 5-6" fill="none" stroke="#262626" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg> Monats-Reporting</li>
-        <li><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#ffe05e"/><path d="m8 12 3 3 5-6" fill="none" stroke="#262626" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg> E-Mail-Support</li>
-      </ul>
-      <a href="#" class="pi-plan__btn">Auswählen</a>
-    </div>
-    <div class="pi-plan pi-plan--top">
-      <span class="pi-plan__fahne">Empfohlen</span>
-      <h3 class="pi-plan__name">Wachstum</h3>
-      <div class="pi-plan__preis">2.490&thinsp;&euro; <span>/ Monat</span></div>
-      <p class="pi-plan__hint">Für laufende Kampagnen.</p>
-      <ul class="pi-plan__list">
-        <li><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#ffe05e"/><path d="m8 12 3 3 5-6" fill="none" stroke="#262626" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg> Bis zu 4 Kanäle</li>
-        <li><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#ffe05e"/><path d="m8 12 3 3 5-6" fill="none" stroke="#262626" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg> Live-Dashboard</li>
-        <li><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#ffe05e"/><path d="m8 12 3 3 5-6" fill="none" stroke="#262626" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg> Fester Ansprechpartner</li>
-        <li><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#ffe05e"/><path d="m8 12 3 3 5-6" fill="none" stroke="#262626" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg> Monatliche Strategie</li>
-      </ul>
-      <a href="#" class="pi-plan__btn">Auswählen</a>
-    </div>
-    <div class="pi-plan">
-      <h3 class="pi-plan__name">Individuell</h3>
-      <div class="pi-plan__preis">auf Anfrage</div>
-      <p class="pi-plan__hint">Für große Etats.</p>
-      <ul class="pi-plan__list">
-        <li><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#ffe05e"/><path d="m8 12 3 3 5-6" fill="none" stroke="#262626" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg> Alle Kanäle</li>
-        <li><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#ffe05e"/><path d="m8 12 3 3 5-6" fill="none" stroke="#262626" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg> Eigenes Team</li>
-        <li><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#ffe05e"/><path d="m8 12 3 3 5-6" fill="none" stroke="#262626" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg> SLA nach Wunsch</li>
-      </ul>
-      <a href="#" class="pi-plan__btn">Kontakt</a>
-    </div>
-  </div>
-</section>`,
-    srcdoc: `<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>*{box-sizing:border-box}body{margin:0}</style></head><body>
-<style>
-  .pi-preis{--akzent:#ffe05e;--dunkel:#262626;--papier:#f4f1ea;--karte:#fff;--leise:#6b6b6b;--linie:#e6e3da;--schrift:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--papier);color:var(--dunkel);font-family:var(--schrift);padding:4rem 1.5rem}
-  .pi-preis *{box-sizing:border-box}
-  .pi-preis__head{text-align:center;max-width:640px;margin:0 auto 2.8rem}
-  .pi-preis__head h2{font-size:clamp(1.8rem,4vw,2.6rem);letter-spacing:-.02em;margin:0 0 .5rem;font-weight:800}
-  .pi-preis__head p{color:var(--leise);font-size:1.1rem;margin:0}
-  .pi-preis__row{max-width:1000px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;align-items:stretch}
-  .pi-plan{background:var(--karte);border:1px solid var(--linie);border-radius:1rem;padding:2rem 1.8rem;display:flex;flex-direction:column;position:relative}
-  .pi-plan--top{border:2px solid var(--dunkel);box-shadow:0 16px 40px rgba(38,38,38,.12)}
-  .pi-plan__fahne{position:absolute;top:-.85rem;left:50%;transform:translateX(-50%);background:var(--akzent);color:var(--dunkel);font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;padding:.35rem .8rem;border-radius:2rem;white-space:nowrap}
-  .pi-plan__name{font-size:1.15rem;font-weight:700;margin:0 0 .4rem}
-  .pi-plan__preis{font-size:2.6rem;font-weight:800;letter-spacing:-.02em;line-height:1;margin:.3rem 0 .2rem}
-  .pi-plan__preis span{font-size:1rem;font-weight:500;color:var(--leise)}
-  .pi-plan__hint{color:var(--leise);font-size:.9rem;margin:0 0 1.4rem}
-  .pi-plan__list{list-style:none;padding:0;margin:0 0 1.8rem;display:grid;gap:.7rem;flex:1}
-  .pi-plan__list li{display:flex;gap:.55rem;align-items:flex-start;font-size:.95rem;line-height:1.4}
-  .pi-plan__list svg{width:1.15rem;height:1.15rem;flex:none;margin-top:.1rem}
-  .pi-plan__btn{font:inherit;font-weight:600;font-size:1rem;padding:.85rem 1rem;border-radius:.55rem;border:2px solid var(--dunkel);background:transparent;color:var(--dunkel);cursor:pointer;text-align:center;text-decoration:none;transition:background .15s,color .15s}
-  .pi-plan__btn:hover{background:var(--dunkel);color:#fff}
-  .pi-plan--top .pi-plan__btn{background:var(--dunkel);color:#fff}
-  .pi-plan--top .pi-plan__btn:hover{background:var(--akzent);color:var(--dunkel);border-color:var(--akzent)}
-  @media (max-width:760px){.pi-preis__row{grid-template-columns:1fr;max-width:400px}}
-</style>
-<section class="pi-preis">
-  <div class="pi-preis__head"><h2>Pakete, die mitwachsen</h2><p>Fair kalkuliert, jederzeit wechselbar.</p></div>
-  <div class="pi-preis__row">
-    <div class="pi-plan">
-      <h3 class="pi-plan__name">Start</h3>
-      <div class="pi-plan__preis">990&thinsp;&euro; <span>/ Monat</span></div>
-      <p class="pi-plan__hint">Für erste Kampagnen.</p>
-      <ul class="pi-plan__list">
-        <li><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#ffe05e"/><path d="m8 12 3 3 5-6" fill="none" stroke="#262626" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg> 1 Kanal</li>
-        <li><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#ffe05e"/><path d="m8 12 3 3 5-6" fill="none" stroke="#262626" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg> Monats-Reporting</li>
-        <li><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#ffe05e"/><path d="m8 12 3 3 5-6" fill="none" stroke="#262626" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg> E-Mail-Support</li>
-      </ul>
-      <a href="#" class="pi-plan__btn">Auswählen</a>
-    </div>
-    <div class="pi-plan pi-plan--top">
-      <span class="pi-plan__fahne">Empfohlen</span>
-      <h3 class="pi-plan__name">Wachstum</h3>
-      <div class="pi-plan__preis">2.490&thinsp;&euro; <span>/ Monat</span></div>
-      <p class="pi-plan__hint">Für laufende Kampagnen.</p>
-      <ul class="pi-plan__list">
-        <li><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#ffe05e"/><path d="m8 12 3 3 5-6" fill="none" stroke="#262626" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg> Bis zu 4 Kanäle</li>
-        <li><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#ffe05e"/><path d="m8 12 3 3 5-6" fill="none" stroke="#262626" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg> Live-Dashboard</li>
-        <li><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#ffe05e"/><path d="m8 12 3 3 5-6" fill="none" stroke="#262626" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg> Fester Ansprechpartner</li>
-        <li><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#ffe05e"/><path d="m8 12 3 3 5-6" fill="none" stroke="#262626" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg> Monatliche Strategie</li>
-      </ul>
-      <a href="#" class="pi-plan__btn">Auswählen</a>
-    </div>
-    <div class="pi-plan">
-      <h3 class="pi-plan__name">Individuell</h3>
-      <div class="pi-plan__preis">auf Anfrage</div>
-      <p class="pi-plan__hint">Für große Etats.</p>
-      <ul class="pi-plan__list">
-        <li><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#ffe05e"/><path d="m8 12 3 3 5-6" fill="none" stroke="#262626" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg> Alle Kanäle</li>
-        <li><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#ffe05e"/><path d="m8 12 3 3 5-6" fill="none" stroke="#262626" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg> Eigenes Team</li>
-        <li><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#ffe05e"/><path d="m8 12 3 3 5-6" fill="none" stroke="#262626" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg> SLA nach Wunsch</li>
-      </ul>
-      <a href="#" class="pi-plan__btn">Kontakt</a>
-    </div>
-  </div>
-</section>
-</body></html>`,
-    claudePrompt: 'Nutze diesen Baustein als Ausgangspunkt und passe ihn an: Behalte die drei Pakete und die Hervorhebung des mittleren (Klasse pi-plan--top mit Empfohlen-Fähnchen). Setze Paketnamen auf [deine Namen], Preise auf [deine Preise] und ersetze die Häkchen-Punkte durch [deine Leistungen je Paket]. Wenn du vier Pakete brauchst, kopiere eine pi-plan-Karte und stell die Spaltenzahl in .pi-preis__row auf repeat(4,1fr).',
-    seedKopien: 26,
-    seedRating: { schnitt: 4.7, anzahl: 10 }
-  },
-
-  /* ============================================================ *
-   * 8 · TESTIMONIAL / ZITAT                                      *
-   * ============================================================ */
-  {
-    id: 'testimonial-zitat',
-    name: 'Testimonial / Zitat',
-    kategorie: 'inhalt',
-    leuchtturm: false,
-    schwierigkeit: 'einfach',
-    beschreibung: 'Ein hervorgehobenes Kundenzitat mit großem Anführungszeichen, Name, Rolle und Monogramm-Avatar. Löst „Vertrauen durch eine echte Stimme aufbauen“.',
-    einsatz: 'Kundenstimme auf einer Landingpage oder eine Referenz-Aussage im Angebot — Beispieltext, kein echtes Kundenmaterial.',
-    tags: ['testimonial', 'zitat', 'kundenstimme', 'referenz', 'vertrauen', 'quote', 'avatar'],
-    code: `<style>
-  .pi-quote {
-    --akzent:  #ffe05e;   /* großes Anführungszeichen & Avatar */
-    --dunkel:  #262626;
-    --papier:  #f1f1ec;
-    --leise:   #6b6b6b;
-    --schrift: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    background: var(--papier); color: var(--dunkel); font-family: var(--schrift);
-    padding: 4.5rem 1.5rem;
-  }
-  .pi-quote * { box-sizing: border-box; }
-  .pi-quote__card { max-width:720px; margin:0 auto; text-align:center; position:relative; }
-  .pi-quote__mark { font-size:5rem; line-height:.6; color:var(--akzent); font-family:Georgia, "Times New Roman", serif; display:block; margin-bottom:.5rem; }
-  .pi-quote__text { font-size:clamp(1.3rem,3vw,1.8rem); line-height:1.4; font-weight:500; letter-spacing:-.01em; margin:0 0 2rem; }
-  .pi-quote__who { display:flex; align-items:center; justify-content:center; gap:.9rem; }
-  .pi-quote__avatar { width:3rem; height:3rem; border-radius:50%; background:var(--akzent); color:var(--dunkel); display:flex; align-items:center; justify-content:center; font-weight:800; font-size:1.1rem; }
-  .pi-quote__name { text-align:left; }
-  .pi-quote__name strong { display:block; font-size:1rem; }
-  .pi-quote__name span { color:var(--leise); font-size:.9rem; }
-</style>
-
-<section class="pi-quote">
-  <figure class="pi-quote__card">
-    <span class="pi-quote__mark" aria-hidden="true">&ldquo;</span>
-    <!-- Zitat, Name, Rolle und Initialen anpassen -->
-    <blockquote class="pi-quote__text">Zum ersten Mal sehen wir sofort, welche Kampagne wirklich liefert. Das hat unsere Abstimmungen radikal verkürzt.</blockquote>
-    <figcaption class="pi-quote__who">
-      <div class="pi-quote__avatar">MK</div>
-      <div class="pi-quote__name"><strong>Maria Kern</strong><span>Marketingleitung, Beispiel GmbH</span></div>
-    </figcaption>
-  </figure>
-</section>`,
-    srcdoc: `<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>*{box-sizing:border-box}body{margin:0}</style></head><body>
-<style>
-  .pi-quote{--akzent:#ffe05e;--dunkel:#262626;--papier:#f1f1ec;--leise:#6b6b6b;--schrift:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--papier);color:var(--dunkel);font-family:var(--schrift);padding:4.5rem 1.5rem}
-  .pi-quote *{box-sizing:border-box}
-  .pi-quote__card{max-width:720px;margin:0 auto;text-align:center;position:relative}
-  .pi-quote__mark{font-size:5rem;line-height:.6;color:var(--akzent);font-family:Georgia,"Times New Roman",serif;display:block;margin-bottom:.5rem}
-  .pi-quote__text{font-size:clamp(1.3rem,3vw,1.8rem);line-height:1.4;font-weight:500;letter-spacing:-.01em;margin:0 0 2rem}
-  .pi-quote__who{display:flex;align-items:center;justify-content:center;gap:.9rem}
-  .pi-quote__avatar{width:3rem;height:3rem;border-radius:50%;background:var(--akzent);color:var(--dunkel);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.1rem}
-  .pi-quote__name{text-align:left}
-  .pi-quote__name strong{display:block;font-size:1rem}
-  .pi-quote__name span{color:var(--leise);font-size:.9rem}
-</style>
-<section class="pi-quote">
-  <figure class="pi-quote__card">
-    <span class="pi-quote__mark" aria-hidden="true">&ldquo;</span>
-    <blockquote class="pi-quote__text">Zum ersten Mal sehen wir sofort, welche Kampagne wirklich liefert. Das hat unsere Abstimmungen radikal verkürzt.</blockquote>
-    <figcaption class="pi-quote__who">
-      <div class="pi-quote__avatar">MK</div>
-      <div class="pi-quote__name"><strong>Maria Kern</strong><span>Marketingleitung, Beispiel GmbH</span></div>
-    </figcaption>
-  </figure>
-</section>
-</body></html>`,
-    claudePrompt: 'Nutze diesen Baustein als Ausgangspunkt und passe ihn an: Behalte das zentrierte Zitat mit Avatar. Setze den Zitattext auf „[dein Zitat]“, den Namen auf [Name], die Rolle auf [Position, Firma] und die zwei Initialen im Avatar entsprechend. Wichtig: Nur echte, freigegebene Aussagen verwenden — dieser Beispieltext ist erfunden.',
-    seedKopien: 12,
-    seedRating: { schnitt: 4.2, anzahl: 5 }
-  },
-
-  /* ============================================================ *
-   * 9 · KONTAKTFORMULAR  — LEUCHTTURM                            *
+   * 5 · KONTAKTFORMULAR  — LEUCHTTURM                            *
    * ============================================================ */
   {
     id: 'kontaktformular',
@@ -980,11 +627,12 @@ const BAUSTEINE = [
 </body></html>`,
     claudePrompt: 'Nutze diesen Baustein als Ausgangspunkt und passe ihn an: Behalte den zweispaltigen Aufbau (Info-Spalte links, Felder rechts) und die Fokus-Optik. Ändere die Kontaktdaten (E-Mail, Telefon, Ort) auf [deine Angaben], die Betreff-Auswahl auf [deine Optionen] und die Feld-Beschriftungen bei Bedarf. Hinweis für Claude: Der Button ist type="button" und versendet nichts — wenn ich echten Versand will, binde bitte [z. B. einen Formspree-Endpoint oder mailto] an.',
     seedKopien: 31,
-    seedRating: { schnitt: 4.6, anzahl: 10 }
+    seedRating: { schnitt: 4.6, anzahl: 10 },
+    votesRecent: 4
   },
 
   /* ============================================================ *
-   * 10 · CHART-SETUP (Inline-SVG + CSS, KEINE Lib) — LEUCHTTURM  *
+   * 6 · CHART-SETUP (Inline-SVG + CSS, KEINE Lib) — LEUCHTTURM   *
    * ============================================================ */
   {
     id: 'chart-setup',
@@ -1117,11 +765,12 @@ const BAUSTEINE = [
 </body></html>`,
     claudePrompt: 'Nutze diesen Baustein als Ausgangspunkt und passe ihn an: Behalte beide Diagramme ohne externe Bibliothek. Setze die Balkenwerte auf [meine Zahlen] — ändere dafür je Balken das height (0-100%) und die Beschriftung; den größten Balken mit der Klasse pi-bars__bar--hi hervorheben. Beim Liniendiagramm die Punkte in polyline points und im Flächen-path auf meine Werte umrechnen (y: 0 oben, 178 unten). Wenn du unsicher bist, gib mir deine Rohzahlen und ich lasse Claude die Koordinaten ausrechnen. Als Beispieldaten passt eine CSV aus dem Baukasten-Ordner Beispieldaten.',
     seedKopien: 29,
-    seedRating: { schnitt: 4.9, anzahl: 12 }
+    seedRating: { schnitt: 4.9, anzahl: 12 },
+    votesRecent: 5
   },
 
   /* ============================================================ *
-   * 11 · TABELLEN-LOOK                                           *
+   * 7 · TABELLEN-LOOK                                            *
    * ============================================================ */
   {
     id: 'tabellen-look',
@@ -1222,11 +871,12 @@ const BAUSTEINE = [
 </body></html>`,
     claudePrompt: 'Nutze diesen Baustein als Ausgangspunkt und passe ihn an: Behalte den Tabellen-Look (dunkle Kopfzeile, Zebra-Zeilen, Status-Badges, Scroll-Container). Ersetze die Spalten durch [meine Spalten] und fülle die Zeilen mit [meinen Daten]. Für Status nutze die Badge-Klassen pi-badge--live, --plan oder --stop. Zahlenspalten bekommen die Klasse pi-tab__num, damit sie rechtsbündig stehen. Beispieldaten findest du im Baukasten-Ordner Beispieldaten.',
     seedKopien: 24,
-    seedRating: { schnitt: 4.5, anzahl: 9 }
+    seedRating: { schnitt: 4.5, anzahl: 9 },
+    votesRecent: 2
   },
 
   /* ============================================================ *
-   * 12 · STAT-KENNZAHLEN-BAND                                    *
+   * 8 · STAT-KENNZAHLEN-BAND                                     *
    * ============================================================ */
   {
     id: 'stat-band',
@@ -1287,13 +937,14 @@ const BAUSTEINE = [
 </body></html>`,
     claudePrompt: 'Nutze diesen Baustein als Ausgangspunkt und passe ihn an: Behalte das dunkle Kennzahlen-Band. Setze die vier Zahlen auf [meine Werte] und die Beschriftungen darunter auf [was sie bedeuten]. Wenn du drei oder fünf Kennzahlen brauchst, ändere in .pi-stat__row die Spaltenzahl (repeat(3,1fr) bzw. repeat(5,1fr)). Bitte nur real belegbare Zahlen verwenden.',
     seedKopien: 14,
-    seedRating: { schnitt: 4.3, anzahl: 6 }
+    seedRating: { schnitt: 4.3, anzahl: 6 },
+    votesRecent: 4
   }
 
 ];
 
-/* ---- Normalisierte Felder für die Rating-/Kopier-Engine (base.js) ----
-   getEffectiveRating() erwartet item.rating = { average, count }; der
+/* ---- Normalisierte Felder für die Stimmen-/Kopier-Engine (base.js) ----
+   getUpvoteCount() liest item.rating.count als Seed-Fallback; der
    „Meistkopiert“-Zähler liest item.copyCount. Beides wird hier NUR aus den
    vorhandenen Seed-Feldern abgeleitet (umbenannt), nichts erfunden. */
 BAUSTEINE.forEach(function (b) {
@@ -1407,40 +1058,6 @@ const BEISPIELDATEN = [
     uebungZiele: [
       { label: 'Karten-Grid-Baustein öffnen', href: 'vorlagen.html?b=karten-grid', typ: 'baustein' },
       { label: 'Prompt „Social-Post-Serie“', href: 'prompts.html?p=social-post-serie', typ: 'prompt' }
-    ]
-  },
-  {
-    id: 'testbild-produkt',
-    datei: 'testbild-produkt.svg',
-    pfad: 'beispieldaten/testbild-produkt.svg',
-    format: 'SVG',
-    groesseBytes: 1694,
-    zeilen: 26,
-    datensaetze: null,
-    spalten: null,
-    spaltenHinweis: '1200 × 900 (4:3) · Flächen in pilot-Farben · als Testbild gekennzeichnet',
-    beschreibung: 'Ein Produkt-Platzhalterbild der erfundenen Marke VELOMO — stilisiertes E-Bike als flache Vektorgrafik. Zum Üben, wenn ein Layout ein Bild braucht, du aber noch keins hast.',
-    uebungstext: 'Sag Claude: „Bau das Testbild als <img> in den Bild-Text-Baustein ein.“ Und wenn du ein echtes Motiv willst: Der Prompt „Bildbrief“ hilft dir, es sauber zu beschreiben.',
-    uebungZiele: [
-      { label: 'Bild-Text-Baustein öffnen', href: 'vorlagen.html?b=bild-text-split', typ: 'baustein' },
-      { label: 'Prompt „Bildbrief“', href: 'prompts.html?p=bildbrief', typ: 'prompt' }
-    ]
-  },
-  {
-    id: 'testbild-kampagne',
-    datei: 'testbild-kampagne.svg',
-    pfad: 'beispieldaten/testbild-kampagne.svg',
-    format: 'SVG',
-    groesseBytes: 2063,
-    zeilen: 29,
-    datensaetze: null,
-    spalten: null,
-    spaltenHinweis: '1600 × 900 (16:9) · Headline als Platzhalter-Balken · als Testbild gekennzeichnet',
-    beschreibung: 'Ein Kampagnen-Platzhalterbild der erfundenen Marke Quellgold im Querformat — mit freier Fläche, wo später Claim und Call-to-Action hinkommen. Gut als Startpunkt für eine Kampagnen-Sektion.',
-    uebungstext: 'Sag Claude: „Bau eine Hero-Sektion, die dieses Kampagnenbild großflächig nutzt.“ Den passenden Claim für die Platzhalter-Balken textest du mit der Claim-Werkstatt.',
-    uebungZiele: [
-      { label: 'Header-Hero-Baustein öffnen', href: 'vorlagen.html?b=header-hero', typ: 'baustein' },
-      { label: 'Prompt „Claim-Werkstatt“', href: 'prompts.html?p=claim-werkstatt', typ: 'prompt' }
     ]
   }
 ];

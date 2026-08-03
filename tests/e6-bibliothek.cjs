@@ -27,13 +27,19 @@ const ARG = process.argv[2] || 'http://localhost:8412/vorlagen.html?tab=assets';
 const TARGET = /\.html/.test(ARG) ? ARG : new URL('vorlagen.html?tab=assets', ARG).href;
 const INDEX_TARGET = TARGET.replace(/vorlagen\.html.*$/, 'index.html');
 
-// Soll-Werte (Stand E6, 2026-07-17), abgeleitet aus data/assets.js:
-const EXPECTED_TOTAL = 30;      // ASSETS = Fonts + Paletten + Muster + Icon-Sets
-const EXPECTED_FONTS = 9;
-const EXPECTED_PALETTES = 7;
-const EXPECTED_PATTERNS = 10;   // 7 SVG-Muster + 3 Gradients
+/* Soll-Werte NACHGEZOGEN (2026-08-03, Kurations-Runde), abgeleitet aus
+   data/assets.js. Der Bestand wurde von 30 auf 16 Einträge zusammengestrichen —
+   nicht lizenzbedingt, sondern als bewusste Kuration („weniger, dafür geprüft").
+   Aufschlüsselung nach ASSET_STATS: 5 Fonts + 4 Paletten + 5 Muster
+   (3 SVG + 2 Gradients) + 2 Icon-Sets = 16.
+   EXPECTED_ICONS (48 durchsuchbare LUCIDE_ICONS) ist unverändert — die
+   Icon-Auswahl war von der Kuration nicht betroffen. */
+const EXPECTED_TOTAL = 16;      // ASSETS = Fonts + Paletten + Muster + Icon-Sets
+const EXPECTED_FONTS = 5;
+const EXPECTED_PALETTES = 4;
+const EXPECTED_PATTERNS = 5;    // 3 SVG-Muster + 2 Gradients
 const EXPECTED_ICONS = 48;      // LUCIDE_ICONS (durchsuchbar)
-const EXPECTED_ICONSETS = 4;
+const EXPECTED_ICONSETS = 2;
 const HIGHLIGHT_ID = 'inter';
 const DEEPLINK_ID = 'fraunces';
 const ALLOWED_LICENSES = ['OFL', 'Apache-2.0', 'MIT', 'ISC', 'CC0'];
@@ -264,26 +270,39 @@ async function runViewport(browser, vp) {
   await page.keyboard.press('Escape');
   await page.waitForTimeout(200);
   const modalClosed = await page.evaluate(() => !document.getElementById('modal-overlay').classList.contains('open'));
+  // NACHGEZOGEN (2026-08-03): dritter Reiter heißt „Stimmen" statt „Bewertungen"
+  // (Upvote-Umbau; data-tab="ratings" unverändert).
   check('10_detail_modal_tabs',
     modalInfo.open && modalInfo.name === 'Inter' && modalInfo.tabs.length === 3
-      && modalInfo.tabs[0] === 'Vorschau' && modalInfo.tabs[1] === 'Einsatz' && modalInfo.tabs[2] === 'Bewertungen'
+      && modalInfo.tabs[0] === 'Vorschau' && modalInfo.tabs[1] === 'Einsatz' && modalInfo.tabs[2] === 'Stimmen'
       && modalInfo.hasPreview && einsatzOk && modalClosed,
     { modalInfo, einsatzOk, modalClosed });
 
-  // ---------- (11) Bewertung: rate:asset:* persistiert + Namespace sauber ----------
+  /* ---------- (11) Stimme: vote:asset:* persistiert + Namespace sauber ----------
+     NACHGEZOGEN (2026-08-03): Fünf-Sterne-Eingabe (#star-input-<id> .star-btn)
+     → ein Upvote-Knopf (.up-btn[data-up-id], base.js). Gespeichert wird jetzt
+     vote:asset:<id> = '1' statt rate:asset:<id> = '4'.
+     Der Prüf-GEDANKE bleibt vollständig erhalten und ist hier dreiteilig:
+     (a) die Interaktion speichert lokal, (b) sie speichert im richtigen
+     Namespace (kein fremder Typ — die stumme Fehlerklasse aus CLAUDE.md, weil
+     vorlagen.html im Baukasten-Reiter auf `baustein` defaultet), und (c) der
+     Zustand überlebt einen Reload. */
   await page.evaluate((id) => { openModal(id); switchTab('ratings'); }, HIGHLIGHT_ID);
   await page.waitForTimeout(200);
-  await page.evaluate((id) => { document.querySelector(`#star-input-${id} .star-btn[data-val="4"]`).click(); }, HIGHLIGHT_ID);
+  await page.evaluate((id) => {
+    document.querySelector(`#modal .up-btn[data-up-id="${id}"]`).click();
+  }, HIGHLIGHT_ID);
   await page.waitForTimeout(200);
   const rateInfo = await page.evaluate((id) => ({
-    lsKey: localStorage.getItem('rate:asset:' + id),
-    foreignKeys: Object.keys(localStorage).filter(k => k.startsWith('rate:skill:') || k.startsWith('rate:prompt:') || k.startsWith('vote:')).length,
+    lsKey: localStorage.getItem('vote:asset:' + id),
+    foreignKeys: Object.keys(localStorage).filter(k =>
+      k.startsWith('rate:') || (k.startsWith('vote:') && !k.startsWith('vote:asset:'))).length,
   }), HIGHLIGHT_ID);
   await page.goto(TARGET, { waitUntil: 'load' });
   await page.waitForSelector('#font-grid .font-card', { timeout: 10000 });
-  const rateReload = await page.evaluate((id) => localStorage.getItem('rate:asset:' + id), HIGHLIGHT_ID);
-  check('11_rating_persists_namespaced',
-    rateInfo.lsKey === '4' && rateInfo.foreignKeys === 0 && rateReload === '4',
+  const rateReload = await page.evaluate((id) => localStorage.getItem('vote:asset:' + id), HIGHLIGHT_ID);
+  check('11_vote_persists_namespaced',
+    rateInfo.lsKey === '1' && rateInfo.foreignKeys === 0 && rateReload === '1',
     { rateInfo, rateReload });
 
   // ---------- (12) Deep-Link ?a=<id>: kanonischer Hash, Modal offen, Karte hervorgehoben ----------
@@ -451,9 +470,19 @@ async function runIndexChecks(browser) {
       && (typeof TEASER === 'undefined' || !('baukasten' in TEASER)),
     areaCount: parseInt((document.getElementById('area-bibliothek-count') || {}).textContent || '-1', 10),
     areaMeta: (document.getElementById('area-bibliothek-meta') || {}).textContent || '',
+    // Gegenprobe zum entfallenen Aufschlüsselungs-Satz, siehe i3: entweder es
+    // gibt ihn auf KEINER Bereichs-Karte (heutiger Stand) oder er ist zurück —
+    // ein halb wiederhergestellter Zustand fällt so auf.
+    areaMetaNodes: document.querySelectorAll('.area-card .area-meta').length,
     areaCta: !!document.querySelector('.area-card a.c-cta[href="vorlagen.html?tab=assets"]'),
     areaSpotHref: (document.querySelector('a.area-spot[href^="vorlagen.html?a="]') || { getAttribute: () => '' }).getAttribute('href') || '',
     areaSpotRating: (document.getElementById('area-bibliothek-spot-rating') || {}).textContent || '',
+    /* Soll-Eintrag der Kachel, zur Laufzeit aus derselben Quelle wie die Seite:
+       renderAreaSpot() (index.html) zeigt bestRated(items, typ, 5)[0]. Siehe i4. */
+    spotExpected: (typeof bestRated === 'function' && typeof ASSETS !== 'undefined')
+      ? ((bestRated(ASSETS, 'asset', 5)[0] || {}).id || null) : null,
+    spotPool: (typeof bestRated === 'function' && typeof ASSETS !== 'undefined')
+      ? bestRated(ASSETS, 'asset', 5).map(x => x.id) : null,
     // Ehrlichkeits-Anker: jede Bereichs-Karte MUSS zu etwas Fertigem führen.
     // Früher zählte hier das gelbe „Live"-Label — das saß auf allen sechs Karten
     // und unterschied damit nichts mehr; es wurde entfernt. Der echte CTA-Link ist
@@ -471,18 +500,46 @@ async function runIndexChecks(browser) {
   check('i2_area_card_links_vorlagen_assets',
     indexInfo.noRouter && /Bibliothek/.test(indexInfo.areaCtaText),
     { noRouter: indexInfo.noRouter, ctaText: indexInfo.areaCtaText });
+  /* NACHGEZOGEN (2026-08-03): Der Aufschlüsselungs-Satz `.area-meta`
+     („9 Schriften · 4 Icon-Sets · 7 Paletten · 10 Muster") ist beim Umbau der
+     Startseite auf rotierende Spots (renderAreaSpot) entfallen — und zwar auf
+     ALLEN SECHS Bereichs-Karten zugleich, samt der Zeile, die ihn gefüllt hat.
+     Das ist eine Gestaltungsentscheidung, kein Defekt: keine Zahl ist falsch
+     geworden, es steht nur eine Zeile weniger da.
+     Die Teil-Bedingungen auf diesen Satz entfallen deshalb. Was den Check
+     eigentlich trägt, bleibt unangetastet: die angezeigte Gesamtzahl auf der
+     Kachel MUSS der Datenlage entsprechen (Zahlen-Ehrlichkeit, CLAUDE.md).
+     Zusätzlich wird jetzt geprüft, dass der Satz wirklich überall weg ist —
+     sonst bliebe eine halb zurückgebaute Karte mit veralteter Aufschlüsselung
+     unbemerkt stehen, und genau die zeigte dann falsche Zahlen. */
   check('i3_counts_match_data',
     indexInfo.areaCount === EXPECTED_TOTAL && indexInfo.dataAssets === EXPECTED_TOTAL
-      && indexInfo.areaMeta.includes(String(EXPECTED_FONTS))
-      && indexInfo.areaMeta.includes(String(EXPECTED_ICONSETS))
-      && indexInfo.areaMeta.includes(String(EXPECTED_PALETTES))
-      && indexInfo.areaMeta.includes(String(EXPECTED_PATTERNS)),
-    { areaCount: indexInfo.areaCount, meta: indexInfo.areaMeta, dataAssets: indexInfo.dataAssets });
+      && indexInfo.areaMetaNodes === 0,
+    { areaCount: indexInfo.areaCount, meta: indexInfo.areaMeta,
+      areaMetaNodes: indexInfo.areaMetaNodes, dataAssets: indexInfo.dataAssets });
+  /* NACHGEZOGEN (2026-08-03): Der Spot-Link wurde vorher gegen die feste ID
+     'inter' geprüft. Das ging jahrelang zufällig durch — seit die Kachel ihren
+     Eintrag über bestRated() zieht, ROTIERT sie tagesabhängig. Ein fester
+     Sollwert ist hier also nicht „streng", sondern schlicht falsch: er wäre an
+     den meisten Tagen rot, ohne dass irgendetwas kaputt wäre.
+     Ersatz OHNE Schutzverlust, zweiteilig:
+       (a) der Link hat die kanonische Deep-Link-Form (/^vorlagen\.html\?a=/) —
+           das ist es, was tatsächlich brechen kann, und
+       (b) die verlinkte ID ist exakt die, die renderAreaSpot() laut eigenem
+           Vertrag zeigt: bestRated(items, typ, 5)[0] (index.html).
+     (b) wird zur LAUFZEIT aus derselben Funktion geholt und kann deshalb nicht
+     mitdriften. Der Check ist damit sogar strenger als der alte feste Wert: er
+     deckt auch eine falsch verdrahtete Kachel auf (falsche Liste, falscher Typ,
+     falscher href-Bauer), nicht nur eine geänderte ID. */
+  const spotId = (indexInfo.areaSpotHref.match(/^vorlagen\.html\?a=(.+)$/) || [])[1] || '';
+  const spotOk = /^vorlagen\.html\?a=.+$/.test(indexInfo.areaSpotHref)
+    && !!indexInfo.spotExpected && spotId === indexInfo.spotExpected;
   check('i4_area_card_clickable',
-    indexInfo.areaCta && indexInfo.areaSpotHref === 'vorlagen.html?a=' + HIGHLIGHT_ID
+    indexInfo.areaCta && spotOk
       && indexInfo.areaSpotRating.trim().length > 0 && indexInfo.navVorlagen
       && indexInfo.areaCtaCount === 6 && indexInfo.soonPills === 0,
     { areaCta: indexInfo.areaCta, areaSpotHref: indexInfo.areaSpotHref,
+      spotId, spotExpected: indexInfo.spotExpected, spotPool: indexInfo.spotPool, spotOk,
       areaSpotRating: indexInfo.areaSpotRating, navVorlagen: indexInfo.navVorlagen,
       areaCtaCount: indexInfo.areaCtaCount, soonPills: indexInfo.soonPills });
   check('i5_news_mentions_bibliothek',

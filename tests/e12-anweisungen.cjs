@@ -344,19 +344,37 @@ async function runViewport(browser, vp) {
 
   // ---------- (6) Namensraum-Sauberkeit ----------
   /* Bewerten und Merken auf DERSELBEN Karte. Beide Bedienelemente folgen den
-     Hausmustern (.star-btn[data-val] im #star-input-<id>, .fav-btn[data-fav-id]),
-     gesucht wird zuerst innerhalb der Karte. Aufklapper werden vorher geöffnet,
-     damit ein Widget in einem <details> nicht als „fehlt" gilt. */
+     Hausmustern (.up-btn[data-up-id], .fav-btn[data-fav-id]), gesucht wird
+     zuerst innerhalb der Karte. Aufklapper werden vorher geöffnet, damit ein
+     Widget in einem <details> nicht als „fehlt" gilt.
+
+     NACHGEZOGEN (2026-08-03): Bewertet wird nicht mehr mit fünf Sternen
+     (#star-input-<id> .star-btn[data-val]), sondern mit dem gemeinsamen
+     Upvote-Knopf aus base.js — vorlagen.html rendert ihn für Anweisungen als
+     renderUpvoteBtn(a.id, 'anweisung', …). Entsprechend heißt der erwartete
+     Schlüssel vote:anweisung:<id> statt rate:anweisung:<id>.
+
+     Der Prüf-GEDANKE ist unverändert und ausgerechnet hier der wichtigste im
+     ganzen Repo: `baustein` ist der Seiten-Default von vorlagen.html
+     (window.RatingConfig). Ein Widget, das seinen Typ nicht explizit mitgibt,
+     schreibt also lautlos in den FALSCHEN Namensraum. Deshalb wird weiterhin
+     beides geprüft — der eigene Schlüssel entsteht UND kein baustein-Schlüssel
+     mit dieser id. Die Fremd-Prüfung deckt jetzt zusätzlich vote:baustein: ab. */
   const bedient = await page.evaluate(o => {
     const karte = document.getElementById('bk-pa-' + o.id);
     if (karte) karte.querySelectorAll('details').forEach(d => { d.open = true; });
     const suche = sel => (karte && karte.querySelector(sel)) || document.querySelector(sel);
-    const stern = suche('#star-input-' + o.id + ' .star-btn[data-val="4"]')
-      || suche('.star-btn[data-val="4"]');
+    const stimme = suche(`.up-btn[data-up-id="${CSS.escape(o.id)}"]`);
     const fav = suche(`.fav-btn[data-fav-id="${CSS.escape(o.id)}"]`);
-    if (stern) stern.click();
+    if (stimme) stimme.click();
     if (fav) fav.click();
-    return { sternGefunden: !!stern, favGefunden: !!fav };
+    return {
+      stimmeGefunden: !!stimme,
+      // Der Typ am Knopf selbst — eine falsche Verdrahtung fällt so schon hier
+      // auf und nicht erst indirekt über einen fehlenden Speicher-Schlüssel.
+      stimmeTyp: stimme ? stimme.getAttribute('data-up-typ') : null,
+      favGefunden: !!fav,
+    };
   }, { id: kopId });
   await page.waitForTimeout(400);
   const namensraum = await page.evaluate(o => {
@@ -364,20 +382,20 @@ async function runViewport(browser, vp) {
     return {
       fremd: {
         copies: k('copies:baustein'), tried: k('tried:baustein'),
-        rate: k('rate:baustein'), fav: k('fav:baustein'),
+        rate: k('rate:baustein'), vote: k('vote:baustein'), fav: k('fav:baustein'),
       },
       eigen: {
         copies: k('copies:' + o.typ), tried: k('tried:' + o.typ),
-        rate: k('rate:' + o.typ), fav: k('fav:' + o.typ),
+        vote: k('vote:' + o.typ), fav: k('fav:' + o.typ),
       },
       alleSchluesselMitId: Object.keys(localStorage).filter(x => x.endsWith(':' + o.id)),
     };
   }, { id: kopId, typ: TYP });
   const fremdTreffer = Object.entries(namensraum.fremd).filter(([, v]) => v !== null).map(([k]) => k);
   check('06_namensraum_sauber',
-    bedient.sternGefunden && bedient.favGefunden
+    bedient.stimmeGefunden && bedient.stimmeTyp === TYP && bedient.favGefunden
       && fremdTreffer.length === 0
-      && namensraum.eigen.rate !== null && namensraum.eigen.fav !== null,
+      && namensraum.eigen.vote !== null && namensraum.eigen.fav !== null,
     { id: kopId, ...bedient, fremdTreffer, ...namensraum });
 
   // ---------- (10) Seiteneigenes Suchfeld filtert den Abschnitt ehrlich ----------

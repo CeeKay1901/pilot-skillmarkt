@@ -24,5 +24,5 @@ Wird periodisch aus dem persönlichen Quell-Repo `CeeKay1901/pilot-skillmarkt` n
 3. **`REPO_RAW`** entfernen
 
 ## Offen / Beobachten
-- Nichts Dringendes offen. Nächster Re-Sync aus dem Quell-Repo bei Bedarf → Rezept oben beachten.
+- **Re-Sync fällig (Stand 2026-08-03):** Im Quell-Repo ist eine große Feedback- und Kurations-Runde gelandet (Sterne→Upvote-System, Kuration aller Kategorien auf Qualität, Naming „Skills"/„pilot AI", neuer Community-Skill grill-me, Bookmark-Favoriten, Ansichtsdichte, Centra-Typografie). Beim Re-Sync zusätzlich zum Rezept oben: **Centra-Font-Dateien mitliefern** — siehe `docs/CENTRA-RESYNC.md` (im öffentlichen Quell-Repo sind sie aus Lizenzgründen gitignored, die Live-Seite fällt bis dahin auf Inter zurück).
 - CI-Merke: „dependency review" fällt org-weit durch (privat ohne GHAS); Semgrep meckert data:-URI-Favicons.

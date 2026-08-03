@@ -8,6 +8,26 @@
      ANWEISUNGEN — 3 kopierfertige CLAUDE.md-Vorlagen, geschnitten nach
                    Projekttyp: kleines-tool | datenauswertung | einseiter.
 
+   NAMEN UND IDs LAUFEN HIER BEWUSST AUSEINANDER (03.08.2026).
+   Es gibt drei Projekttypen, und sie heißen im Marketplace überall gleich:
+   EINSEITER, DASHBOARD, AUSWERTER. Bis zum 03.08.2026 hießen dieselben drei
+   Typen hier „Kleines Tool", „Datenauswertung" und „Website / Einseiter" und
+   in data/startprojekte.js „Kampagnen-Dashboard", „Umfrage-Auswerter" und
+   „Einseiter" — wer eine Vorlage und das passende Gerüst nebeneinander sah,
+   konnte nicht erkennen, dass sie zusammengehören.
+   Die IDs bleiben, wie sie sind: an ihnen hängen Deep-Links (?pa=<id>),
+   localStorage-Schlüssel (fav:/tried:/rate:anweisung:<id>), die Zuordnung in
+   data/startprojekte.js und die Ersterscheinungs-Daten in data/seit.js, deren
+   Generator umbenannte IDs in der Git-Historie nicht mehr findet (Einfrier-
+   Regel, siehe CLAUDE.md). Ein Rename hier wäre also nicht Kosmetik, sondern
+   ein Datenverlust.
+   Warum „Dashboard & kleines Tool" und nicht schlicht „Dashboard": Die Vorlage
+   deckt jedes kleine interaktive Werkzeug ab — Rechner, Umrechner, Checkliste,
+   Generator —, und genau so heißt sie auch im `text`, den man kopiert
+   („# CLAUDE.md — Kleines Tool"). Der Kartentitel nur „Dashboard" zu nennen
+   würde den Umfang kleiner machen, als er ist, und der kopierten Datei
+   widersprechen. Der Leitbegriff steht deshalb vorn, die ehrliche Weite dahinter.
+
    Wer diese Datei liest:
      1. Das Baukasten-Modul in `vorlagen.html` — zeigt Karte, Vorschau,
         „Warum steht das drin"-Aufklapper und den Kopieren-Knopf.
@@ -59,11 +79,11 @@
 const ANWEISUNGEN = [
 
   /* ============================================================ *
-   * 1 · KLEINES TOOL                                             *
+   * 1 · DASHBOARD & KLEINES TOOL   (Startprojekt: dashboard)      *
    * ============================================================ */
   {
     id: 'kleines-tool',
-    name: 'Kleines Tool',
+    name: 'Dashboard & kleines Tool',
     kurz: 'Projektanweisung für ein interaktives Werkzeug, das eine einzige Aufgabe erledigt und per Doppelklick läuft.',
     wofuer: 'Für ein Werkzeug mit Eingabefeldern und einem Ergebnis: Rechner, Umrechner, Checkliste, Generator. Alles passiert in einer Datei im Browser, ohne Server und ohne Installation.',
     passt: [
@@ -73,11 +93,13 @@ const ANWEISUNGEN = [
       'Die Rechnung dahinter kannst du selbst nachprüfen'
     ],
     passtNicht: [
-      'Der Ausgangspunkt ist eine vorhandene Datei mit vielen Zeilen, aus der Kennzahlen werden sollen — dafür ist „Datenauswertung" gemacht',
-      'Es wird am Ende nichts gerechnet, sondern etwas gelesen und weitergegeben — dann nimm „Website / Einseiter"',
+      'Der Ausgangspunkt ist eine vorhandene Datei mit vielen Zeilen, aus der Kennzahlen werden sollen — dafür ist der „Auswerter" gemacht',
+      'Es wird am Ende nichts gerechnet, sondern etwas gelesen und weitergegeben — dann nimm den „Einseiter"',
       'Mehrere Personen sollen dieselben Daten sehen und ändern — das kann keine der drei Vorlagen, dafür braucht es einen Server'
     ],
     tags: ['tool', 'rechner', 'formular', 'einzeldatei', 'interaktiv', 'browser'],
+    votesSeed: 8,    // Demo-Seed wie in allen Sammlungen; VL_VOTE_HINT verspricht eine Startzahl
+    votesRecent: 3,
     warum: [
       {
         abschnitt: 'Das baue ich hier',
@@ -195,11 +217,11 @@ Frag nach, bevor du baust. Besonders bei Rundung, Einheiten und Sonderfällen: W
   },
 
   /* ============================================================ *
-   * 2 · DATENAUSWERTUNG                                          *
+   * 2 · AUSWERTER                  (Startprojekt: auswerter)      *
    * ============================================================ */
   {
     id: 'datenauswertung',
-    name: 'Datenauswertung',
+    name: 'Auswerter',
     kurz: 'Projektanweisung für eine Auswertung: Datei rein, verdichtete Zahlen raus — mit Pflicht zur sichtbaren Formatprüfung.',
     wofuer: 'Für Auswertungen bestehender Dateien: CSV-Export, Umfrage-Rückläufe, Kampagnenzahlen. Der Schwerpunkt liegt nicht auf der Oberfläche, sondern darauf, dass die Zahlen stimmen und nachvollziehbar bleiben.',
     passt: [
@@ -209,11 +231,13 @@ Frag nach, bevor du baust. Besonders bei Rundung, Einheiten und Sonderfällen: W
       'Dieselbe Auswertung wird später mit einer neuen Datei wiederholt'
     ],
     passtNicht: [
-      'Es gibt noch keine Datei, die Werte werden von Hand eingetippt — dann passt „Kleines Tool" besser',
-      'Die Zahlen stehen schon fest und sollen nur verständlich dargestellt und geteilt werden — dafür ist „Website / Einseiter" gedacht',
+      'Es gibt noch keine Datei, die Werte werden von Hand eingetippt — dann passt „Dashboard & kleines Tool" besser',
+      'Die Zahlen stehen schon fest und sollen nur verständlich dargestellt und geteilt werden — dafür ist der „Einseiter" gedacht',
       'Die Datei enthält personenbezogene Daten, die nicht auf deinen Rechner dürfen — das klärst du vor dem Bauen, nicht danach'
     ],
     tags: ['daten', 'csv', 'auswertung', 'kennzahlen', 'excel', 'umfrage'],
+    votesSeed: 6,
+    votesRecent: 4,
     warum: [
       {
         abschnitt: 'Das werte ich hier aus',
@@ -347,11 +371,11 @@ Frag nach. Besonders bei der Bedeutung einer Spalte, beim Umgang mit leeren Zell
   },
 
   /* ============================================================ *
-   * 3 · WEBSITE / EINSEITER                                      *
+   * 3 · EINSEITER                  (Startprojekt: einseiter)      *
    * ============================================================ */
   {
     id: 'einseiter',
-    name: 'Website / Einseiter',
+    name: 'Einseiter',
     kurz: 'Projektanweisung für eine einzelne Seite zum Weitergeben — offline lauffähig, lesbar auf dem Handy, ohne Tracking.',
     wofuer: 'Für eine Seite, die etwas erklärt oder zeigt und dann geteilt wird: Kampagnenüberblick, Ergebnisseite, Einladung, internes Erklärstück. Kein Menü, keine Unterseiten.',
     passt: [
@@ -361,11 +385,13 @@ Frag nach. Besonders bei der Bedeutung einer Spalte, beim Umgang mit leeren Zell
       'Sie soll auch ohne Netz und als PDF-Ausdruck funktionieren'
     ],
     passtNicht: [
-      'Jemand soll etwas eingeben und ein Ergebnis bekommen — das ist „Kleines Tool"',
-      'Die Zahlen auf der Seite müssen erst aus einer Datei berechnet werden — dann fang mit „Datenauswertung" an',
+      'Jemand soll etwas eingeben und ein Ergebnis bekommen — das ist „Dashboard & kleines Tool"',
+      'Die Zahlen auf der Seite müssen erst aus einer Datei berechnet werden — dann fang mit dem „Auswerter" an',
       'Es sollen Angaben von Besuchern entgegengenommen werden — das geht ohne Server nicht und gehört nicht in diese Vorlage'
     ],
     tags: ['website', 'einseiter', 'landingpage', 'teilen', 'html', 'offline'],
+    votesSeed: 7,
+    votesRecent: 2,
     warum: [
       {
         abschnitt: 'Das steht auf der Seite',

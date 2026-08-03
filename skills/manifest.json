@@ -1,9 +1,4 @@
 {
- "algorithmic-art": [
-  "SKILL.md",
-  "templates/generator_template.js",
-  "templates/viewer.html"
- ],
  "brainstorming": [
   "SKILL.md",
   "scripts/frame-template.html",
@@ -26,36 +21,6 @@
   "SKILL.md",
   "references/beispiel.md",
   "references/checkliste.md"
- ],
- "canvas-design": [
-  "SKILL.md",
-  "canvas-fonts/ArsenalSC-OFL.txt",
-  "canvas-fonts/BigShoulders-OFL.txt",
-  "canvas-fonts/Boldonse-OFL.txt",
-  "canvas-fonts/BricolageGrotesque-OFL.txt",
-  "canvas-fonts/CrimsonPro-OFL.txt",
-  "canvas-fonts/DMMono-OFL.txt",
-  "canvas-fonts/EricaOne-OFL.txt",
-  "canvas-fonts/GeistMono-OFL.txt",
-  "canvas-fonts/Gloock-OFL.txt",
-  "canvas-fonts/IBMPlexMono-OFL.txt",
-  "canvas-fonts/InstrumentSans-OFL.txt",
-  "canvas-fonts/Italiana-OFL.txt",
-  "canvas-fonts/JetBrainsMono-OFL.txt",
-  "canvas-fonts/Jura-OFL.txt",
-  "canvas-fonts/LibreBaskerville-OFL.txt",
-  "canvas-fonts/Lora-OFL.txt",
-  "canvas-fonts/NationalPark-OFL.txt",
-  "canvas-fonts/NothingYouCouldDo-OFL.txt",
-  "canvas-fonts/Outfit-OFL.txt",
-  "canvas-fonts/PixelifySans-OFL.txt",
-  "canvas-fonts/PoiretOne-OFL.txt",
-  "canvas-fonts/RedHatMono-OFL.txt",
-  "canvas-fonts/Silkscreen-OFL.txt",
-  "canvas-fonts/SmoochSans-OFL.txt",
-  "canvas-fonts/Tektur-OFL.txt",
-  "canvas-fonts/WorkSans-OFL.txt",
-  "canvas-fonts/YoungSerif-OFL.txt"
  ],
  "content-recycling": [
   "SKILL.md",
@@ -107,6 +72,10 @@
  "frontend-design": [
   "SKILL.md"
  ],
+ "grill-me": [
+  "SKILL.md",
+  "references/beispiel.md"
+ ],
  "internal-comms": [
   "SKILL.md",
   "examples/3p-updates.md",
@@ -155,11 +124,6 @@
   "SKILL.md",
   "references/beispiel.md",
   "references/template.md"
- ],
- "pitch-deck": [
-  "SKILL.md",
-  "references/beispiel.md",
-  "references/dramaturgie.md"
  ],
  "pptx": [
   "SKILL.md",
@@ -229,19 +193,6 @@
   "find-polluter.sh",
   "root-cause-tracing.md"
  ],
- "theme-factory": [
-  "SKILL.md",
-  "themes/arctic-frost.md",
-  "themes/botanical-garden.md",
-  "themes/desert-rose.md",
-  "themes/forest-canopy.md",
-  "themes/golden-hour.md",
-  "themes/midnight-galaxy.md",
-  "themes/modern-minimalist.md",
-  "themes/ocean-depths.md",
-  "themes/sunset-boulevard.md",
-  "themes/tech-innovation.md"
- ],
  "tonalitaets-check": [
   "SKILL.md",
   "references/beispiel.md",
@@ -255,21 +206,6 @@
   "SKILL.md",
   "references/beispiel.md",
   "references/checkliste.md"
- ],
- "verification-before-completion": [
-  "SKILL.md"
- ],
- "web-artifacts-builder": [
-  "SKILL.md",
-  "scripts/bundle-artifact.sh",
-  "scripts/init-artifact.sh"
- ],
- "webapp-testing": [
-  "SKILL.md",
-  "examples/console_logging.py",
-  "examples/element_discovery.py",
-  "examples/static_html_automation.py",
-  "scripts/with_server.py"
  ],
  "webaudit": [
   "SKILL.md",

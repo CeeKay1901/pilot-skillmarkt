@@ -1,14 +1,20 @@
 #!/usr/bin/env node
 /**
- * Bettet die sieben Muster-SVGs als data:-URI in data/assets.js ein und prüft,
+ * Bettet die Muster-SVGs als data:-URI in data/assets.js ein und prüft,
  * dass Daten und Platte nicht auseinanderlaufen.
  *
  *   node tools/muster-datauri.mjs            # dataUri neu erzeugen (Normalfall)
  *   node tools/muster-datauri.mjs --pruefen  # nur prüfen, nichts schreiben (Exit 1 bei Abweichung)
  *
+ * KEINE BESTANDSZAHL IN DIESEM KOPF: Am 03.08.2026 ist data/assets.js von 30 auf
+ * 16 Einträge gekürzt worden, und dieser Kommentar sprach danach von „sieben
+ * Mustern" und „30 Assets" weiter, obwohl es drei bzw. sechzehn sind. Der Lauf
+ * SAGT seine Zahlen selbst (letzte Zeile der Ausgabe: Assets, Dateipfade,
+ * eingebettete Muster) — hier stehen deshalb nur noch die Regeln.
+ *
  * ZUM NAMEN: Der Schreibmodus betrifft nur die Muster — der Prüfmodus nicht.
- * --pruefen hält seit jeher alle 16 Dateipfade aller 30 Assets gegen die Platte,
- * nicht nur die sieben eingebetteten SVG. Sein Zuständigkeitsbereich ist also
+ * --pruefen hält seit jeher jeden Dateipfad jedes Assets gegen die Platte,
+ * nicht nur die eingebetteten SVG. Sein Zuständigkeitsbereich ist also
  * „data/assets.js gegen die Wirklichkeit", und dazu gehören seit E14 auch die
  * Ziffern im Fließtext von beschreibung (Punkt (c) weiter unten). Wer hier eine
  * weitere Prüfung an data/assets.js braucht, hängt sie hier an, statt ein
@@ -25,13 +31,14 @@
  * portable Fassung setzt vorlagen.html zur Laufzeit aus css + dataUri
  * zusammen. Zwei CSS-Strings in den Daten wären zwei Wahrheiten.
  *
- * WARUM prozentkodiert und nicht Base64 — gemessen über alle sieben Dateien
- * (1715 Bytes roh):
- *     Base64 gesamt        2478 Zeichen
- *     prozentkodiert       2382 Zeichen   (96 weniger)
+ * WARUM prozentkodiert und nicht Base64 — nachgemessen am 03.08.2026 über die
+ * verbliebenen Musterdateien (873 Bytes roh):
+ *     Base64 gesamt        1246 Zeichen
+ *     prozentkodiert       1180 Zeichen   (66 weniger)
  * Nur bei den zwei kleinsten Dateien gewinnt Base64 knapp (dots 206 statt 219,
  * grid 246 statt 248); für diese 15 Zeichen zwei Kodierungen im Datensatz zu
- * mischen wäre der schlechtere Tausch. Dazu bleibt der prozentkodierte URI
+ * mischen wäre der schlechtere Tausch. Der Schreibmodus zeigt die Tabelle bei
+ * jedem Lauf, die Zahlen hier sind also nachprüfbar. Dazu bleibt der URI
  * lesbar — man sieht im Diff, welches SVG drinsteht.
  * Leerzeichen bleiben roh: in einem CSS-`url("…")` sind sie zulässig, und
  * %20 für jedes von ihnen kostete 358 Zeichen und läge damit über Base64.
@@ -50,7 +57,7 @@
  * Anführungszeichen tauschen, die Zeichen selbst stehen lassen.
  *
  * WAS --pruefen prüft (a und b gegen die Platte, nicht gegeneinander):
- *   (a) jeder Pfad in jedem dateien[] der 30 Assets existiert,
+ *   (a) jeder Pfad in jedem dateien[] aller Assets existiert,
  *   (b) jeder dataUri ist exakt der heutige Dateiinhalt — dekodiert Byte für
  *       Byte verglichen und zusätzlich als ganzer URI-String.
  *   (c) jede Ziffernfolge in beschreibung ist aus den eigenen Daten des
@@ -163,8 +170,10 @@ function belegbareZahlen(ref) {
   const zahlen = zahlenAus(ohneRauschen(JSON.stringify(ohneText)), ZIFFERN_DATEN);
   /* Array-Längen sind belegbare Zahlen: „7 Farben" ist beweisbar, wenn farben[]
      sieben Einträge hat. Die Liste wird erweitert, sobald ein Eintrag ein neues
-     zählbares Array bekommt — `gewichte` kam am 25.07.2026 bei iconset/phosphor
-     dazu. Ohne diese Zeile dürfte die Beschreibung die Zahl der Gewichte gar
+     zählbares Array bekommt — `gewichte` kam am 25.07.2026 für iconset/phosphor
+     dazu (der Eintrag ist am 03.08.2026 gestrichen, der Schlüssel bleibt hier
+     stehen: er kostet nichts und das nächste Set mit Gewichten braucht ihn
+     wieder). Ohne diese Zeile dürfte eine Beschreibung die Zahl der Gewichte gar
      nicht nennen, obwohl sie danebensteht und nachzählbar ist; die Aufnahme
      macht die Prüfung also nicht weicher, sondern erlaubt eine Aussage, die
      belegt IST. Wichtig ist nur, dass hier ausschließlich Arrays stehen, deren
@@ -262,8 +271,9 @@ if (NUR_PRUEFEN) {
      Aussage übrig, die keine Ziffer braucht: „die kleinste Kachel der Sammlung".
      Sie ist heute wahr und wird still falsch, sobald jemand ein kleineres Muster
      oder eine kleinere Schriftdatei ergänzt — also genau beim naheliegendsten
-     nächsten Schritt. Drei solche Sätze stehen im Bestand (ibm-plex-mono,
-     topo, diagonal).
+     nächsten Schritt. Der Bestand hatte davon drei Sätze (ibm-plex-mono, topo,
+     diagonal); nach der Kürzung vom 03.08.2026 ist topo der einzige geblieben,
+     und die Prüfung hat ihn nach dem Wegfall der anderen Kacheln erneut bestätigt.
      Gemessen wird die Größe, über die der Satz redet: bei Schriften die Summe
      ihrer Dateien auf der Platte, bei Mustern die Kachelkante aus
      background-size. Verglichen wird innerhalb der eigenen Gattung — eine

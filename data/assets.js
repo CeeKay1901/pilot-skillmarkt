@@ -3,20 +3,37 @@
    Klassisches Script (kein Modul), definiert globale Konstanten für
    bibliothek.html und die Startseiten-Zähler auf index.html.
 
+   KURATION (03.08.2026): Die Bibliothek ist von 30 auf 16 Einträge gekürzt
+   worden — Rückmeldung der Gruppe war „zu viel Auswahl für eine Entscheidung,
+   die man in zwei Minuten treffen will". Gestrichen sind die Dubletten jeder
+   Gattung: bei den Schriften manrope, plus-jakarta-sans, newsreader und
+   ibm-plex-mono, bei den Paletten monochrom, gedeckt-natur und akzent-duo, bei
+   den Mustern crosshatch, diagonal, plus, waves und grad-grid-fade, bei den
+   Icon-Sets heroicons und phosphor. Geblieben ist je Rolle genau eine Wahl,
+   und wo zwei nebeneinander stehen (space-grotesk/syne), sagen ihre
+   Beschreibungen, wann welche. Die zugehörigen Dateien unter assets/fonts/
+   und assets/patterns/ sind mitgelöscht.
+   KEINE Zahl in diesem Kopf, die aus den Arrays kommt: die Zählung liefert
+   ASSET_STATS zur Laufzeit — dieselbe Regel, die für die Seite gilt.
+
    Definierte Globals:
-     FONTS         — 9 frei nutzbare Webfonts (ausschließlich SIL Open Font
+     FONTS         — frei nutzbare Webfonts (ausschließlich SIL Open Font
                      License 1.1). Jeder Eintrag trägt fontFaceCss + lokale
                      woff2-Datei unter assets/fonts/. Lizenz sichtbar am Asset.
                      WICHTIG: KEINE Fontshare/ITF-Free-Font-Schriften (Satoshi,
                      Clash Display, General Sans, Cabinet Grotesk) — die ITF Free
                      Font License ist NICHT OFL und daher hier bewusst nicht drin.
-     ICONSETS      — 4 Icon-Bibliotheken (Lucide/ISC, Heroicons/MIT,
-                     Phosphor/MIT, Simple Icons/CC0). anzahl = reale Set-Größe.
-     LUCIDE_ICONS  — 48 durchsuchbare Lucide-Inline-SVGs (name + tags + svg);
-                     ehrlicher Ausschnitt aus den 1747 Lucide-Icons.
-     PALETTES      — 7 Farbpaletten. paare[].ratio/aa sind mit der echten
+     ICONSETS      — Icon-Bibliotheken (Lucide/ISC für die Oberfläche, Simple
+                     Icons/CC0 für Marken-Logos). anzahl = reale Set-Größe.
+     LUCIDE_ICONS  — durchsuchbare Lucide-Inline-SVGs (name + tags + svg);
+                     ehrlicher Ausschnitt aus dem vollen Lucide-Satz. Wie klein
+                     der Ausschnitt ist, rechnet vorlagen.html zur Laufzeit aus
+                     LUCIDE_ICONS.length und ICONSETS/lucide.anzahl und schreibt
+                     es auf die Karte — deshalb steht die Zahl hier nicht.
+     PALETTES      — Farbpaletten. paare[].ratio/aa sind mit der echten
                      WCAG-Relativluminanz-Formel berechnet (keine Fantasiewerte).
-     PATTERNS      — 10 Hintergründe (7 SVG-Muster + 3 CSS-Gradients).
+     PATTERNS      — Hintergründe: SVG-Muster (mit Datei) und CSS-Gradients
+                     (ohne Datei). Aufteilung zählt ASSET_STATS.
      BRAND         — realer pilot-CI-Spickzettel (Tokens aus shared/base.css)
                      plus die real vorliegenden Logo-SVGs (BRAND.logos). Kein
                      erfundenes offizielles Brand-Material.
@@ -47,15 +64,23 @@
    DAS GILT ERST RECHT FÜR stil, stimmung, wofuer UND logoHinweis: die sieht
    --pruefen überhaupt nicht an, weder als Ziffer noch als Wort. Am 25.07.2026
    sind dort zwei Zahlwörter aufgefallen und beseitigt worden — „sechs Gewichten"
-   bei iconset/phosphor (war zusätzlich sachlich falsch) und „Die beiden SVGs" in
-   BRAND.logoHinweis. Beide Stellen tragen jetzt einen Kommentar mit der
-   Begründung. Stehen geblieben sind Zahlwörter, die nichts nachzählen, was
-   driften kann: die Pangramme in beispieltext („Zwei flinke Boxer …", „… mehr
-   als drei ausgeschmückte") und „beide Rollen" bei font/manrope, wo die zwei
-   Rollen im selben Satz benannt sind. „Zwei kräftige Komplementär-Akzente" in
-   palette/akzent-duo bleibt ebenfalls: die zwei Akzente sind namentlich genannt
-   und stecken schon in der id — wer einen dritten aufnimmt, benennt die Palette
-   ohnehin um.
+   bei iconset/phosphor (dieser Eintrag ist inzwischen gestrichen) und „Die
+   beiden SVGs" in BRAND.logoHinweis, wo die Begründung als Kommentar daneben
+   steht. Stehen geblieben sind Zahlwörter, die nichts nachzählen, was driften
+   kann: die Pangramme in beispieltext („Zwei flinke Boxer …", „… mehr als drei
+   ausgeschmückte").
+
+   SEED-FELDER: seed { anzahl, rating } ist der redaktionelle Demo-Startwert
+   einer Schrift; ASSETS macht daraus rating { average, count }, und count ist
+   zugleich der Seed der Stimmen-Zahl (_upSeed in shared/base.js). votesRecent
+   daneben ist der Demo-Seed „Stimmen der letzten 90 Tage" und damit eine
+   TEILMENGE von seed.anzahl — gelesen nur von bestRated(), das seinen
+   Rotations-Pool aus „Top-n gesamt" VEREINIGT mit „Top-n zuletzt" bildet. Die
+   Reihenfolgen sind bewusst verschieden gestaffelt. Ehrlich dazugesagt: Weil
+   nur die Schriften einen Seed tragen, ist der Pool derzeit genauso groß wie
+   n — die Fläche auf der Startseite rotiert also noch nicht, sie kann es erst,
+   wenn mehr als n Assets echte Signale haben. Erfundene Seeds für Paletten,
+   Muster und Icon-Sets wären der falsche Weg dorthin.
 
    Alle Zahlen sind real zählbar aus diesen Arrays. Nichts erfunden.
    ============================================================ */
@@ -66,7 +91,7 @@ const FONTS = [
     name: "Inter",
     kategorie: "sans",
     stimmung: "Der ruhige pilot-Standard: eine neutrale, bildschirmoptimierte Grotesk, die in UI, Fließtext und Datentabellen gleichermaßen verlässlich trägt.",
-    beschreibung: "Variable Sans, die alle Gewichte aus derselben Datei holt: der Gewichtsbereich 100–900 deckt Buttons, Fließtext und Tabellen ab, ohne dass du getrennte Schnitte laden musst. Gedacht als Grundschrift eines Projekts; für Überschriften stellst du bei Bedarf Fraunces oder Newsreader daneben.",
+    beschreibung: "Variable Sans, die alle Gewichte aus derselben Datei holt: der Gewichtsbereich 100–900 deckt Buttons, Fließtext und Tabellen ab, ohne dass du getrennte Schnitte laden musst. Gedacht als Grundschrift eines Projekts; für Überschriften stellst du bei Bedarf Fraunces daneben.",
     file: "assets/fonts/inter-variable.woff2",
     fontFamily: "Inter",
     fontFaceCss: "@font-face {\n  font-family: 'Inter';\n  src: url('assets/fonts/inter-variable.woff2') format('woff2-variations');\n  font-weight: 100 900;\n  font-style: normal;\n  font-display: swap;\n}",
@@ -75,61 +100,20 @@ const FONTS = [
     lizenz: "SIL Open Font License 1.1",
     lizenzUrl: "https://github.com/rsms/inter/blob/master/LICENSE.txt",
     quelle: "Rasmus Andersson — https://github.com/rsms/inter",
-    pairing: "Als neutrale Basis mit Fraunces oder Newsreader für redaktionelle Überschriften kombinieren.",
+    pairing: "Als neutrale Basis mit Fraunces für redaktionelle oder Space Grotesk für technische Überschriften kombinieren.",
     claudePrompt: "Binde die Schrift Inter lokal ein: lege inter-variable.woff2 unter assets/fonts/ ab und ergänze diesen @font-face-Block (font-weight: 100 900, format woff2-variations). Setze anschließend font-family: 'Inter', system-ui, sans-serif als Grundschrift für UI und Fließtext. Kein CDN, kein Google-Fonts-Request.",
     beispieltext: "Zwei flinke Boxer jagen die quirlige Eva.",
     seed: { anzahl: 9, rating: 4.9 },
+    votesRecent: 2,
     tags: ["sans", "schrift", "variabel", "oberfläche", "fließtext"],
     dateien: ["assets/fonts/inter-variable.woff2"]
-  },
-  {
-    id: "manrope",
-    name: "Manrope",
-    kategorie: "sans",
-    stimmung: "Modern-geometrische Grotesk mit weichen Rundungen und leicht verspieltem Charakter — freundlich, aber sachlich für Marken- und Produktoberflächen.",
-    beschreibung: "Variable Sans mit Gewichten von 200 bis 800 — genug Spanne, um Überschrift und Fließtext aus derselben Familie zu setzen. Passt für Produkt- und Markenseiten, auf denen eine Schrift beide Rollen tragen soll.",
-    file: "assets/fonts/manrope-variable.woff2",
-    fontFamily: "Manrope",
-    fontFaceCss: "@font-face {\n  font-family: 'Manrope';\n  src: url('assets/fonts/manrope-variable.woff2') format('woff2-variations');\n  font-weight: 200 800;\n  font-style: normal;\n  font-display: swap;\n}",
-    variable: true,
-    gewichtBereich: "200–800",
-    lizenz: "SIL Open Font License 1.1",
-    lizenzUrl: "https://github.com/davelab6/manrope/blob/master/license.txt",
-    quelle: "Mikhail Sharanda — https://github.com/davelab6/manrope",
-    pairing: "Setzt kräftige Headlines gut in Szene; als Fließtext dazu Inter oder Newsreader.",
-    claudePrompt: "Binde die Schrift Manrope lokal ein: lege manrope-variable.woff2 unter assets/fonts/ ab und ergänze diesen @font-face-Block (font-weight: 200 800, format woff2-variations). Setze dann font-family: 'Manrope', sans-serif für Überschriften oder als Grundschrift. Lokal einbetten, kein CDN.",
-    beispieltext: "Vom Ziel bis zur Umsetzung in wenigen klaren Schritten.",
-    seed: { anzahl: 7, rating: 4.6 },
-    tags: ["sans", "schrift", "variabel", "marke", "überschrift"],
-    dateien: ["assets/fonts/manrope-variable.woff2"]
-  },
-  {
-    id: "plus-jakarta-sans",
-    name: "Plus Jakarta Sans",
-    kategorie: "sans",
-    stimmung: "Geometrische Sans mit eigenständigen Details und leicht technischer Anmutung — bringt Frische in Interfaces, ohne aufdringlich zu wirken.",
-    beschreibung: "Variable Sans für Oberflächen, Gewichte 200 bis 800 aus derselben Datei. Die Wahl, wenn ein Interface eigenständiger wirken soll als mit Inter; Codeblöcke stellst du laut Paarungs-Hinweis in IBM Plex Mono daneben.",
-    file: "assets/fonts/plus-jakarta-sans-variable.woff2",
-    fontFamily: "Plus Jakarta Sans",
-    fontFaceCss: "@font-face {\n  font-family: 'Plus Jakarta Sans';\n  src: url('assets/fonts/plus-jakarta-sans-variable.woff2') format('woff2-variations');\n  font-weight: 200 800;\n  font-style: normal;\n  font-display: swap;\n}",
-    variable: true,
-    gewichtBereich: "200–800",
-    lizenz: "SIL Open Font License 1.1",
-    lizenzUrl: "https://github.com/tokotype/PlusJakartaSans/blob/master/OFL.txt",
-    quelle: "Tokotype (Gumpita Rahayu) — https://github.com/tokotype/PlusJakartaSans",
-    pairing: "Als Interface-Schrift mit Space Grotesk für Akzente oder IBM Plex Mono für Codeblöcke.",
-    claudePrompt: "Binde die Schrift Plus Jakarta Sans lokal ein: lege plus-jakarta-sans-variable.woff2 unter assets/fonts/ ab und ergänze diesen @font-face-Block (font-weight: 200 800, format woff2-variations). Setze dann font-family: 'Plus Jakarta Sans', sans-serif. Lokal einbetten, kein Google-Fonts-Request.",
-    beispieltext: "Neue Werkzeuge, klar strukturiert und schnell verständlich.",
-    seed: { anzahl: 6, rating: 4.4 },
-    tags: ["sans", "schrift", "variabel", "oberfläche"],
-    dateien: ["assets/fonts/plus-jakarta-sans-variable.woff2"]
   },
   {
     id: "space-grotesk",
     name: "Space Grotesk",
     kategorie: "sans",
     stimmung: "Proportionale Variante der Space-Mono-Familie: kantig, technisch, mit Retro-Sci-Fi-Note — ideal für Headlines mit Haltung und Produkt-Branding.",
-    beschreibung: "Variable Sans mit Gewichten 300 bis 700, hier als Titelschrift vorgesehen: große Überschriften, Produktnamen, Badges. Den Fließtext darunter übernimmt eine ruhigere Grundschrift wie Inter.",
+    beschreibung: "Variable Sans mit Gewichten 300 bis 700, hier als Titelschrift vorgesehen: große Überschriften, Produktnamen, Badges. Von den beiden auffälligen Schriften hier ist sie die belastbarere — nimm sie, wenn eine ganze Seite viele Überschriften trägt. Den Fließtext darunter übernimmt eine ruhigere Grundschrift wie Inter.",
     file: "assets/fonts/space-grotesk-variable.woff2",
     fontFamily: "Space Grotesk",
     fontFaceCss: "@font-face {\n  font-family: 'Space Grotesk';\n  src: url('assets/fonts/space-grotesk-variable.woff2') format('woff2-variations');\n  font-weight: 300 700;\n  font-style: normal;\n  font-display: swap;\n}",
@@ -138,10 +122,11 @@ const FONTS = [
     lizenz: "SIL Open Font License 1.1",
     lizenzUrl: "https://github.com/floriankarsten/space-grotesk/blob/master/OFL.txt",
     quelle: "Florian Karsten — https://github.com/floriankarsten/space-grotesk",
-    pairing: "Als Display-Grotesk über ruhigem Inter-Fließtext; passt visuell zu Space Mono und IBM Plex Mono.",
+    pairing: "Als Display-Grotesk über ruhigem Inter-Fließtext; für den einen lauten Titel einer Seite steht Syne daneben.",
     claudePrompt: "Binde die Schrift Space Grotesk lokal ein: lege space-grotesk-variable.woff2 unter assets/fonts/ ab und ergänze diesen @font-face-Block (font-weight: 300 700, format woff2-variations). Setze dann font-family: 'Space Grotesk', sans-serif für Überschriften. Lokal einbetten, kein CDN.",
     beispieltext: "Systeme, die mitdenken statt nur zu reagieren.",
     seed: { anzahl: 8, rating: 4.5 },
+    votesRecent: 5,
     tags: ["sans", "schrift", "variabel", "überschrift", "technisch"],
     dateien: ["assets/fonts/space-grotesk-variable.woff2"]
   },
@@ -150,7 +135,7 @@ const FONTS = [
     name: "Fraunces",
     kategorie: "serif",
     stimmung: "Weiche Old-Style-Display-Serif mit Charakter und optischen Achsen — für ausdrucksstarke, redaktionelle Überschriften mit warmer, literarischer Note.",
-    beschreibung: "Variable Serif über den vollen Gewichtsbereich 100 bis 900, gedacht für Überschriften, Titel und Zitate. Der Einbau-Prompt setzt sie ausdrücklich nur für große Größen ein; für den Fließtext bleibt Inter oder Manrope.",
+    beschreibung: "Variable Serif über den vollen Gewichtsbereich 100 bis 900, gedacht für Überschriften, Titel und Zitate. Der Einbau-Prompt setzt sie ausdrücklich nur für große Größen ein; für den Fließtext bleibt Inter.",
     file: "assets/fonts/fraunces-variable.woff2",
     fontFamily: "Fraunces",
     fontFaceCss: "@font-face {\n  font-family: 'Fraunces';\n  src: url('assets/fonts/fraunces-variable.woff2') format('woff2-variations');\n  font-weight: 100 900;\n  font-style: normal;\n  font-display: swap;\n}",
@@ -159,40 +144,20 @@ const FONTS = [
     lizenz: "SIL Open Font License 1.1",
     lizenzUrl: "https://github.com/undercasetype/Fraunces/blob/master/OFL.txt",
     quelle: "Undercase Type (Phaedra Charles, Flavia Zimbardi) — https://github.com/undercasetype/Fraunces",
-    pairing: "Große Fraunces-Headlines über ruhigem Inter- oder Manrope-Fließtext ergeben einen editorialen Kontrast.",
+    pairing: "Große Fraunces-Headlines über ruhigem Inter-Fließtext ergeben einen editorialen Kontrast.",
     claudePrompt: "Binde die Schrift Fraunces lokal ein: lege fraunces-variable.woff2 unter assets/fonts/ ab und ergänze diesen @font-face-Block (font-weight: 100 900, format woff2-variations). Setze dann font-family: 'Fraunces', serif nur für große Überschriften. Lokal einbetten, kein CDN.",
     beispieltext: "Gute Gestaltung beginnt mit einer ruhigen Idee.",
     seed: { anzahl: 7, rating: 4.7 },
+    votesRecent: 3,
     tags: ["serif", "schrift", "variabel", "überschrift", "redaktionell"],
     dateien: ["assets/fonts/fraunces-variable.woff2"]
-  },
-  {
-    id: "newsreader",
-    name: "Newsreader",
-    kategorie: "serif",
-    stimmung: "Lese-Serif für lange Texte am Bildschirm: ausgewogen, unaufgeregt und mit journalistischer Ruhe — trägt Artikel und redaktionelle Fließtexte.",
-    beschreibung: "Variable Serif für lange Lesestrecken am Bildschirm, Gewichte 200 bis 800. Nimm sie für Artikel, Dokumentation und Erklärtexte und setz eine Grotesk wie Space Grotesk oder Manrope über die Überschriften.",
-    file: "assets/fonts/newsreader-variable.woff2",
-    fontFamily: "Newsreader",
-    fontFaceCss: "@font-face {\n  font-family: 'Newsreader';\n  src: url('assets/fonts/newsreader-variable.woff2') format('woff2-variations');\n  font-weight: 200 800;\n  font-style: normal;\n  font-display: swap;\n}",
-    variable: true,
-    gewichtBereich: "200–800",
-    lizenz: "SIL Open Font License 1.1",
-    lizenzUrl: "https://github.com/productiontype/Newsreader/blob/master/OFL.txt",
-    quelle: "Production Type — https://github.com/productiontype/Newsreader",
-    pairing: "Als Fließtext-Serif unter Grotesk-Headlines aus Space Grotesk oder Manrope.",
-    claudePrompt: "Binde die Schrift Newsreader lokal ein: lege newsreader-variable.woff2 unter assets/fonts/ ab und ergänze diesen @font-face-Block (font-weight: 200 800, format woff2-variations). Setze dann font-family: 'Newsreader', serif für Fließtext und Artikel. Lokal einbetten, kein Google-Fonts-Request.",
-    beispieltext: "Ein klarer Satz sagt oft mehr als drei ausgeschmückte.",
-    seed: { anzahl: 6, rating: 4.5 },
-    tags: ["serif", "schrift", "variabel", "fließtext", "artikel"],
-    dateien: ["assets/fonts/newsreader-variable.woff2"]
   },
   {
     id: "syne",
     name: "Syne",
     kategorie: "display",
     stimmung: "Experimentelle Display-Schrift aus dem Kunstkontext: eigenwillige Formen, starker Kontrast zwischen den Schnitten — für Plakate, Cover und markante Titel.",
-    beschreibung: "Variable Display-Schrift mit Gewichten 400 bis 800 für den kurzen Einsatz: Plakat, Cover, ein Titel pro Seite. Alles darunter gehört in eine andere Schrift, etwa Inter oder Newsreader.",
+    beschreibung: "Variable Display-Schrift mit Gewichten 400 bis 800 für den kurzen Einsatz: Plakat, Cover, ein Titel pro Seite. Sie ist die lautere der beiden auffälligen Schriften hier — sobald mehrere Überschriften nebeneinander stehen, ist Space Grotesk die richtige. Alles unterhalb des Titels gehört ohnehin in eine Grundschrift wie Inter.",
     file: "assets/fonts/syne-variable.woff2",
     fontFamily: "Syne",
     fontFaceCss: "@font-face {\n  font-family: 'Syne';\n  src: url('assets/fonts/syne-variable.woff2') format('woff2-variations');\n  font-weight: 400 800;\n  font-style: normal;\n  font-display: swap;\n}",
@@ -201,10 +166,11 @@ const FONTS = [
     lizenz: "SIL Open Font License 1.1",
     lizenzUrl: "https://gitlab.com/bonjour-monde/fonderie/syne-typeface/-/blob/master/OFL.txt",
     quelle: "Bonjour Monde (Lucas Descroix) — https://gitlab.com/bonjour-monde/fonderie/syne-typeface",
-    pairing: "Sparsam als Titelschrift einsetzen, darunter ruhiges Inter oder Newsreader für den Rest.",
+    pairing: "Sparsam als Titelschrift einsetzen, darunter ruhiges Inter für den Rest; wo mehrere Überschriften nebeneinander stehen, ist Space Grotesk die ruhigere Wahl.",
     claudePrompt: "Binde die Schrift Syne lokal ein: lege syne-variable.woff2 unter assets/fonts/ ab und ergänze diesen @font-face-Block (font-weight: 400 800, format woff2-variations). Setze dann font-family: 'Syne', sans-serif ausschließlich für große Titel und Plakat-Momente. Lokal einbetten, kein CDN.",
     beispieltext: "Ideen brauchen manchmal eine laute Stimme.",
     seed: { anzahl: 5, rating: 4.3 },
+    votesRecent: 4,
     tags: ["display", "schrift", "variabel", "plakat", "titel"],
     dateien: ["assets/fonts/syne-variable.woff2"]
   },
@@ -226,29 +192,9 @@ const FONTS = [
     claudePrompt: "Binde die Schrift JetBrains Mono lokal ein: lege jetbrains-mono-variable.woff2 unter assets/fonts/ ab und ergänze diesen @font-face-Block (font-weight: 100 800, format woff2-variations). Setze dann font-family: 'JetBrains Mono', monospace für Code, pre und Terminal. Lokal einbetten, kein CDN.",
     beispieltext: "const skill = laden('assets/fonts/jetbrains-mono.woff2');",
     seed: { anzahl: 9, rating: 4.8 },
+    votesRecent: 3,
     tags: ["mono", "schrift", "variabel", "code", "terminal"],
     dateien: ["assets/fonts/jetbrains-mono-variable.woff2"]
-  },
-  {
-    id: "ibm-plex-mono",
-    name: "IBM Plex Mono",
-    kategorie: "mono",
-    stimmung: "Monospace mit humanistischer Wärme und leicht technischer Signatur — eine ruhige Alternative für Code, Daten und Beschriftungen mit Charakter.",
-    beschreibung: "Monospace mit festem Gewicht 400 (nicht variabel): ein Bold aus derselben Datei gibt es nicht. Dafür ist ihre Datei die kleinste der Sammlung — gut für Code, Zahlenspalten und kurze Beschriftungen.",
-    file: "assets/fonts/ibm-plex-mono-400.woff2",
-    fontFamily: "IBM Plex Mono",
-    fontFaceCss: "@font-face {\n  font-family: 'IBM Plex Mono';\n  src: url('assets/fonts/ibm-plex-mono-400.woff2') format('woff2');\n  font-weight: 400;\n  font-style: normal;\n  font-display: swap;\n}",
-    variable: false,
-    gewichtBereich: "400",
-    lizenz: "SIL Open Font License 1.1",
-    lizenzUrl: "https://github.com/IBM/plex/blob/master/LICENSE.txt",
-    quelle: "IBM Corp. (Mike Abbink, Bold Monday) — https://github.com/IBM/plex",
-    pairing: "Als Mono-Alternative zu JetBrains Mono; passt zu Grotesk-Schriften wie Plus Jakarta Sans oder Space Grotesk.",
-    claudePrompt: "Binde die Schrift IBM Plex Mono lokal ein: lege ibm-plex-mono-400.woff2 unter assets/fonts/ ab und ergänze diesen @font-face-Block (font-weight: 400, format woff2). Setze dann font-family: 'IBM Plex Mono', monospace für Code und Beschriftungen. Lokal einbetten, kein CDN.",
-    beispieltext: "id: 04 // status: bereit // quelle: lokal",
-    seed: { anzahl: 6, rating: 4.4 },
-    tags: ["mono", "schrift", "code", "beschriftung"],
-    dateien: ["assets/fonts/ibm-plex-mono-400.woff2"]
   }
 ];
 
@@ -265,51 +211,6 @@ const ICONSETS = [
     "wofuer": "Erste Wahl für Oberflächen-Icons: Navigation, Buttons, Status, Meta — konsistent mit der bestehenden LU-Map.",
     "claudePrompt": "Bitte füge das Lucide-Icon \"calendar\" als Inline-SVG ein: viewBox 0 0 24 24, fill=none, stroke=currentColor, stroke-width=2, stroke-linecap/linejoin=round. Nutze den echten Pfad von lucide.dev.",
     "tags": ["icons", "iconset", "oberfläche", "strich"],
-    "dateien": []
-  },
-  {
-    "id": "heroicons",
-    "name": "Heroicons",
-    "anzahl": 324,
-    "stil": "Von den Tailwind-Machern: je Icon in Outline (1.5px) und Solid — etwas weicher und runder als Lucide.",
-    "beschreibung": "324 Icons unter MIT-Lizenz, jedes in einer Outline- und einer gefüllten Variante. Die Wahl, wenn du gefüllte Symbole brauchst; die Auswahl ist deutlich kleiner als bei Lucide oder Phosphor.",
-    "lizenz": "MIT",
-    "lizenzUrl": "https://github.com/tailwindlabs/heroicons/blob/master/LICENSE",
-    "quelleUrl": "https://heroicons.com/",
-    "wofuer": "Gute Alternative, wenn ein Solid-/Filled-Look gebraucht wird oder das Projekt ohnehin Tailwind-Ästhetik trägt.",
-    "claudePrompt": "Bitte gib mir das Heroicons-Icon \"bell\" in der Outline-Variante als Inline-SVG (viewBox 0 0 24 24, stroke=currentColor). Quelle: heroicons.com.",
-    "tags": ["icons", "iconset", "gefüllt", "outline"],
-    "dateien": []
-  },
-  {
-    "id": "phosphor",
-    "name": "Phosphor",
-    "anzahl": 1512,
-    /* Hier stand bis zum 25.07.2026 „in sechs Gewichten (Thin bis Fill) plus
-       Duotone". Das war doppelt falsch: ein ausgeschriebenes Zahlwort hält keine
-       Prüfung (--pruefen sieht nur beschreibung an, und dort nur Ziffern), und
-       die Aussage stimmte auch inhaltlich nicht — Duotone IST das sechste
-       Gewicht, keine Zugabe obendrauf. Der Satz zählte also sieben.
-       Nachgemessen am 25.07.2026 an zwei unabhängigen Stellen:
-         · README von github.com/phosphor-icons/homepage — „6 weights: Thin,
-           Light, Regular, Bold, Fill, and Duotone"
-         · Dateibaum von github.com/phosphor-icons/core — genau diese sechs
-           Ordner unter assets/, jeder mit 1512 SVGs. Das ist zugleich der Beleg
-           für anzahl oben.
-       Die Namen stehen jetzt als Liste in den Daten, statt gezählt im Fließtext.
-       Der Text nennt bewusst KEINE Zahl: eine Ziffer „6" dürfte erst dort stehen,
-       wenn tools/muster-datauri.mjs `gewichte` in seine Array-Längen-Liste
-       aufnimmt (belegbareZahlen, aktuell nur farben/paare/dateien) — sonst wäre
-       sie wieder eine Zahl, die niemand hält. */
-    "gewichte": ["Thin", "Light", "Regular", "Bold", "Fill", "Duotone"],
-    "stil": "Flexible Familie: dieselbe Form gibt es dünn, fett, gefüllt und zweifarbig — verspielter und ausdrucksstärker.",
-    "beschreibung": "1512 Icons unter MIT-Lizenz, jede Form in mehreren Gewichten von Thin bis Duotone. Sinnvoll, wenn ein Projekt eine eigene Handschrift bekommen soll: dieselbe Form lässt sich hier dünn oder fett setzen.",
-    "lizenz": "MIT",
-    "lizenzUrl": "https://github.com/phosphor-icons/homepage/blob/master/LICENSE",
-    "quelleUrl": "https://phosphoricons.com/",
-    "wofuer": "Wenn ein Projekt eine eigene Handschrift braucht — etwa Duotone-Akzente oder besonders dünne/fette Striche.",
-    "claudePrompt": "Bitte füge das Phosphor-Icon \"sparkle\" im Regular-Gewicht als Inline-SVG ein (viewBox 0 0 256 256, fill=currentColor). Quelle: phosphoricons.com.",
-    "tags": ["icons", "iconset", "strichstärken", "duotone"],
     "dateien": []
   },
   {
@@ -807,180 +708,6 @@ const PALETTES = [
     "lizenzUrl": null,
     "tags": ["palette", "farben", "kontrast", "barrierearm", "schwarzweiß"],
     "dateien": []
-  },
-  {
-    "id": "gedeckt-natur",
-    "name": "Gedeckt Natur",
-    "stimmung": "Erdige Grün- und Sandtöne — organisch, vertrauenswürdig, für Nachhaltigkeits- und Bildungsthemen.",
-    "beschreibung": "Gedeckte Grün-, Sand- und Lehmtöne für Themen, die nicht nach Software aussehen sollen. Alle Paare tragen AA außer Moos auf Sand (3,9) — das bleibt großen Größen vorbehalten.",
-    "farben": [
-      {
-        "hex": "#2f3a2e",
-        "name": "Waldgrün"
-      },
-      {
-        "hex": "#4f7a52",
-        "name": "Moos"
-      },
-      {
-        "hex": "#a3b18a",
-        "name": "Salbei"
-      },
-      {
-        "hex": "#e9e4d6",
-        "name": "Sand"
-      },
-      {
-        "hex": "#6b6455",
-        "name": "Lehm"
-      }
-    ],
-    "paare": [
-      {
-        "fg": "#2f3a2e",
-        "bg": "#e9e4d6",
-        "ratio": 9.36,
-        "aa": "ja"
-      },
-      {
-        "fg": "#4f7a52",
-        "bg": "#e9e4d6",
-        "ratio": 3.9,
-        "aa": "nur groß"
-      },
-      {
-        "fg": "#6b6455",
-        "bg": "#e9e4d6",
-        "ratio": 4.62,
-        "aa": "ja"
-      },
-      {
-        "fg": "#a3b18a",
-        "bg": "#2f3a2e",
-        "ratio": 5.22,
-        "aa": "ja"
-      }
-    ],
-    "lizenz": "Farbwerte sind nicht schutzfähig — frei nutzbar.",
-    "lizenzUrl": null,
-    "tags": ["palette", "farben", "grün", "natur", "erdtöne"],
-    "dateien": []
-  },
-  {
-    "id": "monochrom",
-    "name": "Monochrom",
-    "stimmung": "Reine Graustufen ohne Buntfarbe — zeitlos und zurückhaltend, lässt Inhalt und Typo sprechen.",
-    "beschreibung": "Graustufen ohne Buntton — brauchbar als Grundlage, in die du später genau eine Akzentfarbe setzt. Alle Paare auf Weiß tragen AA, Grau auf Hellgrau (3,2) nur in großer Schrift.",
-    "farben": [
-      {
-        "hex": "#171717",
-        "name": "Kohle"
-      },
-      {
-        "hex": "#404040",
-        "name": "Anthrazit"
-      },
-      {
-        "hex": "#737373",
-        "name": "Grau"
-      },
-      {
-        "hex": "#d4d4d4",
-        "name": "Hellgrau"
-      },
-      {
-        "hex": "#fafafa",
-        "name": "Weiß"
-      }
-    ],
-    "paare": [
-      {
-        "fg": "#171717",
-        "bg": "#fafafa",
-        "ratio": 17.18,
-        "aa": "ja"
-      },
-      {
-        "fg": "#404040",
-        "bg": "#fafafa",
-        "ratio": 9.93,
-        "aa": "ja"
-      },
-      {
-        "fg": "#737373",
-        "bg": "#fafafa",
-        "ratio": 4.54,
-        "aa": "ja"
-      },
-      {
-        "fg": "#737373",
-        "bg": "#d4d4d4",
-        "ratio": 3.2,
-        "aa": "nur groß"
-      }
-    ],
-    "lizenz": "Farbwerte sind nicht schutzfähig — frei nutzbar.",
-    "lizenzUrl": null,
-    "tags": ["palette", "farben", "grau", "neutral", "basis"],
-    "dateien": []
-  },
-  {
-    "id": "akzent-duo",
-    "name": "Akzent-Duo",
-    "stimmung": "Zwei kräftige Komplementär-Akzente — Violett und Limette — auf neutralem Grund für Kampagnen mit Zug.",
-    "beschreibung": "Dunkler Grundton, heller Untergrund und dazu kräftige Akzente in Violett und Limette — für Seiten, die klar unterscheidbare Signalfarben brauchen. Violett auf Lavendelweiß erreicht 6,48 und trägt damit auch im Fließtext.",
-    "farben": [
-      {
-        "hex": "#1e1b2e",
-        "name": "Tiefviolett"
-      },
-      {
-        "hex": "#6d28d9",
-        "name": "Violett"
-      },
-      {
-        "hex": "#bef264",
-        "name": "Limette"
-      },
-      {
-        "hex": "#f5f3ff",
-        "name": "Lavendelweiß"
-      },
-      {
-        "hex": "#7c7692",
-        "name": "Graulila"
-      }
-    ],
-    "paare": [
-      {
-        "fg": "#1e1b2e",
-        "bg": "#f5f3ff",
-        "ratio": 15.3,
-        "aa": "ja"
-      },
-      {
-        "fg": "#6d28d9",
-        "bg": "#f5f3ff",
-        "ratio": 6.48,
-        "aa": "ja"
-      },
-      {
-        "fg": "#1e1b2e",
-        "bg": "#bef264",
-        "ratio": 12.84,
-        "aa": "ja"
-      },
-      {
-        "fg": "#7c7692",
-        "bg": "#f5f3ff",
-        "ratio": 3.94,
-        "aa": "nur groß"
-      }
-    ],
-    "lizenz": "Farbwerte sind nicht schutzfähig — frei nutzbar.",
-    "lizenzUrl": null,
-    "tags": ["palette", "farben", "violett", "kampagne", "akzent"],
-    "dateien": []
   }
 ];
 
@@ -1025,58 +752,6 @@ const PATTERNS = [
     "dateien": ["assets/patterns/topo.svg"]
   },
   {
-    "id": "waves",
-    "name": "Wellen",
-    "typ": "pattern",
-    "datei": "assets/patterns/waves.svg",
-    "dataUri": "data:image/svg+xml;charset=utf-8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2248%22 height=%2216%22%3E%0A  %3Cpath d=%22M0 8c6-6 12-6 18 0s12 6 18 0 12-6 18 0%22 transform=%22translate(-6 0)%22 fill=%22none%22 stroke=%22%23808080%22 stroke-opacity=%22.25%22 stroke-width=%221.2%22/%3E%0A%3C/svg%3E%0A",
-    "css": "background-color: #f1f1ec; background-image: url('assets/patterns/waves.svg'); background-size: 48px 16px;",
-    "stimmung": "Sanfte Wellenlinien — verspielt und ruhig zugleich, gut für Fußzeilen.",
-    "beschreibung": "SVG-Kachel von 48×16 Pixeln mit einer Wellenlinie, die beim Kacheln nahtlos weiterläuft. Gedacht für schmale Bänder: Fußzeilen, Trennstreifen, Kartenköpfe.",
-    "lizenz": "design-assets (MIT-artig frei)",
-    "tags": ["muster", "svg", "wellen", "band", "fußzeile"],
-    "dateien": ["assets/patterns/waves.svg"]
-  },
-  {
-    "id": "crosshatch",
-    "name": "Schraffur",
-    "typ": "pattern",
-    "datei": "assets/patterns/crosshatch.svg",
-    "dataUri": "data:image/svg+xml;charset=utf-8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2216%22 height=%2216%22%3E%0A  %3Cpath d=%22M0 16 16 0M-4 4 4-4M12 20l8-8%22 stroke=%22%23808080%22 stroke-opacity=%22.15%22 stroke-width=%221%22/%3E%0A  %3Cpath d=%22M0 0l16 16M-4 12l8 8M12-4l8 8%22 stroke=%22%23808080%22 stroke-opacity=%22.15%22 stroke-width=%221%22/%3E%0A%3C/svg%3E%0A",
-    "css": "background-color: #f1f1ec; background-image: url('assets/patterns/crosshatch.svg'); background-size: 16px 16px;",
-    "stimmung": "Feine Kreuzschraffur — handzeichnerische Textur mit editorialem Charakter.",
-    "beschreibung": "SVG-Kachel von 16×16 Pixeln mit gekreuzten Diagonalen. Die Linien liegen bei 15 Prozent Deckkraft und damit schwächer als in allen anderen Mustern hier — brauchbar auch unter Fließtext.",
-    "lizenz": "design-assets (MIT-artig frei)",
-    "tags": ["muster", "svg", "schraffur", "textur", "fein"],
-    "dateien": ["assets/patterns/crosshatch.svg"]
-  },
-  {
-    "id": "diagonal",
-    "name": "Diagonalstreifen",
-    "typ": "pattern",
-    "datei": "assets/patterns/diagonal.svg",
-    "dataUri": "data:image/svg+xml;charset=utf-8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%2212%22%3E%0A  %3Cpath d=%22M-3 15 15-3M-3 3 3-3M9 15l6-6%22 stroke=%22%23808080%22 stroke-opacity=%22.22%22 stroke-width=%221%22/%3E%0A%3C/svg%3E%0A",
-    "css": "background-color: #f1f1ec; background-image: url('assets/patterns/diagonal.svg'); background-size: 12px 12px;",
-    "stimmung": "Enge Diagonalen — dynamische Bewegung für Badges und kleine Flächen.",
-    "beschreibung": "Mit 12×12 Pixeln die kleinste Kachel der Sammlung und dadurch die dichteste Streifung. Für kleine Flächen, die auffallen sollen: Badges, Balken, Hinweisstreifen.",
-    "lizenz": "design-assets (MIT-artig frei)",
-    "tags": ["muster", "svg", "streifen", "diagonal", "badge"],
-    "dateien": ["assets/patterns/diagonal.svg"]
-  },
-  {
-    "id": "plus",
-    "name": "Pluszeichen",
-    "typ": "pattern",
-    "datei": "assets/patterns/plus.svg",
-    "dataUri": "data:image/svg+xml;charset=utf-8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2232%22 height=%2232%22%3E%0A  %3Cpath d=%22M14 16h4M16 14v4%22 stroke=%22%23808080%22 stroke-opacity=%22.35%22 stroke-width=%221.2%22 stroke-linecap=%22round%22/%3E%0A%3C/svg%3E%0A",
-    "css": "background-color: #f1f1ec; background-image: url('assets/patterns/plus.svg'); background-size: 32px 32px;",
-    "stimmung": "Verstreute Plus-Marker — luftiges Raster mit technischem Augenzwinkern.",
-    "beschreibung": "SVG-Kachel von 32×32 Pixeln mit einem Pluszeichen in der Mitte; gekachelt ergibt das ein weit gestelltes Kreuzraster. Für großzügige Abschnitte, die nur eine Andeutung von Struktur brauchen.",
-    "lizenz": "design-assets (MIT-artig frei)",
-    "tags": ["muster", "svg", "plus", "raster", "luftig"],
-    "dateien": ["assets/patterns/plus.svg"]
-  },
-  {
     "id": "grad-pilot-glow",
     "name": "pilot Gelb-Glow",
     "typ": "gradient",
@@ -1086,18 +761,6 @@ const PATTERNS = [
     "beschreibung": "Reines CSS ohne Bilddatei: radiale Verläufe in Signal- und Acid-Gelb über der Papierfarbe der pilot-Palette. Für Kopfbereiche, die zur Hausfarbe passen sollen; angepasst wird über die rgba-Werte.",
     "lizenz": "design-assets (MIT-artig frei)",
     "tags": ["verlauf", "css", "gelb", "kopfbereich", "pilot"],
-    "dateien": []
-  },
-  {
-    "id": "grad-grid-fade",
-    "name": "Raster mit Fade",
-    "typ": "gradient",
-    "datei": null,
-    "css": "background-image: linear-gradient(rgb(128 128 128 / .12) 1px, transparent 1px), linear-gradient(90deg, rgb(128 128 128 / .12) 1px, transparent 1px); background-size: 40px 40px; mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, #000 40%, transparent 100%);",
-    "stimmung": "Feines Gitter, das zum Rand ausblendet — Tech-Look ohne harte Kanten.",
-    "beschreibung": "Reines CSS: Lineare Verläufe bilden ein 40-Pixel-Raster, eine mask-image blendet es zum Rand hin aus. Kommt ohne Datei aus, setzt dafür Browser-Unterstützung für mask-image voraus.",
-    "lizenz": "design-assets (MIT-artig frei)",
-    "tags": ["verlauf", "css", "raster", "maske"],
     "dateien": []
   },
   {
@@ -1198,11 +861,19 @@ const BRAND = {
    Ein Asset = ein Eintrag mit stabiler id + typ. Fonts bringen ihr
    redaktionelles Seed-Rating aus dem Datensatz mit (seed → {average,count});
    Paletten/Muster/Icon-Sets starten ehrlich ohne Seed (rating: null) und
-   sind trotzdem bewertbar. IDs sind über alle Typen hinweg eindeutig. */
+   sind trotzdem bewertbar. IDs sind über alle Typen hinweg eindeutig.
+
+   votesRecent WIRD MITGEREICHT, nicht neu gebildet: bestRated() (shared/base.js)
+   liest das Feld am ITEM, und das Item ist hier dieser Index-Eintrag — nicht der
+   Font. Ohne diese Zeile stünde der Seed in FONTS und wäre für die Startseite
+   trotzdem unsichtbar. Paletten, Muster und Icon-Sets bekommen bewusst KEINEN:
+   sie haben auch keinen Gesamt-Seed (rating: null), und eine „zuletzt"-Zahl
+   ohne Gesamtzahl wäre eine erfundene Bewegung auf einem leeren Konto. */
 const ASSETS = [
   ...FONTS.map(f => ({
     id: f.id, typ: 'font', name: f.name, kategorie: f.kategorie,
     rating: f.seed ? { average: f.seed.rating, count: f.seed.anzahl } : null,
+    votesRecent: f.votesRecent,
     ref: f
   })),
   ...PALETTES.map(p => ({ id: p.id, typ: 'palette', name: p.name, rating: null, ref: p })),
@@ -1210,7 +881,7 @@ const ASSETS = [
   ...ICONSETS.map(s => ({ id: s.id, typ: 'iconset', name: s.name, rating: null, ref: s }))
 ];
 
-/* ===== EINE GEMEINSAME FORM FÜR ALLE 30 ASSETS =====
+/* ===== EINE GEMEINSAME FORM FÜR ALLE ASSETS =====
    assetModel(a) nimmt einen Eintrag aus ASSETS und liefert für jeden Typ
    dieselben Schlüssel:
      { id, typ, name, kategorie, beschreibung, lizenz, lizenzUrl,

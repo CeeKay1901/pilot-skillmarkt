@@ -21,7 +21,7 @@ Die Seite richtet sich an Kolleg:innen **ohne Software-Hintergrund**, die von La
 
 Über allem liegt eine **globale Suche** (Strg/Cmd + K) über alle Ressourcentypen hinweg.
 
-**Bestand, Stand 25.07.2026:** 35 sichtbare Skills (dazu 4 Plugins, 3 Frameworks) · 23 Prompts · 30 Assets · 12 Bausteine · 8 Beispieldaten · 3 Projektanweisungen · 10 Projekte (4 davon echte Team-Tools) · 3 Startprojekte zum Weiterbauen · 28 Lern-Ressourcen · 28 Befehle · 49 Glossar-Begriffe · 10 FAQ. Die Seite rechnet diese Zahlen live aus den Daten aus — die Angabe hier ist eine Momentaufnahme.
+**Bestand, Stand 03.08.2026:** 32 sichtbare Skills (dazu 3 Plugins, 1 Framework) · 17 Prompts · 16 Assets · 7 Bilder · 8 Bausteine · 6 Beispieldaten · 3 Projektanweisungen · 7 Projekte (4 davon echte Team-Tools) · 3 Startprojekte zum Weiterbauen · 19 Lern-Ressourcen · 28 Befehle · 64 Glossar-Begriffe · 10 FAQ. Die Seite rechnet diese Zahlen live aus den Daten aus — die Angabe hier ist eine Momentaufnahme.
 
 ---
 

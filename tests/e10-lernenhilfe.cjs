@@ -85,11 +85,16 @@ async function run() {
         && sub.counts.r > 0 && sub.counts.b > 0 && sub.counts.g > 0 && sub.counts.f > 0
         && sub.navHilfeActive,
       sub);
-    // Reale Sub-Nav-Zähler = Array-Längen der Daten (RESSOURCEN/BEFEHLE/GLOSSAR/FAQ).
-    // Regressions-Wache gegen still verlorene Einträge oder zerbrochene Zähl-Logik.
+    /* Reale Sub-Nav-Zähler = Array-Längen der Daten (RESSOURCEN/BEFEHLE/GLOSSAR/FAQ).
+       Regressions-Wache gegen still verlorene Einträge oder zerbrochene Zähl-Logik.
+       NACHGEZOGEN (2026-08-03): zwei Sollwerte haben sich gegenläufig verschoben.
+         r 28 → 19: zehn Ressourcen wurden in der Kurations-Runde gestrichen,
+                    doku-claude-code kam neu dazu (28 − 10 + 1 = 19).
+         g 49 → 64: das Glossar hat 15 neue Begriffe bekommen (49 + 15 = 64).
+       b (28 Befehle) und f (10 FAQ) sind unverändert. */
     check('03b_sub_nav_sollwerte',
-      sub.counts.r === 28 && sub.counts.b === 28 && sub.counts.g === 49 && sub.counts.f === 10,
-      { got: sub.counts, want: { r: 28, b: 28, g: 49, f: 10 } });
+      sub.counts.r === 19 && sub.counts.b === 28 && sub.counts.g === 64 && sub.counts.f === 10,
+      { got: sub.counts, want: { r: 19, b: 28, g: 64, f: 10 } });
     // Sub-Nav-Zähler müssen mit den tatsächlich gerenderten Karten übereinstimmen (kein Hardcode-Drift).
     const rendered = await page.evaluate(() => ({
       r: document.querySelectorAll('#ressourcen .res-card').length,
@@ -145,11 +150,26 @@ async function run() {
     await page.waitForSelector('#ressourcen', { timeout: 8000 }).catch(() => {});
     const votes = await page.evaluate(() => {
       const out = {};
-      // je einen Vote-Button pro Sektion klicken
-      const clickFirst = sel => { const b = document.querySelector(sel); if (b) { b.click(); return true; } return false; };
-      out.ressource = clickFirst('#ressourcen button[onclick^="voteRessource"]');
-      out.befehl = clickFirst('#befehle button[onclick^="voteBefehl"]');
-      out.begriff = clickFirst('#glossar button[onclick^="voteBegriff"]');
+      /* Je einen Vote-Knopf pro Sektion klicken.
+         NACHGEZOGEN (2026-08-03): Die Ressourcen-Sektion benutzt seit dem
+         Upvote-Umbau den GEMEINSAMEN Knopf aus base.js
+         (.up-btn[data-up-typ="ressource"], onclick=toggleUpvote). Befehle und
+         Glossar hängen noch an ihren seiten-eigenen Fassungen
+         (voteBefehl/voteBegriff). Der Selektor probiert deshalb erst die
+         gemeinsame Form und fällt dann auf die seiten-eigene zurück — so
+         bleibt der Check über die laufende Migration hinweg gültig, statt bei
+         jedem einzelnen Umbauschritt neu angefasst werden zu müssen.
+         Am Prüf-GEDANKEN ändert das nichts: entscheidend ist unten, dass DREI
+         getrennt typisierte vote:-Schlüssel nebeneinander entstehen. */
+      const clickVote = (sec, typ, legacy) => {
+        const b = document.querySelector(`${sec} .up-btn[data-up-typ="${typ}"]`)
+          || document.querySelector(`${sec} button[onclick^="${legacy}"]`);
+        if (b) { b.click(); return true; }
+        return false;
+      };
+      out.ressource = clickVote('#ressourcen', 'ressource', 'voteRessource');
+      out.befehl = clickVote('#befehle', 'befehl', 'voteBefehl');
+      out.begriff = clickVote('#glossar', 'begriff', 'voteBegriff');
       // typisierte Keys nachweisen
       const keys = [];
       for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k && k.indexOf('vote:') === 0) keys.push(k); }

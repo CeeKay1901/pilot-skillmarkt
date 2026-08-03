@@ -44,7 +44,12 @@ node tools/verify-mirror.mjs
 Das Skript öffnet die Live-Seite in einem echten Browser, liest für **jede**
 Datei den angezeigten Inhalt aus und vergleicht ihn Zeichen für Zeichen mit dem
 Repo-Rohinhalt (`raw.githubusercontent.com/.../main/skills/…`) — inklusive Pfad
-und GitHub-Link. Erwartetes Ergebnis: **68/68 Dateien identisch, 0 Abweichungen.**
+und GitHub-Link. Erwartetes Ergebnis: **jede in `skills/manifest.json` gelistete
+Datei identisch, 0 Abweichungen.**
+
+> Hier stand einmal „68/68 Dateien". Die Zahl ist mit der Kuration (E16) falsch
+> geworden und war ohnehin nicht zu halten: Sie hängt am Bestand, nicht an der
+> Aussage. Der Sollwert steht im Manifest — dort und nirgends sonst.
 
 Manueller Gegencheck: Skill öffnen → „Auf GitHub ansehen" klicken → die dort
 gezeigte Datei ist exakt die im Viewer.

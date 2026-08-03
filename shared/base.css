@@ -26,6 +26,99 @@
       font-display: swap;
     }
 
+    /* ===== CENTRA — die echte pilot-Hausschrift (lokal, NICHT im Repo) =====
+       Rollenverteilung wörtlich aus dem pilot Design System v2
+       (web/pilot-tokens.css: --font-display / --font-body, foundations.md §Typography):
+         Centra No2 (Book/Medium)  → Display, Headlines, CTA-Labels; Titel laufen
+                                     dort „mostly at 500 Medium".
+         Centra No1 (Book/Bold)    → Fließtext, Lead-Absätze, Zitate.
+       Das ist genau ANDERSHERUM, als es der Name vermuten lässt — nicht umdrehen.
+
+       LIZENZ: Centra ist kommerziell lizenziert. Die Dateien liegen unter
+       assets/fonts/centra/ und stehen in .gitignore; dieses Repo ist public.
+       Auf GitHub Pages laufen die sechs src:-Zeilen deshalb ins Leere (404).
+       Das ist der geplante Zustand: font-display:swap lässt die Familie
+       ausfallen, die Seite rendert in Inter weiter und sieht aus wie vorher.
+       Die Playwright-Suiten stolpern nicht darüber — alle elf filtern
+       „Failed to load resource" über isBlockedResourceError() heraus.
+
+       GEWICHTS-MAPPING (die Falle in diesem Repo): Die Typo-Skala ist auf die
+       VARIABLE Inter geschnitten und benutzt die Zwischenstufen 450 (--fw-reg)
+       und 640 (--fw-semi). Centra ist statisch. Stünde hier nur
+       `font-weight: 400` / `500`, würde eine 700er-Headline nach CSS-Font-
+       Matching auf den nächstliegenden Schnitt fallen — und das ist bei No2 die
+       Medium. Damit KEIN Gewicht versehentlich zu dünn landet, deckt jeder
+       Schnitt einen BEREICH ab, der die Skala vollständig aufteilt:
+         No1: 100–500 → Book   ·  501–900 → Bold    (450 → Book, 640/700 → Bold)
+         No2: 100–400 → Book   ·  401–900 → Medium  (640/700 → Medium = schwerster
+                                                     Schnitt, den No2 überhaupt hat)
+       Die Skala selbst bleibt unangetastet (450/640), damit der Inter-Fallback
+       ohne die Dateien Pixel für Pixel derselbe ist wie vor dieser Änderung. */
+    @font-face {
+      font-family: 'Centra No1';
+      src: url('../assets/fonts/centra/CentraNo1-Book.woff2') format('woff2'),
+           url('../assets/fonts/centra/CentraNo1-Book.woff') format('woff');
+      font-weight: 100 500;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'Centra No1';
+      src: url('../assets/fonts/centra/CentraNo1-BookItalic.woff2') format('woff2'),
+           url('../assets/fonts/centra/CentraNo1-BookItalic.woff') format('woff');
+      font-weight: 100 500;
+      font-style: italic;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'Centra No1';
+      src: url('../assets/fonts/centra/CentraNo1-Bold.woff2') format('woff2'),
+           url('../assets/fonts/centra/CentraNo1-Bold.woff') format('woff');
+      font-weight: 501 900;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'Centra No1';
+      src: url('../assets/fonts/centra/CentraNo1-BoldItalic.woff2') format('woff2'),
+           url('../assets/fonts/centra/CentraNo1-BoldItalic.woff') format('woff');
+      font-weight: 501 900;
+      font-style: italic;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'Centra No2';
+      src: url('../assets/fonts/centra/CentraNo2-Book.woff2') format('woff2'),
+           url('../assets/fonts/centra/CentraNo2-Book.woff') format('woff');
+      font-weight: 100 400;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'Centra No2';
+      src: url('../assets/fonts/centra/CentraNo2-BookItalic.woff2') format('woff2'),
+           url('../assets/fonts/centra/CentraNo2-BookItalic.woff') format('woff');
+      font-weight: 100 400;
+      font-style: italic;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'Centra No2';
+      src: url('../assets/fonts/centra/CentraNo2-Medium.woff2') format('woff2'),
+           url('../assets/fonts/centra/CentraNo2-Medium.woff') format('woff');
+      font-weight: 401 900;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'Centra No2';
+      src: url('../assets/fonts/centra/CentraNo2-MediumItalic.woff2') format('woff2'),
+           url('../assets/fonts/centra/CentraNo2-MediumItalic.woff') format('woff');
+      font-weight: 401 900;
+      font-style: italic;
+      font-display: swap;
+    }
+
     /* ===== DESIGN TOKENS (konsolidiert, E1) ===== */
     :root {
       /* Kernfarben (pilot-CI, unverändert) */
@@ -68,7 +161,10 @@
          null visuelle Änderung), der Alias ist ersatzlos entfernt. Es gibt für
          diesen Ton nur noch EINEN Namen. */
       --c-gray-l: #bab8ab;
-      --c-star-empty: #86847a;  /* leerer KLICK-Stern: 3,20:1 (WCAG 1.4.11) */
+      --c-star-empty: #86847a;  /* ungemerktes Lesezeichen: 3,20:1 (WCAG 1.4.11).
+                                   Der Name stammt vom leeren KLICK-Stern der
+                                   Sterne-Engine (entfallen); der Ton wird von
+                                   .fav-btn.-lu unverändert weiterbenutzt. */
       --c-gray-m: #66655d;      /* WCAG AA: 5,86:1 auf Weiß · 4,99:1 im schlechtesten Fall */
       --c-ink-strong: #444;     /* Fließtext dunkel (long-desc, Info-Modal) */
       --c-ink-body: #555;       /* Karten-/Zitattext */
@@ -114,8 +210,15 @@
          das ganze Projekt inkl. demo/ und tools/ ergibt 0 Treffer für
          var(--radius-pill). Die Skala ist damit lückenlos --r-xs…--r-pill. */
 
-      /* Typo: Inter variable, Nuancen 450/640 + clamp()-Skala (10px-Basis) */
-      --font-sans: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+      /* Typo: Centra (Hausschrift) mit Inter als vollwertigem Ersatz, Nuancen
+         450/640 + clamp()-Skala (10px-Basis). Die Reihenfolge in der Liste ist
+         die ganze Fallback-Mechanik: liegt assets/fonts/centra/ nicht auf dem
+         Server (public Repo, siehe .gitignore), greift Inter — und die Seite
+         sieht aus wie vor der Centra-Einbindung.
+         --font-sans = Fließtext (Centra No1), --font-head = Headlines
+         (Centra No2). Zur Rollenverteilung siehe den @font-face-Block oben. */
+      --font-sans: 'Centra No1', 'Inter', 'Helvetica Neue', Arial, sans-serif;
+      --font-head: 'Centra No2', 'Inter', 'Helvetica Neue', Arial, sans-serif;
       --font-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
       --fw-reg: 450;
       --fw-semi: 640;
@@ -146,6 +249,9 @@
 
     ::selection { background: var(--c-yellow); color: var(--c-black); }
 
+    /* Headlines auf die Display-Schrift. Ohne Centra-Dateien lösen --font-head
+       und --font-sans beide auf Inter auf — die Regel ist dann wirkungslos. */
+    h1, h2, h3, .display { font-family: var(--font-head); }
     h1, h2, h3 { text-wrap: balance; }
 
     html { font-size: 10px; scroll-behavior: smooth; }
@@ -293,7 +399,8 @@
     .chip .chip-count { font-size: 1.15rem; opacity: .6; font-variant-numeric: tabular-nums; }
     .chip:focus-visible { outline: 2px solid var(--c-black); outline-offset: 2px; }
 
-    /* ===== EMPTY-NOTE (E11: EIN Empty-State — nicht ".empty": kollidiert mit .star.empty) ===== */
+    /* ===== EMPTY-NOTE (E11: EIN Empty-State — nicht ".empty": das kollidierte
+       damals mit .star.empty aus der inzwischen entfallenen Sterne-Anzeige) ===== */
     .empty-note {
       padding: 4.4rem 2.4rem; text-align: center;
       border: 1px dashed var(--line-strong); border-radius: var(--r-lg);
@@ -416,21 +523,7 @@
       display: flex; align-items: center; justify-content: space-between;
       margin-top: auto; gap: 1rem;
     }
-    .stars-display { display: flex; align-items: center; gap: .4rem; }
-    .star { font-size: 1.4rem; }
-    .star.filled { color: var(--c-yellow); }
-    .star.empty { color: var(--c-gray-l); }
-    /* Halbstern: gefüllte Hälfte über dem leeren Stern */
-    .star.half { position: relative; color: var(--c-gray-l); }
-    .star.half::before { content: '★'; position: absolute; left: 0; top: 0; width: 50%; overflow: hidden; color: var(--c-yellow); }
     .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
-    /* UX5-Fix (WCAG AA): informative Rating-Meta-Zahlen (Ø + Anzahl) müssen lesbar sein.
-       Vorher --c-ink-faded (#8d8b80): nur 3.02–3.34:1 auf hellen Karten (< AA 4.5:1).
-       Jetzt --c-gray-m (#66655d): 5.71:1 auf --c-white, 5.65:1 auf --paper, 5.17:1 auf --c-bg,
-       4.86:1 auf --paper-deep — überall ≥4.5:1. (Das frühere Beispiel „.chat-meta“
-       für ein dekoratives Label war falsch eingeordnet — „Du“/„KI-Antwort“ ist
-       informativer Text und steht jetzt ebenfalls auf --c-gray-m.) */
-    .rating-text { font-size: 1.3rem; color: var(--c-gray-m); }
     .avatar {
       width: 2.8rem; height: 2.8rem;
       background: var(--c-yellow); color: var(--c-black);
@@ -640,22 +733,43 @@
     .modal-meta-sep { color: var(--c-gray-l); }
     /* Kein verwaister Trennpunkt am Zeilenende, wenn ein Template nach dem letzten Element noch einen Separator rendert */
     .modal-meta .modal-meta-sep:last-child { display: none; }
+    /* ===== MODAL-REITER =====
+       Aus der Nutzer-Feedbackrunde: „grau in grau, unübersichtlich". Der Befund
+       stimmte. Vorher unterschieden sich aktiv und inaktiv fast nur durch eine
+       3px-Unterkante und den Sprung 500 → 700; die Schriftfarbe wechselte
+       zwischen --c-gray-m (#66655d) und --c-black — zwei Töne derselben Achse,
+       auf einer hellen Fläche mit vielen weiteren grauen Elementen daneben.
+       Jetzt trägt der aktive Reiter die pilot-Pille: schwarze Fläche, weiße
+       Schrift. Nachgerechnet gegen die Modal-Fläche (--c-white #fcfcfc, .modal):
+       aktiv #fcfcfc auf #262626 = 14,75:1 · inaktiv --c-ink-strong (#444) =
+       9,49:1, vorher --c-gray-m (#66655d) = 5,71:1. Hover auf --c-black-soft
+       hält 10,59:1. Alles weit über AA (4,5:1).
+
+       KEINE LAYOUT-SPRÜNGE: aktiv und inaktiv haben identische Kastenmaße —
+       gleiches Padding, gleiche 1px-Rahmenbreite (inaktiv transparent) und
+       gleiches Schriftgewicht. Der frühere 500→700-Sprung machte den aktiven
+       Reiter breiter und schob die Leiste bei jedem Wechsel; das ist weg.
+       min-height 4.4rem hält die Trefffläche auf allen Zeigergeräten (WCAG
+       2.5.8), auch im schmaleren Mobil-Block weiter unten.
+       Der Fokus-Ring bleibt der globale (:focus-visible, schwarz, 2px Abstand)
+       — er sitzt AUSSERHALB der Pille auf heller Fläche und bleibt darum auch
+       auf dem aktiven, schwarzen Reiter sichtbar. */
     .modal-tabs {
-      display: flex; padding: 0 2.4rem;
+      display: flex; gap: .6rem; padding: 1rem 2.4rem;
       border-bottom: 1px solid var(--c-gray-l);
       overflow-x: auto;
     }
     .tab-btn {
-      padding: 1.4rem 2rem;
-      font-size: 1.5rem; font-weight: 500;
-      background: none; border: none; border-bottom: 3px solid transparent;
-      cursor: pointer; transition: var(--trans); color: var(--c-gray-m);
-      margin-bottom: -1px; white-space: nowrap; font-family: inherit;
+      display: inline-flex; align-items: center; justify-content: center;
+      min-height: 4.4rem; padding: .8rem 1.8rem;
+      font-size: 1.5rem; font-weight: var(--fw-semi);
+      background: transparent; border: 1px solid transparent; border-radius: var(--r-pill);
+      cursor: pointer; transition: var(--trans); color: var(--c-ink-strong);
+      white-space: nowrap; font-family: inherit;
     }
-    .tab-btn:hover { color: var(--c-black); }
-    /* EINE Tab-Sprache mit den Seiten (Skills-Subnav, Vorlagen-Tabs, Lernen-&-Hilfe-
-       Sub-Nav): aktiver Tab = gelbe Underline + 700, nicht mehr Schwarz. */
-    .tab-btn.active { color: var(--c-black); border-bottom-color: var(--c-yellow); font-weight: 700; }
+    .tab-btn:hover { color: var(--c-black); border-color: var(--line-strong); background: var(--paper-warm); }
+    .tab-btn.active { color: var(--c-white); background: var(--c-black); border-color: var(--c-black); }
+    .tab-btn.active:hover { color: var(--c-white); background: var(--c-black-soft); border-color: var(--c-black-soft); }
     .modal-body { padding: 3rem 2.4rem; }
 
     /* ===== CTAs ===== */
@@ -676,27 +790,6 @@
     .c-cta.-yellow-border { background: transparent; border-color: var(--c-yellow); color: var(--c-yellow); }
     .c-cta.-yellow-border:hover { background: var(--c-yellow); color: var(--c-black); }
     .c-cta:disabled { opacity: .5; cursor: not-allowed; }
-
-    /* ===== STAR RATING INPUT ===== */
-    .star-input { display: flex; gap: .4rem; margin: 1rem 0; }
-    /* WCAG 1.4.11 (Nicht-Text-Kontrast, 3:1): Die Sterne im Bewertungsformular
-       sind ein BEDIENELEMENT — man muss sehen, wohin man klickt. Mit
-       --c-gray-l (#bab8ab) lagen sie bei 1,76:1 und verschwanden auf der hellen
-       Fläche fast. --c-star-empty (#86847a) hält 3,20:1 auf allen Papierflächen
-       und trennt gleichzeitig den leeren vom gelben Stern deutlicher (1,53 → 2,8).
-       Die reinen ANZEIGE-Sterne (.star.empty) bleiben bewusst heller: sie sind
-       Teil einer role="img"-Grafik, deren aria-label den Wert im Klartext nennt
-       ("4.8 von 5 Sternen"), und eine Abdunklung würde den Karten-Look aller
-       Seiten verschieben, ohne Information hinzuzufügen. */
-    .star-input .star-btn {
-      font-size: 2.8rem; background: none; border: none; cursor: pointer;
-      color: var(--c-star-empty); transition: color .15s ease; line-height: 1;
-      /* Trefffläche ≥44px je Stern */
-      padding: .8rem .8rem; margin: -.8rem -.35rem;
-    }
-    .star-input .star-btn.filled { color: var(--c-yellow); }
-    .star-input:hover .star-btn { color: var(--c-star-empty); }
-    .star-input .star-btn:hover { color: var(--c-yellow); }
 
     /* ===== COMMENT FORM ===== */
     .comment-form { margin-bottom: 3rem; padding: 2.4rem; background: var(--c-bg); border-radius: 1rem; }
@@ -727,7 +820,6 @@
     .comment-author { font-size: 1.6rem; font-weight: 700; margin-bottom: .2rem; }
     .comment-role-date { font-size: 1.3rem; color: var(--c-gray-m); margin-bottom: .8rem; }
     .comment-text { font-size: 1.5rem; line-height: 1.6; }
-    .comment-stars { margin-bottom: .4rem; }
     .no-comments { font-size: 1.5rem; color: var(--c-gray-m); font-style: italic; padding: 2rem 0; }
 
     /* ===== TOAST ===== */
@@ -946,7 +1038,7 @@
        Kopfzeile bekannt ist, nicht in das gemeinsame Primitive. */
     .fav-btn {
       background: none; border: none; cursor: pointer; line-height: 1;
-      font-size: 2rem; color: var(--c-gray-l); transition: var(--trans); flex-shrink: 0;
+      font-size: 2rem; transition: var(--trans); flex-shrink: 0;
       padding: 1.2rem;
       /* Trefffläche ≥44px (WCAG 2.5.8) als HARTE UNTERGRENZE, nicht als Rechnung.
          Vorher ergab sie sich nur aus font-size (2rem) + padding (2×1.2rem) = 44px
@@ -962,8 +1054,34 @@
     /* Katalog-Variante: gleicht das Padding gegen den Kartenkopf aus, damit der
        Stern nicht aus der Zeile schiebt. Nur dort, wo die Kopfzeile das braucht. */
     .card-top .fav-btn { margin: -1.6rem -1.6rem -1.2rem -1.2rem; }
-    .fav-btn:hover { color: var(--c-yellow); transform: scale(1.15); }
-    .fav-btn.active { color: var(--c-yellow); }
+    .fav-btn:hover { transform: scale(1.15); }
+
+    /* ----- Merken als LESEZEICHEN (Variante .-lu, gerendert von favBookmarkHtml()) -----
+       Der Übergang ist durch: alle sechs Seiten rendern das Lesezeichen über
+       favBookmarkHtml(), und das setzt `fav-btn -lu` immer gemeinsam. Die
+       Farbregeln der alten ☆-Glyphe (--c-gray-l als Grundton, Gelb für :hover
+       und .active) sind damit ersatzlos entfallen — sie waren ohnehin
+       durchgängig von den .-lu-Regeln hier unten überschrieben. Die Basisregeln
+       oben (Trefffläche, Positionierung, Hover-Scale) gelten unverändert weiter;
+       der Zustand hängt an der Klasse .-lu, nicht an einem Kindelement-Selektor.
+
+       Zwei Abweichungen von der früheren Glyphen-Variante, beide begründet:
+       (1) Der Zustand steckt in der FLÄCHE (leer ↔ gefüllt) und in der Kontur,
+           nicht allein in der Farbe. Eine gelbe Kontur auf Papier läge bei
+           1,11:1 (--c-yellow gegen --c-bg-deep) und wäre als Zustandsanzeige
+           nach WCAG 1.4.11 (3:1) unbrauchbar — die ☆-Glyphe kam damit durch,
+           weil sie ihre FORM mitwechselte (☆→★), ein Outline-Icon tut das
+           nicht. Aktiv trägt die Kontur deshalb --c-black (14,59:1 auf
+           --paper), das Gelb füllt nur.
+       (2) Inaktiv steht auf --c-star-empty (3,20:1 auf dem schlechtesten
+           Grund) statt --c-gray-l (1,70:1): Es ist ein Bedienelement, kein
+           Dekor. Beide Werte gegen --c-bg-deep nachgerechnet. */
+    .fav-btn.-lu { color: var(--c-star-empty); }
+    .fav-btn.-lu svg.lu { fill: none; transition: fill .15s ease; }
+    .fav-btn.-lu:hover { color: var(--c-black); }
+    .fav-btn.-lu:hover svg.lu { fill: var(--c-yellow); }   /* Vorschau auf „gemerkt" */
+    .fav-btn.-lu.active { color: var(--c-black); }
+    .fav-btn.-lu.active svg.lu { fill: var(--c-yellow); }
 
     .meta-dot { color: var(--c-gray-l); }
 
@@ -1046,9 +1164,10 @@
       .modal-header h2 { font-size: 2.1rem; margin-bottom: 1rem; }
       .modal-close { font-size: 2.8rem; padding: .6rem 1rem; margin-bottom: 1rem; }
       .modal-meta { padding: 1.2rem 1.6rem; gap: 1rem; }
-      .modal-tabs { padding: 0 1.6rem; scrollbar-width: none; }
+      .modal-tabs { padding: .8rem 1.6rem; gap: .4rem; scrollbar-width: none; }
       .modal-tabs::-webkit-scrollbar { display: none; }
-      .tab-btn { padding: 1.2rem 1.3rem; font-size: 1.4rem; }
+      /* Nur schmaler, nicht flacher: min-height 4.4rem aus der Basisregel bleibt. */
+      .tab-btn { padding: .8rem 1.3rem; font-size: 1.4rem; }
       .modal-body { padding: 2rem 1.4rem; }
     }
 
@@ -1091,8 +1210,8 @@
          Seiten wirksam, weil der Footer aus renderNav kommt. */
       .footer-nav a, .footer-nav button { min-height: 4.4rem; }
       /* kleine Bedienelemente: unsichtbare Hit-Area auf ~44px aufblasen */
-      .fav-btn, .star-btn { position: relative; }
-      .fav-btn::after, .star-btn::after { content: ''; position: absolute; inset: -12px; }
+      .fav-btn { position: relative; }
+      .fav-btn::after { content: ''; position: absolute; inset: -12px; }
     }
 
     /* ===== UTILITIES (E1-Einkaufsliste aus der Design-Bibliothek) ===== */
@@ -1851,10 +1970,11 @@
     /* ============================================================
        E8 (Showroom) — additive Komponenten für showroom.html.
        Case-Grid & -Karten, skaliertes lazy-iframe-Thumbnail (.sr-frame),
-       Ehrlichkeits-Marker (.sr-badge -echt/-beispiel), Reaktions-Button
-       „Will ich auch“ (.sr-react), Projekt-des-Monats-Spotlight, Story-
-       Tab-Inhalte, Nachbauen-Querverweis-Chips, Filter/Sort-Leiste,
-       Fakten-Box. pilot-CI, nur additiv — .sr-only NIE überschreiben.
+       Ehrlichkeits-Marker (.sr-badge -echt/-beispiel), Projekt-des-Monats-
+       Spotlight, Story-Tab-Inhalte, Nachbauen-Querverweis-Chips,
+       Filter/Sort-Leiste, Fakten-Box. Die Reaktions-Geste „Will ich auch“
+       (.sr-react) ist seit E16 der geteilte .up-btn weiter unten.
+       pilot-CI, nur additiv — .sr-only NIE überschreiben.
        ============================================================ */
 
     /* ----- Filter/Sort-Leiste ----- */
@@ -1945,18 +2065,10 @@
        Karten ohne ihn). */
     .sr-actions { display: flex; align-items: center; gap: .8rem; flex-wrap: wrap; margin-top: .6rem; }
 
-    /* ----- Reaktions-Button „Will ich auch“ (vote:reaktion:<id>) ----- */
-    .sr-react {
-      display: inline-flex; align-items: center; gap: .5rem;
-      border: 1px solid var(--line-strong); background: transparent; color: var(--c-gray-m);
-      border-radius: var(--r-pill); padding: .55rem 1.2rem;
-      font-family: inherit; font-size: 1.3rem; font-weight: 600; cursor: pointer; transition: var(--trans);
-    }
-    .sr-react:hover { border-color: var(--c-black); color: var(--c-black); }
-    .sr-react .lu { width: 1.5rem; height: 1.5rem; }
-    .sr-react.-on { background: var(--c-yellow); border-color: var(--c-yellow); color: var(--c-black); }
-    .sr-react.-on .lu { fill: var(--c-black); }
-    .sr-react-count { font-family: var(--font-mono); font-weight: 700; }
+    /* .sr-react/.sr-react-count entfernt — die Reaktions-Geste „Will ich auch“
+       (vote:reaktion:<id>) rendert showroom.html seit E16 über renderUpvoteBtn(),
+       also als .up-btn. Volltext-Grep über alle HTML, shared/base.js und
+       data/*.js: beide Klassennamen kommen nirgends mehr als String vor. */
 
     /* ----- Story-Tab-Inhalte („So ist es entstanden“) ----- */
     .sr-story-block { margin: 0 0 1.6rem; }
@@ -2096,7 +2208,7 @@
       .sp-actions .lib-btn { justify-content: center; }
     }
     @media (prefers-reduced-motion: reduce) {
-      .sr-card, .sr-cat, .sr-react, .sr-rank-item { transition: none; }
+      .sr-card, .sr-cat, .sr-rank-item { transition: none; }
       .sr-card:hover { transform: none; }
       .sp-card { transition: none; }
     }
@@ -2311,3 +2423,93 @@
       .nav-ds-btn { min-width: 4rem; padding: 0 .8rem; }
     }
     .nav-ds-count[hidden] { display: none; }   /* hidden-Attribut gewinnt gegen display:inline-flex */
+
+    /* ===== UPVOTE-KNOPF (renderUpvoteBtn() in shared/base.js) ==============
+       Eine Stimme für alle Gattungen — vorher gab es das Muster dreimal in
+       Seiten-CSS: .vote-btn (lernen-hilfe.html, dunkle Befehle-Säule + helle
+       Ressourcen-Variante) und .sr-react (showroom). .up-btn ist bewusst ein
+       EIGENER Klassenname, damit die zentrale Fassung und die Bestandsfassungen
+       sich nicht gegenseitig überschreiben. Stand E16: .sr-react und die helle
+       Ressourcen-Variante sind abgelöst und entfernt, .vote-btn lebt nur noch
+       seitenlokal in lernen-hilfe.html (Befehle-Säule + Glossar) weiter.
+
+       Kontrast, gegen den SCHLECHTESTEN Grund gerechnet, auf dem der Knopf real
+       stehen kann (--c-bg-deep #eeede5): Text --c-ink-strong (#444) = 8,29:1,
+       auf heller Karte (--c-white) 9,49:1 · gedrückt #262626 auf #ffe05e =
+       11,58:1. Alles über AA (4,5:1). Rahmenton und Pillenform folgen
+       dem .chip — kein neues Formvokabular. */
+    .up-btn {
+      display: inline-flex; align-items: center; gap: .5rem;
+      border: 1px solid var(--line-strong); background: transparent; color: var(--c-ink-strong);
+      border-radius: var(--r-pill); padding: .55rem 1.2rem;
+      font-family: inherit; font-size: 1.3rem; font-weight: 600;
+      cursor: pointer; transition: var(--trans);
+    }
+    .up-btn:hover { border-color: var(--c-black); color: var(--c-black); }
+    .up-btn .lu { width: 1.5rem; height: 1.5rem; }
+    .up-btn.-on { background: var(--c-yellow); border-color: var(--c-yellow); color: var(--c-black); }
+    .up-btn.-on .lu { stroke-width: 2.6; }   /* gedrückt: der Pfeil trägt sichtbar mehr Gewicht */
+    @media (prefers-reduced-motion: reduce) { .up-btn { transition: none; } }
+    .up-count {
+      font-family: var(--font-mono); font-variant-numeric: tabular-nums;
+      font-weight: 700; min-width: 2.2rem; text-align: center;
+    }
+    /* Kompaktfassung für dichte Kartenfüße: nur Icon + Zahl, kein Wortlabel.
+       Die Trefffläche darf dabei NICHT mitschrumpfen — siehe Touch-Block unten. */
+    .up-btn.-kompakt { padding: .4rem .9rem; gap: .4rem; font-size: 1.25rem; }
+    .up-btn.-kompakt .lu { width: 1.4rem; height: 1.4rem; }
+
+    /* ===== ANSICHTSDICHTE (initDensity() in shared/base.js) ================
+       Optik übernommen von .variant-seg (prompts.html) — dasselbe Segment-
+       Muster, damit die Seite nicht zwei Umschalter-Sprachen spricht. Der
+       Unterschied ist nur der Ort: dieser hier ist geteilt, weil ihn mehrere
+       Seiten brauchen. */
+    .density-ctl { display: inline-flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+    .density-label {
+      font-family: var(--font-mono); font-size: 1.05rem; font-weight: 600;
+      letter-spacing: .1em; text-transform: uppercase; color: var(--c-gray-m);
+    }
+    .density-seg {
+      display: inline-flex; border: 1px solid var(--c-gray-l);
+      border-radius: var(--r-pill); overflow: hidden;
+    }
+    .density-seg button {
+      font-family: inherit; font-size: 1.3rem; font-weight: 600; cursor: pointer;
+      padding: .7rem 1.6rem; background: transparent; border: none;
+      color: var(--c-gray-m); transition: var(--trans); min-height: 3.6rem;
+    }
+    .density-seg button + button { border-left: 1px solid var(--c-gray-l); }
+    .density-seg button:hover { color: var(--c-black); }
+    .density-seg button.active { background: var(--c-black); color: var(--c-yellow); }
+    .density-seg button.active:hover { color: var(--c-yellow); }
+    .density-hint { font-size: 1.25rem; color: var(--c-gray-m); }
+
+    /* Die Utilities, mit denen die Seiten arbeiten. Bewusst nur SUBTRAKTIV
+       (etwas ausblenden bzw. kürzen) — additive Regeln müssten das display der
+       Seite kennen und würden sie beim Wiedereinblenden überschreiben.
+       Kein !important nötig: [data-density="…"] .klasse hat Spezifität 0,2,0
+       und schlägt jede einfache Klassenregel der Seiten. */
+    [data-density="kompakt"] .density-hide-kompakt,
+    [data-density="standard"] .density-hide-standard,
+    [data-density="kompakt"] .density-only-ausfuehrlich,
+    [data-density="standard"] .density-only-ausfuehrlich { display: none; }
+    /* Textkürzung statt Ausblenden, wo der Absatz nicht ganz verschwinden soll.
+       Zeilenzahl pro Element über --density-clamp-k / --density-clamp-s regelbar. */
+    [data-density="kompakt"] .density-clamp,
+    [data-density="standard"] .density-clamp {
+      display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    [data-density="kompakt"] .density-clamp { -webkit-line-clamp: var(--density-clamp-k, 2); }
+    [data-density="standard"] .density-clamp { -webkit-line-clamp: var(--density-clamp-s, 4); }
+
+    /* Touch: Treffflächen der beiden neuen Bedienelemente (WCAG 2.5.8).
+       Eigener Block statt Ergänzung des Sammelblocks oben — die Regeln gehören
+       inhaltlich zu den Komponenten, die direkt darüber stehen. */
+    @media (hover: none) and (pointer: coarse) {
+      .up-btn, .density-seg button { min-height: 4.4rem; }
+      /* Die Höhe deckt die Regel darüber ab. In der BREITE kann die Kompakt-
+         fassung (nur Icon + zweistellige Zahl) unter 44px rutschen — dafür eine
+         unsichtbare Hit-Area, dasselbe Mittel wie bei .fav-btn. */
+      .up-btn.-kompakt { position: relative; }
+      .up-btn.-kompakt::after { content: ''; position: absolute; inset: 0 -6px; }
+    }

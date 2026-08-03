@@ -34,7 +34,7 @@
     })();
   </script>
   <title>pilot AI Marketplace — Ein Ort für alles, was ihr mit KI baut</title>
-  <meta name="description" content="Die Startseite des internen pilot AI Marketplace: Skill-Katalog, Prompt-Sammlung, Lernen & Hilfe, Asset-Bibliothek, Baukasten und Showroom — Citizen Coding für die pilot Agenturgruppe.">
+  <meta name="description" content="Die Startseite des internen pilot AI Marketplace: Skills, Prompt-Sammlung, Lernen & Hilfe, Asset-Bibliothek, Baukasten und Showroom — Citizen Coding für die pilot Agenturgruppe.">
   <meta name="theme-color" content="#262626">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="pilot AI Marketplace">
@@ -164,8 +164,15 @@
     .area-count { display: flex; align-items: baseline; gap: 1rem; margin: .6rem 0 0; }
     .area-count-num { font-size: 3.2rem; font-weight: 700; letter-spacing: -.03em; line-height: 1; font-variant-numeric: tabular-nums; }
     .area-count-label { font-family: var(--font-mono); font-size: 1.2rem; letter-spacing: .12em; text-transform: uppercase; color: var(--c-gray-m); }
-    .area-meta { font-size: 1.3rem; color: var(--c-gray-m); }
-    /* Highlight-Eintrag im Kärtchen */
+    /* (Die frühere Aufzählungszeile „dazu 4 Plugins · 3 Frameworks · …" ist samt
+       ihrer Regel und ihrer Befüllung entfallen: Sie stand auf jeder Kachel und
+       zählte Dinge auf, die auf der Zielseite ohnehin sofort sichtbar sind — sie
+       hat die Kachel gefüllt, aber keine Entscheidung getragen. Der
+       Beschreibungstext darunter tut beides.) */
+    /* „Bestbewertete" im Kärtchen — der Inhalt kommt aus bestRated() und wechselt
+       täglich, deshalb wird das <a> komplett per JS in den Slot geschrieben.
+       Leerer Slot (Daten nicht geladen) = keine Fläche statt einer leeren Kiste. */
+    .area-spot-slot:empty { display: none; }
     .area-spot {
       margin-top: 1.2rem; padding: 1.2rem 1.4rem;
       background: var(--c-bg); border-radius: var(--r-md);
@@ -179,8 +186,24 @@
       display: block; margin-bottom: .5rem;
     }
     .area-spot-name { font-size: 1.6rem; font-weight: var(--fw-semi); }
-    .area-spot-tag { font-size: 1.35rem; color: var(--c-gray-m); margin: .2rem 0 .5rem; }
-    .area-spot .rating-text { font-size: 1.25rem; }
+    /* Zwei Zeilen hart gekappt: Die Untertitel kommen jetzt aus den Daten und
+       sind je nach Gattung 40 oder 400 Zeichen lang (CASES[].kurz ist ein
+       Absatz). Ohne Deckel bestimmt der Zufall des Tages die Kachelhöhe. */
+    .area-spot-tag {
+      font-size: 1.35rem; color: var(--c-gray-m); margin: .2rem 0 .5rem;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    /* Stimmen-ANZEIGE, kein Knopf: der Spot ist selbst ein <a>, und eine
+       Schaltfläche darf keine Schaltfläche enthalten (CLAUDE.md,
+       nested-interactive). Gestimmt wird auf der Zielseite.
+       Kontrast: --c-ink-strong (#444) auf --c-bg (#f1f1ec) = 8,3:1, auf der
+       Hover-Fläche --paper (#fbfbf7) = 9,3:1 — beides deutlich über AA. */
+    .area-spot-votes {
+      display: inline-flex; align-items: center; gap: .45rem;
+      font-family: var(--font-mono); font-size: 1.2rem; font-weight: 600;
+      color: var(--c-ink-strong); font-variant-numeric: tabular-nums;
+    }
+    .area-spot-votes .lu { width: 1.4rem; height: 1.4rem; flex: none; }
     .area-cta-row { margin-top: auto; padding-top: 1.6rem; }
     @media (max-width: 1023px) {
       .areas { padding: 4.4rem 0 4.8rem; }
@@ -207,7 +230,13 @@
        hier nur die gefüllte Papierfläche + schwarze Schrift + etwas Innenabstand. */
     .jr-chip { gap: .7rem; padding: .6rem 1.4rem; background: var(--paper); color: var(--c-black); }
     .jr-chip:hover, .jr-chip:focus-visible { background: var(--c-white); }
-    .jr-chip .jr-star { color: var(--c-yellow); }
+    /* Merk-Marke im Chip: dasselbe Lesezeichen wie der Merken-Knopf (LU.bookmark,
+       .fav-btn.-lu in base.css) — gefüllt, weil hier ausschließlich GEMERKTE
+       Einträge stehen. Bewusst nur das Icon und kein favBookmarkHtml(): das
+       liefert einen <button>, der Chip ist aber ein <a>, und eine Schaltfläche
+       darf keine Schaltfläche enthalten (CLAUDE.md, nested-interactive).
+       `fill` als CSS-Eigenschaft schlägt das fill="none" im SVG-Attribut. */
+    .jr-chip .lu { width: 1.4rem; height: 1.4rem; flex: none; color: var(--c-black); fill: var(--c-yellow); }
     .jr-chip-type { font-family: var(--font-mono); font-size: 1rem; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--c-gray-m); }
     .jr-more { font-size: 1.3rem; color: var(--c-gray-m); align-self: center; }
     .jr-empty { max-width: 52rem; }
@@ -242,22 +271,16 @@
           <article data-motiv="katalog" class="area-card area-live anim-reveal">
             <div class="area-head">
               <span class="area-ic"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg></span>
-              <h3>Skill-Katalog</h3>
+              <h3>Skills</h3>
             </div>
             <div class="area-count">
               <span class="area-count-num" id="area-skill-count">0</span>
               <span class="area-count-label">Skills</span>
             </div>
-            <p class="area-meta" id="area-skill-meta"></p>
-            <p class="area-text">Skills, Plugins und Frameworks für Claude Code und Langdock — mit Live-Demos, Datei-Einblick und fertigen Startprompts.</p>
-            <a class="area-spot" href="skills.html?skill=erste-schritte">
-              <span class="area-spot-label">Fang hier an</span>
-              <span class="area-spot-name">Erste Schritte</span>
-              <p class="area-spot-tag">Von Langdock zu Claude Code — dein geführter Einstieg</p>
-              <span id="area-spot-rating"></span>
-            </a>
+            <p class="area-text">Skills, Plugins und Frameworks für Claude Code und pilot AI — mit Live-Demos, Datei-Einblick und fertigen Startprompts.</p>
+            <div class="area-spot-slot" id="area-skill-spot"></div>
             <div class="area-cta-row">
-              <a class="c-cta -yellow-bg" href="skills.html">Katalog öffnen</a>
+              <a class="c-cta -yellow-bg" href="skills.html">Skills öffnen</a>
             </div>
           </article>
 
@@ -271,12 +294,7 @@
               <span class="area-count-label">Prompts</span>
             </div>
             <p class="area-text">Kopierfertige Prompts mit Platzhaltern, Varianten und der Erklärung, warum sie funktionieren.</p>
-            <a class="area-spot" href="prompts.html?p=briefing-zusammenfassung">
-              <span class="area-spot-label">Highlight</span>
-              <span class="area-spot-name">Briefing-Zusammenfassung</span>
-              <p class="area-spot-tag">Langes Kunden-Briefing rein, arbeitsfähige Zusammenfassung raus</p>
-              <span id="area-prompt-spot-rating"></span>
-            </a>
+            <div class="area-spot-slot" id="area-prompt-spot"></div>
             <div class="area-cta-row">
               <a class="c-cta -yellow-bg" href="prompts.html">Sammlung öffnen</a>
             </div>
@@ -291,14 +309,8 @@
               <span class="area-count-num" id="area-bibliothek-count">0</span>
               <span class="area-count-label">Assets</span>
             </div>
-            <p class="area-meta" id="area-bibliothek-meta"></p>
             <p class="area-text">Schriften, Icons, Farbpaletten und Muster — frei nutzbar, Lizenz sichtbar an jedem Asset.</p>
-            <a class="area-spot" href="vorlagen.html?a=inter">
-              <span class="area-spot-label">Highlight</span>
-              <span class="area-spot-name">Inter — Live-Vorschau</span>
-              <p class="area-spot-tag">Beispieltext antippen, Größe live regeln, @font-face &amp; Download direkt daneben</p>
-              <span id="area-bibliothek-spot-rating"></span>
-            </a>
+            <div class="area-spot-slot" id="area-bibliothek-spot"></div>
             <div class="area-cta-row">
               <a class="c-cta -yellow-bg" href="vorlagen.html?tab=assets">Bibliothek öffnen</a>
             </div>
@@ -313,14 +325,8 @@
               <span class="area-count-num" id="area-baukasten-count">0</span>
               <span class="area-count-label">Bausteine</span>
             </div>
-            <p class="area-meta" id="area-baukasten-meta"></p>
             <p class="area-text">Fertige Code-Bausteine mit Live-Vorschau — jeder mit einem Prompt, der ihn für dich anpasst.</p>
-            <a class="area-spot" href="vorlagen.html?b=header-hero">
-              <span class="area-spot-label">Highlight</span>
-              <span class="area-spot-name">Header mit Hero</span>
-              <p class="area-spot-tag">Der komplette „above the fold“-Auftakt in einem Rutsch — Nav, Schlagzeile, zwei Buttons</p>
-              <span id="area-baukasten-spot-rating"></span>
-            </a>
+            <div class="area-spot-slot" id="area-baukasten-spot"></div>
             <div class="area-cta-row">
               <a class="c-cta -yellow-bg" href="vorlagen.html">Baukasten öffnen</a>
             </div>
@@ -335,14 +341,8 @@
               <span class="area-count-num" id="area-showroom-count">0</span>
               <span class="area-count-label">Projekte</span>
             </div>
-            <p class="area-meta" id="area-showroom-meta"></p>
             <p class="area-text">Echte Team-Tools und Beispiel-Projekte — mit der ehrlichen Geschichte, wie sie entstanden sind.</p>
-            <a class="area-spot" href="showroom.html?case=umfrage-auswerter">
-              <span class="area-spot-label">Highlight</span>
-              <span class="area-spot-name">Umfrage-Auswerter</span>
-              <p class="area-spot-tag">Ein echtes Feierabend-Tool: CSV rein, Antwortverteilung als Balken raus — ganz ohne Excel</p>
-              <span id="area-showroom-spot-react"></span>
-            </a>
+            <div class="area-spot-slot" id="area-showroom-spot"></div>
             <div class="area-cta-row">
               <a class="c-cta -yellow-bg" href="showroom.html">Showroom öffnen</a>
             </div>
@@ -355,16 +355,10 @@
             </div>
             <div class="area-count">
               <span class="area-count-num" id="area-lernenhilfe-count">0</span>
-              <span class="area-count-label">Ressourcen &amp; Hilfe-Einträge</span>
+              <span class="area-count-label">Lern- &amp; Hilfe-Einträge</span>
             </div>
-            <p class="area-meta" id="area-lernenhilfe-meta"></p>
             <p class="area-text">Geprüfte Lern-Ressourcen, Befehle im Team-Ranking, Glossar und Schritt-für-Schritt-Lösungen für typische Blocker.</p>
-            <a class="area-spot" href="lernen-hilfe.html?befehl=clear">
-              <span class="area-spot-label">Highlight</span>
-              <span class="area-spot-name">/clear</span>
-              <p class="area-spot-tag">Der wichtigste Handgriff, wenn Claude „komisch wird“ — mit Mini-Terminal-Demo</p>
-              <span id="area-lernenhilfe-spot-votes"></span>
-            </a>
+            <div class="area-spot-slot" id="area-lernenhilfe-spot"></div>
             <div class="area-cta-row">
               <a class="c-cta -yellow-bg" href="lernen-hilfe.html">Lernen &amp; Hilfe öffnen</a>
             </div>
@@ -445,54 +439,88 @@
     });
 
     // ===== ECHTE ZÄHLER (live aus data/skills.js — nichts erfunden) =====
+    // Nur noch die zwei Zahlen, die eine Kachel wirklich zeigt. Die frühere
+    // Aufzählung (Plugins/Frameworks/Startprompts/Live-Demos/Skill-Pakete) fiel
+    // mit der Aufzählungszeile der Kacheln weg — sie zählte auf, was auf der Zielseite
+    // ohnehin unmittelbar sichtbar ist.
     const COUNTS = {
       // typgetrennt gezählt — Plugins/Frameworks (itemType, ab E2) zählen nicht als „Skills"
-      // Zahlen-Ehrlichkeit: sichtbare Skill-Zahl OHNE die drei HIDDEN-Einträge (= 35,
-      // konsistent zu skills.html/VISIBLE_SKILL_COUNT). HIDDEN kommt aus data/skills.js.
+      // Zahlen-Ehrlichkeit: sichtbare Skill-Zahl konsistent zu skills.html/
+      // VISIBLE_SKILL_COUNT (Stand Kuration 2026-08: 32; HIDDEN ist seitdem leer).
       skills: (typeof VISIBLE_SKILL_COUNT === 'number')
         ? VISIBLE_SKILL_COUNT
         : SKILLS.filter(s => (s.itemType || 'skill') === 'skill' && (typeof HIDDEN === 'undefined' || !HIDDEN.has(s.id))).length,
-      plugins: SKILLS.filter(s => s.itemType === 'plugin').length,
-      frameworks: SKILLS.filter(s => s.itemType === 'framework').length,
-      prompts: Object.keys(START_PROMPTS).length,
-      demos: DEMOS.reduce((sum, d) => sum + d.cases.length, 0),
-      bundles: Object.keys(BUNDLES).length,
       // Prompt-Sammlung (data/prompts.js, ab E3) — die kuratierten Einträge auf prompts.html
       promptItems: PROMPTS.length
     };
 
+    /* ===== „BESTBEWERTETE" JE KACHEL ==========================================
+       Früher stand in jeder Kachel ein handverlesener Leuchtturm mit fester id,
+       festem Titel und einer Sterne-Zeile. Beides ist weg:
 
-    // Katalog-Karte: großer Zähler + Meta-Zeile + Leuchtturm-Bewertung
+       AUSWAHL: bestRated(items, typ, 5) bildet den Pool aus Top 5 nach
+       Gesamtstimmen ∪ Top 5 nach votesRecent und schneidet daraus tagesbasiert
+       heraus; [0] ist der Eintrag des Tages.
+       Seit der Feedback-Runde 2026-08 tragen die Sammlungen votesRecent-Seeds,
+       der Pool ist damit größer als n und die Fläche ROTIERT täglich — gewollt
+       (Produktentscheidung, Feedback-Item 20): das Label „Bestbewertete" meint
+       den Top-5-Pool, nicht zwingend den Erstplatzierten des Tages. Bewusst
+       KEINE zweite, seiteneigene Tagesrechnung neben der in base.js.
+
+       ANZEIGE: Stimmen statt Sterne (getUpvoteCount, Seed aus den Daten + eigene
+       Stimme). Bewusst KEIN renderUpvoteBtn(): der Spot ist selbst ein <a>, und
+       eine Schaltfläche darf keine Schaltfläche enthalten (CLAUDE.md,
+       nested-interactive). Gestimmt wird auf der Zielseite.
+
+       Die ids der Stimmen-Zeile sind die alten (…-spot-rating/-react/-votes) —
+       fünf Testsuiten greifen sie per getElementById ab; ein Umbenennen wäre
+       Kollateralschaden ohne Gegenwert. */
+    function renderAreaSpot(slotId, items, typ, cfg) {
+      const slot = document.getElementById(slotId);
+      if (!slot || typeof bestRated !== 'function') return;
+      const item = bestRated(items || [], typ, 5)[0];
+      if (!item) return;   // keine Daten → gar kein Spot statt einer leeren Fläche
+      const n = getUpvoteCount(item, typ);
+      const tag = cfg.tag(item) || '';
+      slot.innerHTML =
+        `<a class="area-spot" href="${cfg.href(item)}">`
+        + `<span class="area-spot-label">Bestbewertete</span>`
+        + `<span class="area-spot-name">${escHtml(cfg.name(item))}</span>`
+        + (tag ? `<p class="area-spot-tag">${escHtml(tag)}</p>` : '')
+        // Demo-Kennzeichnung (CLAUDE.md, harte Regel 3): die Zahl ist ein Seed
+        // aus den Daten plus höchstens die eigene Stimme — es gibt kein Backend.
+        + `<span class="area-spot-votes" id="${cfg.voteId}"`
+        + ` title="Demo-Wert: Seed aus den Daten plus deine eigene Stimme — nur auf diesem Gerät gespeichert">`
+        + LU.vote + `${n} ${n === 1 ? 'Stimme' : 'Stimmen'}</span>`
+        + `</a>`;
+    }
+
+    // Skills-Karte: großer Zähler + Bestbewertete.
     const areaCount = document.getElementById('area-skill-count');
     if (areaCount) animateCount(areaCount, COUNTS.skills, 1100);
-    const areaMeta = document.getElementById('area-skill-meta');
-    if (areaMeta) areaMeta.textContent = `dazu ${COUNTS.plugins} Plugins · ${COUNTS.frameworks} Frameworks · ${COUNTS.prompts} Startprompts · ${COUNTS.demos} Live-Demos · ${COUNTS.bundles} Skill-Pakete`;
+    // Derselbe Ausschnitt, den auch der Zähler meint: sichtbare Einträge vom Typ
+    // „skill". Ein Plugin oder ein HIDDEN-Eintrag unter der Überschrift „Skills"
+    // wäre ein Link auf etwas, das die Zielseite so gar nicht listet.
+    const VISIBLE_SKILLS = SKILLS.filter(s => (s.itemType || 'skill') === 'skill'
+      && (typeof HIDDEN === 'undefined' || !HIDDEN.has(s.id)));
+    renderAreaSpot('area-skill-spot', VISIBLE_SKILLS, 'skill', {
+      voteId: 'area-spot-rating',
+      href: s => 'skills.html?skill=' + encodeURIComponent(s.id),
+      name: s => s.name,
+      tag:  s => s.tagline
+    });
 
-    (function renderSpotRating() {
-      const el = document.getElementById('area-spot-rating');
-      const skill = SKILLS.find(s => s.id === 'erste-schritte');
-      if (!el || !skill) return;
-      const e = getEffectiveRating(skill);
-      el.innerHTML = renderStars(e.average) + ` <span class="rating-text">${e.average.toFixed(1)} · ${e.count} Bewertungen</span>`;
-    })();
-
-    // Prompt-Karte: großer Zähler + Leuchtturm-Bewertung.
+    // Prompt-Karte: großer Zähler + Bestbewertete.
     // Achtung Namespace: index setzt KEIN window.RatingConfig — Prompt-Signale
-    // deshalb explizit mit type 'prompt' lesen (rate:prompt:*, comments:prompt:*).
+    // deshalb explizit mit type 'prompt' lesen (vote:prompt:*).
     const areaPromptCount = document.getElementById('area-prompt-count');
     if (areaPromptCount) animateCount(areaPromptCount, COUNTS.promptItems, 1100);
-    (function renderPromptSpotRating() {
-      const el = document.getElementById('area-prompt-spot-rating');
-      const p = PROMPTS.find(x => x.id === 'briefing-zusammenfassung');
-      if (!el || !p) return;
-      const seed = p.rating || { average: 0, count: 0 };
-      let sum = seed.average * seed.count, cnt = seed.count;
-      getComments(p.id, 'prompt').forEach(c => { if (c.rating) { sum += c.rating; cnt++; } });
-      const ur = getRating(p.id, 'prompt');
-      if (ur > 0) { sum += ur; cnt++; }
-      const avg = cnt > 0 ? sum / cnt : 0;
-      el.innerHTML = renderStars(avg) + ` <span class="rating-text">${avg.toFixed(1)} · ${cnt} Bewertungen</span>`;
-    })();
+    renderAreaSpot('area-prompt-spot', PROMPTS, 'prompt', {
+      voteId: 'area-prompt-spot-rating',
+      href: p => 'prompts.html?p=' + encodeURIComponent(p.id),
+      name: p => p.name,
+      tag:  p => p.tagline
+    });
 
     // Auftakt-Zahlen (Editorial-Pass): nur real Gezähltes aus den geladenen
     // Daten-Arrays — Teile, deren Daten fehlen, werden schlicht weggelassen.
@@ -506,7 +534,10 @@
       if (typeof CASES !== 'undefined') parts.push([CASES.length, 'Projekte']);
       if (typeof RESSOURCEN !== 'undefined' && typeof BEFEHLE !== 'undefined'
           && typeof GLOSSAR !== 'undefined' && typeof FAQ !== 'undefined')
-        parts.push([RESSOURCEN.length + BEFEHLE.length + GLOSSAR.length + FAQ.length, 'Hilfe-Einträge']);
+        // Benennung wie auf der Kachel und wie die Zielseite heißt („Lernen &
+        // Hilfe") — „Hilfe-Einträge" unterschlug die Lern-Ressourcen, die in
+        // derselben Summe stecken.
+        parts.push([RESSOURCEN.length + BEFEHLE.length + GLOSSAR.length + FAQ.length, 'Lern- & Hilfe-Einträge']);
       host.innerHTML = parts.map(([n, l]) => `<span><b>${n}</b>${l}</span>`).join('');
     });
 
@@ -520,12 +551,17 @@
       const count = document.getElementById('area-lernenhilfe-count');
       const total = RESSOURCEN.length + BEFEHLE.length + GLOSSAR.length + FAQ.length;
       if (count) animateCount(count, total, 1100);
-      const meta = document.getElementById('area-lernenhilfe-meta');
-      if (meta) meta.textContent = `${RESSOURCEN.length} Lern-Ressourcen · ${BEFEHLE.length} Befehle · ${GLOSSAR.length} Glossar-Begriffe · ${FAQ.length} Schritt-für-Schritt-Lösungen`;
-      // Leuchtturm /clear: Stimmen wie auf lernen-hilfe.html gezählt (Seed + eigene, vote:befehl:*)
-      const spotVotes = document.getElementById('area-lernenhilfe-spot-votes');
-      const lh = BEFEHLE.find(b => b.id === 'clear');
-      if (spotVotes && lh) spotVotes.innerHTML = `<span class="rating-text">${getVotes('befehl', lh.id, lh.votes)} × „Hat mir geholfen“</span>`;
+      // Bestbewertete aus BEFEHLE: Die Kachel bündelt vier Sammlungen, aber nur
+      // die Befehle tragen auf der Zielseite ein Team-Ranking aus denselben
+      // Stimmen (vote:befehl:*), das der Spot fortschreibt. Ressourcen, Glossar
+      // und FAQ hängen an eigenen Deep-Link-Parametern (?r=/?begriff=/?faq=) —
+      // ein gemischter Pool wäre ein zweiter Umbau, kein Detail dieses hier.
+      renderAreaSpot('area-lernenhilfe-spot', BEFEHLE, 'befehl', {
+        voteId: 'area-lernenhilfe-spot-votes',
+        href: b => 'lernen-hilfe.html?befehl=' + encodeURIComponent(b.id),
+        name: b => b.cmd,
+        tag:  b => b.nutzen
+      });
     });
 
     // Asset-Bibliothek-Karte + Zähler (E6): data/assets.js lädt per defer —
@@ -534,13 +570,15 @@
       if (typeof ASSETS === 'undefined') return;
       const bibCount = document.getElementById('area-bibliothek-count');
       if (bibCount) animateCount(bibCount, ASSETS.length, 1100);
-      const bibMeta = document.getElementById('area-bibliothek-meta');
-      if (bibMeta) bibMeta.textContent = `${FONTS.length} Schriften · ${ICONSETS.length} Icon-Sets · ${PALETTES.length} Paletten · ${PATTERNS.length} Muster & Verläufe`;
-      // Leuchtturm: Seed-Bewertung der Inter-Schrift (rate:asset:* wird auf
-      // bibliothek.html gepflegt) — hier direkt aus dem Seed angezeigt.
-      const spotRating = document.getElementById('area-bibliothek-spot-rating');
-      const lh = ASSETS.find(a => a.id === 'inter');
-      if (spotRating && lh && lh.rating) spotRating.innerHTML = renderStars(lh.rating.average) + ` <span class="rating-text">${lh.rating.average.toFixed(1)} · ${lh.rating.count} Bewertungen</span>`;
+      // Ein ASSETS-Eintrag trägt nur id/typ/name/rating — der beschreibende Text
+      // liegt im Original unter .ref, je nach Gattung als stimmung (Schriften)
+      // oder beschreibung. Fehlt beides, läuft der Spot ohne Untertitel.
+      renderAreaSpot('area-bibliothek-spot', ASSETS, 'asset', {
+        voteId: 'area-bibliothek-spot-rating',
+        href: a => 'vorlagen.html?a=' + encodeURIComponent(a.id),
+        name: a => a.name,
+        tag:  a => (a.ref && (a.ref.stimmung || a.ref.beschreibung)) || ''
+      });
     });
 
     // Baukasten-Karte + Zähler (E7): data/bausteine.js lädt per defer — deshalb
@@ -549,13 +587,12 @@
       if (typeof BAUSTEINE === 'undefined') return;
       const bkCount = document.getElementById('area-baukasten-count');
       if (bkCount) animateCount(bkCount, BAUSTEINE.length, 1100);
-      const bkMeta = document.getElementById('area-baukasten-meta');
-      if (bkMeta) bkMeta.textContent = `davon ${BAUKASTEN_STATS.leuchttuerme} Highlights · ${BAUKASTEN_STATS.kategorien} Kategorien · ${BEISPIELDATEN_STATS.total} Beispieldateien zum Üben`;
-      // Leuchtturm: Seed-Bewertung des Header-Hero-Bausteins (rate:baustein:* wird
-      // auf baukasten.html gepflegt) — hier direkt aus dem Seed angezeigt.
-      const spotRating = document.getElementById('area-baukasten-spot-rating');
-      const lh = BAUSTEINE.find(b => b.id === 'header-hero');
-      if (spotRating && lh && lh.rating) spotRating.innerHTML = renderStars(lh.rating.average) + ` <span class="rating-text">${lh.rating.average.toFixed(1)} · ${lh.rating.count} Bewertungen</span>`;
+      renderAreaSpot('area-baukasten-spot', BAUSTEINE, 'baustein', {
+        voteId: 'area-baukasten-spot-rating',
+        href: b => 'vorlagen.html?b=' + encodeURIComponent(b.id),
+        name: b => b.name,
+        tag:  b => b.beschreibung
+      });
     });
 
     // Showroom-Karte + Zähler (E8): data/cases.js lädt per defer — deshalb
@@ -564,13 +601,19 @@
       if (typeof CASES === 'undefined') return;
       const srCount = document.getElementById('area-showroom-count');
       if (srCount) animateCount(srCount, CASES.length, 1100);
-      const srMeta = document.getElementById('area-showroom-meta');
-      if (srMeta) srMeta.textContent = `davon ${CASE_STATS.echt} echte Team-Tools · ${CASE_STATS.beispiel} Beispiel-Projekte · ${CASE_STATS.saeulen} Säulen`;
-      // Leuchtturm: „Will ich auch"-Reaktionen des echten Umfrage-Auswerters (Seed +
-      // eigene Stimme über vote:reaktion:*, aus base.js).
-      const react = document.getElementById('area-showroom-spot-react');
-      const lhCase = CASES.find(c => c.id === 'umfrage-auswerter');
-      if (react && lhCase) react.innerHTML = `<span class="rating-text">${getVotes('reaktion', lhCase.id, lhCase.reaktionSeed)} × „Will ich auch“</span>`;
+      /* Projekte führen ihre Stimmen als reaktionSeed („Will ich auch"), und
+         getUpvoteCount() kennt nur votesSeed/votes/rating.count — ohne Alias
+         läse es für JEDES Projekt 0 und die Auswahl fiele auf die alphabetisch
+         erste id zurück. Deshalb hier eine Projektion mit votesSeed statt einer
+         zweiten Rechenstelle: gleiche Zahl wie bisher (Seed + eigene Stimme über
+         vote:reaktion:*), nur über die gemeinsame API. */
+      const CASE_POOL = CASES.map(c => ({ id: c.id, titel: c.titel, kurz: c.kurz, votesSeed: c.reaktionSeed, votesRecent: c.votesRecent }));
+      renderAreaSpot('area-showroom-spot', CASE_POOL, 'reaktion', {
+        voteId: 'area-showroom-spot-react',
+        href: c => 'showroom.html?case=' + encodeURIComponent(c.id),
+        name: c => c.titel,
+        tag:  c => c.kurz
+      });
     });
 
     // ===== NEU IM MARKETPLACE (abgeleitet, nicht gepflegt) =====
@@ -643,14 +686,17 @@
       if (favItems.length + triedCount + bewertungen + reaktionen === 0) {
         body.innerHTML = `
           <div class="jr-empty">
-            <p>Noch nichts gemerkt. Sobald du etwas favorisierst, ausprobierst oder bewertest, sammelt es sich hier — über alle Bereiche hinweg, damit du es wiederfindest.</p>
-            <a class="c-cta -black-border" href="skills.html">Im Katalog stöbern</a>
+            <p>Noch nichts gemerkt. Sobald du etwas mit dem Lesezeichen merkst, ausprobierst oder bewertest, sammelt es sich hier — über alle Bereiche hinweg, damit du es wiederfindest.</p>
+            <a class="c-cta -black-border" href="skills.html">Bei den Skills stöbern</a>
           </div>`;
         return;
       }
 
+      // Marke am Chip ist das Lesezeichen (LU.bookmark) — dasselbe Symbol, mit
+      // dem der Eintrag im Marketplace gemerkt wurde. Nur das Icon, kein
+      // favBookmarkHtml(): das liefert einen <button>, und der Chip ist ein <a>.
       const favChips = favItems.slice(0, 6).map(({ id, type }) =>
-        `<a class="chip jr-chip" href="${linkFor[type](id)}"><span class="jr-star" aria-hidden="true">★</span>${escHtml(nameFor(type, id))}<span class="jr-chip-type" aria-hidden="true">${TYPE_LABEL[type]}</span></a>`
+        `<a class="chip jr-chip" href="${linkFor[type](id)}">${LU.bookmark}${escHtml(nameFor(type, id))}<span class="jr-chip-type" aria-hidden="true">${TYPE_LABEL[type]}</span></a>`
       ).join('');
       const more = favItems.length > 6 ? `<span class="jr-more">+${favItems.length - 6} weitere</span>` : '';
 
@@ -662,7 +708,7 @@
           <div class="jr-stat"><span class="jr-num">${reaktionen}</span><span class="jr-label">Reaktionen</span></div>
         </div>
         ${favItems.length ? `<div class="jr-favs">${favChips}${more}</div>`
-          : `<p class="area-text">Markiere Einträge im Marketplace mit ★, dann tauchen sie hier auf.</p>`}`;
+          : `<p class="area-text">Merke dir Einträge im Marketplace über das Lesezeichen, dann tauchen sie hier auf.</p>`}`;
     });
 
     // ===== SCROLL-REVEAL (.anim-reveal aus base.css) =====

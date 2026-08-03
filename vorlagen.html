@@ -74,6 +74,27 @@
      hat (spannt die ganze Grid-Breite, wie .icon-empty aber grid-tauglich). */
   .vl-grid-empty { grid-column: 1 / -1; font-size: 1.4rem; color: var(--c-gray-m); padding: 2rem 0; }
 
+  /* ===== Ansichtsdichte (initDensity, shared/base.js) =====
+     Zwei Regler auf dieser Seite, je einer pro großem Raster: einer in der
+     .bk-toolbar des Code-Reiters, einer in einer eigenen Leiste über den vier
+     Asset-Rastern des Design-Reiters. Die Gestalt (.density-ctl/.density-seg)
+     kommt fertig aus base.css — hier nur die Einpassung.
+     Der Design-Reiter hat keine Filterleiste, in die der Regler passen würde;
+     deshalb die eigene Zeile mit derselben Innenbreite wie die Abschnitte
+     darunter (--max-w/--pad-d wie .lib-inner), sonst stünde er linksbündig am
+     Fensterrand, während alles darunter zentriert ist. */
+  .vl-panel-toolbar {
+    max-width: var(--max-w); margin: 0 auto; padding: 2rem var(--pad-d) 0;
+    display: flex; justify-content: flex-end;
+  }
+  @media (max-width: 1023px) { .vl-panel-toolbar { padding: 1.6rem var(--pad-m) 0; justify-content: flex-start; } }
+  .bk-toolbar .vl-density { flex-basis: 100%; }
+
+  /* Stimmen-Knopf (renderUpvoteBtn) in Kartenfuß und Modal-Kopf. .up-btn bringt
+     Form, Farbe und Trefffläche aus base.css mit; der Wrapper trägt nur den
+     title mit der Demo-Kennzeichnung und hält den Knopf in der Zeile. */
+  .vl-votes { display: inline-flex; align-items: center; }
+
   /* Zwei Abschnitte dieser Seite filtern bewusst NICHT mit (Icon-Browser: eigenes
      Suchfeld; Brand-Spickzettel: fester Satz ohne Raster). Ein Abschnitt, der bei
      aktiver Suche unverändert dasteht, sieht aus wie ein Fehler — deshalb sagt er
@@ -244,21 +265,15 @@
        „Inter|normal|100 900“ und „JetBrains Mono|normal|100 800“ doppelt.
        Kein Extra-Download (gleiche Datei), aber Code und Kommentar widersprachen
        sich, und die lokale Inter-Deklaration hatte keinen Italic-Schnitt — wer
-       sie für die maßgebliche gehalten hätte, hätte falsch geschlossen. */
-    @font-face {
-      font-family: 'Manrope';
-      src: url('assets/fonts/manrope-variable.woff2') format('woff2-variations');
-      font-weight: 200 800;
-      font-style: normal;
-      font-display: swap;
-    }
-    @font-face {
-      font-family: 'Plus Jakarta Sans';
-      src: url('assets/fonts/plus-jakarta-sans-variable.woff2') format('woff2-variations');
-      font-weight: 200 800;
-      font-style: normal;
-      font-display: swap;
-    }
+       sie für die maßgebliche gehalten hätte, hätte falsch geschlossen.
+
+       Am 03.08.2026 sind mit der Kurations-Runde vier Deklarationen entfallen
+       (Manrope, Plus Jakarta Sans, Newsreader, IBM Plex Mono): Die Schriften
+       stehen nicht mehr in data/assets.js, und ihre woff2-Dateien sind unter
+       assets/fonts/ gelöscht. Eine @font-face-Regel auf eine fehlende Datei
+       bleibt still — der Browser lädt nichts, meldet nichts, und der Block
+       sähe beim nächsten Lesen aus wie eine Schrift, die es hier gibt.
+       Was hier steht, muss zu FONTS in data/assets.js passen. */
     @font-face {
       font-family: 'Space Grotesk';
       src: url('assets/fonts/space-grotesk-variable.woff2') format('woff2-variations');
@@ -274,25 +289,9 @@
       font-display: swap;
     }
     @font-face {
-      font-family: 'Newsreader';
-      src: url('assets/fonts/newsreader-variable.woff2') format('woff2-variations');
-      font-weight: 200 800;
-      font-style: normal;
-      font-display: swap;
-    }
-    @font-face {
       font-family: 'Syne';
       src: url('assets/fonts/syne-variable.woff2') format('woff2-variations');
       font-weight: 400 800;
-      font-style: normal;
-      font-display: swap;
-    }
-    /* IBM Plex Mono bleibt: der einzige Mono-Font der Bibliothek, der NICHT in
-       base.css steht — ohne diesen Block liefe seine Vorschaukarte im Fallback. */
-    @font-face {
-      font-family: 'IBM Plex Mono';
-      src: url('assets/fonts/ibm-plex-mono-400.woff2') format('woff2');
-      font-weight: 400;
       font-style: normal;
       font-display: swap;
     }
@@ -332,7 +331,7 @@
        Bis hierher haben vier Renderer vier Karten gebaut — fontCardHtml,
        palCardHtml, patCardHtml und ein Inline-Template in renderIconsets. Seit
        Stufe 5a sahen sie sich zum Verwechseln ähnlich, pflegten ihren Aufbau
-       aber jede für sich. Jetzt rendert assetCardHtml(assetModel(a)) alle 30.
+       aber jede für sich. Jetzt rendert assetCardHtml(assetModel(a)) sie alle.
 
        „Eine Karte" heisst: EINE Hülle (.asset-card), EIN Kopf, EINE Bedienleiste.
        NICHT: eine Vorschau. Eine Schrift zeigt eine Schriftprobe, eine Palette
@@ -345,9 +344,10 @@
        sind aber zwei Dinge zugleich —
          (1) sie tragen Rahmen, Hintergrund und Hover aus shared/base.css,
          (2) tests/e6-bibliothek.cjs zählt die vier Raster GENAU über sie
-             (#font-grid .font-card = 9, #pal-grid .pal-card = 7,
-              #pat-grid .pat-card = 10, #iconset-grid .iconset-card = 4),
-             und e6:06 klickt auf `#pal-grid .pal-card .swatch`.
+             (#font-grid .font-card, #pal-grid .pal-card, #pat-grid .pat-card,
+              #iconset-grid .iconset-card — Sollwerte stehen dort, nicht hier,
+              sonst driften sie bei jeder Kuration auseinander), und e6:06
+             klickt auf `#pal-grid .pal-card .swatch`.
        Wer sie entfernt, macht die Prüfung blind, ohne dass etwas rot wird —
        die Selektoren träfen dann schlicht nichts mehr. Also: bleiben.
 
@@ -383,12 +383,35 @@
        liest sich in einem Blick — beschreibung sind zwei bis drei Sätze. Kurzer
        Aufhänger, dann der Beleg; die umgekehrte Reihenfolge hätte jede Karte mit
        einem 200-Zeichen-Block begonnen, besonders im dreispaltigen Muster-Raster.
-       Warum nicht gekürzt/aufklappbar: eine abgeschnittene beschreibung wäre für
-       die Suche eine Falle — man findet die Karte über ein Wort, das man dann
-       nicht sieht. Der Größen- und Farbsprung ist die Unterscheidung, nicht das
-       Verstecken. Vollständig steht beides auch im Detail-Modal. */
+       NACHTRAG 03.08.2026 — DAS VERSTECKEN IST JETZT BEDIENBAR.
+       Hier stand: „Warum nicht gekürzt/aufklappbar: eine abgeschnittene
+       beschreibung wäre für die Suche eine Falle — man findet die Karte über ein
+       Wort, das man dann nicht sieht." Der Einwand stimmt weiter, aber er galt
+       einer festen Kürzung ohne Ausweg. Der Dichte-Regler (initDensity) ist
+       etwas anderes: Er steht sichtbar über dem Raster, hat drei Stufen, merkt
+       sich die Wahl und ist mit einem Klick zurückgedreht. „Ausführlich" zeigt
+       jede Karte vollständig — die Falle hat also eine Tür.
+       Zugeordnet ist bewusst ungleich: stimmung („wie es wirkt") bleibt in JEDER
+       Stufe sichtbar und wird nur geklammert, beschreibung („was es ist")
+       verschwindet in „Kompakt" ganz. Wer eine Übersicht überfliegt, braucht den
+       Aufhänger; die zwei bis drei Sätze Beleg braucht er erst beim Vergleichen.
+       Vollständig steht beides auch im Detail-Modal, das der Regler nicht
+       anfasst — dort ist man ohnehin nicht mehr am Überfliegen. */
     .ac-stimmung { font-size: 1.4rem; line-height: 1.55; color: var(--c-ink-body); margin: 0; }
     .ac-beschreibung { font-size: 1.25rem; line-height: 1.6; color: var(--c-gray-m); margin: 0; }
+    /* Zwei Zeilen in „Kompakt", vier in „Standard" — die stimmung ist ein Satz,
+       mehr braucht sie in keiner Stufe. Werte über die Variablen der Utility. */
+    .ac-stimmung.density-clamp { --density-clamp-k: 2; --density-clamp-s: 4; }
+    .ac-beschreibung.density-clamp { --density-clamp-s: 3; }
+    /* Der ehrliche Ausschnitt-Hinweis (assetAusschnittHtml) — abgesetzt wie der
+       „hier filtert die Suche nicht"-Hinweis der Abschnitte, damit er als Ansage
+       gelesen wird und nicht als weiterer Beschreibungssatz. Er bleibt in JEDER
+       Dichtestufe stehen: Er korrigiert eine falsche Erwartung, und die
+       entsteht gerade beim schnellen Überfliegen. */
+    .ac-ausschnitt {
+      margin: 0; font-size: 1.2rem; line-height: 1.5; color: var(--c-ink-body);
+      border-left: 3px solid var(--c-yellow); padding-left: 1rem;
+    }
     .ac-tags { display: flex; gap: .5rem; flex-wrap: wrap; }
     .ac-tag {
       font-family: var(--font-mono); font-size: 1.1rem; color: var(--c-gray-m);
@@ -406,22 +429,26 @@
       .ac-body { padding: 1.4rem 1.4rem 1.4rem; }
     }
 
-    /* ===== „Merken“-Stern in den Kartenköpfen =====
-       Die Gestalt kommt fertig aus base.css (.fav-btn) — hier wird nur die
-       rechte Kopfgruppe gebildet: Badge/Button und Stern stehen zusammen am
-       rechten Rand, damit der Kartentitel links seine Grundlinie behält.
-       Die negativen Ränder von .fav-btn (dort für den Katalog-Kartenkopf
-       gerechnet) werden auf die hiesigen Kopfzeilen angepasst — negative Ränder
-       verschieben die Trefferfläche, sie verkleinern sie nicht.
+    /* ===== „Merken“-Lesezeichen in den Kartenköpfen =====
+       Die Gestalt kommt fertig aus base.css (.fav-btn und .fav-btn.-lu) — hier
+       wird nur die rechte Kopfgruppe gebildet: Badge/Button und Lesezeichen
+       stehen zusammen am rechten Rand, damit der Kartentitel links seine
+       Grundlinie behält.
+       Die negativen Ränder von .fav-btn (dort für den Kartenkopf auf
+       skills.html gerechnet) werden auf die hiesigen Kopfzeilen angepasst —
+       negative Ränder verschieben die Trefferfläche, sie verkleinern sie nicht.
        Das kleinere font-size TAT das aber: 1.9rem + 2×1.2rem Padding ergab real
        43×43px (nachgemessen), einen Pixel unter WCAG 2.5.8. Deshalb hält
        base.css die 44px seit der Korrektur per min-width/min-height fest,
-       unabhängig von der Schriftgröße. Diese Zeile darf also verkleinern. */
+       unabhängig von der Schriftgröße. Diese Zeile darf also verkleinern.
+       font-size WIRKT weiter, obwohl hier keine Glyphe mehr steht: das
+       LU-Bookmark-SVG ist `width: 1em; height: 1em` (base.css:245), skaliert
+       also mit der Schriftgröße seines Knopfes. */
     .vl-kopf-rechts { display: inline-flex; align-items: center; gap: .8rem; margin-left: auto; }
-    /* Merken-Stern in der Kopfzeile der Beispieldaten-Karte: schiebt sich an den
-       rechten Rand, ohne den Dateinamen zu verdrängen (der darf umbrechen). Die
+    /* Merken-Lesezeichen in der Kopfzeile der Beispieldaten-Karte: schiebt sich an
+       den rechten Rand, ohne den Dateinamen zu verdrängen (der darf umbrechen). Die
        negativen Ränder holen das 1.2rem-Padding aus base.css wieder herein, damit
-       der Stern nicht aus der Zeile wächst — die 44px-Trefferfläche bleibt,
+       der Knopf nicht aus der Zeile wächst — die 44px-Trefferfläche bleibt,
        die hält base.css jetzt per min-width/min-height fest. */
     .bk-data-kopf .fav-btn { margin: -1.1rem -1.1rem -1.1rem auto; font-size: 1.9rem; }
     .vl-kopf-rechts .fav-btn { font-size: 1.9rem; margin: -1.1rem -1.1rem -1.1rem -.4rem; }
@@ -431,7 +458,7 @@
 
     /* ===== Baustein-Vorschau: ganze Miniatur statt Anschnitt (Juli 2026) =====
        Vorher rendert der iframe in Kartenbreite — sichtbar war nur der obere
-       linke Ausschnitt (bei Footer, CTA-Band & Co. sogar nur weiße Fläche).
+       linke Ausschnitt (bei flachen Bändern wie dem Footer sogar nur weiße Fläche).
        Jetzt rendert er IMMER intern in Desktop-Breite (--pv-w) und wird per
        transform auf die verfügbare Breite heruntergerechnet (--pv-s). Alle
        Variablen setzt pvSync() zur Laufzeit:
@@ -442,11 +469,14 @@
     .baustein-thumb, .preview-frame-wrap {
       --pv-w: 1200px; --pv-h: 675px; --pv-s: .4; --pv-x: 0px; --pv-y: 0px;
     }
-    /* Einheitliche Kachel-Geometrie 16:9: die höchsten Bausteine (Preis-Karten
-       und Kontaktformular, Verhältnis 0,54) passen vollständig in voller Breite
+    /* Einheitliche Kachel-Geometrie 16:9: der höchste Baustein im Bestand
+       (Kontaktformular, Verhältnis 0,54) passt vollständig in voller Breite
        hinein, flache Bänder liegen zentriert auf der Karo-Fläche. Gleiche
        Kartenhöhen im Grid — und dank Höhen-Begrenzung in pvSync() wird auch ein
-       künftig noch höherer Baustein verkleinert statt angeschnitten. */
+       künftig noch höherer Baustein verkleinert statt angeschnitten. Genau
+       deshalb steht hier auch kein fester Wert im Code: Preis-Karten waren bis
+       zum 03.08.2026 der zweite Kandidat und sind gestrichen — die Rechnung in
+       pvSync() hat das nicht gemerkt, weil sie misst statt anzunehmen. */
     .baustein-thumb { aspect-ratio: 16 / 9; }
     /* Einspaltig (≤1023px, dort bricht .bk-grid um) steht keine Karte neben einer
        anderen — dann darf die Kachel genau so hoch sein wie die Miniatur. Spart
@@ -559,10 +589,17 @@
             <label for="bk-sort">Sortierung</label>
             <select id="bk-sort" aria-label="Bausteine sortieren">
               <option value="recommended">Empfohlen zuerst</option>
+              <!-- Wortlaut wörtlich wie auf den anderen fünf Seiten — siehe
+                   sortedBausteine() für das Rangkriterium. -->
+              <option value="votes">Meiste Stimmen</option>
               <option value="copies">Meistkopiert</option>
               <option value="alpha">Name A–Z</option>
             </select>
           </div>
+          <!-- Ansichtsdichte (initDensity, shared/base.js) für das große
+               Bausteine-Raster. Kompakt ist der Standard: Wer diesen Reiter
+               öffnet, sucht meistens einen Baustein wieder, den er kennt. -->
+          <div class="vl-density" data-density-bausteine></div>
         </div>
         <div class="bk-grid" id="bk-grid"></div>
       </div>
@@ -620,6 +657,14 @@
   <!-- TAB: DESIGN-ASSETS (Body aus bibliothek.html, IDs unverändert; main-content-Anker umbenannt) -->
   <div id="panel-assets" role="tabpanel" aria-labelledby="vltab-assets" hidden>
   <main>
+    <!-- Ansichtsdichte für ALLE vier Asset-Raster dieses Reiters (Schriften,
+         Icon-Sets, Paletten, Muster). Sie steht deshalb über den Abschnitten und
+         nicht in einem davon: der Regler gilt dem ganzen Reiter, und in der
+         Kopfzeile eines einzelnen Abschnitts sähe er aus, als beträfe er nur
+         diesen. Der Bausteine-Reiter hat seinen eigenen Regler in der
+         .bk-toolbar — zwei Raster, zwei Reiter, zwei Speicherstände. -->
+    <div class="vl-panel-toolbar"><div class="vl-density" data-density-assets></div></div>
+
     <!-- (a) FONTS -->
     <section class="lib-section" id="assets-start" aria-labelledby="fonts-h">
       <div class="lib-inner">
@@ -644,7 +689,7 @@
           <h2 id="icons-h">Icon-Browser</h2>
           <span class="lib-sec-count" id="icons-count"></span>
         </div>
-        <p class="lib-note">Vier freie Icon-Bibliotheken im Überblick — plus eine Auswahl der wichtigsten Lucide-Icons zum direkten Kopieren. Klick ein Icon an, das SVG landet in deiner Zwischenablage.</p>
+        <p class="lib-note">Freie Icon-Bibliotheken im Überblick — plus eine Auswahl der wichtigsten Lucide-Icons zum direkten Kopieren. Klick ein Icon an, das SVG landet in deiner Zwischenablage. Wie viele Sets und Icons es hier gibt, steht im Zähler an der Überschrift; die Zahl rechnet die Seite aus den Daten.</p>
         <div class="iconset-grid" id="iconset-grid"></div>
         <!-- Wird von renderIconGrid() gefüllt, sobald die Seitensuche läuft: das
              Icon-Raster darunter filtert bewusst NICHT mit (Begründung dort im
@@ -845,7 +890,7 @@
                  schreibt (sonst stünde nach jedem Klick ein ?tab=code in der URL).
          rating  window.RatingConfig.type, solange dieser Reiter aktiv ist. Das ist
                  nur der Seiten-Default — jeder Stern und jedes Sterne-Widget
-                 übergibt seinen Typ zusätzlich EXPLIZIT (siehe vlFavBtnHtml). */
+                 übergibt seinen Typ zusätzlich EXPLIZIT (siehe favBookmarkHtml). */
     const VL_TABS = {
       assets:    { panel: 'panel-assets',    param: 'assets', rating: 'asset' },
       bausteine: { panel: 'panel-bausteine', param: null,     rating: 'baustein' },
@@ -930,36 +975,67 @@
     }
     window.vlDeepLinkMiss = vlDeepLinkMiss;
 
-    /* ===== MERKEN (Favoriten) — gemeinsam für BEIDE Module dieser Seite =====
-       Die Mechanik kommt vollständig aus shared/base.js (isFavorite/toggleFavorite,
-       Speicherschlüssel fav:<typ>:<id>); hier fehlten nur die Bedienelemente.
+    /* ===== MERKEN (Favoriten) — gemeinsam für ALLE Module dieser Seite =====
+       Markup und Mechanik kommen seit dem Feedback-Pass vollständig aus
+       shared/base.js: favBookmarkHtml(id, typ, name) rendert den Knopf,
+       toggleFavorite() schaltet ihn, gespeichert wird unter fav:<typ>:<id>.
+
+       Hier stand bis zum 03.08.2026 eine eigene Fassung namens vlFavBtnHtml()
+       mit den beiden Stern-Glyphen — dieselben Attribute, dieselbe Mechanik, nur eine
+       fünfte Kopie desselben Knopfes. Sie ist ersatzlos weg; die Aufrufstellen
+       rufen direkt favBookmarkHtml(). Der Unterschied ist sichtbar: statt der
+       Glyphe steht jetzt das Lesezeichen-Icon, gefüllt wenn gemerkt — dasselbe
+       Bild wie auf Skills, Prompts, Showroom und Lernen & Hilfe.
 
        Der Typ wird IMMER EXPLIZIT übergeben und NIE aus window.RatingConfig
-       abgeleitet: Diese Seite trägt zwei Module und schaltet RatingConfig beim
+       abgeleitet: Diese Seite trägt vier Module und schaltet RatingConfig beim
        Reiterwechsel um (vlShowTab: 'asset' bzw. 'baustein', dazu die Defaults in
-       den beiden Modul-IIFEs). Ein impliziter Typ landete also in dem Namensraum,
+       den Modul-IIFEs). Ein impliziter Typ landete also in dem Namensraum,
        dessen Reiter zuletzt aktiv war — ein gemerkter Baustein würde dann still
        unter fav:asset:<id> abgelegt und stünde in „Deine Sachen“ falsch da.
-       aria-label trägt den Namen, weil im Grid sonst Dutzende Sterne identisch
-       „Zu Favoriten hinzufügen“ hießen. */
-    function vlFavBtnHtml(id, typ, name) {
-      const fav = isFavorite(id, typ);
-      return `<button type="button" class="fav-btn${fav ? ' active' : ''}" data-fav-id="${escHtml(id)}" data-fav-typ="${typ}" data-fav-name="${escHtml(name)}" onclick="toggleFavorite(event,'${id}','${typ}')" aria-pressed="${fav}" aria-label="${escHtml(name)} ${fav ? 'aus Favoriten entfernen' : 'zu Favoriten hinzufügen'}">${fav ? '★' : '☆'}</button>`;
-    }
-    /* Zustand gezielt nachziehen statt das Grid neu zu rendern: der Fokus bleibt
+       aria-label trägt den Namen, weil im Grid sonst Dutzende Knöpfe identisch
+       „Zu Favoriten hinzufügen“ hießen; darum steht er auch in data-fav-name.
+
+       Zustand gezielt nachziehen statt das Grid neu zu rendern: der Fokus bleibt
        auf dem Knopf (Tastaturbedienung) und die Karten springen nicht.
        Gelesen wird pro Knopf mit SEINEM data-fav-typ — der Rückruf aus base.js
-       liefert nur die id, und dieselbe id könnte theoretisch in beiden Modulen
-       vorkommen. So bleibt jeder Stern in seinem eigenen Namensraum korrekt. */
+       liefert nur die id, und dieselbe id könnte in zwei Modulen vorkommen
+       (testbild-produkt gibt es als Bild UND als Beispieldatei). So bleibt jeder
+       Knopf in seinem eigenen Namensraum korrekt.
+       KEIN textContent mehr: Der Knopf trägt jetzt ein SVG als Kind. Ein
+       Überschreiben des Textinhalts würde es ersatzlos löschen, und die Karte
+       hätte nach dem ersten Klick einen leeren Knopf — die Umstellung auf
+       favBookmarkHtml() ist genau hier gefährlich. Sichtbar wird der Zustand
+       über die Klasse `active` (base.css füllt das Icon). */
     window.onFavoritesChanged = function (id) {
       document.querySelectorAll(`.fav-btn[data-fav-id="${CSS.escape(id)}"]`).forEach(btn => {
         const now = isFavorite(id, btn.dataset.favTyp);
         btn.classList.toggle('active', now);
         btn.setAttribute('aria-pressed', String(now));
-        btn.textContent = now ? '★' : '☆';
         btn.setAttribute('aria-label', `${btn.dataset.favName || ''} ${now ? 'aus Favoriten entfernen' : 'zu Favoriten hinzufügen'}`);
       });
     };
+
+    /* ===== STIMMEN (Upvotes) — gemeinsam für alle Module dieser Seite =====
+       Die Sterne sind am 03.08.2026 von dieser Seite verschwunden, so wie
+       vorher schon von Skills, Prompts und Lernen & Hilfe. Grund war überall
+       derselbe: Eine fünfstufige Note verlangt ein Urteil, das man einem
+       Baustein oder einer Schrift kaum abringen kann („ist das eine 4 oder eine
+       5?"), und die Seed-Durchschnitte lagen erwartungsgemäß alle zwischen 4,2
+       und 4,9 — sie sagten nichts. „Hat mir geholfen: ja" beantwortet dieselbe
+       Frage belastbar und ist mit einem Klick gegeben.
+
+       Der Seed kommt aus den Daten: getUpvoteCount() (shared/base.js) nimmt
+       rating.count, also die ANZAHL der redaktionellen Seed-Bewertungen — keine
+       umgerechnete, keine erfundene Zahl. Die alten rate:<typ>:<id>-Einträge im
+       localStorage bleiben unangetastet liegen; sie werden nur nicht mehr
+       gelesen.
+
+       DEMO-KENNZEICHNUNG (CLAUDE.md, harte Regel 3): Die Zahl ist ein Startwert
+       plus höchstens die eigene Stimme, gespeichert unter vote:<typ>:<id> in
+       diesem Browser. VL_VOTE_HINT sagt das an jedem Knopf; der Satz steht
+       genau einmal, damit die Fassungen nicht auseinanderlaufen. */
+    const VL_VOTE_HINT = 'Demo-Wert: Startzahl aus den Daten plus deine eigene Stimme — nur auf diesem Gerät gespeichert.';
 
     function vlShowTab(which, fromClick) {
       /* E12 — Tab-Wechsel-Verhalten: das Suchfeld gehört zu KEINEM Panel, darum
@@ -1205,9 +1281,21 @@
     }
     function setSort(s) { state.sort = s; renderBausteine(); }
 
+    /* SORTIERUNG. „Meiste Stimmen" ist am 03.08.2026 dazugekommen, weil die
+       Karten seither eine Stimmenzahl TRAGEN — eine sichtbare Kennzahl, nach der
+       man nicht ordnen kann, ist eine offene Frage. Rangkriterium ist voteScore()
+       aus shared/base.js: derselbe Wert, den der Knopf auf der Karte anzeigt
+       (Seed aus den Daten + eigene Stimme), damit Reihenfolge und Zahl nicht
+       auseinanderlaufen. Wortlaut wörtlich wie auf skills.html, prompts.html,
+       showroom.html und lernen-hilfe.html.
+       „Empfohlen zuerst" bleibt der Startwert und bleibt an leuchtturm+Kopien
+       hängen: Es ist die redaktionelle Reihenfolge und soll gerade NICHT von
+       Stimmen abhängen, sonst gäbe es zweimal dieselbe Sortierung. */
     function sortedBausteine(list) {
       const arr = list.slice();
-      if (state.sort === 'copies') {
+      if (state.sort === 'votes') {
+        arr.sort((a, b) => voteScore(b, 'baustein') - voteScore(a, 'baustein') || a.name.localeCompare(b.name, 'de'));
+      } else if (state.sort === 'copies') {
         arr.sort((a, b) => copyCountOf(b) - copyCountOf(a) || a.name.localeCompare(b.name, 'de'));
       } else if (state.sort === 'alpha') {
         arr.sort((a, b) => a.name.localeCompare(b.name, 'de'));
@@ -1223,20 +1311,28 @@
         <article class="baustein-card" id="baustein-${b.id}" data-id="${b.id}" data-kat="${b.kategorie}">
           <div class="baustein-thumb" data-pv-id="${b.id}">
             <!-- tabindex="-1": Die Vorschau ist reine Optik (auch pointer-events:none).
-                 Ohne das landen alle 12 Rahmen in der Tab-Reihenfolge und man muss
-                 sich mit der Tastatur durch sie hindurcharbeiten, um zu den Buttons
-                 der nächsten Karte zu kommen. Der Baustein-Inhalt selbst ist über
-                 „Ansehen & anpassen"/„Code" erreichbar. -->
+                 Ohne das landet JEDER Rahmen des Rasters in der Tab-Reihenfolge und
+                 man muss sich mit der Tastatur durch sie hindurcharbeiten, um zu den
+                 Buttons der nächsten Karte zu kommen. Der Baustein-Inhalt selbst ist
+                 über „Ansehen & anpassen"/„Code" erreichbar. -->
             <iframe class="preview-frame" tabindex="-1" title="Live-Vorschau: ${escHtml(b.name)}" loading="lazy" sandbox="" srcdoc="${escHtml(b.srcdoc)}"></iframe>
           </div>
           <div class="baustein-body">
             <div class="baustein-kopf">
               <span class="baustein-name">${escHtml(b.name)}</span>
-              <span class="vl-kopf-rechts"><span class="baustein-schwer">${escHtml(kategorieLabel(b))}</span>${vlFavBtnHtml(b.id, 'baustein', b.name)}</span>
+              <span class="vl-kopf-rechts"><span class="baustein-schwer">${escHtml(kategorieLabel(b))}</span>${favBookmarkHtml(b.id, 'baustein', b.name)}</span>
             </div>
-            <p class="baustein-desc">${escHtml(b.beschreibung)}</p>
+            <p class="baustein-desc density-hide-kompakt density-clamp">${escHtml(b.beschreibung)}</p>
             <div class="baustein-meta">
               <span class="copy-count" data-copies="${b.id}">${LU.copy}${copyCountOf(b)}× kopiert</span>
+              <!-- Die Stimme steht auf der KARTE, nicht nur im Modal: Sie ist die
+                   Kennzahl, nach der man hier sortieren kann, und ein Rang, dessen
+                   Kriterium man auf der Karte nicht ablesen kann, wirkt willkürlich
+                   (dieselbe Lektion wie in prompts.html/cardMetricHtml).
+                   label:'' — im Raster steht neben jedem Knopf schon der
+                   Kopierzähler; ein zweites Wort „Hilfreich" daneben machte die
+                   Zeile bei 320 px zweizeilig. Das aria-label trägt es trotzdem. -->
+              <span class="vl-votes" title="${VL_VOTE_HINT}">${renderUpvoteBtn(b.id, 'baustein', getUpvoteCount(b, 'baustein'), { label: '', compact: true, name: b.name })}</span>
             </div>
             <div class="baustein-actions">
               <button class="lib-btn -primary" onclick="openModal('${b.id}')">${LU.blocks}Ansehen &amp; anpassen</button>
@@ -1356,7 +1452,7 @@
             <span class="bk-data-ic">${d.format === 'Markdown' ? LU['file-text'] : (d.format === 'SVG' ? LU.palette : LU.database)}</span>
             <span class="bk-data-name">${escHtml(d.datei)}</span>
             <span class="bk-data-format">${escHtml(d.format)}</span>
-            ${vlFavBtnHtml(d.id, 'daten', d.datei)}
+            ${favBookmarkHtml(d.id, 'daten', d.datei)}
           </div>
           <div class="bk-data-facts">${facts.map(f => `<span>${escHtml(f)}</span>`).join('')}</div>
           <p class="bk-data-desc">${escHtml(d.beschreibung)}</p>
@@ -1372,11 +1468,11 @@
         </article>`;
     }
     /* ENTSCHEIDUNG (25.07.2026): Dieser Abschnitt WIRD gefiltert.
-       Die acht Übungsdateien sind eine eigene, merkbare Sammlung mit eigenem
+       Die Übungsdateien sind eine eigene, merkbare Sammlung mit eigenem
        Deep-Link (?d=<id>) und eigenem Eintrag in der globalen Suche — also eine
        Menge, in der man etwas sucht, kein Beiwerk. Bis 25.07.2026 blieben alle
-       acht Karten bei jeder Suche stehen, während direkt darüber gefilterte
-       Bausteine lagen; der Zähler nannte dazu ungerührt „8 Dateien".
+       Karten bei jeder Suche stehen, während direkt darüber gefilterte
+       Bausteine lagen; der Zähler nannte dazu ungerührt die volle Zahl.
        Haystack wie bei den Bausteinen: Dateiname, Format, Beschreibung, Übungs-
        idee und Spaltenhinweis — also alles, was auf der Karte auch lesbar ist. */
     function beispieldatenMatchesSearch(d) {
@@ -1398,9 +1494,33 @@
       const c = document.getElementById('data-count');
       if (c) c.textContent = q
         ? `${list.length} von ${BEISPIELDATEN.length} Dateien passen zu „${q}“`
-        : `${BEISPIELDATEN.length} Dateien · ${BEISPIELDATEN_STATS.csv} CSV + ${BEISPIELDATEN_STATS.markdown} Markdown + ${BEISPIELDATEN_STATS.svg} SVG`;
+        : `${BEISPIELDATEN.length} Dateien · ${beispieldatenFormate()}`;
+      /* Der Hinweis nennt seit dem 03.08.2026 auch, WO die zwei Testbilder
+         geblieben sind. Sie standen bis dahin doppelt: hier als Übungsdatei und
+         im Abschnitt darunter als Bild — dieselbe Datei zweimal im selben
+         Reiter. Quelle ist jetzt data/bilder.js (Begründung dort im Kopf), und
+         ein Bestand, aus dem etwas verschwindet, muss sagen wohin; sonst sucht
+         jemand die Datei, die er beim letzten Mal hier gefunden hat.
+         innerHTML statt textContent, weil der Verweis ein echter Link auf den
+         Abschnitt-Anker ist. Der String ist fest verdrahtet, es kommt keine
+         Eingabe darin vor. */
       const hint = document.getElementById('bk-data-hinweis');
-      if (hint) hint.textContent = 'Erfundene Übungsdaten — kein echtes Kundenmaterial. Namen, Marken und Zahlen sind anonymisiert bzw. plausibel erfunden.';
+      if (hint) hint.innerHTML = 'Erfundene Übungsdaten — kein echtes Kundenmaterial. Namen, Marken und Zahlen sind anonymisiert bzw. plausibel erfunden. '
+        + 'Die zwei Testbilder (<code>testbild-produkt.svg</code>, <code>testbild-kampagne.svg</code>) stehen im Abschnitt '
+        + '<a href="#bild-testbild-produkt">Bilder zum Weiterverwenden</a> — dort mit Vorschau, Maßen und Lizenz.';
+    }
+
+    /* Formatzeile des Zählers, aus BEISPIELDATEN_STATS gebaut und um leere
+       Gattungen gekürzt. Vorher stand hier eine feste Kette „x CSV + y Markdown
+       + z SVG"; seit die zwei Test-SVGs in data/bilder.js gewandert sind, stünde
+       dort „+ 0 SVG" — eine Angabe über eine Gattung, die es hier nicht gibt.
+       Die Liste folgt den Daten, statt sie nachzusprechen. */
+    function beispieldatenFormate() {
+      return [
+        [BEISPIELDATEN_STATS.csv, 'CSV'],
+        [BEISPIELDATEN_STATS.markdown, 'Markdown'],
+        [BEISPIELDATEN_STATS.svg, 'SVG']
+      ].filter(([n]) => n > 0).map(([n, l]) => `${n} ${l}`).join(' + ');
     }
 
     // ===== (d) PROJEKTANWEISUNGEN (kopierfertige CLAUDE.md-Vorlagen) =====
@@ -1449,7 +1569,7 @@
 
     function anweisungCardHtml(a) {
       // „Neu" kommt aus data/seit.js (istNeu in base.js), nicht aus den Daten —
-      // gleiche Machart wie die Katalogkarten in skills.html.
+      // gleiche Machart wie die Skill-Karten in skills.html.
       const neuFlagHtml = (typeof istNeu === 'function' && istNeu('ANWEISUNGEN', a.id)) ? '<span class="card-neu-flag">Neu</span>' : '';
       const tagsHtml = (a.tags || []).map(t => `<span class="bk-pa-tag">${escHtml(t)}</span>`).join('');
       const liHtml = arr => (arr || []).map(p => `<li>${escHtml(p)}</li>`).join('');
@@ -1461,7 +1581,7 @@
             <span class="bk-pa-ic">${LU['file-text']}</span>
             <span class="bk-pa-name">${escHtml(a.name)}</span>
             ${neuFlagHtml}
-            ${vlFavBtnHtml(a.id, 'anweisung', a.name)}
+            ${favBookmarkHtml(a.id, 'anweisung', a.name)}
           </div>
           <p class="bk-pa-kurz">${escHtml(a.kurz)}</p>
           <p class="bk-pa-wofuer">${escHtml(a.wofuer)}</p>
@@ -1490,10 +1610,18 @@
           <div class="bk-pa-actions">
             <button type="button" class="lib-btn -primary" data-copy-anweisung="${a.id}" onclick="copyAnweisung(event,'${a.id}')">${LU.copy}Als CLAUDE.md kopieren</button>
           </div>
+          <!-- Hier stand ein Fünf-Sterne-Widget („Deine Bewertung"). Es ist am
+               03.08.2026 der einen Stimme gewichen — eine Note für eine
+               Projektanweisung zu vergeben, ohne ein Projekt damit gebaut zu
+               haben, verlangt ein Urteil, das niemand hat. „Hat mir geholfen"
+               kann dagegen jeder beantworten, der eine Vorlage benutzt hat.
+               Der Typ steht EXPLIZIT: window.RatingConfig ist in diesem Reiter
+               'baustein', eine Stimme landete sonst still unter
+               vote:baustein:<id>. -->
           <div class="bk-pa-rate">
-            <span class="bk-pa-rate-label">Deine Bewertung</span>
-            ${renderInteractiveStars(a.id, 'anweisung')}
-            <p class="bk-pa-rate-hint" id="rating-hint-${a.id}"></p>
+            <span class="bk-pa-rate-label">War die Vorlage hilfreich?</span>
+            <span class="vl-votes" title="${VL_VOTE_HINT}">${renderUpvoteBtn(a.id, 'anweisung', getUpvoteCount(a, 'anweisung'), { label: 'Hilfreich', name: a.name })}</span>
+            <p class="bk-pa-rate-hint">${escHtml(VL_VOTE_HINT)}</p>
           </div>
         </article>`;
     }
@@ -1526,23 +1654,26 @@
       if (hint) hint.textContent = 'Der Text, den du kopierst, ist genau der, der als CLAUDE.md in deinem Projektordner landet — keine gekürzte Vorschau. Kopierzähler und Bewertung bleiben lokal in deinem Browser.';
     }
 
-    // ===== MODAL-ENGINE-VERDRAHTUNG: Vorschau · Code · Sag Claude · Bewertungen =====
+    // ===== MODAL-ENGINE-VERDRAHTUNG: Vorschau · Code · Sag Claude · Stimmen =====
+    /* Der vierte Reiter hieß bis zum 03.08.2026 „Bewertungen" und begann mit
+       einer Sterne-Zeile. Der SCHLÜSSEL bleibt 'ratings' — er steht in
+       state.activeTab, in den Renderern und in den Modal-Deep-Links; nur die
+       Beschriftung folgt dem, was drinsteht. Gleiche Trennung wie auf
+       prompts.html (dort ebenfalls ['ratings', 'Stimmen']). */
     function renderBausteinHead(item) {
       document.getElementById('modal-name').textContent = item.name;
       // Typ-Dachzeile: sagt im Kopf, WAS geöffnet wurde (wechselt mit dem Tab)
       const kindEl = document.getElementById('modal-kind');
       if (kindEl) { kindEl.textContent = 'Baustein'; kindEl.hidden = false; }
-      const bstRatingHtml = item.rating
-        ? `${renderStars(item.rating.average)}<span>${item.rating.average.toFixed(1)} (${item.rating.count} Bewertungen)</span><span class="modal-meta-sep">·</span>`
-        : '';
       document.getElementById('modal-meta').innerHTML =
-        bstRatingHtml
+        `<span class="vl-votes" title="${VL_VOTE_HINT}">${renderUpvoteBtn(item.id, 'baustein', getUpvoteCount(item, 'baustein'), { label: 'Hilfreich', name: item.name })}</span>`
+        + `<span class="modal-meta-sep">·</span>`
         + `<span class="ff-kat">${escHtml(kategorieLabel(item))} · ${escHtml(schwierigkeitLabel(item))}</span>`
         + `<span class="modal-meta-sep">·</span>`
         + `<span class="copy-count" data-copies="${item.id}">${LU.copy}${copyCountOf(item)}× kopiert</span>`;
       const tabBar = document.querySelector('#modal .modal-tabs');
       if (tabBar) {
-        tabBar.innerHTML = [['overview', 'Vorschau'], ['code', 'Code'], ['claude', 'Sag Claude'], ['ratings', 'Bewertungen']]
+        tabBar.innerHTML = [['overview', 'Vorschau'], ['code', 'Code'], ['claude', 'Sag Claude'], ['ratings', 'Stimmen']]
           .map(([id, label], i) => `<button class="tab-btn${i === 0 ? ' active' : ''}" role="tab" aria-selected="${i === 0 ? 'true' : 'false'}" data-tab="${id}" onclick="switchTab('${id}')">${label}</button>`).join('');
       }
     }
@@ -1582,21 +1713,28 @@
         </div>
         <p class="am-source">Der Ablauf: Code kopieren, in Claude Code einfügen, dann diesen Prompt drunter — Claude passt Farben, Texte und Struktur für dich an, statt dass du es von Hand baust.</p>`;
     }
+    /* Der Reiter zeigt jetzt EINE Stimme statt eines Sterne-Durchschnitts.
+       Die Kommentare bleiben vollständig: sie tragen den Inhalt, um den es hier
+       geht. Ihr gespeichertes rating-Feld (aus der Sterne-Zeit, in
+       comments:<typ>:<id> im localStorage) wird nur nicht mehr ANGEZEIGT —
+       gelöscht wird es nicht, das wäre ein Datenverlust ohne Gegenwert.
+       submitComment() in base.js kommt ohne Sterne-Widget klar und schreibt
+       dann rating: null. */
     function renderBausteinRatings(item) {
-      const e = getEffectiveRating(item);
+      const stimmen = getUpvoteCount(item, 'baustein');
       const comments = getComments(item.id);
       const commentsHtml = comments.length
         ? comments.map((c) => `
           <div class="am-comment">
-            <div class="am-comment-head">${escHtml(c.author)}${c.role ? ' · ' + escHtml(c.role) : ''}${c.rating ? ' · ' + renderStars(c.rating) : ''} · ${formatDate(c.date)}</div>
+            <div class="am-comment-head">${escHtml(c.author)}${c.role ? ' · ' + escHtml(c.role) : ''} · ${formatDate(c.date)}</div>
             <div class="am-comment-text">${escHtml(c.text)}</div>
           </div>`).join('')
         : '<p class="am-hint">Noch keine Kommentare — schreib den ersten!</p>';
       return `
-        <p class="am-source">${renderStars(e.average)} <strong>${e.average.toFixed(1)}</strong> · ${e.count} ${e.count === 1 ? 'Bewertung' : 'Bewertungen'}${item.rating ? '' : ' (noch ohne Seed — deine Bewertung startet die Zählung)'}</p>
-        <span class="am-label">Deine Bewertung</span>
-        ${renderInteractiveStars(item.id)}
-        <p class="am-hint" id="rating-hint-${item.id}"></p>
+        <p class="am-source"><strong>${stimmen}</strong> ${stimmen === 1 ? 'Stimme' : 'Stimmen'} — Kolleg:innen, denen dieser Baustein geholfen hat.</p>
+        <span class="am-label">Hat er dir geholfen?</span>
+        <div class="am-actions"><span class="vl-votes" title="${VL_VOTE_HINT}">${renderUpvoteBtn(item.id, 'baustein', stimmen, { label: 'Hilfreich', name: item.name })}</span></div>
+        <p class="am-hint">${escHtml(VL_VOTE_HINT)}</p>
         <span class="am-label">Dein Kommentar (bleibt lokal in deinem Browser)</span>
         <div class="am-comment-form">
           <input id="comment-author-${item.id}" placeholder="Dein Name" aria-label="Dein Name">
@@ -1753,6 +1891,16 @@
       };
       Object.entries(icons).forEach(([id, svg]) => { const el = document.getElementById(id); if (el) el.innerHTML = svg; });
 
+      /* Ansichtsdichte VOR dem ersten renderBausteine(): initDensity() setzt
+         data-density auf #bk-grid, und die Karten fragen es über
+         .density-hide-kompakt / .density-clamp ab. Andersherum stünde die erste
+         Fassung eine Bildlänge lang in der falschen Stufe.
+         Eigener Seitenschlüssel 'vorlagen-code': Der Standard wäre der
+         Dateiname, und den teilten sich die zwei Regler dieser Seite — ein
+         Umschalten im Code-Reiter verstellte dann auch den Design-Reiter,
+         obwohl er ein anderes Raster zeigt. */
+      initDensity({ page: 'vorlagen-code', container: '#bk-grid', mount: '[data-density-bausteine]', label: 'Ansicht', default: 'kompakt' });
+
       renderCats();
       renderBausteine();
       renderRanking();
@@ -1903,11 +2051,12 @@
        Browser bricht das Attribut am ersten " ab, und die Regel kommt gar nicht
        erst an. Deshalb wird ausschliesslich der Pfad ZWISCHEN den vorhandenen
        einfachen Anführungszeichen getauscht. Die data:-URIs sind
-       prozentkodiert und enthalten weder ' noch # (geprüft über alle sieben).
+       prozentkodiert und enthalten weder ' noch # (von
+       tools/muster-datauri.mjs bei jedem Lauf über alle geprüft).
        Ersetzung als Funktion, damit $-Zeichen im URI nicht als $&/$1 gelesen
        werden.
 
-       Die drei Verläufe haben kein dataUri und brauchen keins — ihr css ist
+       Die Verläufe haben kein dataUri und brauchen keins — ihr css ist
        selbsttragend (reine CSS-Verläufe, keine Datei). Sie fallen durch die
        erste Zeile und bekommen ihr css unverändert. */
     function patternCssPortabel(p) {
@@ -1925,14 +2074,17 @@
 
     // ===== E12: SEITEN-SUCHE (aktiver Tab = Assets) =====
     // Das eine Seiten-Suchfeld filtert hier alle VIER Asset-Raster: Schriften,
-    // Icon-SETS, Paletten und Muster/Verläufe — das sind zusammen genau die 30
-    // Einträge von ASSETS. Die Icon-Sets kamen am 25.07.2026 dazu: sie sind vier
-    // der 30 Assets und blieben als einziges Raster bei jeder Suche stehen.
-    // Der Icon-BROWSER (#icon-grid, 48 einzelne Icons) behält bewusst seine
-    // EIGENE Suche (#icon-search) — zwei konkurrierende Suchen auf demselben Grid
-    // wären verwirrend, und die 48 Icons sind keine Assets, sondern der Inhalt
-    // EINES Assets (Lucide). Neu ist nur: das steht jetzt sichtbar auf der Seite
+    // Icon-SETS, Paletten und Muster/Verläufe — das sind zusammen genau die
+    // Einträge von ASSETS. Die Icon-Sets kamen am 25.07.2026 dazu: sie waren das
+    // einzige Raster, das bei jeder Suche unverändert stehenblieb.
+    // Der Icon-BROWSER (#icon-grid) behält bewusst seine EIGENE Suche
+    // (#icon-search) — zwei konkurrierende Suchen auf demselben Grid wären
+    // verwirrend, und seine Zellen sind keine Assets, sondern der Inhalt EINES
+    // Assets (Lucide). Neu ist nur: das steht jetzt sichtbar auf der Seite
     // (renderIconGrid), statt stumm zu bleiben.
+    // KEINE Bestandszahlen in diesem Kommentar: Am 03.08.2026 ist ASSETS von 30
+    // auf 16 gekürzt worden, und hier standen an drei Stellen „30" — Kommentare
+    // driften genauso still wie Fließtext, nur merkt es niemand.
     // Mehrere Begriffe = UND; kombiniert mit dem Schrift-Kategorie-Filter auch.
     function _vlSearchTerms() {
       const q = (state.search || '').trim().toLowerCase();
@@ -1963,8 +2115,8 @@
     }
 
     /* Reiter-Zähler „Design-Assets <n>" (E12-Badge, .vl-count in der Reiterleiste).
-       Bis 25.07.2026 stand hier stur ASSETS.length. Er zählt jetzt, wie viele der
-       30 Assets zur Suche passen — über alle vier Typen hinweg und aus denselben
+       Bis 25.07.2026 stand hier stur ASSETS.length. Er zählt jetzt, wie viele
+       Assets zur Suche passen — über alle vier Typen hinweg und aus denselben
        Heuhaufen wie die vier Raster.
        BEWUSST OHNE den Schrift-Kategorie-Filter: der Reiter beantwortet „wie viel
        findet deine Suche in diesem Reiter", die Kategorie-Pillen darunter tragen
@@ -2031,12 +2183,42 @@
        Daten. Hier einmal zusammengeführt statt in vier Templates. */
     function assetStimmungText(m) { return m.typ === 'iconset' ? (m.ref.stil || '') : (m.ref.stimmung || ''); }
 
+    /* ===== „Was davon liegt hier?" — der ehrliche Ausschnitt =====
+       Ein Icon-Set trägt auf der Karte seine reale Set-Größe als Badge. Bei
+       Lucide stand daneben ein Icon-Browser mit einer Handvoll Symbolen, und die
+       Rückmeldung aus der Gruppe war die naheliegende: „Ich dachte, das sind
+       alle." Die Karte sagt jetzt selbst, wie klein der Ausschnitt ist.
+
+       BEIDE ZAHLEN WERDEN GERECHNET, keine getippt: die eine aus
+       LUCIDE_ICONS.length (das ist der Browser darunter), die andere aus
+       ref.anzahl. Deshalb steht der Satz hier und nicht in der beschreibung von
+       data/assets.js — dort prüft tools/muster-datauri.mjs jede Ziffer gegen die
+       EIGENEN Felder des Eintrags, und LUCIDE_ICONS ist ein anderes Array. Eine
+       getippte 48 wäre dort entweder rot oder, schlimmer, unbemerkt falsch.
+
+       Die Bedingung fragt nach dem Ausschnitt, nicht nach der id: Sobald ein
+       zweites Set einen Browser auf dieser Seite bekommt, gilt derselbe Satz
+       auch dort. Reiner Text, kein Link — e6:03 zählt die externen Links in
+       #iconset-grid (Begründung an renderIconsets). Die Adresse steht als Wort
+       da und daneben der Knopf „Zur Bibliothek", der genau dorthin führt. */
+    const VL_ICON_BROWSER_SET = 'lucide';   // das Set, aus dem der Icon-Browser stammt
+    function assetAusschnittHtml(m) {
+      if (m.typ !== 'iconset' || m.id !== VL_ICON_BROWSER_SET) return '';
+      if (typeof LUCIDE_ICONS === 'undefined' || !m.ref || !m.ref.anzahl) return '';
+      const hier = LUCIDE_ICONS.length;
+      const gesamt = m.ref.anzahl;
+      const quelle = String(m.ref.quelleUrl || '').replace(/^https?:\/\//, '').replace(/\/+$/, '');
+      return `<p class="ac-ausschnitt">Im Icon-Browser unter dieser Liste liegen ${hier} von ${gesamt.toLocaleString('de-DE')} Icons`
+        + ` — eine handverlesene Auswahl, nicht das Set.${quelle ? ` Die vollständige Sammlung steht auf ${escHtml(quelle)}.` : ''}</p>`;
+    }
+
     /* Der typabhängige Vorschau-Slot.
-       Icon-Sets bekommen bewusst KEINEN: die vier Sets liegen nicht als Dateien
-       im Repo, nur Lucide ist mit 48 Beispiel-Icons im Icon-Browser darunter
+       Icon-Sets bekommen bewusst KEINEN: die Sets liegen nicht als Dateien
+       im Repo, nur Lucide ist mit einer Auswahl im Icon-Browser darunter
        vertreten. Eine erfundene Vorschau (etwa Lucide-Icons unter jedem Set)
-       würde behaupten, alle vier sähen gleich aus. Auf der Karte steht damit
-       das, was heute schon dort steht — Name, Set-Größe, Stil, Lizenz. */
+       würde behaupten, sie sähen alle gleich aus. Auf der Karte steht damit
+       das, was heute schon dort steht — Name, Set-Größe, Stil, Lizenz, und bei
+       Lucide die Ausschnitt-Zeile von assetAusschnittHtml(). */
     function assetVorschauHtml(m) {
       const r = m.ref;
       if (m.typ === 'font') {
@@ -2098,11 +2280,12 @@
           <div class="ac-body">
             <div class="ac-kopf">
               <span class="ac-name">${escHtml(m.name)}</span>
-              <span class="vl-kopf-rechts">${badge ? `<span class="ac-badge">${escHtml(badge)}</span>` : ''}${vlFavBtnHtml(m.id, 'asset', m.name)}</span>
+              <span class="vl-kopf-rechts">${badge ? `<span class="ac-badge">${escHtml(badge)}</span>` : ''}${favBookmarkHtml(m.id, 'asset', m.name)}</span>
             </div>
-            ${stimmung ? `<p class="ac-stimmung">${escHtml(stimmung)}</p>` : ''}
-            ${m.beschreibung ? `<p class="ac-beschreibung">${escHtml(m.beschreibung)}</p>` : ''}
-            ${tagsHtml ? `<div class="ac-tags">${tagsHtml}</div>` : ''}
+            ${stimmung ? `<p class="ac-stimmung density-clamp">${escHtml(stimmung)}</p>` : ''}
+            ${m.beschreibung ? `<p class="ac-beschreibung density-hide-kompakt density-clamp">${escHtml(m.beschreibung)}</p>` : ''}
+            ${assetAusschnittHtml(m)}
+            ${tagsHtml ? `<div class="ac-tags density-hide-kompakt">${tagsHtml}</div>` : ''}
             <div class="ac-foot">
               <span class="lib-lic">${LU.check}${escHtml(assetLicenseLabel(m))}</span>
               ${assetHauptaktionHtml(m)}
@@ -2145,12 +2328,14 @@
 
     // ===== (b) ICONS =====
     /* ENTSCHEIDUNG (25.07.2026), Teil 1 — die ICON-SET-Karten WERDEN gefiltert.
-       Sie sind vier der 30 Design-Assets, haben Deep-Link, Stern und Detail-Modal
-       wie Schriften, Paletten und Muster — und waren das einzige der vier
+       Sie sind Design-Assets wie Schriften, Paletten und Muster, haben Deep-Link,
+       Merken-Knopf und Detail-Modal — und waren das einzige der vier
        Asset-Raster, das bei jeder Suche unverändert stehenblieb.
        Der Detail-Knopf ist ein <button>, KEIN <a>: e6:03 verlangt in
        #iconset-grid genau ICONSETS.length externe a[target=_blank] (die
-       „Zur Bibliothek"-Links). Ein Link mehr pro Karte würde daraus 8 machen. */
+       „Zur Bibliothek"-Links). Ein Link mehr pro Karte verdoppelte die Zahl.
+       Aus demselben Grund ist der Lucide-Hinweis auf der Karte (siehe
+       assetAusschnittHtml) reiner TEXT und kein Link auf lucide.dev. */
     function renderIconsets() {
       const host = document.getElementById('iconset-grid');
       if (!host) return;
@@ -2340,17 +2525,18 @@
       // Typ-Dachzeile: sagt im Kopf, WAS geöffnet wurde (wechselt mit dem Tab)
       const kindEl = document.getElementById('modal-kind');
       if (kindEl) { kindEl.textContent = 'Design-Asset'; kindEl.hidden = false; }
-      // Bewertungs-Seed vorn in der Meta-Zeile — gleiches Muster wie in den anderen Modalen
-      const ratingHtml = item.rating
-        ? `${renderStars(item.rating.average)}<span>${item.rating.average.toFixed(1)} (${item.rating.count} Bewertungen)</span><span class="modal-meta-sep">·</span>`
-        : '';
+      // Stimme vorn in der Meta-Zeile — gleiches Muster wie im Baustein-Modal.
+      // Sie steht bei JEDEM Asset, auch bei denen ohne Seed (Paletten, Muster,
+      // Icon-Sets starten ehrlich bei 0): Ein Knopf, der nur bei manchen Karten
+      // auftaucht, sähe aus wie ein Fehler, und abstimmen kann man überall.
       document.getElementById('modal-meta').innerHTML =
-        ratingHtml
+        `<span class="vl-votes" title="${VL_VOTE_HINT}">${renderUpvoteBtn(item.id, 'asset', getUpvoteCount(item, 'asset'), { label: 'Hilfreich', name: item.name })}</span>`
+        + `<span class="modal-meta-sep">·</span>`
         + `<span class="ff-kat">${typLabel(item)}</span><span class="modal-meta-sep">·</span>`
         + `<span class="lib-lic">${LU.check}${escHtml(assetLicenseLabel(item))}</span>`;
       const tabBar = document.querySelector('#modal .modal-tabs');
       if (tabBar) {
-        tabBar.innerHTML = [['overview', 'Vorschau'], ['einsatz', 'Einsatz'], ['ratings', 'Bewertungen']]
+        tabBar.innerHTML = [['overview', 'Vorschau'], ['einsatz', 'Einsatz'], ['ratings', 'Stimmen']]
           .map(([id, label], i) => `<button class="tab-btn${i === 0 ? ' active' : ''}" role="tab" aria-selected="${i === 0 ? 'true' : 'false'}" data-tab="${id}" onclick="switchTab('${id}')">${label}</button>`).join('');
       }
     }
@@ -2377,7 +2563,11 @@
         return `<div class="am-preview"><div class="pat-preview" style="${r.css};height:18rem;border-radius:var(--r-sm);border:1px solid var(--line)"></div><p class="ff-stimmung" style="margin-top:1.2rem">${escHtml(r.stimmung)}</p></div>`;
       }
       if (item.typ === 'iconset') {
-        return `<div class="am-preview"><p class="iconset-stil">${escHtml(r.stil)}</p><p class="am-source"><strong>Wofür:</strong> ${escHtml(r.wofuer)}</p><p class="ff-meta"><span class="ff-gewicht">${r.anzahl.toLocaleString('de-DE')} Icons im Set</span></p></div>`;
+        // assetAusschnittHtml() erwartet die gemeinsame Form (m.typ/m.id/m.ref) —
+        // hier kommt der ASSETS-Eintrag herein, der dieselben drei Felder trägt.
+        // Der Hinweis steht auch im Modal, weil ein Deep-Link (?a=lucide) direkt
+        // hier landet, ohne dass die Karte je zu sehen war.
+        return `<div class="am-preview"><p class="iconset-stil">${escHtml(r.stil)}</p><p class="am-source"><strong>Wofür:</strong> ${escHtml(r.wofuer)}</p><p class="ff-meta"><span class="ff-gewicht">${r.anzahl.toLocaleString('de-DE')} Icons im Set</span></p>${assetAusschnittHtml(item)}</div>`;
       }
       return '';
     }
@@ -2406,11 +2596,11 @@
           <p class="am-source" style="margin-top:1.4rem">${escHtml(r.lizenz)} Klick im Vorschau-Tab kopiert einzelne Hex-Codes.</p>`;
       }
       if (item.typ === 'pattern') {
-        /* Der Code-Block zeigt GENAU das, was der Knopf kopiert — bei den sieben
+        /* Der Code-Block zeigt GENAU das, was der Knopf kopiert — bei den
            SVG-Mustern also die portable Fassung mit eingebettetem data:-URI, nicht
            mehr den repo-relativen Pfad. Zwei verschiedene Zeichenketten an einer
            Stelle „CSS" wären genau die Sorte stille Abweichung, die man erst im
-           fremden Projekt merkt. Die drei Verläufe sehen davon nichts: sie haben
+           fremden Projekt merkt. Die Verläufe sehen davon nichts: sie haben
            kein dataUri, patternCssPortabel gibt ihr css unverändert zurück.
            Der SVG-Download steht daneben, weil manche die Datei wollen statt des
            Schnipsels. Pfad kommt aus dateien[0] — nicht neu zusammengebaut, sonst
@@ -2442,21 +2632,27 @@
       return '';
     }
 
+    /* Wie im Baustein-Modal: eine Stimme statt eines Sterne-Durchschnitts, die
+       Kommentare unverändert. Das rating-Feld alter Kommentare bleibt im
+       Speicher liegen und wird nur nicht mehr angezeigt.
+       Der Satz „noch ohne Seed" ist mit den Sternen weggefallen und wird nicht
+       ersetzt: Bei den Stimmen ist eine 0 selbsterklärend — sie sagt genau das,
+       was sie sagt, und braucht keine Fußnote. */
     function renderAssetRatings(item) {
-      const e = getEffectiveRating(item);
+      const stimmen = getUpvoteCount(item, 'asset');
       const comments = getComments(item.id);
       const commentsHtml = comments.length
-        ? comments.map((c, i) => `
+        ? comments.map((c) => `
           <div class="am-comment">
-            <div class="am-comment-head">${escHtml(c.author)}${c.role ? ' · ' + escHtml(c.role) : ''}${c.rating ? ' · ' + renderStars(c.rating) : ''} · ${formatDate(c.date)}</div>
+            <div class="am-comment-head">${escHtml(c.author)}${c.role ? ' · ' + escHtml(c.role) : ''} · ${formatDate(c.date)}</div>
             <div class="am-comment-text">${escHtml(c.text)}</div>
           </div>`).join('')
         : '<p class="am-hint">Noch keine Kommentare — schreib den ersten!</p>';
       return `
-        <p class="am-source">${renderStars(e.average)} <strong>${e.average.toFixed(1)}</strong> · ${e.count} ${e.count === 1 ? 'Bewertung' : 'Bewertungen'}${item.rating ? '' : ' (noch ohne Seed — deine Bewertung startet die Zählung)'}</p>
-        <span class="am-label">Deine Bewertung</span>
-        ${renderInteractiveStars(item.id)}
-        <p class="am-hint" id="rating-hint-${item.id}"></p>
+        <p class="am-source"><strong>${stimmen}</strong> ${stimmen === 1 ? 'Stimme' : 'Stimmen'} — Kolleg:innen, denen dieses Asset geholfen hat.</p>
+        <span class="am-label">Hat es dir geholfen?</span>
+        <div class="am-actions"><span class="vl-votes" title="${VL_VOTE_HINT}">${renderUpvoteBtn(item.id, 'asset', stimmen, { label: 'Hilfreich', name: item.name })}</span></div>
+        <p class="am-hint">${escHtml(VL_VOTE_HINT)}</p>
         <span class="am-label">Dein Kommentar (bleibt lokal in deinem Browser)</span>
         <div class="am-comment-form">
           <input id="comment-author-${item.id}" placeholder="Dein Name" aria-label="Dein Name">
@@ -2564,6 +2760,14 @@
       };
       Object.entries(icons).forEach(([id, svg]) => { const el = document.getElementById(id); if (el) el.innerHTML = svg; });
 
+      /* Ansichtsdichte VOR den ersten Renderern, gleiche Begründung wie im
+         Bausteine-Modul. container ist hier das ganze Panel: der Reiter trägt
+         VIER Raster (Schriften, Icon-Sets, Paletten, Muster), die alle
+         dieselben Utility-Klassen benutzen. Eigener Schlüssel
+         'vorlagen-design', damit die zwei Regler dieser Seite sich nicht
+         gegenseitig verstellen. */
+      initDensity({ page: 'vorlagen-design', container: '#panel-assets', mount: '[data-density-assets]', label: 'Ansicht', default: 'kompakt' });
+
       renderFontCats();
       renderFonts();
       renderIconsets();
@@ -2574,13 +2778,15 @@
 
       // E12: Count-Badge am Design-Assets-Tab — gesetzt von updateAssetsTabCount(),
       // das die vier Renderer oben bei jedem Rendern aufrufen.
-      // Gemessen 24.07.2026: zeigte 39 statt 30. ASSETS ENTHÄLT die Schriften
-      // bereits (data/assets.js: [...FONTS.map(…), ...PALETTES, ...PATTERNS,
-      // ...ICONSETS]) — „FONTS.length + ASSETS.length“ zählte die 9 Schriften
-      // doppelt. ASSETS.length allein = 30 und deckt sich mit den Abschnitts-
-      // zählern (9 Schriften + 4 Icon-Sets + 7 Paletten + 10 Hintergründe)
-      // und mit der Zahl auf der Startseite. Seit 25.07.2026 folgt die Zahl
-      // zusätzlich der Suche (vorher stand sie stur auf 30).
+      // Der Fehler, der hier einmal saß (gemessen 24.07.2026): Die Badge zählte
+      // „FONTS.length + ASSETS.length“ und damit die Schriften DOPPELT — ASSETS
+      // enthält sie bereits (data/assets.js: [...FONTS.map(…), ...PALETTES,
+      // ...PATTERNS, ...ICONSETS]). Richtig ist ASSETS.length allein; das deckt
+      // sich mit der Summe der vier Abschnittszähler und mit der Zahl auf der
+      // Startseite. Seit 25.07.2026 folgt die Zahl zusätzlich der Suche.
+      // Die konkreten Zahlen von damals stehen bewusst nicht mehr hier: Sie
+      // waren nach der Kuration vom 03.08.2026 falsch und beschrieben ohnehin
+      // einen Bestand, nicht den Fehler.
       updateAssetsTabCount();
 
       initModalEngine();
@@ -2686,7 +2892,7 @@
             <div class="bild-kopf">
               <span class="bild-name">${escHtml(b.name)}</span>
               ${neuFlagHtml}
-              ${vlFavBtnHtml(b.id, 'bild', b.name)}
+              ${favBookmarkHtml(b.id, 'bild', b.name)}
             </div>
             <p class="bild-desc">${escHtml(b.beschreibung)}</p>
             <div class="bild-facts">
@@ -2835,7 +3041,7 @@
             <span class="pk-ic">${LU.package}</span>
             <span class="pk-name">${escHtml(p.name)}</span>
             ${neuFlagHtml}
-            ${vlFavBtnHtml(p.id, 'paket', p.name)}
+            ${favBookmarkHtml(p.id, 'paket', p.name)}
           </div>
           <p class="pk-kurz">${escHtml(p.kurz)}</p>
           <p class="pk-wofuer">${escHtml(p.wofuer)}</p>

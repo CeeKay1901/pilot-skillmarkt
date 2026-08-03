@@ -32,11 +32,18 @@ const ARG = process.argv[2] || 'http://localhost:8412/showroom.html';
 const TARGET = /\.html/.test(ARG) ? ARG : new URL('showroom.html', ARG).href;
 const INDEX_TARGET = TARGET.replace(/showroom\.html.*$/, 'index.html');
 
-// Soll-Werte (Stand E8, 2026-07-17), abgeleitet aus data/cases.js:
-const EXPECTED_TOTAL = 10;          // CASES.length
-const EXPECTED_ECHT = 4;            // istEcht:true
-const EXPECTED_BEISPIEL = 6;        // istEcht:false
-const EXPECTED_SAEULEN = 6;         // verschiedene Säulen
+/* Soll-Werte NACHGEZOGEN (2026-08-03, Kurations-Runde), abgeleitet aus
+   data/cases.js: drei inszenierte Beispiel-Projekte wurden gestrichen
+   (moodboard-generator, umfrage-dashboard, wettbewerbs-radar), damit 10→7.
+   Die vier ECHTEN Team-Tools sind unangetastet geblieben — genau das ist der
+   Punkt der Kuration und der Grund, warum EXPECTED_ECHT gleich bleibt: es
+   wurde nur Inszeniertes entfernt, nichts Echtes (CLAUDE.md, harte Regel 4).
+   Mit den drei Cases fallen zwei Säulen weg (6→4: insights, media,
+   performance, office). */
+const EXPECTED_TOTAL = 7;           // CASES.length
+const EXPECTED_ECHT = 4;            // istEcht:true — unverändert
+const EXPECTED_BEISPIEL = 3;        // istEcht:false
+const EXPECTED_SAEULEN = 4;         // verschiedene Säulen
 const SPOTLIGHT_ID = 'umfrage-auswerter';
 const SPOTLIGHT_NAME = 'Umfrage-Auswerter';
 const DEEPLINK_ID = 'tkp-rechner';
@@ -237,31 +244,46 @@ async function runViewport(browser, vp) {
       && modalClosed,
     { modalInfo, storyOk, previewInfo, modalClosed });
 
-  // ---------- (5) Reaktion „Will ich auch“: vote:reaktion:* togglet + persistiert, KEINE Sterne ----------
+  /* ---------- (5) Reaktion „Will ich auch“: vote:reaktion:* togglet + persistiert, KEINE Sterne ----------
+     NACHGEZOGEN (2026-08-03): Der Reaktions-Knopf war eine showroom-eigene
+     Sonderlocke ([data-react]/[data-react-count]). Er ist jetzt derselbe
+     gemeinsame Upvote-Knopf wie überall sonst — .up-btn[data-up-id][data-up-typ]
+     mit .up-count (base.js renderUpvoteBtn). Der Speicher-Schlüssel
+     vote:reaktion:<id> ist unverändert, der Typ heißt weiter `reaktion`.
+     Der Prüf-GEDANKE ist unverändert: umschalten, Zahl zieht mit, überlebt
+     einen Reload, und es entsteht KEIN rate:-Schlüssel.
+     Der Selektor steht bewusst in einer Konstante: die alte Fassung hat den
+     Selektor viermal wiederholt und ist beim Umbau mit „.click() auf null"
+     hart abgebrochen, statt einen roten Check zu melden. */
   const firstId = await page.evaluate(() => document.querySelector('#sr-grid .sr-card').dataset.id);
-  const before = await page.evaluate((id) => ({
-    ls: localStorage.getItem('vote:reaktion:' + id),
-    count: (document.querySelector(`#sr-grid #case-${id} [data-react-count="${id}"]`) || {}).textContent || '',
-    pressed: (document.querySelector(`#sr-grid #case-${id} [data-react="${id}"]`) || {}).getAttribute('aria-pressed'),
-  }), firstId);
-  await page.evaluate((id) => { document.querySelector(`#sr-grid #case-${id} [data-react="${id}"]`).click(); }, firstId);
+  const UP = (id) => `#sr-grid #case-${id} .up-btn[data-up-id="${id}"][data-up-typ="reaktion"]`;
+  const before = await page.evaluate((o) => ({
+    ls: localStorage.getItem('vote:reaktion:' + o.id),
+    count: (document.querySelector(o.sel + ' .up-count') || {}).textContent || '',
+    pressed: (document.querySelector(o.sel) || {}).getAttribute
+      ? document.querySelector(o.sel).getAttribute('aria-pressed') : null,
+  }), { id: firstId, sel: UP(firstId) });
+  await page.evaluate((sel) => { document.querySelector(sel).click(); }, UP(firstId));
   await page.waitForTimeout(250);
-  const afterOn = await page.evaluate((id) => ({
-    toast: !!document.querySelector('#toast.show'),
-    ls: localStorage.getItem('vote:reaktion:' + id),
-    count: (document.querySelector(`#sr-grid #case-${id} [data-react-count="${id}"]`) || {}).textContent || '',
-    pressed: (document.querySelector(`#sr-grid #case-${id} [data-react="${id}"]`) || {}).getAttribute('aria-pressed'),
-    onClass: (document.querySelector(`#sr-grid #case-${id} [data-react="${id}"]`) || {}).classList.contains('-on'),
-    noRateKeys: Object.keys(localStorage).filter(k => k.startsWith('rate:')).length === 0,
-  }), firstId);
-  await page.evaluate((id) => { document.querySelector(`#sr-grid #case-${id} [data-react="${id}"]`).click(); }, firstId);
+  const afterOn = await page.evaluate((o) => {
+    const btn = document.querySelector(o.sel);
+    return {
+      toast: !!document.querySelector('#toast.show'),
+      ls: localStorage.getItem('vote:reaktion:' + o.id),
+      count: (btn && btn.querySelector('.up-count') || {}).textContent || '',
+      pressed: btn ? btn.getAttribute('aria-pressed') : null,
+      onClass: !!btn && btn.classList.contains('-on'),
+      noRateKeys: Object.keys(localStorage).filter(k => k.startsWith('rate:')).length === 0,
+    };
+  }, { id: firstId, sel: UP(firstId) });
+  await page.evaluate((sel) => { document.querySelector(sel).click(); }, UP(firstId));
   await page.waitForTimeout(250);
-  const afterOff = await page.evaluate((id) => ({
-    ls: localStorage.getItem('vote:reaktion:' + id),
-    count: (document.querySelector(`#sr-grid #case-${id} [data-react-count="${id}"]`) || {}).textContent || '',
-  }), firstId);
+  const afterOff = await page.evaluate((o) => ({
+    ls: localStorage.getItem('vote:reaktion:' + o.id),
+    count: (document.querySelector(o.sel + ' .up-count') || {}).textContent || '',
+  }), { id: firstId, sel: UP(firstId) });
   // Reaktion wieder setzen und Persistenz über Reload prüfen
-  await page.evaluate((id) => { document.querySelector(`#sr-grid #case-${id} [data-react="${id}"]`).click(); }, firstId);
+  await page.evaluate((sel) => { document.querySelector(sel).click(); }, UP(firstId));
   await page.waitForTimeout(150);
   await page.goto(TARGET, { waitUntil: 'load' });
   await page.waitForSelector('#sr-grid .sr-card', { timeout: 10000 });
@@ -529,6 +551,22 @@ async function runIndexChecks(browser) {
     assetsCtaStillThere: !!document.querySelector('.areas-grid .area-cta-row a[href="vorlagen.html?tab=assets"]'),
     areaCount: parseInt((document.getElementById('area-showroom-count') || {}).textContent || '-1', 10),
     areaMeta: (document.getElementById('area-showroom-meta') || {}).textContent || '',
+    areaMetaNodes: document.querySelectorAll('.area-card .area-meta').length,
+    /* Soll-Eintrag der Kachel, zur Laufzeit aus derselben Quelle wie die Seite:
+       renderAreaSpot() (index.html) zeigt bestRated(items, typ, 5)[0]. Siehe i4.
+       Die Projektion muss hier nachgebaut werden, und zwar aus zwei Gründen:
+       (1) index.html baut sein CASE_POOL als lokale const in einem
+           DOMContentLoaded-Rückruf — von außen nicht sichtbar.
+       (2) Ein Case trägt seinen Seed als `reaktionSeed`; _upSeed() (base.js)
+           kennt aber nur votesSeed/votes/rating.count. Ohne die Umbenennung
+           läse bestRated() für JEDES Projekt 0 und fiele auf die alphabetisch
+           erste id zurück — der Test prüfte dann etwas anderes als die Seite
+           zeigt. Genau diese Falle steht als Kommentar auch in index.html. */
+    spotExpected: (typeof bestRated === 'function' && typeof CASES !== 'undefined')
+      ? ((bestRated(CASES.map(c => ({
+          id: c.id, votesSeed: c.reaktionSeed, votesRecent: c.votesRecent,
+        })), 'reaktion', 5)[0] || {}).id || null)
+      : null,
     areaCta: !!document.querySelector('.area-card a.c-cta[href="showroom.html"]'),
     areaSpotHref: (document.querySelector('a.area-spot[href^="showroom.html?case="]') || { getAttribute: () => '' }).getAttribute('href') || '',
     areaSpotReact: (document.getElementById('area-showroom-spot-react') || {}).textContent || '',
@@ -557,16 +595,40 @@ async function runIndexChecks(browser) {
       && indexInfo.vorlagenCtaStillThere && indexInfo.assetsCtaStillThere,
     { noRouter: indexInfo.noRouter, ctaText: indexInfo.areaCtaText,
       vorlagenCtaStillThere: indexInfo.vorlagenCtaStillThere, assetsCtaStillThere: indexInfo.assetsCtaStillThere });
+  /* NACHGEZOGEN (2026-08-03): Der Aufschlüsselungs-Satz `.area-meta`
+     („4 echte · 6 Beispiele") ist beim Umbau der Startseite auf rotierende
+     Spots entfallen — auf allen sechs Bereichs-Karten zugleich, samt füllender
+     Zeile. Gestaltungsentscheidung, kein Defekt: es wurde keine Zahl falsch,
+     es steht eine Zeile weniger da.
+     Tragend bleibt hier sogar mehr als vorher: die Kachel-Zahl MUSS der
+     Datenlage entsprechen, und echt/Beispiel werden weiterhin gegen CASE_STATS
+     geprüft — das ist die Trennung aus CLAUDE.md, harte Regel 4. Dazu die
+     Gegenprobe, dass der Satz wirklich überall weg ist. */
   check('i3_counts_match_data',
     indexInfo.areaCount === EXPECTED_TOTAL && indexInfo.dataCases === EXPECTED_TOTAL
       && indexInfo.dataEcht === EXPECTED_ECHT && indexInfo.dataBeispiel === EXPECTED_BEISPIEL
-      && indexInfo.areaMeta.includes(String(EXPECTED_ECHT)) && indexInfo.areaMeta.includes(String(EXPECTED_BEISPIEL)),
-    { areaCount: indexInfo.areaCount, meta: indexInfo.areaMeta, dataCases: indexInfo.dataCases });
+      && indexInfo.areaMetaNodes === 0,
+    { areaCount: indexInfo.areaCount, meta: indexInfo.areaMeta,
+      areaMetaNodes: indexInfo.areaMetaNodes, dataCases: indexInfo.dataCases });
+  /* NACHGEZOGEN (2026-08-03): Der Spot-Link wurde vorher gegen die feste ID
+     SPOTLIGHT_ID ('umfrage-auswerter') geprüft. Die Kachel zieht ihren Eintrag
+     jetzt über bestRated() und ROTIERT tagesabhängig — ein fester Sollwert wäre
+     an den meisten Tagen rot, ohne dass irgendetwas kaputt wäre.
+     Ersatz OHNE Schutzverlust: kanonische Deep-Link-Form
+     (/^showroom\.html\?case=/) UND die verlinkte ID ist exakt die, die
+     renderAreaSpot() laut eigenem Vertrag zeigt (zur Laufzeit berechnet, siehe
+     spotExpected oben). Das deckt zusätzlich eine falsch verdrahtete Kachel auf
+     — insbesondere die reaktionSeed/votesSeed-Falle.
+     SPOTLIGHT_ID/SPOTLIGHT_NAME bleiben für die Modal-Checks oben in Gebrauch. */
+  const spotId = (indexInfo.areaSpotHref.match(/^showroom\.html\?case=(.+)$/) || [])[1] || '';
+  const spotOk = /^showroom\.html\?case=.+$/.test(indexInfo.areaSpotHref)
+    && !!indexInfo.spotExpected && spotId === indexInfo.spotExpected;
   check('i4_area_card_clickable',
-    indexInfo.areaCta && indexInfo.areaSpotHref === 'showroom.html?case=' + SPOTLIGHT_ID
+    indexInfo.areaCta && spotOk
       && indexInfo.areaSpotReact.trim().length > 0 && indexInfo.navShowroom
       && indexInfo.areaCtaCount === 6 && indexInfo.soonPills === 0,
     { areaCta: indexInfo.areaCta, areaSpotHref: indexInfo.areaSpotHref,
+      spotId, spotExpected: indexInfo.spotExpected, spotOk,
       areaSpotReact: indexInfo.areaSpotReact, navShowroom: indexInfo.navShowroom,
       areaCtaCount: indexInfo.areaCtaCount, soonPills: indexInfo.soonPills });
   check('i5_news_mentions_showroom_and_interlinks',

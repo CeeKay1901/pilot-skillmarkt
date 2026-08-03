@@ -119,7 +119,13 @@ function renderNav(activePage, opts) {
   // nav-catalog/nav-prompts/nav-vorlagen/nav-showroom/nav-hilfe stehen IMMER
   // im DOM, das aktive Item trägt class="active" + aria-current="page".
   const sharedItems = [
-    { id: 'nav-catalog', page: 'katalog', label: 'Katalog', href: 'skills.html' },
+    /* Das Label heißt seit der Feedback-Runde „Skills" — „Katalog" sagte, in
+       welcher FORM etwas vorliegt, nicht WAS drin ist; Leute von Langdock
+       suchten Skills und fanden ein Wort für ein Register. id, page-Schlüssel
+       und href bleiben ABSICHTLICH 'nav-catalog'/'katalog'/'skills.html':
+       daran hängen fünf Testsuiten, opts.sharedOnclick.katalog (skills.html)
+       und geteilte Deep-Links. Nur die Beschriftung ist neu. */
+    { id: 'nav-catalog', page: 'katalog', label: 'Skills', href: 'skills.html' },
     { id: 'nav-prompts', page: 'prompts', label: 'Prompts', href: 'prompts.html' },
     { id: 'nav-vorlagen', page: 'vorlagen', label: 'Vorlagen', href: 'vorlagen.html' },
     { id: 'nav-showroom', page: 'showroom', label: 'Showroom', href: 'showroom.html' },
@@ -174,7 +180,14 @@ function renderNav(activePage, opts) {
           <button type="button" id="footer-about" onclick="openAboutModal()">Über diese Seite</button>
           <a href="lernen-hilfe.html" id="footer-hilfe"><svg class="brand-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24"/><path d="m14.83 9.17 4.24-4.24"/><path d="m14.83 14.83 4.24 4.24"/><path d="m9.17 14.83-4.24 4.24"/><circle cx="12" cy="12" r="4"/></svg>Du hängst fest? Zu Lernen &amp; Hilfe</a>
           <a href="https://github.com/CeeKay1901/pilot-skillmarkt" target="_blank" rel="noopener"><svg class="brand-ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>Repo auf GitHub</a>
-          <a href="https://code.claude.com/docs" target="_blank" rel="noopener"><svg class="brand-ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21 10.5h3v3h-3v3h-1.5v3H18v-3h-1.5v3H15v-3H9v3H7.5v-3H6v3H4.5v-3H3v-3H0v-3h3v-6h18Zm-15 0h1.5v-3H6Zm10.5 0H18v-3h-1.5z"/></svg>Claude-Code-Doku</a>
+          <!-- Statt der Hersteller-Doku (code.claude.com) die HAUSEIGENE
+               Einstiegsseite: Zielgruppe sind Kolleg:innen ohne Software-
+               Hintergrund, für die „Docs" die falsche erste Tür ist.
+               Das Claude-Wortmarken-SVG ist hier bewusst weg — es hätte auf
+               eine pilot-Seite gezeigt und die Absender verwechselt. An seiner
+               Stelle das LU-Rocket (Start/Loslegen), wie die Nachbarlinks als
+               inline-SVG mit .brand-ico. -->
+          <a href="https://pilot-dev-platform.apps.pilot.onmercury.io/wie-fange-ich-an" target="_blank" rel="noopener"><svg class="brand-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg>Wie fange ich an? — pilot Dev-Doku</a>
         </nav>
       </div>
       <div class="footer-legal">© 2026 pilot Agenturgruppe — AI Marketplace · Citizen Coding</div>
@@ -359,7 +372,13 @@ const LU = {
   "trophy": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>',
   "layout-dashboard": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>',
   /* E9 (globales Such-Overlay) — reines Lupen-Icon (NICHT 'qa', das ist Lupe-mit-Häkchen). */
-  "search": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>'
+  "search": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>',
+  /* Merken/Lesezeichen (Lucide `bookmark`, Outline). Derselbe Pfad, den der
+     Header-Knopf „Deine Sachen" schon inline trägt (renderNav) — Merken und
+     der Ort, an dem das Gemerkte landet, tragen damit dasselbe Zeichen.
+     Gefüllt wird NICHT hier, sondern über .fav-btn.-lu.active in base.css:
+     `fill` gehört zum Zustand, nicht zum Icon. */
+  "bookmark": '<svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>'
 };
 function subIcon(sub) {
   return LU[sub] || LU.fallback;
@@ -483,99 +502,34 @@ function copyTriggerRunway(evt, trigger, id) {
   });
 }
 
-/* ===== RATING-ENGINE (Sterne + Kommentare, typ-namespaced) ===== */
-function renderStars(rating, interactive = false, skillId = null) {
-  const full = Math.floor(rating);
-  const half = rating - full >= 0.5;
-  let html = `<span class="stars-display" role="img" aria-label="${rating.toFixed(1)} von 5 Sternen">`;
-  for (let i = 1; i <= 5; i++) {
-    const isFull = i <= full;
-    const isHalf = !isFull && (i === full + 1 && half);
-    html += `<span class="star ${isFull ? 'filled' : isHalf ? 'half' : 'empty'}" aria-hidden="true">${isFull ? '★' : '☆'}</span>`;
-  }
-  html += '</span>';
-  return html;
-}
+/* ===== FEEDBACK-ENGINE (Kommentare + Alt-Bewertungen, typ-namespaced) =====
+   Die Sterne-Engine ist mit E16 entfallen: renderStars, renderInteractiveStars,
+   hoverStars, resetStarHover, setRating, submitRating, getEffectiveRating,
+   bayesScore und itemBadge sind ersatzlos gestrichen, alle sechs Seiten stimmen
+   über renderUpvoteBtn() ab (vote:<typ>:<id>).
+   Geblieben sind die Kommentare und der LESENDE Zugriff auf die alten
+   rate:<typ>:<id>-Schlüssel. Die Altdaten bleiben bewusst liegen und werden
+   nicht migriert — geschrieben wird dorthin nichts mehr, gelesen nur noch an
+   zwei Stellen: skills.html fragt damit „hat die Person vor E16 schon Feedback
+   gegeben?" (dann kommt der CTA nicht mehr), und submitComment() hängt einen
+   alten Stern an einen neu geschriebenen Kommentar. */
 
-/* Zweiter Parameter `type` ist OPTIONAL und wird nur durchgereicht, wenn er
-   angegeben ist — gleiche Machart wie vlFavBtnHtml(id, typ, name) in
-   vorlagen.html. Grund: window.RatingConfig.type ist ein SEITEN-Default, und
-   Seiten mit mehreren bewertbaren Gattungen stellen ihn um (vorlagen.html beim
-   Reiterwechsel: 'baustein' ↔ 'asset'). Eine Gattung, die dort NICHT im
-   Default steht, landete sonst still im falschen Namensraum — der Schlüssel
-   würde geschrieben, der Test bliebe grün und die Bewertung wäre trotzdem am
-   falschen Ort. Ohne Parameter ändert sich nichts (RatingConfig-Default). */
-function renderInteractiveStars(skillId, type) {
-  const current = state.pendingRating[skillId] || getRating(skillId, type) || 0;
-  const typArg = type ? `, '${type}'` : '';
-  let html = `<div class="star-input" id="star-input-${skillId}" data-current="${current}"${type ? ` data-rate-typ="${type}"` : ''}>`;
-  for (let i = 1; i <= 5; i++) {
-    html += `<button type="button" class="star-btn ${i <= current ? 'filled' : ''}"
-      data-val="${i}"
-      onmouseenter="hoverStars('${skillId}', ${i})"
-      onmouseleave="resetStarHover('${skillId}')"
-      onclick="setRating('${skillId}', ${i}${typArg})"
-      aria-label="${i} Sterne">★</button>`;
-  }
-  html += '</div>';
-  return html;
-}
-
-function hoverStars(skillId, val) {
-  const container = document.getElementById(`star-input-${skillId}`);
-  if (!container) return;
-  container.querySelectorAll('.star-btn').forEach((btn, i) => {
-    btn.classList.toggle('filled', i < val);
-  });
-}
-
-function resetStarHover(skillId) {
-  const container = document.getElementById(`star-input-${skillId}`);
-  if (!container) return;
-  const current = parseInt(container.dataset.current) || 0;
-  container.querySelectorAll('.star-btn').forEach((btn, i) => {
-    btn.classList.toggle('filled', i < current);
-  });
-}
-
-// `type` optional — siehe renderInteractiveStars(); das Widget reicht ihn durch.
-function setRating(skillId, stars, type) {
-  if (!submitRating(skillId, stars, type)) { showToast('Konnte nicht speichern — privater Modus oder Speicher voll.'); return; }
-  state.pendingRating[skillId] = stars;
-  const container = document.getElementById(`star-input-${skillId}`);
-  if (container) {
-    container.dataset.current = stars;
-    container.querySelectorAll('.star-btn').forEach((btn, i) => {
-      btn.classList.toggle('filled', i < stars);
-    });
-  }
-  const hint = document.getElementById(`rating-hint-${skillId}`);
-  if (hint) hint.textContent = `Du hast ${stars} von 5 Sternen gegeben. Danke!`;
-  showToast('Bewertung gespeichert ★');
-}
-
-// Das Sterne-Widget im Bewertungs-Tab heißt 'comment-<id>' (DOM-Namensraum) —
-// gespeichert wird IMMER unter der echten Item-ID, sonst zählt die Bewertung nie.
+// Das Kommentar-Widget im Stimmen-Tab heißt 'comment-<id>' (DOM-Namensraum) —
+// gelesen wird IMMER unter der echten Item-ID, sonst findet die Alt-Bewertung nie.
 function _ratingKey(skillId) { return String(skillId).replace(/^comment-/, ''); }
 
 // Typ-Auflösung: expliziter Parameter > window.RatingConfig.type (Seiten-Default) > 'skill'.
-// So bewertet prompts.html ohne Parameter-Fädelei im prompt-Namespace (E2-Lektion).
+// So liest prompts.html ohne Parameter-Fädelei im prompt-Namespace (E2-Lektion).
 function _ratingType(t) { return t || (window.RatingConfig && window.RatingConfig.type) || 'skill'; }
 
+// Nur noch lesend — der einzige Schreiber (submitRating) ist mit der Sterne-Engine
+// entfallen. Der Alt-Key skill-rating-<id> bleibt mitgelesen (Bestandsnutzer).
 function getRating(skillId, type) {
   type = _ratingType(type);
   const id = _ratingKey(skillId);
   let data = lsGet(`rate:${type}:${id}`);
   if (data === null && type === 'skill') data = lsGet(`skill-rating-${id}`);
   return data ? parseInt(data) : 0;
-}
-
-function submitRating(skillId, stars, type) {
-  type = _ratingType(type);
-  const id = _ratingKey(skillId);
-  const ok = lsSet(`rate:${type}:${id}`, stars);
-  if (type === 'skill') lsSet(`skill-rating-${id}`, stars); // Alt-Key synchron halten
-  return ok;
 }
 
 function getComments(skillId, type) {
@@ -585,8 +539,8 @@ function getComments(skillId, type) {
     if (data === null && type === 'skill') data = lsGet(`skill-comments-${skillId}`);
     const parsed = data ? JSON.parse(data) : [];
     // Array.isArray statt blindem Durchreichen: try/catch fing nur KAPUTTES JSON.
-    // Gültiges JSON vom falschen Typ kam ungeprüft durch und riss über
-    // getEffectiveRating() den kompletten Render-Lauf mit — reproduziert auf
+    // Gültiges JSON vom falschen Typ kam ungeprüft durch und riss über das
+    // damalige getEffectiveRating() den kompletten Render-Lauf mit — reproduziert auf
     // skills.html mit comments:skill:pptx = null / 999 / "text": jeweils
     // 0 statt 37 Karten, leeres Grid und ein JS-Fehler („userComments.forEach
     // is not a function“ bzw. „…of null“). Ausgerechnet ungültiges JSON war
@@ -602,40 +556,6 @@ function _saveComments(skillId, arr, type) {
   if (type === 'skill') lsSet(`skill-comments-${skillId}`, json); // Alt-Key synchron halten
   return ok;
 }
-
-function getEffectiveRating(item) {
-  const userRating = getRating(item.id);
-  const userComments = getComments(item.id);
-  const seed = item.rating || { average: 0, count: 0 };
-  let totalSum = seed.average * seed.count;
-  let totalCount = seed.count;
-  // Zweite Sicherung neben getComments(): diese Funktion steckt in jeder Karte,
-  // jedem Sort-Vergleich und in bayesScore() — ein Nicht-Array hier legt die
-  // ganze Seite lahm. Der Katalog muss auch mit verunreinigtem localStorage stehen.
-  if (Array.isArray(userComments)) {
-    userComments.forEach(c => { if (c && c.rating) { totalSum += c.rating; totalCount++; } });
-  }
-  if (userRating > 0) { totalSum += userRating; totalCount++; }
-  return { average: totalCount > 0 ? totalSum / totalCount : 0, count: totalCount };
-}
-
-// Bayes-gewichtetes Rating: dünn bewertete Items (n=2) nicht über gut belegte (n=21) heben.
-// score = (n*avg + m*C) / (n + m), Prior C=4.2, Gewicht m=10.
-function bayesScore(item) {
-  const e = getEffectiveRating(item);
-  const C = 4.2, m = 10;
-  return (e.count * e.average + m * C) / (e.count + m);
-}
-
-// Ehrliche Badges: nur „Team-Favorit“ datenverdient (hohe Bewertung + genug Stimmen + Endorsements).
-function itemBadge(item) {
-  const e = getEffectiveRating(item);
-  const endorsers = (item.endorsedBy || []).length;
-  if (e.average >= 4.6 && e.count >= 12 && endorsers >= 2) return { cls: 'empfohlen', label: 'Team-Favorit' };
-  return null;
-}
-// (Der Alt-Name skillBadge() ist entfernt — Grep über alle HTML, JS und JSON
-//  außerhalb von skills/ ergab 0 Aufrufstellen, auch keine inline-onclick.)
 
 function submitComment(skillId) {
   const author = document.getElementById(`comment-author-${skillId}`)?.value?.trim();
@@ -718,6 +638,34 @@ function toggleFavorite(evt, id, type) {
   if (typeof window.onFavoritesChanged === 'function') window.onFavoritesChanged(id, !wasFav);
 }
 
+/* Zentraler Merken-Knopf im Lesezeichen-Look (E15).
+   Bisher hatte JEDE Seite ihre eigene Kopie desselben Markups — vlFavBtnHtml()
+   in vorlagen.html, je eine Fassung in prompts, showroom, skills und
+   lernen-hilfe, alle mit den Glyphen ☆/★. Diese Fassung ist die gemeinsame:
+   gleiche Attribute (data-fav-id/-typ/-name, aria-pressed, aria-label), damit
+   die vorhandenen window.onFavoritesChanged-Rückrufe der Seiten sie ohne
+   Änderung nachziehen können — nur die Darstellung ist das LU-Bookmark-SVG
+   statt der Glyphe. Die Klasse `-lu` schaltet die zugehörigen CSS-Regeln
+   (base.css) scharf; ohne sie sähe ein Outline-Icon im Aktiv-Zustand fast
+   unverändert aus.
+   toggleFavorite() bleibt unangetastet — hier wird nur gerendert.
+   extraCls: seiten-eigene Einpassung (Ränder, Ausrichtung), z. B. 'ff-kopf'.
+
+   WARUM NICHT `favBtnHtml`: Diesen Namen gibt es schon zweimal als SEITEN-
+   LOKALE Funktion mit anderer Signatur — prompts.html:715 nimmt das ganze
+   Prompt-Objekt, showroom.html:423 das Case-Objekt. Beide Seiten laden
+   shared/base.js VOR ihrem eigenen Script, ihre Deklaration gewinnt also.
+   Eine gleichnamige Fassung hier wäre auf vier Seiten die geteilte und auf
+   genau diesen zweien still eine andere — der Aufruf favBtnHtml('id','prompt')
+   liefe dort in p.id === undefined, ohne Fehlermeldung. Ein eigener Name ist
+   die einzige Lösung, die keine HTML-Datei anfassen muss. */
+function favBookmarkHtml(id, type, name, extraCls) {
+  const fav = isFavorite(id, type);
+  const cls = 'fav-btn -lu' + (fav ? ' active' : '') + (extraCls ? ' ' + extraCls : '');
+  const nam = name || 'Eintrag';
+  return `<button type="button" class="${cls}" data-fav-id="${escHtml(id)}" data-fav-typ="${escHtml(type)}" data-fav-name="${escHtml(nam)}" onclick="toggleFavorite(event,'${id}','${type}')" aria-pressed="${fav}" aria-label="${escHtml(nam)} ${fav ? 'aus Favoriten entfernen' : 'zu Favoriten hinzufügen'}">${LU.bookmark}</button>`;
+}
+
 function getTried(type) {
   type = _ratingType(type);
   const prefix = `tried:${type}:`;
@@ -753,6 +701,161 @@ function toggleVote(type, id) {
     if (!lsSet(`vote:${type}:${id}`, '1')) { showToast('Konnte nicht speichern — privater Modus oder Speicher voll.'); return false; }
   } else lsRemove(`vote:${type}:${id}`);
   return now;
+}
+
+/* ===== UPVOTE-API (E15) — eine Stimme für ALLE Gattungen ===================
+   Die Vote-Helfer oben sind aus dem Hilfe-Center gewachsen (befehl/begriff/faq)
+   und arbeiten mit einem Seed, den der Aufrufer selbst mitbringt. Für skill,
+   prompt, asset, baustein, bild, paket, anweisung und startprojekt fehlte
+   genau das: eine Stelle, die weiß, WOHER der Seed kommt. Diese Schicht sitzt
+   deshalb OBEN AUF hasVoted/getVotes/toggleVote — sie ersetzt nichts, sie
+   beantwortet nur die Frage „wie viele Stimmen hat dieses Item?" für alle
+   Typen gleich.
+
+   DEMO-KENNZEICHNUNG (CLAUDE.md, harte Regel 3): Die Zahl ist ein Seed-Wert
+   plus höchstens die eigene Stimme; es gibt kein Backend, nichts wird geteilt.
+   Diese Funktionen können das nicht selbst anzeigen — die Seite, die sie
+   benutzt, MUSS die Kennzeichnung an der Oberfläche behalten. */
+
+/* Seed-Auflösung, in dieser Reihenfolge:
+     1. item.votesSeed  — das ausdrückliche Feld. Neue Daten sollen das setzen.
+     2. item.votes      — der Bestand: data/befehle.js, data/glossar.js und
+                          data/ressourcen.js führen ihre Stimmen schon so.
+     3. item.rating.count / item.ratingCount — FALLBACK für die Gattungen, die
+        heute nur Sterne-Seeds haben (skills, prompts, assets, bausteine,
+        bilder, pakete, anweisungen, startprojekte, cases). Genommen wird die
+        ANZAHL der Seed-Bewertungen, nicht der Durchschnitt: Sie ist die
+        einzige echte Zahl in den Daten, die „so viele Leute haben sich zu dem
+        Eintrag geäußert" bedeutet — und genau das zählt ein Upvote. Kein
+        Umrechnungsfaktor, keine erfundene Zahl (CLAUDE.md, harte Regel 2).
+        Sobald eine Datendatei votesSeed bekommt, gewinnt Stufe 1 automatisch. */
+function _upSeed(item) {
+  if (!item) return 0;
+  if (typeof item.votesSeed === 'number') return item.votesSeed;
+  if (typeof item.votes === 'number') return item.votes;
+  if (item.rating && typeof item.rating.count === 'number') return item.rating.count;
+  if (typeof item.ratingCount === 'number') return item.ratingCount;
+  return 0;
+}
+
+// Anzeige-Summe: Seed + eigene Stimme. Baut auf getVotes() auf, damit es für
+// „Stimme dazu oder nicht" genau EINE Rechenstelle im Projekt gibt.
+function getUpvoteCount(item, type) {
+  if (!item) return 0;
+  return getVotes(type, item.id, _upSeed(item));
+}
+
+// Sortier-Metrik. Eigener Name, weil ein Aufrufer beim Sortieren nicht
+// „Anzahl" meint, sondern „Rang" — und weil hier später eine Gewichtung
+// dazukommen kann, ohne dass die Anzeige-Funktion sich ändert.
+function voteScore(item, type) { return getUpvoteCount(item, type); }
+
+/* Ein Knopf, drei Zustände-Attribute, kein Emoji. `count` ist die GESAMTZAHL
+   (also das, was getUpvoteCount() liefert) — der Seed wird daraus zurück-
+   gerechnet und in data-up-seed geparkt, damit toggleUpvote() in-place neu
+   rechnen kann, ohne die Daten noch einmal zu sehen.
+   Kein id-Attribut: derselbe Eintrag kann auf einer Seite mehrfach stehen
+   (Karte + Modal). Angesprochen wird über data-up-id/-typ, genau wie die
+   Seiten es bei .fav-btn[data-fav-id] schon tun.
+   opts: { label, name, compact, cls }
+     label   Sichtbares Wort, Standard „Hilfreich". label:'' → nur Icon + Zahl.
+     name    Titel des Eintrags, geht in das aria-label.
+     compact true → .-kompakt (kleinere Pille, Trefffläche bleibt ≥44px).
+     cls     zusätzliche Klassen der Seite. */
+function renderUpvoteBtn(id, type, count, opts) {
+  opts = opts || {};
+  const on = hasVoted(type, id);
+  const total = typeof count === 'number' ? count : 0;
+  const seed = total - (on ? 1 : 0);
+  const label = opts.label === undefined ? 'Hilfreich' : opts.label;
+  const cls = 'up-btn' + (on ? ' -on' : '') + (opts.compact ? ' -kompakt' : '') + (opts.cls ? ' ' + opts.cls : '');
+  /* Der barrierefreie Name bleibt in BEIDEN Zuständen gleich — den Zustand
+     trägt aria-pressed, das ist bei einem Umschalter die richtige Stelle
+     (der ältere .fav-btn dreht stattdessen den Text; das hier ist die
+     sauberere Fassung, nicht versehentlich abweichend). Er beginnt mit dem
+     sichtbaren Wort, damit WCAG 2.5.3 („Label in Name") erfüllt bleibt. */
+  const aria = (label || 'Hilfreich') + (opts.name ? ' — ' + opts.name : '');
+  return `<button type="button" class="${cls}" data-up-id="${escHtml(id)}" data-up-typ="${escHtml(type)}" data-up-seed="${seed}"`
+    + ` aria-pressed="${on}" aria-label="${escHtml(aria)}" onclick="toggleUpvote(event,'${id}','${type}')">`
+    + LU.vote
+    + (label ? `<span class="up-label">${escHtml(label)}</span>` : '')
+    + `<span class="up-count">${total}</span></button>`;
+}
+
+/* Umschalten + in-place nachziehen. Bewusst KEIN Neu-Rendern der Karte:
+   das Ranking in lernen-hilfe.html misst für seine FLIP-Bewegung die alten
+   Kartenpositionen, bevor es die Liste neu schreibt. Würde hier schon
+   gerendert, wären die Messwerte beim Aufruf des Rückrufs bereits die neuen
+   und die Bewegung fiele aus. Deshalb: nur die Knöpfe aktualisieren, dann
+   window.onUpvoteChanged(id, type, count, on) rufen — die Seite entscheidet,
+   ob und wie sie neu sortiert. */
+function toggleUpvote(evt, id, type) {
+  if (evt) evt.stopPropagation();
+  const wanted = !hasVoted(type, id);
+  const now = toggleVote(type, id);
+  // toggleVote() liefert false sowohl für „zurückgenommen" als auch für
+  // „konnte nicht speichern" und hat im zweiten Fall bereits gemeldet. Ohne
+  // diese Unterscheidung stünde hier ein Erfolgs-Toast auf einem Fehlschlag.
+  if (wanted && !now) return false;
+  let count = null;
+  document.querySelectorAll('.up-btn[data-up-id]').forEach(btn => {
+    if (btn.dataset.upId !== String(id) || btn.dataset.upTyp !== String(type)) return;
+    const seed = parseInt(btn.dataset.upSeed, 10) || 0;
+    count = seed + (now ? 1 : 0);
+    btn.classList.toggle('-on', now);
+    btn.setAttribute('aria-pressed', now ? 'true' : 'false');
+    const c = btn.querySelector('.up-count');
+    if (c) c.textContent = count;
+  });
+  showToast(now ? 'Danke — deine Stimme zählt (nur auf diesem Gerät)' : 'Stimme zurückgenommen');
+  if (typeof window.onUpvoteChanged === 'function') window.onUpvoteChanged(id, type, count, now);
+  return now;
+}
+
+// Tagesindex (lokaler Kalendertag seit Epoche). Einzige Zeitquelle der
+// Rotation — dieselbe Seite zeigt an einem Tag dieselbe Auswahl, auch nach
+// Reload, und wechselt um Mitternacht.
+function _upDayIndex() {
+  try {
+    const d = new Date();
+    return Math.floor(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / 86400000);
+  } catch (e) { return 0; }
+}
+
+/* „Bestbewertete" als ROTATIONS-POOL statt als starrer Bestenliste.
+   Grund: Eine feste Top-3 zeigt monatelang dieselben drei Einträge — der Rest
+   des Bestands wird nie gesehen, obwohl genau das der Zweck der Fläche ist.
+   Der Pool ist die Vereinigung aus
+     · Top-n nach Gesamtstimmen (voteScore) und
+     · Top-n nach item.votesRecent, falls dieses Feld in den Daten existiert
+       (seit der Feedback-Runde 2026-08 tragen es alle Sammlungen mit Stimmen-
+       Seeds; fehlt es, besteht der Pool nur aus der ersten Hälfte, ohne
+       Sonderfall im Aufrufer).
+   Daraus schneidet ein tagesbasierter Versatz n Einträge heraus. Deterministisch:
+   gleicher Tag + gleiche Daten = gleiche Auswahl, auch über zwei Browser hinweg.
+   Der Gleichstand wird über die id aufgelöst, sonst hinge die Reihenfolge an
+   der Sortier-Implementierung und die Rotation wäre nur scheinbar stabil. */
+function bestRated(items, type, n) {
+  const list = Array.isArray(items) ? items.filter(Boolean) : [];
+  n = n || 3;
+  if (!list.length) return [];
+  const byId = (a, b) => String(a.id).localeCompare(String(b.id));
+  const byTotal = list.slice()
+    .sort((a, b) => (voteScore(b, type) - voteScore(a, type)) || byId(a, b))
+    .slice(0, n);
+  const hasRecent = list.some(it => typeof it.votesRecent === 'number');
+  const byRecent = hasRecent
+    ? list.slice()
+        .sort((a, b) => ((b.votesRecent || 0) - (a.votesRecent || 0)) || byId(a, b))
+        .slice(0, n)
+    : [];
+  const pool = [];
+  byTotal.concat(byRecent).forEach(it => { if (!pool.some(p => p.id === it.id)) pool.push(it); });
+  if (pool.length <= n) return pool;
+  const off = _upDayIndex() % pool.length;
+  const out = [];
+  for (let i = 0; i < n; i++) out.push(pool[(off + i) % pool.length]);
+  return out;
 }
 
 /* ===== SUCH-/FILTER-HELFER ===== */
@@ -1220,7 +1323,11 @@ function _ensureSubmitOverlay() {
 /* Ziel-Bereich je Beitragstyp — „Erscheint im Katalog“ wäre für Prompts, Assets & Co.
    gelogen. wo = Dativ („erscheint …“), wohin = Akkusativ („den Weg … finden“). */
 const _SF_BEREICH = {
-  skill:     { wo: 'im Katalog',              wohin: 'in den Katalog' },
+  /* „unter Skills"/„zu Skills" statt „im Katalog"/„in den Katalog" — dieselbe
+     Umbenennung wie im Nav-Label, gleiche Fügung wie bei ressource/kniff
+     („unter Lernen & Hilfe"), weil „Skills" ein Bereichsname ist und kein
+     Behälter, in den etwas hineingelegt wird. */
+  skill:     { wo: 'unter Skills',            wohin: 'zu Skills' },
   prompt:    { wo: 'in der Prompt-Sammlung',  wohin: 'in die Prompt-Sammlung' },
   ressource: { wo: 'unter Lernen & Hilfe',    wohin: 'zu Lernen & Hilfe' },
   kniff:     { wo: 'unter Lernen & Hilfe',    wohin: 'zu Lernen & Hilfe' },
@@ -1383,17 +1490,20 @@ const GSEARCH_SOURCES = [
 ];
 
 /* HIDDEN-Skills (aus der Katalog-Fläche genommen) tauchen auch in der globalen
-   Suche nicht auf — Konsistenz mit skills.html. Quelle ist das HIDDEN-Set aus
-   data/skills.js; der lokale Fallback deckt den Fall ab, dass sich der Export ändert. */
-const _GS_HIDDEN_FALLBACK = new Set(['pitch-deck', 'theme-factory', 'web-artifacts-builder']);
+   Suche nicht auf — Konsistenz mit skills.html. Quelle ist allein das HIDDEN-Set
+   aus data/skills.js; ist es (noch) nicht geladen, wird nichts ausgeblendet.
+   Der frühere lokale Fallback listete drei Skill-IDs namentlich — die sind mit
+   E16 gestrichen, und eine zweite Liste hätte ohnehin still von data/skills.js
+   abweichen können. Ein leeres Set ist die ehrlichere Voreinstellung. */
+const _GS_HIDDEN_EMPTY = new Set();
 function _gsHiddenSkillIds() {
   try { if (typeof HIDDEN !== 'undefined' && HIDDEN && typeof HIDDEN.has === 'function') return HIDDEN; } catch (e) {}
-  return _GS_HIDDEN_FALLBACK;
+  return _GS_HIDDEN_EMPTY;
 }
 
 /* Sprechende Fundort-Labels für die Trefferliste — statt roher Dateinamen. */
 const GS_AREA_LABELS = {
-  'skills.html':       'Katalog',
+  'skills.html':       'Skills',      /* Fundort-Label = Nav-Label (früher „Katalog") */
   'prompts.html':      'Prompt-Sammlung',
   'lernen-hilfe.html': 'Lernen & Hilfe',
   'vorlagen.html':     'Vorlagen',
@@ -1459,7 +1569,7 @@ const GSEARCH_GROUPS = [
     href: it => 'vorlagen.html?b=' + encodeURIComponent(it.id),
     title: it => it.name, sub: it => it.beschreibung,
     fields: it => [[it.name || '', 5], [(it.tags || []).join(' '), 3], [it.beschreibung || '', 2], [it.einsatz || '', 1]] },
-  /* Beispieldaten (die 8 Übungsdateien im Bausteine-Modul). Sie liegen in
+  /* Beispieldaten (die Übungsdateien im Bausteine-Modul). Sie liegen in
      data/bausteine.js, also NICHT in GSEARCH_SOURCES eintragen — der Eintrag
      für BAUSTEINE lädt dieselbe Datei, und zwei Einträge auf eine Quelle sind
      genau die Doppel-Anfrage, vor der der Kommentar bei GLOSSAR/FAQ warnt. */
@@ -2102,9 +2212,11 @@ function closeDeineSachen() {
   if (window._dsOpener) { try { window._dsOpener.focus(); } catch (e) {} window._dsOpener = null; }
 }
 
-/* Zähl-Badge aktuell halten: nach jeder Merken-/Bewerten-/Ausprobiert-Aktion */
+/* Zähl-Badge aktuell halten: nach jeder Merken-/Ausprobiert-Aktion.
+   (submitRating stand hier bis E16 mit drin — das Badge zählt ohnehin nur
+   fav:-Schlüssel, siehe _dsCount().) */
 (function _dsHookMutations() {
-  ['toggleFavorite', 'markTried', 'submitRating'].forEach(name => {
+  ['toggleFavorite', 'markTried'].forEach(name => {
     const orig = window[name];
     if (typeof orig !== 'function') return;
     window[name] = function () {
@@ -2114,3 +2226,130 @@ function closeDeineSachen() {
     };
   });
 })();
+
+/* ===== ANSICHTSDICHTE (E15) ==============================================
+   Aus der Feedback-Runde: Die Übersichtsseiten zeigen jedem alles — wer nur
+   schnell etwas wiederfinden will, scrollt an Beschreibungen, Meta-Zeilen und
+   Beispielen vorbei, die er in diesem Moment nicht braucht. Statt Inhalte
+   dauerhaft zu streichen, bekommt die Seite einen Regler.
+
+   Drei Stufen, KOMPAKT ist der Standard (Nutzer-Entscheid): Wer die Seite zum
+   Arbeiten öffnet, sucht meistens etwas Bekanntes wieder.
+
+   Der Helfer macht drei Dinge und sonst nichts:
+     1. Er merkt sich die Stufe pro Seite (localStorage `density:<page>`).
+     2. Er setzt data-density auf ein Container-Element — daran hängen die
+        generischen Utilities in base.css (.density-hide-kompakt,
+        .density-only-ausfuehrlich, .density-clamp).
+     3. Er rendert die Segment-Steuerung in einen Slot der Seite.
+   WAS pro Stufe verschwindet, entscheidet die Seite über die Utility-Klassen
+   an ihren eigenen Elementen — hier steht bewusst keine Inhaltslogik. */
+
+const _DENSITY_STUFEN = [
+  { id: 'kompakt',      label: 'Kompakt',     hint: 'Viel auf einen Blick.' },
+  { id: 'standard',     label: 'Standard',    hint: 'Mit Kurzinfo zu jedem Eintrag.' },
+  { id: 'ausfuehrlich', label: 'Ausführlich', hint: 'Alle Details sichtbar.' }
+];
+// Registry pro Seite: initDensity() merkt sich Container und Slot, damit
+// setDensity() aus einem onclick heraus beides wiederfindet.
+const _densityReg = {};
+
+function _densityValid(level) { return _DENSITY_STUFEN.some(s => s.id === level); }
+function _densityStufe(level) { return _DENSITY_STUFEN.filter(s => s.id === level)[0] || _DENSITY_STUFEN[0]; }
+
+// Seitenschlüssel: ausdrücklich übergeben oder aus dem Dateinamen abgeleitet.
+// Der Schlüssel landet im localStorage-Key, deshalb keine Endung und kein Pfad.
+function _densityPage(page) {
+  if (page) return String(page);
+  try {
+    const f = (location.pathname.split('/').pop() || '').replace(/\.html$/, '');
+    return f || 'seite';
+  } catch (e) { return 'seite'; }
+}
+
+function _densityEl(x) {
+  if (!x) return null;
+  if (typeof x === 'string') { try { return document.querySelector(x); } catch (e) { return null; } }
+  return x.nodeType === 1 ? x : null;
+}
+
+/* Gespeicherte Stufe lesen. Ein unbekannter Wert im Speicher (händisch
+   verstellt, alte Schreibweise) fällt still auf den Standard zurück, statt
+   ein data-density zu setzen, für das es keine Regeln gibt — dieselbe Härte
+   gegen vergifteten localStorage wie in getComments(). */
+function getDensity(page, fallback) {
+  const v = lsGet('density:' + _densityPage(page));
+  return _densityValid(v) ? v : (_densityValid(fallback) ? fallback : 'kompakt');
+}
+
+function _densityCtlHtml(page, level, labelText) {
+  const s = _densityStufe(level);
+  const lid = 'density-label-' + page;
+  const btns = _DENSITY_STUFEN.map(st => {
+    const on = st.id === level;
+    return `<button type="button" class="${on ? 'active' : ''}" data-density-val="${st.id}"`
+      + ` aria-pressed="${on}" onclick="setDensity('${page}','${st.id}')">${escHtml(st.label)}</button>`;
+  }).join('');
+  return `<div class="density-ctl">`
+    + `<span class="density-label" id="${lid}">${escHtml(labelText || 'Ansicht')}</span>`
+    + `<div class="density-seg" role="group" aria-labelledby="${lid}" data-density-page="${escHtml(page)}">${btns}</div>`
+    + `<span class="density-hint">${escHtml(s.hint)}</span>`
+    + `</div>`;
+}
+
+/* Zustand nachziehen. Beim Umschalten wird die Steuerung NICHT neu geschrieben,
+   sondern in place aktualisiert — ein innerHTML-Neubau würde den Fokus vom
+   gerade gedrückten Knopf nehmen und die Tastaturbedienung abbrechen (dieselbe
+   Lektion wie bei window.onFavoritesChanged in vorlagen.html). */
+function _densityApply(page, level) {
+  const reg = _densityReg[page];
+  if (!reg) return;
+  if (reg.container) reg.container.setAttribute('data-density', level);
+  if (!reg.mount) return;
+  let seg = null;
+  reg.mount.querySelectorAll('.density-seg').forEach(el => { if (el.dataset.densityPage === page) seg = el; });
+  if (!seg) { reg.mount.innerHTML = _densityCtlHtml(page, level, reg.label); return; }
+  seg.querySelectorAll('button[data-density-val]').forEach(b => {
+    const on = b.dataset.densityVal === level;
+    b.classList.toggle('active', on);
+    b.setAttribute('aria-pressed', on ? 'true' : 'false');
+  });
+  const hint = seg.parentNode && seg.parentNode.querySelector('.density-hint');
+  if (hint) hint.textContent = _densityStufe(level).hint;
+}
+
+/* Umschalten. Schlägt das Speichern fehl (privater Modus, Speicher voll),
+   schaltet die Ansicht trotzdem um — sie merkt es sich nur bis zum Reload
+   nicht. Ein Toast wäre hier Lärm: die Umschaltung ist sichtbar geglückt. */
+function setDensity(page, level) {
+  page = _densityPage(page);
+  if (!_densityValid(level)) return;
+  lsSet('density:' + page, level);
+  _densityApply(page, level);
+  if (typeof window.onDensityChanged === 'function') window.onDensityChanged(level, page);
+}
+
+/* Aufruf der Seite, einmal beim Aufbau:
+     initDensity({ page: 'skills', container: '#skills-grid', mount: '[data-density-slot]' })
+   opts (alle optional):
+     page      Schlüssel für localStorage; Standard = Dateiname ohne .html
+     container Element ODER Selektor, das data-density trägt; Standard body
+     mount     Element ODER Selektor für die Steuerung; Standard
+               [data-density-slot] — dasselbe Slot-Muster wie [data-page-search]
+     label     Beschriftung vor der Steuerung; Standard „Ansicht"
+     default   Stufe beim allerersten Besuch; Standard 'kompakt'
+   Rückgabe: die aktive Stufe, damit die Seite gleich richtig rendern kann. */
+function initDensity(opts) {
+  opts = opts || {};
+  const page = _densityPage(opts.page);
+  const level = getDensity(page, opts.default || 'kompakt');
+  _densityReg[page] = {
+    container: _densityEl(opts.container) || document.body,
+    mount: _densityEl(opts.mount) || document.querySelector('[data-density-slot]'),
+    label: opts.label
+  };
+  const reg = _densityReg[page];
+  if (reg.mount) reg.mount.innerHTML = _densityCtlHtml(page, level, reg.label);
+  _densityApply(page, level);
+  return level;
+}

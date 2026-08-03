@@ -31,36 +31,51 @@
        ebenfalls schon — hier NICHT duplizieren. Nur ein paar seiten-
        lokale Feinheiten für den ehrlichen Hero-Hinweis.
        ============================================================ */
-    .sr-desc { display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
-    .modal-body .sr-desc { display: block; overflow: visible; }
+    /* KARTEN-DIÄT (Feedback 2026-08, Item 11: „zu viele Details, bessere Leser-
+       führung"). Die Karte trägt jetzt genau fünf Dinge: Vorschau, Ehrlichkeits-
+       Marker, Titel, EIN Satz Nutzen und die gemessene Umfangs-Zeile. Alles
+       darüber hinaus — Entstehungsgeschichte, Fakten-Box, die ausführliche
+       Beschreibung — liegt im Detail-Modal.
+       Die frühere 4-Zeilen-Kürzung von .sr-desc ist damit hinfällig: der lange
+       Text steht auf der Karte nur noch in der Ansichtsstufe „Ausführlich" und
+       dort dann vollständig (sonst hieße „alle Details sichtbar" nichts). */
+    .sr-nutzen { font-size: 1.45rem; line-height: 1.5; color: var(--c-ink-body); margin: 0; }
+    /* Die Metrik-Zeile ist die messbare Einordnung, die den früheren, nicht
+       nachprüfbaren Zeit-Schätzwert ersetzt (Item 33). Mono + tabellarische
+       Ziffern, damit die Zahlen im Raster untereinander stehen. */
+    .sr-metrik {
+      display: flex; align-items: center; gap: .5rem; margin: 0;
+      font-family: var(--font-mono); font-size: 1.15rem; font-variant-numeric: tabular-nums;
+      color: var(--c-ink-strong);
+    }
+    .sr-metrik .lu { width: 1.3rem; height: 1.3rem; flex-shrink: 0; color: var(--c-gray-m); }
+
+    /* Ansichtsdichte (initDensity, shared/base.js): eigene Zeile am Ende der
+       Toolbar, rechtsbündig unter den Selects — dieselbe Kante wie dort. */
+    .sr-density { flex-basis: 100%; display: flex; justify-content: flex-end; }
+    @media (max-width: 640px) { .sr-density { justify-content: flex-start; } }
 
     /* Ehrlichkeits-Marker liegt im Karten-Körper (statisch), NICHT mehr über dem
        Live-Thumbnail — dort kollidierte er mit Logos/Badges der Demos selbst. */
     /* Ehrlichkeits-Marker links, Merken-Knopf rechts in derselben Zeile. */
     .sr-marker-row { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
     /* .fav-btn bringt aus base.css negative Margins mit, die auf das Padding der
-       Skill-Karte abgestimmt sind (-1,6rem). In der Case-Karte würde das den Stern
-       aus dem Kartenkopf in die Vorschau ziehen: hier nur so viel Zug, dass die
-       ≥44px-Trefffläche (Padding aus base.css) die Zeilenhöhe nicht aufbläht und
-       der Stern optisch am rechten Innenrand sitzt. */
+       Skill-Karte abgestimmt sind (-1,6rem). In der Case-Karte würde das das
+       Lesezeichen aus dem Kartenkopf in die Vorschau ziehen: hier nur so viel Zug,
+       dass die ≥44px-Trefffläche (Padding aus base.css) die Zeilenhöhe nicht
+       aufbläht und das Lesezeichen optisch am rechten Innenrand sitzt.
+       Gilt für die Variante .-lu genauso — die Maße stehen am Basis-.fav-btn. */
     .sr-marker-row .fav-btn { margin: -1.2rem -.7rem -1.2rem 0; }
 
-    /* Feedback-Geste an das kanonische Vote-Muster angeglichen (LU.vote + Zähl-Chip),
-       damit die „Will ich auch“-Reaktion aussieht wie die Zustimmungs-Votes in
-       hilfe/lernen. Speicherung (vote:reaktion:<id>) und Logik bleiben unverändert. */
-    .sr-react { gap: .7rem; padding: .7rem 1.5rem; font-size: 1.35rem; }
-    .sr-react .lu { width: 1.4rem; height: 1.4rem; }
-    .sr-react-count {
-      font-variant-numeric: tabular-nums; font-size: 1.25rem;
-      background: rgba(38,38,38,.08); border-radius: var(--r-xl);
-      padding: .1rem .8rem; min-width: 2.6rem; text-align: center;
-    }
-    .sr-react.-on .sr-react-count { background: rgba(38,38,38,.15); }
+    /* Die „Will ich auch"-Geste ist seit dem Feedback-Pass der geteilte .up-btn
+       aus shared/base.js (renderUpvoteBtn) — dieselbe Optik wie die Stimmen auf
+       Prompts, Skills und Lernen & Hilfe. Die seitenlokale .sr-react-Fassung ist
+       damit ersatzlos entfallen; Speicherung (vote:reaktion:<id>), Zählweise und
+       Ranking-Logik sind unverändert geblieben.
+       Trefffläche und Kontrast bringt .up-btn aus base.css selbst mit. */
 
-    /* UX: Touch-Trefffläche ≥44px (WCAG 2.5.5), analog zur Vote-Geste in Lernen & Hilfe —
-       min-height statt größerem Padding, damit das Karten-Layout nicht springt. */
+    /* UX: Touch-Trefffläche ≥44px (WCAG 2.5.5). */
     @media (hover: none) and (pointer: coarse) {
-      .sr-react { min-height: 4.4rem; padding-top: .9rem; padding-bottom: .9rem; }
       /* Gegencheck 2026-07-24: die drei Filter-Selects lagen bei 35 px gemessen
          (hasTouch/isMobile, pointer:coarse) — eigenständige Bedienelemente, für
          die die Fließtext-Ausnahme aus WCAG 2.5.8 nicht gilt. */
@@ -143,17 +158,16 @@
     .sr-cat:not(.active) .tab-count { color: var(--c-ink-strong); }
 
     /* KARTEN-FUSS: Aktionsreihe sitzt bündig am Kartenende, damit die
-       Karten einer Grid-Zeile unten gemeinsam abschließen. Der breitere
-       Editorial-Innenabstand von .sr-react ließ „Will ich auch / Ansehen /
-       Details“ exakt auf Kantenbreite laufen — je nach Zählerstand brach
-       „Details“ mal um, mal nicht. In der Karte darum etwas schmaler. */
+       Karten einer Grid-Zeile unten gemeinsam abschließen. Die Kompaktfassung
+       des .up-btn hält „Will ich auch / Ansehen / Details“ dabei in einer Zeile. */
     .sr-card .sr-body { flex: 1 1 auto; }
     .sr-card .sr-actions { margin-top: auto; }
-    .sr-card .sr-react { padding-left: 1.1rem; padding-right: 1.1rem; }
 
-    /* Karten-Titel sind jetzt <h3> (h1→h2→h3, Sprungmarken für Screenreader).
-       Optik identisch zur bisherigen <span>-Auszeichnung. */
-    h3.sr-name { line-height: 1.25; }
+    /* Karten-Titel sind <h2>: Seit die Sektions-Überschrift „Alle Projekte“ als
+       Dublette zur Seitenüberschrift entfallen ist (Feedback Item 34), sitzen die
+       Karten direkt unter der h1 — als h3 entstünde eine übersprungene Ebene
+       (h1→h3, axe `heading-order`). Optik hängt an .sr-name, nicht am Tag. */
+    .sr-card .sr-name { line-height: 1.25; }
 
     @media (max-width: 640px) {
       /* Mobil standen Label und Select der drei Filter je nach Wortlänge
@@ -193,17 +207,23 @@
 
   <main>
     <!-- (a) CASE-GRID -->
-    <section class="lib-section" id="main-content" aria-labelledby="cases-h">
+    <!-- Feedback Item 34: Die frühere h2 „Alle Projekte“ (#cases-h) sagte dasselbe
+         wie die Seitenüberschrift eine Bildschirmhöhe darüber — zwei Überschriften,
+         eine Aussage. Sie ist ersatzlos entfallen. Der Abschnitt behält seinen
+         barrierefreien Namen über aria-label (die Landmarke bleibt also auffindbar),
+         und weil damit die h2-Ebene hier fehlt, sind die Kartentitel von h3 auf h2
+         gezogen — sonst spränge die Gliederung von h1 direkt auf h3.
+         Das Sektions-Icon ist mitgegangen: base.css blendet .lib-sec-ic ohnehin aus,
+         ohne Überschrift daneben wäre es ein leerer Platzhalter. -->
+    <section class="lib-section" id="main-content" aria-label="Projekte aus dem Team">
       <div class="lib-inner">
         <p class="kicker">Aus dem Team</p>
         <div class="lib-sec-head">
-          <span class="lib-sec-ic lu-slot" id="cases-ic"></span>
-          <h2 id="cases-h">Alle Projekte</h2>
           <!-- aria-live: das Grid tauscht beim Filtern lautlos aus — der Zähler
                ist die einzige Rückmeldung, die auch am Screenreader ankommt. -->
           <span class="lib-sec-count" id="cases-count" aria-live="polite"></span>
         </div>
-        <p class="lib-note">Jede Vorschau ist die echte Demo, skaliert und nicht klickbar. „Ansehen“ öffnet sie im neuen Tab, „Details“ die ganze Geschichte samt Nachbau-Anleitung.</p>
+        <p class="lib-note">Jede Vorschau ist die echte Demo, skaliert und nicht klickbar. „Ansehen“ öffnet sie im neuen Tab, „Details“ die ganze Geschichte samt Nachbau-Anleitung. Der Umfang auf jeder Karte ist <strong>gemessen</strong>, nicht geschätzt: Größe und Zeilen genau der Datei, die hinter der Vorschau liegt.</p>
         <div class="sr-toolbar">
           <!-- E12: Seiten-Suchfeld (renderNav-Slot, ID #search) — filtert die Case-Karten
                zusätzlich zu den Filter-Pills (Kombination = UND). -->
@@ -216,10 +236,14 @@
                 <option value="all">Alle Arten</option>
               </select>
             </div>
+            <!-- Item 33: Hieß „Aufwand“ und bot zwei geschätzte Zeitspannen an,
+                 die niemand nachprüfen konnte.
+                 Jetzt „Umfang“ mit gemessenen Stufen (siehe UMFANG_STUFEN im Script);
+                 die Optionen füllt fillSelect() aus den Daten, nicht von Hand. -->
             <div class="sr-select">
-              <label for="sr-aufwand">Aufwand</label>
-              <select id="sr-aufwand" aria-label="Projekte nach Aufwand filtern">
-                <option value="all">Jeder Aufwand</option>
+              <label for="sr-umfang">Umfang</label>
+              <select id="sr-umfang" aria-label="Projekte nach Umfang filtern">
+                <option value="all">Jeder Umfang</option>
               </select>
             </div>
             <div class="sr-select">
@@ -228,11 +252,17 @@
                    enthalten (WCAG 2.5.3 Label in Name) — „Projekte sortieren“ tat das nicht. -->
               <select id="sr-sort" aria-label="Sortierung der Projekte">
                 <option value="recommended">Empfohlen zuerst</option>
-                <option value="meistgewollt">Meistgewollt</option>
+                <!-- Wert bleibt 'meistgewollt' (interner Zustand), das LABEL folgt dem
+                     Wortlaut der Schwesterseiten: dort heißt dieselbe Sortierung
+                     „Meiste Stimmen“ (skills.html, prompts.html). -->
+                <option value="meistgewollt">Meiste Stimmen</option>
                 <option value="alpha">Name A–Z</option>
               </select>
             </div>
           </div>
+          <!-- Ansichtsdichte (initDensity, shared/base.js). Kompakt ist der Standard:
+               wer den Showroom öffnet, sucht meistens ein bestimmtes Projekt wieder. -->
+          <div class="sr-density" data-density-slot></div>
         </div>
         <div class="sr-grid" id="sr-grid"></div>
       </div>
@@ -302,7 +332,7 @@
       <div class="submit-band-inner">
         <p class="section-label">Mitmachen</p>
         <h2 id="sr-submit-h">Zeig, was du gebaut hast</h2>
-        <p class="submit-band-text">Der Showroom lebt von den Projekten des Teams. Egal ob Feierabend-Tool oder halber-Tag-Dashboard — wenn du etwas gebaut hast, das anderen zeigt, was möglich ist, reich es hier ein. Am liebsten mit der ehrlichen Geschichte dahinter: Was war das Problem, was ging schief, was kam am Ende raus.</p>
+        <p class="submit-band-text">Der Showroom lebt von den Projekten des Teams. Egal ob eine Datei mit 80 Zeilen oder ein ganzes kleines Dashboard — wenn du etwas gebaut hast, das anderen zeigt, was möglich ist, reich es hier ein. Am liebsten mit der ehrlichen Geschichte dahinter: Was war das Problem, was ging schief, was kam am Ende raus.</p>
         <button type="button" class="c-cta -yellow-bg" id="sr-submit-cta" onclick="openCaseSubmit()">Projekt einreichen</button>
         <p class="submit-band-note">Demo-Flow: deine Eingabe bleibt lokal in deinem Browser, es wird nichts gesendet.</p>
       </div>
@@ -354,13 +384,13 @@
       activeFile: 0,
       saeule: null,          // null = alle Säulen | 'insights' | 'media' | …
       art: 'all',            // 'all' | 'tool' | 'dashboard' | …
-      aufwand: 'all',        // 'all' | 'mini' | 'halber-tag'
+      umfang: 'all',         // 'all' | 'klein' | 'mittel' | 'gross' (abgeleitet, siehe UMFANG_STUFEN)
       sort: 'recommended',
       search: ''             // E12: Freitext-Suche (Titel/Beschreibung/Persona/Säule/Art)
     };
     // KEIN window.RatingConfig — Cases haben keine Stern-BEWERTUNG (1–5, rate:<typ>:<id>),
-    // sondern nur Reaktionen (vote:reaktion:<id>). Einen Merken-Stern gibt es sehr wohl
-    // (favBtnHtml weiter unten, fav:case:<id>) — das ist ein anderer Mechanismus.
+    // sondern nur Reaktionen (vote:reaktion:<id>). Ein Merken-Lesezeichen gibt es sehr wohl
+    // (favBookmarkHtml aus base.js, fav:case:<id>) — das ist ein anderer Mechanismus.
 
     // prefersReduce()/scrollBehavior() kommen als window.-Helfer aus shared/base.js
     // (Shared-Helper-Kontrakt) — hier keine lokalen Kopien mehr.
@@ -382,8 +412,47 @@
     }
     const ART_LABEL = { tool: 'Tool', dashboard: 'Dashboard', helfer: 'Helfer', visualisierung: 'Visualisierung', generator: 'Generator' };
     const ART_ORDER = ['tool', 'dashboard', 'helfer', 'visualisierung', 'generator'];
-    const AUFWAND_LABEL = { mini: 'Feierabend-Projekt', 'halber-tag': 'Halber Tag' };
-    const AUFWAND_ORDER = ['mini', 'halber-tag'];
+
+    /* ===== UMFANG (Feedback Item 33: „Umfang statt Aufwand") ==================
+       Vorher standen hier zwei geschätzte Zeitspannen als Filterstufen —
+       weder nachrechenbar noch vergleichbar, und in den Daten als zweites Feld
+       (aufwandStufe) von Hand gepflegt.
+
+       Jetzt kommt beides aus EINER gemessenen Größe: `umfang` in data/cases.js
+       (bytes/zeilen/dateien, per wc ermittelt, Quellpfad steht dabei). Die Stufe
+       ist ABGELEITET, nicht gepflegt — damit können Zahl auf der Karte und
+       Filterstufe nicht auseinanderlaufen.
+
+       Warum die Bytes und nicht die Zeilen die Stufe bestimmen: Der webaudit-Report
+       ist erzeugt und legt 149 KB in 77 Zeilen ab. Nach Zeilen sortiert wäre er das
+       kleinste Projekt der Seite, was schlicht falsch ist. Die Zeilen stehen
+       trotzdem auf der Karte — für die handgeschriebenen Tools sind sie die
+       anschaulichere Zahl.
+       Eine Stufe ohne Projekte taucht im Filter gar nicht erst auf (fillSelect). */
+    const UMFANG_STUFEN = [
+      { id: 'klein',  label: 'Klein · unter 10 KB',   maxBytes: 10 * 1024 },
+      { id: 'mittel', label: 'Mittel · 10 bis 50 KB', maxBytes: 50 * 1024 },
+      { id: 'gross',  label: 'Groß · über 50 KB',     maxBytes: Infinity }
+    ];
+    const UMFANG_ORDER = UMFANG_STUFEN.map(s => s.id);
+    const UMFANG_LABEL = UMFANG_STUFEN.reduce((m, s) => { m[s.id] = s.label; return m; }, {});
+    function umfangStufe(c) {
+      const b = (c.umfang && c.umfang.bytes) || 0;
+      return (UMFANG_STUFEN.filter(s => b < s.maxBytes)[0] || UMFANG_STUFEN[UMFANG_STUFEN.length - 1]).id;
+    }
+    /* Anzeige-Größe: unter 10 KB mit einer Nachkommastelle (5,2 KB sagt mehr als
+       „5 KB"), darüber gerundet. Deutsches Dezimalkomma über toLocaleString. */
+    function umfangKB(bytes) {
+      const kb = (bytes || 0) / 1024;
+      return (kb < 10 ? kb.toLocaleString('de-DE', { minimumFractionDigits: 1, maximumFractionDigits: 1 })
+                      : Math.round(kb).toLocaleString('de-DE')) + ' KB';
+    }
+    // Eine Zeile, drei gemessene Angaben — dieselbe Reihenfolge auf Karte und im Modal.
+    function umfangText(c) {
+      const u = c.umfang || {};
+      const d = u.dateien || 1;
+      return `${umfangKB(u.bytes)} · ${(u.zeilen || 0).toLocaleString('de-DE')} Zeilen · ${d} ${d === 1 ? 'Datei' : 'Dateien'}`;
+    }
 
     function caseById(id) { return CASES.find(c => c.id === id); }
     function personaRolle(name) {
@@ -400,68 +469,64 @@
     }
     function reactVotes(c) { return getVotes('reaktion', c.id, c.reaktionSeed); }
 
-    // ===== REAKTION „Will ich auch“ (vote:reaktion:<id>, KEINE Sterne) =====
-    // mitTitel=true hängt den Projektnamen unsichtbar an den Button-Namen — im Grid
-    // heißen sonst zehn Buttons identisch „Will ich auch“. Der Zusatz steht bewusst
-    // AUSSERHALB von [data-react-count], damit dessen Textinhalt die reine Zahl bleibt.
-    function reactionBtnHtml(c, mitTitel) {
-      const voted = hasVoted('reaktion', c.id);
-      return `<button type="button" class="sr-react${voted ? ' -on' : ''}" aria-pressed="${voted}"
-        data-react="${c.id}" onclick="toggleReaction(event,'${c.id}')">
-        ${LU.vote}<span class="sr-react-label">Will ich auch</span>
-        <span class="sr-react-count" data-react-count="${c.id}">${reactVotes(c)}</span>${mitTitel ? `<span class="sr-only"> — ${escHtml(c.titel)}</span>` : ''}</button>`;
+    /* ===== REAKTION „Will ich auch“ (vote:reaktion:<id>, KEINE Sterne) =====
+       Seit dem Feedback-Pass rendert renderUpvoteBtn() aus shared/base.js den Knopf.
+       Das ist eine reine OPTIK-Umstellung: Typ bleibt 'reaktion', der Speicherort
+       bleibt vote:reaktion:<id>, die Zahl bleibt Seed (c.reaktionSeed) + eigene
+       Stimme. Gewonnen ist, dass die Geste auf allen sechs Seiten gleich aussieht
+       und dass Umschalten, Trefffläche und aria-Zustand nur noch an einer Stelle
+       gepflegt werden.
+       WARUM NICHT getUpvoteCount(): dessen Seed-Auflösung kennt votesSeed/votes/
+       rating.count — Projekte führen ihre Stimmen als reaktionSeed. Der Zähler
+       kommt deshalb weiter aus reactVotes() und wird als `count` übergeben; das
+       ist genau der Parameter, für den renderUpvoteBtn ihn vorsieht.
+       `name` hängt den Projektnamen an den barrierefreien Namen — im Grid heißen
+       sonst sieben Knöpfe identisch „Will ich auch“. */
+    function reactionBtnHtml(c, kompakt) {
+      return renderUpvoteBtn(c.id, 'reaktion', reactVotes(c), {
+        label: 'Will ich auch', name: c.titel, compact: !!kompakt
+      });
     }
-    // ===== MERKEN (Favoriten, fav:case:<id>) =====
-    /* Mechanik kommt aus shared/base.js. Der Typ 'case' MUSS hier explizit
-       übergeben werden: diese Seite setzt bewusst kein window.RatingConfig
-       (siehe oben — keine Stern-Bewertung), ohne Typ fiele die
-       Engine auf den Standard 'skill' zurück und die Merkung landete still im
-       falschen Namensraum (fav:skill:<id>). Dann fände „Deine Sachen“ zwar
-       einen Eintrag, aber unter der Typ-Bezeichnung „Skill“.
-       aria-label trägt den Projektnamen — im Grid heißen sonst alle Merken-
-       Knöpfe gleich (dasselbe Problem wie bei „Will ich auch“ darunter). */
-    function favBtnHtml(c) { return srFavBtnHtml(c.id, 'case', c.titel); }
 
-    /* Ein Merken-Knopf für BEIDE Typen dieser Seite (case | startprojekt).
-       data-fav-typ und data-fav-name hängen am Knopf, weil der Rückruf aus
-       base.js nur die id liefert — siehe onFavoritesChanged darunter. */
-    function srFavBtnHtml(id, typ, name) {
-      const fav = isFavorite(id, typ);
-      return `<button type="button" class="fav-btn${fav ? ' active' : ''}" data-fav-id="${escHtml(id)}" data-fav-typ="${typ}" data-fav-name="${escHtml(name)}"
-        onclick="toggleFavorite(event,'${id}','${typ}')"
-        aria-pressed="${fav}"
-        aria-label="${escHtml(name)} ${fav ? 'aus Favoriten entfernen' : 'zu Favoriten hinzufügen'}">${fav ? '★' : '☆'}</button>`;
-    }
+    /* Nach jeder Stimme: Ranking neu zeichnen. toggleUpvote() in base.js hat die
+       Knöpfe selbst schon nachgezogen (Karte UND Modal) und meldet sich hier nur
+       noch; das Grid wird bewusst NICHT neu gerendert — das lüde alle Vorschau-
+       iframes neu und risse den Fokus vom gerade gedrückten Knopf.
+       Die Sortierung „Meiste Stimmen“ ordnet deshalb erst beim nächsten Rendern
+       um: ein Sprung der Karte unter dem Finger wäre die schlechtere Wahl. */
+    window.onUpvoteChanged = function (id, type) {
+      if (type !== 'reaktion') return;
+      renderRanking();
+    };
+
+    // ===== MERKEN (Favoriten, fav:case:<id> bzw. fav:startprojekt:<id>) =====
+    /* Markup und Mechanik kommen komplett aus shared/base.js: favBookmarkHtml()
+       rendert das Lesezeichen (LU.bookmark) samt data-fav-id/-typ/-name,
+       aria-pressed und aria-label — dieselbe Fassung wie auf den anderen Seiten,
+       die frühere seitenlokale Sternglyphen-Kopie ist entfallen.
+       Der Typ MUSS explizit mit: diese Seite setzt bewusst kein
+       window.RatingConfig (siehe oben — keine Stern-Bewertung), ohne Typ fiele die
+       Engine auf den Standard 'skill' zurück und die Merkung landete still im
+       falschen Namensraum (fav:skill:<id>). Dann fände „Deine Sachen“ zwar einen
+       Eintrag, aber unter der Typ-Bezeichnung „Skill“. */
 
     /* Zustand gezielt nachziehen statt neu zu rendern: der Fokus bleibt auf dem
        Knopf (Tastatur) und die Vorschau-iframes werden nicht neu geladen.
-       TYPFEST seit Stufe 3: die Seite trägt jetzt ZWEI merkbare Typen. Der
+       TYPFEST seit Stufe 3: die Seite trägt ZWEI merkbare Typen. Der
        Rückruf liefert nur die id, und die frühere Fassung schlug sie
        ausschliesslich in CASES nach — ein gemerktes Startprojekt hätte den
        aria-label-Rückfall „Projekt“ bekommen, also einen falschen Namen am
        richtigen Knopf. Gelesen wird deshalb pro Knopf mit SEINEM data-fav-typ
-       (Muster aus vorlagen.html:569). */
+       (Muster aus vorlagen.html:569). Den Text tauscht der Rückruf NICHT mehr:
+       im Lesezeichen steckt ein SVG, ein textContent-Zuweisung würde es löschen. */
     window.onFavoritesChanged = function (id) {
       document.querySelectorAll(`.fav-btn[data-fav-id="${CSS.escape(id)}"]`).forEach(btn => {
         const now = isFavorite(id, btn.dataset.favTyp);
         btn.classList.toggle('active', now);
         btn.setAttribute('aria-pressed', String(now));
-        btn.textContent = now ? '★' : '☆';
         btn.setAttribute('aria-label', `${btn.dataset.favName || ''} ${now ? 'aus Favoriten entfernen' : 'zu Favoriten hinzufügen'}`);
       });
     };
-
-    function toggleReaction(evt, id) {
-      if (evt) evt.stopPropagation();
-      const now = toggleVote('reaktion', id);
-      const c = caseById(id);
-      document.querySelectorAll(`[data-react-count="${id}"]`).forEach(el => { el.textContent = reactVotes(c); });
-      document.querySelectorAll(`[data-react="${id}"]`).forEach(b => {
-        b.classList.toggle('-on', now); b.setAttribute('aria-pressed', String(now));
-      });
-      showToast(now ? 'Notiert — „Will ich auch“' : 'Reaktion zurückgenommen');
-      renderRanking();
-    }
 
     // ===== (a) FILTER/SORT + CASE-GRID =====
     function renderCats() {
@@ -472,7 +537,7 @@
       // Zähler folgen der aktiven Suche, damit die Pillen zur Gridfläche passen.
       // (Gemessen 24.07.2026, Suche „excel“: „Media 2“ versprach zwei Projekte und
       // lieferte null. Muster aus prompts.html/groupCount, dort schon gefixt.)
-      // art/aufwand bleiben bewusst außen vor: die stehen als Selects daneben und
+      // art/umfang bleiben bewusst außen vor: die stehen als Selects daneben und
       // sind — anders als die Suche — an den Pillen selbst ablesbar.
       host.innerHTML = cats.map(c => {
         const active = state.saeule === (c.id === 'all' ? null : c.id);
@@ -482,10 +547,15 @@
         return `<button class="sr-cat${active ? ' active' : ''}" data-cat="${c.id}" aria-pressed="${active}" onclick="setSaeule('${c.id}')">${c.ic}${escHtml(c.label)} <span class="tab-count">${count}</span></button>`;
       }).join('');
     }
-    function fillSelect(id, order, labels, allLabel) {
+    /* Füllt ein Filter-Select aus den Daten. `wert` liest den Filterwert eines Cases
+       — früher entschied das ein `id === 'sr-art'`-Vergleich mitten in der Funktion,
+       was mit der dritten Stufe (Umfang ist abgeleitet, nicht gespeichert) nicht mehr
+       trug. Angeboten werden nur Werte, zu denen es auch Projekte gibt: eine leere
+       Filterstufe verspricht Treffer, die es nicht gibt (tools/qa zaehler). */
+    function fillSelect(id, order, labels, allLabel, wert) {
       const sel = document.getElementById(id);
       if (!sel) return;
-      const present = order.filter(v => CASES.some(c => (id === 'sr-art' ? c.art : c.aufwandStufe) === v));
+      const present = order.filter(v => CASES.some(c => wert(c) === v));
       sel.innerHTML = `<option value="all">${allLabel}</option>`
         + present.map(v => `<option value="${v}">${escHtml(labels[v])}</option>`).join('');
     }
@@ -514,7 +584,7 @@
       return CASES.filter(c =>
         (!state.saeule || c.saeule === state.saeule) &&
         (state.art === 'all' || c.art === state.art) &&
-        (state.aufwand === 'all' || c.aufwandStufe === state.aufwand) &&
+        (state.umfang === 'all' || umfangStufe(c) === state.umfang) &&
         caseMatchesSearch(c));
     }
     function sortedCases(list) {
@@ -531,29 +601,42 @@
       return arr;
     }
 
+    /* KARTEN-ANATOMIE (Feedback Item 11) — bewusst fünf Bausteine, mehr nicht:
+         Vorschau · Ehrlichkeits-Marker · Titel · EIN Satz Nutzen · Metrik-Zeile.
+       Was vorher zusätzlich auf der Karte stand, ist nicht verschwunden, sondern
+       umgezogen: die ausführliche Beschreibung ins Modal (Reiter „Überblick“), die
+       Entstehungsgeschichte in „So ist es entstanden“, die Zutaten in „Nachbauen“.
+       Die beiden Zwischenstufen des Dichte-Reglers blenden gestaffelt wieder ein:
+         kompakt (Standard) → nichts zusätzlich
+         standard            → Persona/Säule
+         ausführlich         → zusätzlich die volle Beschreibung
+       Reihenfolge im Markup = Lesereihenfolge; die Klassen aus base.css
+       (.density-hide-kompakt / .density-only-ausfuehrlich) blenden nur aus. */
     function caseCardHtml(c) {
       return `
-        <article class="sr-card" id="case-${c.id}" data-id="${c.id}" data-saeule="${c.saeule}" data-art="${c.art}" data-aufwand="${c.aufwandStufe}">
+        <article class="sr-card" id="case-${c.id}" data-id="${c.id}" data-saeule="${c.saeule}" data-art="${c.art}" data-umfang="${umfangStufe(c)}">
           <div class="sr-thumb">
             <iframe class="sr-frame" src="${c.liveUrl}" loading="lazy"
                     tabindex="-1" aria-hidden="true" title="Vorschau (nicht interaktiv): ${escHtml(c.titel)}"></iframe>
           </div>
           <div class="sr-body">
-            <div class="sr-marker-row">${markerHtml(c)}${favBtnHtml(c)}</div>
+            <div class="sr-marker-row">${markerHtml(c)}${favBookmarkHtml(c.id, 'case', c.titel)}</div>
             <div class="sr-kopf">
-              <!-- h3: Karten-Titel als Überschrift unter der Sektions-h2 — ergibt
-                   h1→h2→h3 ohne Sprung und macht das Grid per Überschriften-
-                   Navigation durchlaufbar. .sr-name bleibt der Hook für Tests/CSS,
+              <!-- h2: Die Sektions-Überschrift ist entfallen (Item 34), die Karten
+                   sitzen jetzt direkt unter der h1 — als h3 entstünde ein Sprung
+                   über die h2-Ebene. .sr-name bleibt der Hook für Tests/CSS,
                    der Textinhalt bleibt exakt der Projekttitel. -->
-              <h3 class="sr-name">${escHtml(c.titel)}</h3>
+              <h2 class="sr-name">${escHtml(c.titel)}</h2>
               <span class="sr-sub">${escHtml(ART_LABEL[c.art] || c.art)}</span>
             </div>
-            <p class="sr-persona"><strong>${escHtml(c.persona)}</strong> · ${escHtml(SAEULE_LABEL[c.saeule] || c.saeule)}</p>
-            <p class="sr-desc">${escHtml(c.kurz)}</p>
+            <p class="sr-nutzen">${escHtml(c.nutzen || '')}</p>
+            <p class="sr-metrik" title="Gemessen an ${escHtml((c.umfang && c.umfang.quelle) || '')}">${LU['file-text']}${escHtml(umfangText(c))}</p>
+            <p class="sr-persona density-hide-kompakt"><strong>${escHtml(c.persona)}</strong> · ${escHtml(SAEULE_LABEL[c.saeule] || c.saeule)}</p>
+            <p class="sr-desc density-only-ausfuehrlich">${escHtml(c.kurz)}</p>
             <div class="sr-actions">
               ${reactionBtnHtml(c, true)}
-              <!-- „Ansehen“/„Details“ hießen im Grid zehnmal gleich — unsichtbarer
-                   Zusatz nennt Projekt und (beim Link) den neuen Tab. -->
+              <!-- „Ansehen“/„Details“ heißen im Grid an jeder Karte gleich —
+                   unsichtbarer Zusatz nennt Projekt und (beim Link) den neuen Tab. -->
               <a class="lib-btn -primary" href="${c.liveUrl}" target="_blank" rel="noopener">${LU.eye}Ansehen<span class="sr-only"> — ${escHtml(c.titel)}, öffnet neuen Tab</span></a>
               <button class="lib-btn" onclick="openModal('${c.id}')">${LU['layout-dashboard']}Details<span class="sr-only"> — ${escHtml(c.titel)}</span></button>
             </div>
@@ -569,7 +652,9 @@
         host.innerHTML = `
           <div class="empty-state">
             <div class="empty-icon">${LU.search}</div>
-            <h3 class="empty-title">Kein Projekt gefunden</h3>
+            <!-- h2 wie die Kartentitel: ohne Sektions-Überschrift wäre h3 hier ein
+                 Ebenensprung unter der h1 (siehe Kommentar am Abschnitt). -->
+            <h2 class="empty-title">Kein Projekt gefunden</h2>
             <p class="empty-text">Keine Projekte passen zu deinen Filtern. Setz die Filter zurück oder probier einen anderen Suchbegriff.</p>
             <button class="c-cta -black-bg" onclick="resetShowroomFilters()" style="margin-top:2rem">Alle Filter zurücksetzen</button>
           </div>`;
@@ -579,11 +664,12 @@
       const c = document.getElementById('cases-count');
       if (c) {
         const q = (state.search || '').trim();
-        // Bisher zählte nur die Suche mit: mit Säule-, Art- oder Aufwand-Filter stand
-        // über einem Ein-Treffer-Grid weiter „10 Projekte“. Jetzt sagt der Zähler bei
-        // JEDEM aktiven Filter das Ergebnis — ohne Filter bleibt die Bestandsangabe
-        // mit der echt/Beispiel-Aufteilung stehen.
-        const gefiltert = !!q || !!state.saeule || state.art !== 'all' || state.aufwand !== 'all';
+        // Bisher zählte nur die Suche mit: mit Säule-, Art- oder Umfang-Filter stand
+        // über einem Ein-Treffer-Grid weiter die volle Bestandszahl. Jetzt sagt der
+        // Zähler bei JEDEM aktiven Filter das Ergebnis — ohne Filter bleibt die
+        // Bestandsangabe mit der echt/Beispiel-Aufteilung stehen.
+        // Beide Zahlen kommen aus CASE_STATS, also aus den Daten (Zahlen-Ehrlichkeit).
+        const gefiltert = !!q || !!state.saeule || state.art !== 'all' || state.umfang !== 'all';
         const passt = list.length === 1 ? 'passt' : 'passen';
         c.textContent = gefiltert
           ? `${list.length} von ${CASE_STATS.total} Projekten ${passt} ${q ? `zu „${q}“` : 'zu deinen Filtern'}`
@@ -592,10 +678,10 @@
     }
     // E12: setzt Suche UND alle Pills/Selects zurück (Empty-State-Button).
     function resetShowroomFilters() {
-      state.saeule = null; state.art = 'all'; state.aufwand = 'all'; state.search = '';
+      state.saeule = null; state.art = 'all'; state.umfang = 'all'; state.search = '';
       const sf = document.getElementById('search'); if (sf) sf.value = '';
       const artSel = document.getElementById('sr-art'); if (artSel) artSel.value = 'all';
-      const aufSel = document.getElementById('sr-aufwand'); if (aufSel) aufSel.value = 'all';
+      const umfSel = document.getElementById('sr-umfang'); if (umfSel) umfSel.value = 'all';
       renderCats(); renderCases();
       // Der auslösende Button steckte im Empty-State und ist gerade mit-ersetzt
       // worden — sonst fällt der Fokus auf <body> zurück.
@@ -654,7 +740,7 @@
           </div>
           <div class="sp-marker-row">
             <span class="sp-marker">${LU.blocks}Leeres Gerüst — kein fertiges Projekt</span>
-            ${srFavBtnHtml(sp.id, 'startprojekt', sp.name)}
+            ${favBookmarkHtml(sp.id, 'startprojekt', sp.name)}
           </div>
           <div class="sp-actions">
             <a class="lib-btn" href="${sp.liveUrl}" target="_blank" rel="noopener">${LU.eye}Ansehen<span class="sr-only"> — ${escHtml(sp.name)} in neuem Tab</span></a>
@@ -758,11 +844,15 @@
       const host = document.getElementById('sr-rank');
       if (!host) return;
       const top = CASES.slice().sort((a, b) => reactVotes(b) - reactVotes(a) || a.titel.localeCompare(b.titel, 'de')).slice(0, 5);
+      /* Die Stimmenzahl steht hier als ANZEIGE, nicht als Knopf: Der Ranking-Eintrag
+         ist selbst eine Schaltfläche, und eine Schaltfläche darf keine enthalten
+         (CLAUDE.md, nested-interactive). Gestimmt wird an der Karte oder im Modal;
+         nach jeder Stimme zeichnet window.onUpvoteChanged diese Liste neu. */
       host.innerHTML = top.map((c, i) => `
         <button type="button" class="sr-rank-item" onclick="openModal('${c.id}')">
           <span class="sr-rank-pos">${i + 1}</span>
           <span class="sr-rank-name">${escHtml(c.titel)}</span>
-          <span class="sr-rank-count" data-react-count="${c.id}">${LU.vote}${reactVotes(c)}</span>
+          <span class="sr-rank-count">${LU.vote}${reactVotes(c)}</span>
         </button>`).join('');
     }
 
@@ -786,7 +876,7 @@
       document.getElementById('modal-meta').innerHTML =
         markerHtml(item)
         + sep + `<span>${escHtml(item.persona)}${rolle ? ' · ' + escHtml(rolle) : ''}</span>`
-        + sep + `<span>${escHtml(item.aufwand)}</span>`;
+        + sep + `<span>${escHtml(umfangText(item))}</span>`;
       const tabBar = document.querySelector('#modal .modal-tabs');
       if (tabBar) {
         tabBar.innerHTML = [['overview', 'Überblick'], ['story', 'So ist es entstanden'], ['nachbauen', 'Nachbauen'], ['vorschau', 'Vorschau']]
@@ -796,14 +886,21 @@
     function renderCaseOverview(item) {
       const rolle = personaRolle(item.persona);
       const fb = item.faktenBox || {};
+      const u = item.umfang || {};
+      const np = (fb.prompts || []).length, nb = (fb.bausteine || []).length;
+      /* Die Fakten-Box trennt seit dem Feedback-Pass zwei Dinge, die vorher unter
+         „Aufwand" zusammenfielen: den GEMESSENEN Umfang (Datei, nachrechenbar) und
+         die GESCHÄTZTE Zeit (faktenBox.dauer, bei Beispiel-Projekten ausdrücklich
+         eine Einordnung). Nur so bleibt erkennbar, welche Zahl woher kommt. */
       return `
         <p class="sr-desc" style="font-size:1.55rem;line-height:1.6">${escHtml(item.kurz)}</p>
         ${item.zitat ? `<blockquote class="sr-quote">${escHtml(item.zitat)}</blockquote>` : ''}
         <div class="sr-facts">
-          <div><span class="sr-fact-label">Aufwand</span><div class="sr-fact-val">${escHtml(fb.dauer || item.aufwand)}</div></div>
+          <div><span class="sr-fact-label">Umfang (gemessen)</span><div class="sr-fact-val">${escHtml(umfangText(item))}${u.quelle ? `<br><span style="font-family:var(--font-mono);font-size:1.15rem;color:var(--c-gray-m)">${escHtml(u.quelle)}</span>` : ''}</div></div>
+          ${fb.dauer ? `<div><span class="sr-fact-label">Zeitaufwand (geschätzt)</span><div class="sr-fact-val">${escHtml(fb.dauer)}</div></div>` : ''}
           <div><span class="sr-fact-label">Von</span><div class="sr-fact-val">${escHtml(item.persona)}${rolle ? ' · ' + escHtml(rolle) : ''}</div></div>
           <div><span class="sr-fact-label">Genutzte Skills</span><div class="sr-fact-val">${(fb.skills || []).map(id => { const s = SKILLS.find(x => x.id === id); return escHtml(s ? s.name : id); }).join(', ') || '—'}</div></div>
-          <div><span class="sr-fact-label">Prompts &amp; Bausteine</span><div class="sr-fact-val">${(fb.prompts || []).length} Prompts · ${(fb.bausteine || []).length} Bausteine</div></div>
+          <div><span class="sr-fact-label">Prompts &amp; Bausteine</span><div class="sr-fact-val">${np} ${np === 1 ? 'Prompt' : 'Prompts'} · ${nb} ${nb === 1 ? 'Baustein' : 'Bausteine'}</div></div>
         </div>
         <div class="sr-actions" style="margin-top:1.6rem">
           ${reactionBtnHtml(item)}
@@ -963,10 +1060,10 @@
       // Auch die Freitext-Suche zählt dazu: sonst springt highlightCard() auf eine
       // Karte, die gar nicht im Grid steht (z. B. Sprung aus der globalen Suche).
       if ((state.saeule && item.saeule !== state.saeule) || (state.art !== 'all' && item.art !== state.art)
-        || (state.aufwand !== 'all' && item.aufwandStufe !== state.aufwand) || !caseMatchesSearch(item)) {
-        state.saeule = null; state.art = 'all'; state.aufwand = 'all'; state.search = '';
+        || (state.umfang !== 'all' && umfangStufe(item) !== state.umfang) || !caseMatchesSearch(item)) {
+        state.saeule = null; state.art = 'all'; state.umfang = 'all'; state.search = '';
         const artSel = document.getElementById('sr-art'); if (artSel) artSel.value = 'all';
-        const aufSel = document.getElementById('sr-aufwand'); if (aufSel) aufSel.value = 'all';
+        const umfSel = document.getElementById('sr-umfang'); if (umfSel) umfSel.value = 'all';
         const sf = document.getElementById('search'); if (sf) sf.value = '';
         renderCats(); renderCases();
       }
@@ -983,7 +1080,7 @@
         fields: [
           { key: 'name', label: 'Projektname', required: true, placeholder: 'z. B. „Reporting-Generator“' },
           { key: 'problem', label: 'Welches Problem löst es?', type: 'textarea', required: true, placeholder: 'Was war der Anlass — und was tut das Projekt?' },
-          { key: 'aufwand', label: 'Grober Aufwand', placeholder: 'z. B. „Feierabend-Projekt, ~2 Stunden“' },
+          { key: 'umfang', label: 'Grober Umfang', placeholder: 'z. B. „eine HTML-Datei, ~200 Zeilen“' },
           { key: 'link', label: 'Link zur Demo (optional)', placeholder: 'https://…' }
         ],
         submitLabel: 'Projekt einreichen (Demo)'
@@ -992,13 +1089,22 @@
 
     // ===== INIT =====
     document.addEventListener('DOMContentLoaded', () => {
-      // Sektions-Icons setzen (Lucide aus der LU-Map)
-      const icons = { 'cases-ic': LU.rocket, 'sp-ic': LU.bauen, 'rank-ic': LU.trophy };
+      // Sektions-Icons setzen (Lucide aus der LU-Map). #cases-ic ist mit der
+      // Sektions-Überschrift entfallen (Item 34) und steht deshalb nicht mehr hier.
+      const icons = { 'sp-ic': LU.bauen, 'rank-ic': LU.trophy };
       Object.entries(icons).forEach(([id, svg]) => { const el = document.getElementById(id); if (el) el.innerHTML = svg; });
 
+      /* Ansichtsdichte (initDensity, shared/base.js). Kompakt ist der Standard:
+         Wer den Showroom öffnet, will meistens ein bestimmtes Projekt wiederfinden.
+         Der Regler hängt am Grid — alles, was er ein- und ausblendet, sitzt auf den
+         Karten (.density-hide-kompakt / .density-only-ausfuehrlich).
+         VOR renderCases(): sonst stünde data-density erst nach dem ersten Zeichnen
+         am Container, und die Karten flackerten einmal in voller Höhe auf. */
+      initDensity({ page: 'showroom', container: '#sr-grid', mount: '[data-density-slot]', default: 'kompakt' });
+
       renderCats();
-      fillSelect('sr-art', ART_ORDER, ART_LABEL, 'Alle Arten');
-      fillSelect('sr-aufwand', AUFWAND_ORDER, AUFWAND_LABEL, 'Jeder Aufwand');
+      fillSelect('sr-art', ART_ORDER, ART_LABEL, 'Alle Arten', c => c.art);
+      fillSelect('sr-umfang', UMFANG_ORDER, UMFANG_LABEL, 'Jeder Umfang', umfangStufe);
       renderCases();
       // VOR applyDeepLink: der #sp-Zweig sucht die Karte per getElementById und
       // kehrt bei einer noch leeren Liste still zurück — der Deep-Link führte
@@ -1008,8 +1114,8 @@
 
       const artSel = document.getElementById('sr-art');
       if (artSel) artSel.addEventListener('change', e => { state.art = e.target.value; renderCases(); });
-      const aufSel = document.getElementById('sr-aufwand');
-      if (aufSel) aufSel.addEventListener('change', e => { state.aufwand = e.target.value; renderCases(); });
+      const umfSel = document.getElementById('sr-umfang');
+      if (umfSel) umfSel.addEventListener('change', e => { state.umfang = e.target.value; renderCases(); });
       const sortSel = document.getElementById('sr-sort');
       if (sortSel) sortSel.addEventListener('change', e => { state.sort = e.target.value; renderCases(); });
 

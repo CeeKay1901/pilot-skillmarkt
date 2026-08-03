@@ -1,6 +1,6 @@
 // pilot AI Marketplace — Prompt-Sammlung (ausgelagerte Daten, Etappe E3).
 // Klassisches Script, definiert globale Konstanten:
-//   PROMPTS           — alle Einträge (Leuchttürme mit builder/variants/preview + Breite-Einträge)
+//   PROMPTS           — alle Einträge (Leuchttürme mit builder/preview + Breite-Einträge)
 //   PROMPT_PLATFORMS  — Plattform-Liste (eigene Kopie; skills.js wird auf prompts.html nicht geladen)
 //   PROMPT_START      — „Fang hier an“-Kandidat der Redaktion
 // Ein Leuchtturm ist kein eigener Bestand mehr: Wer ein `builder`-Feld hat, IST einer.
@@ -9,13 +9,34 @@
 // deckungsgleich sind, laufen beim ersten neuen Baukasten-Prompt lautlos auseinander.
 // Darum entfällt die Liste; Fähnchen, Kartenrand und Sortierung in prompts.html
 // hängen alle an `p.builder`.
+// JE PROMPT GENAU EIN TEXT (E15): Bis August 2026 trugen die fünf Leuchttürme ein
+// `variants`-Array mit einer Kurz- und einer Ausführlich-Fassung. Aus der Feedback-
+// runde kam die eindeutige Rückmeldung, dass eine Auswahl an dieser Stelle nicht
+// hilft, sondern eine Entscheidung abverlangt, die niemand treffen will — wer einen
+// Prompt sucht, will den besten, nicht drei. Geblieben ist deshalb je Prompt die
+// stärkste Fassung; `promptText` ist damit wieder die einzige Textquelle. (Die
+// Kurz-Fassungen waren Abmagerungen des Haupttextes, die Ausführlich-Fassungen
+// Erweiterungen — beides ohne eigenständigen Nutzen gegenüber dem Haupttext, der
+// als einziger auch zu `warum`, `exampleOutput` und `preview` passte.)
 // Platzhalter-Konvention: [GROSSBUCHSTABEN] in eckigen Klammern — werden im UI gelb
 // markiert und beim Kopieren UNVERÄNDERT mitkopiert. rating/copyCount sind Demo-Seeds
 // (zentral im Footer gekennzeichnet), Kommentare sind seeded Stimmen der PILOTS-Personas.
+// rating.count dient prompts.html zusätzlich als Seed der Upvote-Zahl (_upSeed in
+// shared/base.js) — die Sterne-Anzeige gibt es dort seit E15 nicht mehr.
+// `votesRecent` ist ebenfalls ein Demo-Seed: die Stimmen der letzten 90 Tage, also
+// eine TEILMENGE von rating.count. Gelesen wird das Feld nur von bestRated()
+// (shared/base.js), das seinen Rotations-Pool aus „Top-n gesamt“ VEREINIGT mit
+// „Top-n zuletzt“ bildet. Ohne das Feld fallen beide Hälften zusammen, der Pool
+// schrumpft auf n und der „Bestbewertete“-Spot der Startseite zeigt monatelang
+// dieselben Einträge. Die Verteilung ist bewusst NICHT proportional zur
+// Gesamtzahl — sonst wären beide Ranglisten wieder identisch.
 
 const PROMPT_PLATFORMS = [
   { id: 'code',     label: 'Claude Code', short: 'Code' },
-  { id: 'langdock', label: 'Langdock',    short: 'Langdock' }
+  // id bleibt 'langdock' — daran hängen Filter-Deep-Links und localStorage.
+  // Sichtbar heißt die Plattform bei pilot „pilot AI“; das ist der Name, unter dem
+  // die Kolleg:innen sie im Alltag öffnen.
+  { id: 'langdock', label: 'pilot AI',    short: 'pilot AI' }
 ];
 
 const PROMPT_START = 'meeting-todos';
@@ -54,49 +75,6 @@ ausdrücklich. Übernimm alle Zahlen wörtlich aus dem Briefing.
 
 Hier das Briefing:
 [BRIEFING-TEXT]`,
-    variants: [
-      {
-        id: 'kurz', label: 'Kurz', hint: 'Wenn es schnell gehen muss — vier Punkte plus die offenen Fragen.',
-        promptText: `Fasse das folgende Kunden-Briefing von [KUNDE] zusammen:
-1. Kernaufgabe in einem Satz.
-2. Ziele als Liste (messbare zuerst).
-3. Budget & Timing — fehlende Angaben als „nicht genannt“ kennzeichnen.
-4. Die fünf wichtigsten offenen Fragen an den Kunden, priorisiert.
-Erfinde nichts, übernimm Zahlen wörtlich.
-
-[BRIEFING-TEXT]`
-      },
-      {
-        id: 'ausfuehrlich', label: 'Ausführlich', hint: 'Zwei Durchgänge mit Originalzitaten — für Briefings, die du weitergibst.',
-        promptText: `Du bist erfahrene:r Berater:in in einer Mediaagentur und bereitest Kunden-Briefings
-für dein Team auf. Du liest genau, unterscheidest Fakten von Vermutungen und
-benennst offene Punkte, statt sie zu überspielen.
-
-Analysiere das folgende Briefing von [KUNDE] in zwei Durchgängen.
-
-Durchgang 1 — Zusammenfassung für [EMPFÄNGER]:
-**In einem Satz:** Worum geht es? (max. 25 Wörter)
-**Ziele:** Liste, messbare zuerst, unscharfe mit „(unscharf)“ markiert.
-**Zielgruppe & Markt:** Stichpunkte.
-**Budget & Timing:** Nur, was im Text steht; Fehlendes als „nicht genannt“.
-**Muss / Kann:** Harte Vorgaben und Wünsche, getrennt.
-**Originalzitate:** Die 2–3 Sätze aus dem Briefing, die die Erwartung des Kunden
-am deutlichsten zeigen — wörtlich, in Anführungszeichen.
-
-Durchgang 2 — kritischer Blick:
-**Widersprüche & Risiken:** Wo passt etwas nicht zusammen (z. B. Ziel vs. Budget,
-Timing vs. Umfang)? Benenne jedes Risiko in einem Satz.
-**Offene Fragen an den Kunden:** 3–7 Fragen, priorisiert.
-**Entwurf Rückfragen-E-Mail:** Kurze, freundliche E-Mail an den Kunden mit den
-Top-3-Fragen — versandfertig, ohne Floskeln.
-
-Wichtig: Erfinde nichts. Übernimm Zahlen wörtlich. Kennzeichne jede eigene
-Einschätzung ausdrücklich als Einschätzung.
-
-Hier das Briefing:
-[BRIEFING-TEXT]`
-      }
-    ],
     builder: {
       fields: [
         { key: 'kunde', ph: '[KUNDE]', label: 'Kunde / Marke', type: 'text', placeholder: 'z. B. „Grünwerk Gartenmärkte“' },
@@ -169,10 +147,11 @@ Hier das Briefing:
     },
     copyCount: 41,
     rating: { average: 4.5, count: 18 },
+    votesRecent: 6,
     comments: [
       { author: 'Sophie Klein', role: 'Projektmanagerin', initials: 'SK', date: '2026-07-03', rating: 4.6, text: 'Läuft bei mir vor jedem Kickoff. Die Rückfragen-Liste geht fast unverändert in die Mail an den Kunden — das allein spart mir eine halbe Stunde.' },
       { author: 'Anna Schreiber', role: 'Content Strategin', initials: 'AS', date: '2026-06-24', rating: 4.4, text: 'Das „(unscharf)“-Markieren ist Gold wert. Vorher habe ich vage Ziele erst in der Konzeption bemerkt, jetzt sehe ich sie in Minute drei.' },
-      { author: 'Christopher Kipp', role: 'Innovation Lead', initials: 'CK', date: '2026-06-18', rating: 4.3, text: 'Guter Einstiegs-Prompt, um zu zeigen, was Format-Vorgaben bewirken. Bei sehr kurzen Briefings nehme ich die Kurz-Variante, sonst wirkt das Gerüst überdimensioniert.' }
+      { author: 'Christopher Kipp', role: 'Innovation Lead', initials: 'CK', date: '2026-06-18', rating: 4.3, text: 'Guter Einstiegs-Prompt, um zu zeigen, was Format-Vorgaben bewirken. Bei sehr kurzen Briefings streiche ich vor dem Absenden zwei Rubriken raus, sonst wirkt das Gerüst überdimensioniert.' }
     ],
     addedAt: '2026-07-16',
     skillRef: 'briefing-gen',
@@ -208,43 +187,6 @@ Regeln:
 Format: Erst die nummerierte Liste. Danach eine Bewertungstabelle mit den Spalten
 Claim | Merkfähigkeit (1–5) | Passung zur Tonalität (1–5) | Risiko/Missverständnis.
 Sprich zum Schluss eine Empfehlung für die Top 2 aus und begründe jede in einem Satz.`,
-    variants: [
-      {
-        id: 'kurz', label: 'Kurz', hint: 'Fünf Claims statt zehn, mit Favorit — für die schnelle Runde.',
-        promptText: `Entwickle 5 Claim-Varianten für [MARKE] ([PRODUKT]). Zielgruppe: [ZIELGRUPPE].
-Tonalität: [TONALITÄT]. Kernbotschaft: [KERNBOTSCHAFT].
-Maximal 6 Wörter pro Claim, keine Werbefloskeln, mindestens einer ganz wörtlich
-und einer mit überraschendem Bild. Nenne am Ende deinen Favoriten mit einem Satz
-Begründung.`
-      },
-      {
-        id: 'ausfuehrlich', label: 'Ausführlich', hint: 'Erst Tonwörter, dann Claims in drei Richtungen — für den Workshop.',
-        promptText: `Du bist Senior-Texter:in mit fünfzehn Jahren Erfahrung in Markenkampagnen. Du
-entwickelst Claims, die man sich merkt — kurz, konkret, ohne Werbefloskeln.
-
-Briefing:
-Marke/Produkt: [MARKE] ([PRODUKT])
-Zielgruppe: [ZIELGRUPPE]
-Gewünschte Tonalität: [TONALITÄT]
-Kernbotschaft: [KERNBOTSCHAFT]
-
-Arbeite in drei Schritten:
-
-Schritt 1 — Tonwörter: Sammle 8–10 Wörter und Bilder, die zur Tonalität und zur
-Zielgruppe passen (und 3, die tabu sind). Kurz kommentieren.
-
-Schritt 2 — Claims: Entwickle je 4 Claims in drei Richtungen:
-a) wörtlich und selbstbewusst, b) Wortspiel oder überraschendes Bild,
-c) aus Sicht der Zielgruppe formuliert (ihre Sprache, ihr Alltag).
-Maximal 6 Wörter pro Claim, keine abgenutzten Werbewörter („einfach“, „innovativ“,
-„Erlebnis“, „Genuss pur“, „neu gedacht“).
-
-Schritt 3 — Auswahl: Bewerte alle 12 in einer Tabelle mit den Spalten
-Claim | Merkfähigkeit (1–5) | Passung zur Tonalität (1–5) | Risiko/Missverständnis.
-Wähle die Top 2 und liefere zu jedem: eine passende Headline-Verlängerung
-(max. 12 Wörter) und einen Satz, wo der Claim NICHT funktionieren würde.`
-      }
-    ],
     builder: {
       fields: [
         { key: 'marke', ph: '[MARKE]', label: 'Marke', type: 'text', placeholder: 'z. B. „VELOMO“' },
@@ -306,6 +248,7 @@ Regeln: Maximal 6 Wörter pro Claim. Keine abgenutzten Werbewörter […]` },
     },
     copyCount: 14,
     rating: { average: 4.2, count: 11 },
+    votesRecent: 3,
     comments: [
       { author: 'Anna Schreiber', role: 'Content Strategin', initials: 'AS', date: '2026-07-08', rating: 4.5, text: 'Die Floskel-Verbotsliste macht den Unterschied. Ohne sie kommt „Einfach besser ankommen“, mit ihr kommen Sachen, die ich ins Review mitnehme.' },
       { author: 'Mia Hoffmann', role: 'Senior UX Designerin', initials: 'MH', date: '2026-06-29', rating: 4.2, text: 'Nutze ich zweckentfremdet für Microcopy — Button-Texte und Empty States. Die Bewertungstabelle hilft mir, dem Team Entscheidungen zu begründen.' },
@@ -345,41 +288,6 @@ Gehe so vor:
    Formel schon gut ist, sag das ehrlich und lass sie in Ruhe.
 
 Wichtig: Ich arbeite mit [EXCEL-VERSION]. Schlage nur Funktionen vor, die es dort gibt.`,
-    variants: [
-      {
-        id: 'kurz', label: 'Kurz', hint: 'Nur verstehen, was die Formel tut — ohne Testtabelle.',
-        promptText: `Erkläre diese Excel-Formel ([EXCEL-VERSION]) in Alltagssprache: erst in einem Satz,
-dann Schritt für Schritt von innen nach außen. Nenne zum Schluss die eine wichtigste
-Stolperfalle.
-
-[FORMEL]`
-      },
-      {
-        id: 'ausfuehrlich', label: 'Ausführlich', hint: 'Mit Testtabelle — wenn du die Datei künftig selbst pflegst.',
-        promptText: `Du bist Excel-Expert:in und erklärst Formeln für Kolleg:innen ohne Excel-Tiefenwissen —
-geduldig, präzise, und ohne Fachbegriffe unerklärt stehen zu lassen.
-
-Ich habe diese Formel geerbt und muss die Datei künftig selbst pflegen.
-Kontext der Datei: [KONTEXT]
-Meine Excel-Version: [EXCEL-VERSION] — schlage nur Funktionen vor, die es dort gibt.
-
-[FORMEL]
-
-Arbeite die folgenden Punkte ab:
-1. **In einem Satz:** Was macht die Formel, in Alltagssprache?
-2. **Schritt für Schritt:** Zerlege sie von innen nach außen; jede Funktion beim
-   ersten Auftreten in maximal einem Satz erklären.
-3. **Testtabelle:** Erstelle eine kleine Tabelle mit 4–5 erfundenen Testfällen
-   (normale Werte, leere Zelle, Text statt Zahl, nicht gefundener Wert) und dem
-   jeweiligen Ergebnis der Formel.
-4. **Stolperfallen:** Alle Fälle aus der Testtabelle, in denen das Ergebnis falsch
-   oder irreführend ist — mit Begründung.
-5. **Neubau:** Baue die Formel so, wie du sie heute schreiben würdest (robuster,
-   lesbarer, ggf. modernere Funktionen). Erkläre jede Abweichung vom Original.
-6. **Doku-Kommentar:** Formuliere einen Kommentar von 1–2 Sätzen, den ich als
-   Zellnotiz hinterlegen kann, damit die nächste Person die Formel versteht.`
-      }
-    ],
     builder: {
       fields: [
         { key: 'formel', ph: '[FORMEL]', label: 'Die Formel', type: 'textarea', placeholder: 'z. B. =WENN(ISTFEHLER(SVERWEIS(A2;Plan!$A$2:$F$500;6;FALSCH));"prüfen";SVERWEIS(A2;Plan!$A$2:$F$500;6;FALSCH))' },
@@ -443,10 +351,11 @@ XVERWEIS hat den „nicht gefunden“-Fall eingebaut — die Formel sucht nur no
     },
     copyCount: 34,
     rating: { average: 4.4, count: 16 },
+    votesRecent: 5,
     comments: [
       { author: 'Sophie Klein', role: 'Projektmanagerin', initials: 'SK', date: '2026-07-10', rating: 4.7, text: 'Ich habe einen Mediaplan mit sieben verschachtelten WENNs geerbt. Nach drei Durchläufen mit diesem Prompt verstehe ich die Datei zum ersten Mal wirklich.' },
       { author: 'Jan Richter', role: 'Tech Lead & Citizen-Coding-Mentor', initials: 'JR', date: '2026-06-27', rating: 4.3, text: 'Fachlich sauber, und die Versions-Zeile ist der unterschätzte Teil — davor haben Kolleg:innen ständig XVERWEIS-Vorschläge für Excel 2016 bekommen.' },
-      { author: 'Lukas Weber', role: 'SEO Strategist', initials: 'LW', date: '2026-06-19', rating: 4.1, text: 'Die Testtabelle aus der ausführlichen Variante nutze ich als Mini-QA für Reporting-Sheets. Bei Google-Sheets-Formeln als Version „Google Sheets“ wählen, dann stimmen auch die Funktionsnamen.' }
+      { author: 'Lukas Weber', role: 'SEO Strategist', initials: 'LW', date: '2026-06-19', rating: 4.1, text: 'Das durchgerechnete Mini-Beispiel nutze ich als Mini-QA für Reporting-Sheets. Bei Google-Sheets-Formeln als Version „Google Sheets“ wählen, dann stimmen auch die Funktionsnamen.' }
     ],
     addedAt: '2026-07-16',
     skillRef: 'xlsx',
@@ -474,57 +383,16 @@ mir wichtige Entscheidungen kurz, bevor du sie triffst.
 Rahmenbedingungen:
 - Eine einzige HTML-Datei, ohne Build-Schritt und ohne Server — ich will sie per
   Doppelklick öffnen und per E-Mail teilen können.
-- Keine externen Dienste, alles läuft lokal im Browser.
-- Deutsche Beschriftungen.
-
-Stelle mir zuerst deine 2–3 wichtigsten Rückfragen, falls etwas unklar ist. Baue
-dann eine erste Version, die ich sofort ausprobieren kann — lieber klein und
-funktionierend als vollständig. Sag mir am Ende, wie ich sie öffne und was ich
-testen soll.`,
-    variants: [
-      {
-        id: 'kurz', label: 'Kurz', hint: 'Für Mini-Tools, bei denen es wenig zu klären gibt.',
-        promptText: `Baue mir ein kleines Tool als einzelne HTML-Datei (kein Server, keine externen
-Dienste, deutsche Beschriftungen): [ZWECK]. Nutzer: [NUTZER].
-Fertig ist es, wenn: [ERFOLGSKRITERIUM].
-Ich bin kein:e Entwickler:in — sag mir am Ende, wie ich die Datei öffne und was
-ich testen soll.`
-      },
-      {
-        id: 'ausfuehrlich', label: 'Ausführlich', hint: 'Wenn du echte Daten hast und ans Weiterbauen denkst.',
-        promptText: `Ich möchte ein kleines internes Tool bauen. Ich bin kein:e Entwickler:in — erkläre
-mir wichtige Entscheidungen kurz, bevor du sie triffst, und benutze keine
-Fachbegriffe ohne Erklärung.
-
-**Was das Tool tut:** [ZWECK]
-**Wer es benutzt:** [NUTZER]
-**Womit es arbeitet:** [DATEN]
-**Wie es aussehen soll:** [AUSSEHEN]
-**Woran ich merke, dass es fertig ist:** [ERFOLGSKRITERIUM]
-
-So sehen meine Daten beispielhaft aus (Ausschnitt, ggf. anonymisiert):
-[DATENBEISPIEL]
-
-Rahmenbedingungen:
-- Eine einzige HTML-Datei, ohne Build-Schritt und ohne Server — per Doppelklick
-  zu öffnen, per E-Mail teilbar.
 - Keine externen Dienste, alles läuft lokal im Browser. Es verlassen keine Daten
   meinen Rechner.
 - Deutsche Beschriftungen.
 
-Vorgehen:
-1. Stelle mir zuerst deine wichtigsten Rückfragen (maximal 3).
-2. Skizziere dann in 3–5 Stichpunkten, was Version 1 kann und was du bewusst
-   weglässt — warte auf mein Okay.
-3. Baue Version 1. Denke an die unschönen Fälle: leere Eingaben, falsche Formate,
-   sehr große Werte.
-4. Sag mir am Ende: wie ich die Datei öffne, welche 3 Dinge ich testen soll, und
-   welche 2–3 Ausbau-Ideen du für Version 2 siehst (nur auflisten, nicht bauen).`
-      }
-    ],
+Stelle mir zuerst deine 2–3 wichtigsten Rückfragen, falls etwas unklar ist. Baue
+dann eine erste Version, die ich sofort ausprobieren kann — lieber klein und
+funktionierend als vollständig. Denke dabei an die unschönen Fälle: leere
+Eingaben, falsche Formate, sehr große Werte. Sag mir am Ende, wie ich sie öffne
+und was ich testen soll.`,
     builder: {
-      // [DATENBEISPIEL] (nur Ausführlich-Variante) bewusst OHNE Builder-Feld:
-      // bleibt gelb markiert und wird beim Einfügen echter Daten von Hand ersetzt.
       fields: [
         { key: 'zweck', ph: '[ZWECK]', label: 'Was soll das Tool tun?', type: 'textarea', placeholder: 'z. B. „einen TKP-Rechner: Budget, Kontakte und TKP — zwei Felder ausfüllen, das dritte wird berechnet“' },
         { key: 'nutzer', ph: '[NUTZER]', label: 'Wer benutzt es?', type: 'text', placeholder: 'z. B. „Kolleg:innen aus der Mediaplanung, im Kundentermin auch mal am Beamer“' },
@@ -565,6 +433,7 @@ Vorgehen:
     },
     copyCount: 27,
     rating: { average: 4.5, count: 13 },
+    votesRecent: 9,
     comments: [
       { author: 'Jan Richter', role: 'Tech Lead & Citizen-Coding-Mentor', initials: 'JR', date: '2026-07-12', rating: 4.6, text: 'Der Prompt verhindert die drei häufigsten Kickoff-Fehler, die ich in der Q0-Gruppe sehe: kein Fertig-Kriterium, keine Daten-Angabe, und Claude baut einen Server, den niemand betreiben kann.' },
       { author: 'Christopher Kipp', role: 'Innovation Lead', initials: 'CK', date: '2026-07-01', rating: 4.5, text: '„Lieber klein und funktionierend als vollständig“ ist der wichtigste Satz darin. Die erste Version nach zehn Minuten in der Hand zu haben verändert, wie Leute über KI-Tools denken.' },
@@ -607,45 +476,6 @@ Formuliere daraus ein Feedback nach diesen Regeln:
 
 Gib mir danach in zwei Sätzen zurück: Welchen Punkt aus meinem Rohfeedback hast du
 am stärksten umformuliert? So kann ich prüfen, ob die Schärfe noch stimmt.`,
-    variants: [
-      {
-        id: 'kurz', label: 'Kurz', hint: 'Ein knapper Durchgang: Beobachtung, Beispiel, was stattdessen hilft.',
-        promptText: `Formuliere mein ungeschöntes Feedback zu [ARBEITSERGEBNIS] wertschätzend, aber ohne
-die Substanz abzuschwächen. Jeder Kritikpunkt als: Beobachtung + Beispiel + was
-stattdessen hilft. Keine Floskeln, kein Pflicht-Lob. Übermittlung: [KANAL].
-
-Mein Rohfeedback:
-[ROHFEEDBACK]`
-      },
-      {
-        id: 'ausfuehrlich', label: 'Ausführlich', hint: 'Für heikle Fälle — mit Perspektivwechsel und zwei Fassungen.',
-        promptText: `Du hilfst mir, inhaltlich hartes Feedback so zu formulieren, dass es wertschätzend,
-konkret und umsetzbar ist. Wichtig: Du schwächst die Substanz nicht ab — du änderst
-nur die Verpackung.
-
-Situation: Ich gebe Feedback zu [ARBEITSERGEBNIS]. Die Person ist [BEZIEHUNG].
-Übermittlung: [KANAL].
-
-Das ist meine ungeschönte Einschätzung:
-[ROHFEEDBACK]
-
-Arbeite in vier Schritten:
-
-1. **Sortieren:** Liste die Kritikpunkte aus meinem Rohfeedback auf und ordne jeden
-   ein: „muss sich ändern“ / „Geschmackssache“ / „eigentlich kein Feedback, sondern
-   mein Frust“. Frust-Punkte fliegen raus — sag mir aber, welche das waren.
-2. **Perspektivwechsel:** Wie wird die Person das Feedback vermutlich lesen? Nenne
-   die eine Formulierung mit dem größten Verletzungsrisiko.
-3. **Zwei Fassungen:** Schreibe das Feedback in zwei Varianten —
-   a) direkt und knapp (für ein Gespräch unter erfahrenen Kolleg:innen),
-   b) ausführlicher mit mehr Einordnung (wenn die Person das Thema zum ersten Mal
-   hört oder unsicher ist).
-   Beide: Beobachtung + Beispiel + was stattdessen hilft, pro Kritikpunkt. Ende mit
-   konkretem nächsten Schritt und Gesprächsangebot. Keine Floskeln.
-4. **Schärfe-Kontrolle:** Welchen Punkt hast du am stärksten umformuliert, und ist
-   dabei inhaltlich etwas verloren gegangen? Antworte ehrlich in zwei Sätzen.`
-      }
-    ],
     builder: {
       fields: [
         { key: 'arbeitsergebnis', ph: '[ARBEITSERGEBNIS]', label: 'Worauf gibst du Feedback?', type: 'text', placeholder: 'z. B. „dem Entwurf der Kundenpräsentation für den Quartals-Review“' },
@@ -718,9 +548,10 @@ Lass uns gern morgen 15 Minuten dazu telefonieren — die Umbauten sind übersch
     },
     copyCount: 21,
     rating: { average: 4.2, count: 12 },
+    votesRecent: 4,
     comments: [
       { author: 'Sophie Klein', role: 'Projektmanagerin', initials: 'SK', date: '2026-07-06', rating: 4.4, text: 'Die Schärfe-Kontrolle am Ende ist der beste Teil. Einmal hat mir die KI zurückgemeldet, dass sie meinen Kernpunkt entschärft hatte — ohne die Frage hätte ich es nicht gemerkt.' },
-      { author: 'Anna Schreiber', role: 'Content Strategin', initials: 'AS', date: '2026-06-30', rating: 4.2, text: 'Ich nutze die ausführliche Variante für Text-Feedback an Freie. Schritt 1 sortiert meinen Frust aus — was übrig bleibt, ist tatsächlich das Feedback, das ich geben wollte.' },
+      { author: 'Anna Schreiber', role: 'Content Strategin', initials: 'AS', date: '2026-06-30', rating: 4.2, text: 'Ich nutze ihn für Text-Feedback an Freie. Ins Rohfeedback schreibe ich erst alles ungefiltert rein — was danach herauskommt, ist tatsächlich das Feedback, das ich geben wollte, ohne meinen Frust.' },
       { author: 'Christopher Kipp', role: 'Innovation Lead', initials: 'CK', date: '2026-06-22', rating: 4.1, text: 'Wichtig fürs Onboarding: Das Ergebnis ist ein Entwurf, kein Autopilot. Lesen, anpassen, dann erst senden — genau dafür ist die Kontrollfrage am Ende da.' }
     ],
     addedAt: '2026-07-16',
@@ -729,7 +560,7 @@ Lass uns gern morgen 15 Minuten dazu telefonieren — die Umbauten sind übersch
     skillRefNote: 'Für interne Kommunikation über Feedback hinaus: Ankündigungen, Team-Updates, heikle Mails.'
   },
 
-  /* ==================== BREITE-EINTRÄGE (18) ==================== */
+  /* ==================== BREITE-EINTRÄGE (12) ==================== */
 
   {
     id: 'meeting-todos',
@@ -763,6 +594,7 @@ für Social wird erst nach dem Q3-Reporting entschieden. Der Jour fixe wechselt
 ab August auf 14-tägig.`,
     copyCount: 29,
     rating: { average: 4.6, count: 14 },
+    votesRecent: 7,
     endorsedBy: ['Sophie Klein', 'Christopher Kipp'],
     comments: [
       { author: 'Sophie Klein', role: 'Projektmanagerin', initials: 'SK', date: '2026-07-09', rating: 4.7, text: 'Mein meistgenutzter Prompt. Die Spalte „Offene Frage“ fängt genau das ab, was sonst zwischen den Zeilen verloren geht.' },
@@ -770,7 +602,8 @@ ab August auf 14-tägig.`,
     ],
     addedAt: '2026-07-16',
     skillRef: 'meeting-notes',
-    skillRefName: 'Meeting Notes'
+    skillRefName: 'Meeting Notes',
+    skillRefNote: 'Macht denselben Schritt als Werkzeug: Claude liest Mitschrift oder Transkript direkt aus der Datei und liefert Protokoll samt Action Items.'
   },
 
   {
@@ -810,12 +643,14 @@ RÜCKFRAGEN: Wer vertritt dich im Kornwerk-Jour-fixe am 12.8.? Wo liegt die
 Buchungsvorlage genau — Kampagnenordner oder Team-Laufwerk?`,
     copyCount: 15,
     rating: { average: 4.5, count: 8 },
+    votesRecent: 6,
     comments: [
       { author: 'Sophie Klein', role: 'Projektmanagerin', initials: 'SK', date: '2026-07-02', rating: 4.6, text: 'Habe ich vor dem Sommerurlaub getestet: Die Störfall-Liste war das, wofür meine Vertretung am dankbarsten war.' }
     ],
     addedAt: '2026-07-16',
     skillRef: 'doc-coauthoring',
-    skillRefName: 'doc-coauthoring'
+    skillRefName: 'doc-coauthoring',
+    skillRefNote: 'Führt dich in drei Phasen durch längere Dokumente — die richtige Adresse, wenn aus der Übergabe ein echtes Konzeptpapier wird (Inhalt auf Englisch).'
   },
 
   {
@@ -855,13 +690,15 @@ Prüfsatz: Kannst du erklären, warum dieselbe Kampagne unter zwei Modellen
 verschieden gut aussieht?`,
     copyCount: 21,
     rating: { average: 4.3, count: 10 },
+    votesRecent: 3,
     comments: [
       { author: 'Christopher Kipp', role: 'Innovation Lead', initials: 'CK', date: '2026-07-05', rating: 4.4, text: 'Der Prüfsatz am Ende ist das Beste daran — man merkt sofort, ob man es wirklich verstanden hat.' },
       { author: 'Lukas Weber', role: 'SEO Strategist', initials: 'LW', date: '2026-06-25', rating: 4.1, text: 'Nutze ich, um Nicht-Media-Kolleg:innen Begriffe aus meinen Reports zu übersetzen.' }
     ],
     addedAt: '2026-07-16',
     skillRef: 'erste-schritte',
-    skillRefName: 'Erste Schritte'
+    skillRefName: 'Erste Schritte',
+    skillRefNote: 'Der geführte Einstieg für alle, die von der Chat-KI kommen: wie Claude Code arbeitet, Schritt für Schritt und ohne Vorwissen.'
   },
 
   {
@@ -900,13 +737,15 @@ Benutze keinen Fachbegriff, ohne ihn direkt in Klammern zu erklären. Zeige mir 
    würde nichts mehr tun.`,
     copyCount: 16,
     rating: { average: 4.4, count: 9 },
+    votesRecent: 7,
     comments: [
       { author: 'Jan Richter', role: 'Tech Lead & Citizen-Coding-Mentor', initials: 'JR', date: '2026-07-07', rating: 4.6, text: 'Genau so lernt man sein eigenes Vibecoding-Projekt kennen. Empfehle ich in jeder Sprechstunde.' },
       { author: 'Sophie Klein', role: 'Projektmanagerin', initials: 'SK', date: '2026-06-28', rating: 4.2, text: 'Ich hatte Respekt vor meinen eigenen Dateien. Jetzt frage ich einfach — Frage 4 hat mir die Angst vorm Löschen genommen.' }
     ],
     addedAt: '2026-07-16',
     skillRef: 'erste-schritte',
-    skillRefName: 'Erste Schritte'
+    skillRefName: 'Erste Schritte',
+    skillRefNote: 'Der geführte Einstieg dahinter: was ein Projektordner ist, wie du Aufträge gibst und wie du das Ergebnis prüfst.'
   },
 
   {
@@ -947,13 +786,15 @@ Semikolons enthält, und dann das passende Trennzeichen verwenden.
 Ändert nichts am Rest — Auswertung und Anzeige bleiben unberührt. Okay?`,
     copyCount: 11,
     rating: { average: 4.5, count: 7 },
+    votesRecent: 5,
     comments: [
       { author: 'Jan Richter', role: 'Tech Lead & Citizen-Coding-Mentor', initials: 'JR', date: '2026-07-11', rating: 4.7, text: 'Die wichtigste Zeile ist „Repariere noch nichts“. Wer das weglässt, bekommt Umbauten statt Diagnosen.' },
       { author: 'Mia Hoffmann', role: 'Senior UX Designerin', initials: 'MH', date: '2026-07-01', rating: 4.3, text: 'Hat meinen Prototyp gerettet, ohne ihn umzukrempeln. Die Drei-Hypothesen-Struktur macht die Antwort nachvollziehbar.' }
     ],
     addedAt: '2026-07-16',
     skillRef: 'systematic-debugging',
-    skillRefName: 'systematic-debugging'
+    skillRefName: 'systematic-debugging',
+    skillRefNote: 'Dieselbe Haltung als Skill: eine erprobte Vier-Phasen-Methode, mit der Claude die Ursache eingrenzt, statt Fixes zu raten.'
   },
 
   {
@@ -992,13 +833,15 @@ Passt der Steckbrief so? Dann schlage ich als Nächstes den einfachsten
 Bauplan vor: eine einzige HTML-Datei, die ihr im Team-Ordner teilt.`,
     copyCount: 18,
     rating: { average: 4.4, count: 8 },
+    votesRecent: 6,
     comments: [
       { author: 'Mia Hoffmann', role: 'Senior UX Designerin', initials: 'MH', date: '2026-07-08', rating: 4.5, text: 'So starte ich jeden Prototyp. Die Nicht-Ziele-Frage hat mir schon dreimal den Scope gerettet.' },
       { author: 'Jan Richter', role: 'Tech Lead & Citizen-Coding-Mentor', initials: 'JR', date: '2026-06-29', rating: 4.4, text: 'Wer mit diesem Steckbrief in die Sprechstunde kommt, ist doppelt so schnell fertig.' }
     ],
     addedAt: '2026-07-16',
     skillRef: 'brainstorming',
-    skillRefName: 'brainstorming'
+    skillRefName: 'brainstorming',
+    skillRefNote: 'Der Skill, der dieses Interview automatisch führt — inklusive kleinem Konzept am Ende, bevor irgendetwas gebaut wird.'
   },
 
   {
@@ -1038,13 +881,15 @@ CTA: Welcher Hof liefert deinen Hafer? Die Karte gibt's im Kommentar.
 #Regionalität #Lieferkette #Kornwerk`,
     copyCount: 27,
     rating: { average: 4.3, count: 12 },
+    votesRecent: 3,
     comments: [
       { author: 'Anna Schreiber', role: 'Content Strategin', initials: 'AS', date: '2026-07-04', rating: 4.6, text: 'Die Quellen-Klammer ist Gold: Ich sehe sofort, ob die KI erfunden oder gelesen hat.' },
       { author: 'Mia Hoffmann', role: 'Senior UX Designerin', initials: 'MH', date: '2026-06-24', rating: 4.0, text: 'Nutze ich für unsere Projekt-Posts. Fünf echte Blickwinkel statt fünf Zusammenfassungen.' }
     ],
     addedAt: '2026-07-16',
     skillRef: 'content-recycling',
-    skillRefName: 'Content Recycling'
+    skillRefName: 'Content Recycling',
+    skillRefNote: 'Geht über eine Plattform hinaus: macht aus einem Inhalt kanalgerechte Fassungen für LinkedIn, Instagram, Newsletter und Kurzvideo.'
   },
 
   {
@@ -1088,12 +933,14 @@ FAVORITEN: Nr. 2 (konkretes Alltagsbild, das jede WG kennt) und Nr. 9
 (messbares Versprechen, senkt die Einstiegshürde).`,
     copyCount: 19,
     rating: { average: 4.2, count: 7 },
+    votesRecent: 2,
     comments: [
       { author: 'Anna Schreiber', role: 'Content Strategin', initials: 'AS', date: '2026-06-27', rating: 4.4, text: 'Die Macharten-Aufteilung nehme ich inzwischen auch für Headlines und Anzeigentexte.' }
     ],
     addedAt: '2026-07-16',
     skillRef: 'tonalitaets-check',
-    skillRefName: 'Tonalitäts-Check'
+    skillRefName: 'Tonalitäts-Check',
+    skillRefNote: 'Prüft die fertigen Zeilen gegen die Marken-Tonalität und die Sprachregeln des Kunden — der Schritt nach der Auswahl.'
   },
 
   {
@@ -1136,164 +983,15 @@ Dann halten wir den Termin sicher. Falls etwas hakt: Rufen Sie mich gern
 kurz an. Herzliche Grüße`,
     copyCount: 23,
     rating: { average: 4.4, count: 11 },
+    votesRecent: 4,
     comments: [
       { author: 'Sophie Klein', role: 'Projektmanagerin', initials: 'SK', date: '2026-07-10', rating: 4.5, text: 'Mein Absicherungsritual bei heiklen Kundenmails. Punkt 2 hat mich schon vor echten Missverständnissen bewahrt.' },
       { author: 'Anna Schreiber', role: 'Content Strategin', initials: 'AS', date: '2026-06-30', rating: 4.2, text: 'Die Kürzungs-Regel ist klug — sonst wird aus diplomatisch schnell schwammig.' }
     ],
     addedAt: '2026-07-16',
     skillRef: 'tonalitaets-check',
-    skillRefName: 'Tonalitäts-Check'
-  },
-
-  {
-    id: 'umfrage-fragen',
-    name: 'Umfrage-Fragen ohne Schieflage',
-    tagline: 'Fragebogen-Entwurf mit eingebauter Methodenprüfung — keine Suggestivfragen, keine Doppeldeutigkeiten.',
-    taskGroup: 'texten',
-    platforms: { langdock: true },
-    difficulty: 'advanced',
-    tags: ['umfrage', 'marktforschung', 'insights', 'fragebogen'],
-    promptText: `Du bist Marktforscher:in mit Erfahrung im Fragebogen-Design. Ich plane eine Befragung zu [THEMA] bei [ZIELGRUPPE]. Erkenntnisziel: [WAS-WIR-HERAUSFINDEN-WOLLEN].
-
-Entwickle 8–10 Fragen: überwiegend geschlossene Fragen mit ausformulierten Antwortskalen, dazu maximal 2 offene Fragen.
-
-Regeln:
-- Keine Suggestivfragen („Wie sehr schätzen Sie …?“)
-- Keine doppelläufigen Fragen (zwei Dinge in einer Frage)
-- Alltagssprache statt Fachjargon — die Befragten sind keine Expert:innen
-
-Gib zu jeder Frage in einem Halbsatz an, welche Auswertung sie später ermöglicht. Nenne am Ende die 2 größten Verzerrungsrisiken dieser Befragung und wie die Fragereihenfolge sie abmildert.`,
-    warum: 'Die expliziten Verbotsregeln adressieren genau die zwei Fehler, die KI-generierte (und menschliche) Fragebögen am häufigsten ruinieren: Suggestion und Doppelläufigkeit. Der „Wozu dient diese Frage?“-Halbsatz erzwingt Rückwärtsdenken von der Auswertung her — Fragen ohne Auswertungsziel fliegen so von selbst raus. Die Verzerrungs-Reflexion am Ende macht aus dem Entwurf ein methodisch begründbares Dokument.',
-    exampleOutput: `BEFRAGUNG: Warum kündigen Nutzer:innen die Veloru-App nach dem Probemonat?
-
-F3 (geschlossen): „Wie oft haben Sie die App im Probemonat geöffnet?“
-   täglich / mehrmals pro Woche / etwa wöchentlich / seltener / gar nicht
-   → ermöglicht: Kündiger nach Nutzungsintensität segmentieren
-
-F4 (geschlossen): „Welche Funktion haben Sie am häufigsten genutzt?“
-   Routenplanung / Akku-Übersicht / Werkstatt-Buchung / Community / keine
-   → ermöglicht: Zusammenhang Kündigungsgrund ↔ Kernfunktion prüfen
-
-F8 (offen): „Was hätte anders sein müssen, damit Sie geblieben wären?“
-   → ermöglicht: Kündigungsgründe finden, die unsere Antwortlisten nicht abdecken
-
-VERZERRUNGSRISIKEN: 1) Nur Reagierer antworten — die Verärgertsten und die
-Wohlwollendsten. Abmilderung: neutrale Nutzungsfragen vor Bewertungsfragen.
-2) F8 zu früh gestellt färbt alle Folgeantworten — deshalb steht sie am Ende.`,
-    copyCount: 6,
-    rating: { average: 4.1, count: 6 },
-    comments: [
-      { author: 'Christopher Kipp', role: 'Innovation Lead', initials: 'CK', date: '2026-07-03', rating: 4.3, text: 'Nutzen wir für interne Feedback-Umfragen. Die Verzerrungs-Sektion hebt das Ergebnis über Bauchgefühl-Niveau.' },
-      { author: 'Lukas Weber', role: 'SEO Strategist', initials: 'LW', date: '2026-06-21', rating: 3.9, text: 'Gute Basis. Für echte Kundenstudien lasse ich die Skalen danach nochmal vom Insights-Team prüfen.' }
-    ],
-    addedAt: '2026-07-16',
-    skillRef: 'markt-research',
-    skillRefName: 'Markt-Research'
-  },
-
-  {
-    id: 'bildbrief',
-    name: 'Bildbrief für das Design-Team',
-    tagline: 'So präzise briefen, dass zwei Designer:innen unabhängig voneinander ähnliche Entwürfe liefern würden.',
-    taskGroup: 'gestalten',
-    platforms: { langdock: true },
-    difficulty: 'advanced',
-    tags: ['briefing', 'design', 'bildsprache', 'kampagne', 'art-direction'],
-    promptText: `Du bist Art Buyer:in in einer Agentur und schreibst einen Bildbrief an das Design-Team.
-
-Kampagne: [KAMPAGNE-KUNDE]
-Kernbotschaft: [KERNBOTSCHAFT]
-Zielgruppe: [ZIELGRUPPE]
-Kanäle/Formate: [KANÄLE-FORMATE]
-
-Erstelle den Bildbrief mit diesen Abschnitten:
-1) Bildidee in einem Satz
-2) Stimmung & Lichtführung
-3) Bildaufbau: Vordergrund, Mittelgrund, Hintergrund — und wo Platz für Headline und Logo bleibt
-4) Farbwelt, mit Bezug zum CI: [CI-FARBEN-FALLS-BEKANNT]
-5) No-Gos: was das Motiv auf keinen Fall zeigen darf
-6) Drei Referenz-Beschreibungen im Stil von „so ähnlich wie …, aber …“
-
-Qualitätsmaßstab: So präzise schreiben, dass zwei verschiedene Designer:innen unabhängig voneinander ähnliche Entwürfe liefern würden.`,
-    warum: 'Der Qualitätsmaßstab am Ende ist der eigentliche Trick: „Zwei Designer:innen, ähnliche Entwürfe“ gibt der KI ein prüfbares Kriterium für Präzision — vage Adjektive („modern“, „emotional“) fallen daran durch. Die Abschnitte 3 und 5 erzwingen die Angaben, die in echten Briefings am häufigsten fehlen: Layout-Reserven für Text und explizite No-Gos.',
-    exampleOutput: `BILDBRIEF — Quellgold „Echte Pause“, OOH + Social
-
-1) BILDIDEE: Eine Person hat mitten im hektischen Umfeld einen sichtbar
-   ruhigen Moment — die Welt um sie herum ist bewegungsunscharf, sie nicht.
-
-2) STIMMUNG & LICHT: Später Nachmittag, warmes Seitenlicht, keine Studio-
-   Anmutung. Die Ruhe kommt aus der Haltung, nicht aus einem leeren Set.
-
-3) BILDAUFBAU: Vordergrund rechts die Person mit Flasche (Etikett lesbar,
-   nicht frontal-werblich). Mittelgrund: unscharfe Passanten. Oberes Drittel
-   bleibt ruhig für die Headline, Logo-Reserve unten rechts.
-
-4) FARBWELT: Warme Naturtöne, das Quellgold-Gelbgold als Akzent auf Etikett
-   und Headline — kein kühles Blau, das die Kategorie sonst dominiert.
-
-5) NO-GOS: kein inszeniertes Lachen in die Kamera, keine Berg-/Quell-Klischees,
-   kein Kondenswasser-Overkill, keine sterile Büro-Szene.
-
-6) REFERENZ: „So ähnlich wie die ruhigen Momente in Bahn-Werbung —
-   aber urban, ohne Reise-Kontext und ohne Sehnsuchts-Pathos.“`,
-    copyCount: 8,
-    rating: { average: 4.2, count: 5 },
-    comments: [
-      { author: 'Mia Hoffmann', role: 'Senior UX Designerin', initials: 'MH', date: '2026-07-06', rating: 4.5, text: 'Endlich Briefings, in denen steht, wo die Headline hin soll. Abschnitt 3 sollte Pflicht sein.' },
-      { author: 'Anna Schreiber', role: 'Content Strategin', initials: 'AS', date: '2026-06-26', rating: 4.1, text: 'Die No-Gos sparen eine komplette Korrekturschleife. Aus Erfahrung.' }
-    ],
-    addedAt: '2026-07-16',
-    skillRef: 'moodboard',
-    skillRefName: 'Moodboard-Generator'
-  },
-
-  {
-    id: 'storyboard-rohfassung',
-    name: 'Storyboard-Rohfassung für einen Spot',
-    tagline: 'Von der Idee zur Szenen-Tabelle — mit Dramaturgie-Regeln, die für Social wirklich gelten.',
-    taskGroup: 'gestalten',
-    platforms: { langdock: true },
-    difficulty: 'advanced',
-    tags: ['storyboard', 'video', 'bewegtbild', 'social', 'dramaturgie'],
-    promptText: `Du bist Creative Producer:in. Erstelle eine Storyboard-Rohfassung für einen [LAENGE, z. B. 20-sekündigen] Spot für [KUNDE-PRODUKT].
-
-Kernbotschaft: [KERNBOTSCHAFT]
-Zielgruppe: [ZIELGRUPPE]
-Kanal: [KANAL, z. B. Instagram Reels]
-
-Gliedere in 5–7 Szenen als Tabelle: Szene | Dauer (Sek.) | Bild (was sehen wir?) | Ton/Voiceover | Text-Einblendung.
-
-Dramaturgie-Vorgaben:
-- Die ersten 3 Sekunden müssen ohne Ton funktionieren und einen Grund zum Weiterschauen liefern.
-- Die Marke taucht frühestens in Szene [MARKEN-EINSTIEG-SZENE] auf.
-- Der Spot endet mit: [CALL-TO-ACTION].
-
-Schlage danach eine alternative Eröffnungsszene vor, falls die erste zu erwartbar ist — und sag ehrlich, welche der beiden du produzieren würdest.`,
-    warum: 'Die Tabellen-Struktur trennt sauber, was in Bewegtbild-Briefings gern verschwimmt: Bild, Ton und Text-Ebene pro Szene. Die Dramaturgie-Vorgaben kodieren echtes Plattform-Wissen als harte Regeln („3 Sekunden ohne Ton“ — die Realität stummer Feeds), statt auf den Geschmack der KI zu hoffen. Die erzwungene Alternative zur Eröffnung liefert dir automatisch eine zweite Option für die Kreativ-Abstimmung.',
-    exampleOutput: `SPOT: Veloru E-Bikes, 20 Sek., Instagram Reels — „Der Berg ist jetzt flach“
-
-| Sz | Sek | Bild                          | Ton/VO              | Text-Einblendung     |
-|----|-----|-------------------------------|---------------------|----------------------|
-| 1  | 0–3 | POV Lenker: steile Straße     | (stumm wirksam)     | „Kennst du die?“     |
-|    |     | kippt ins Bild, Fahrerin      | leises Atmen        |                      |
-|    |     | schaltet NICHT ab             |                     |                      |
-| 2  | 3–7 | Gesicht: kein Kampf, Grinsen  | Musik setzt ein     | —                    |
-| 3  | 7–12| Seitenfahrt: sie überholt     | VO: „Gleiche        | —                    |
-|    |     | einen Rennradfahrer bergauf   | Straße. Neuer Tag.“ |                      |
-| 4  | 12–16| Ankunft oben, Blick zurück   | Musik-Peak          | „Der Berg ist        |
-|    |     | Veloru-Logo am Rahmen sichtbar|                     | jetzt flach.“        |
-| 5  | 16–20| Packshot Bike + App          | VO: CTA             | „Probefahrt buchen“  |
-
-ALTERNATIVE ERÖFFNUNG: Rennradfahrer-POV, der überholt WIRD — ich würde die
-Original-Szene 1 nehmen: POV erzeugt mehr Identifikation als Schadenfreude.`,
-    copyCount: 4,
-    rating: { average: 4.1, count: 4 },
-    comments: [
-      { author: 'Anna Schreiber', role: 'Content Strategin', initials: 'AS', date: '2026-07-01', rating: 4.3, text: 'Die Rohfassung ersetzt kein Kreativ-Team, aber sie macht das erste Meeting doppelt so konkret.' }
-    ],
-    addedAt: '2026-07-16',
-    skillRef: 'briefing-gen',
-    skillRefName: 'Briefing Generator'
+    skillRefName: 'Tonalitäts-Check',
+    skillRefNote: 'Der systematische Bruder dieses Prompts: prüft Texte gegen eine hinterlegte Marken-Tonalität statt gegen dein Bauchgefühl.'
   },
 
   {
@@ -1331,13 +1029,15 @@ neue Endcards mit klarerer Handlungsaufforderung.
 • Videobotschaft funktioniert nachweislich (68 % sehen bis zum Ende)`,
     copyCount: 25,
     rating: { average: 4.5, count: 13 },
+    votesRecent: 4,
     comments: [
       { author: 'Sophie Klein', role: 'Projektmanagerin', initials: 'SK', date: '2026-07-11', rating: 4.7, text: 'Mein Freitag-Ritual: Zahlen rein, Management-Absatz raus, einmal gegenlesen. Spart mir jede Woche eine Stunde.' },
       { author: 'Lukas Weber', role: 'SEO Strategist', initials: 'LW', date: '2026-06-28', rating: 4.4, text: 'Die Vergleichspunkt-Regel sollte in jedem Reporting gelten, auch ohne KI.' }
     ],
     addedAt: '2026-07-16',
     skillRef: 'report-summary',
-    skillRefName: 'Report Summarizer'
+    skillRefName: 'Report Summarizer',
+    skillRefNote: 'Nimmt den ganzen Report statt einzelner Zahlen: PDF oder Excel rein, Executive Summary mit Handlungsempfehlungen raus.'
   },
 
   {
@@ -1375,157 +1075,15 @@ EMPFEHLUNG: Erst 1–3 klären, dann auswerten. Sag Bescheid, wenn ich dir
 eine bereinigte Kopie (Original bleibt unberührt) anlegen soll.`,
     copyCount: 14,
     rating: { average: 4.4, count: 8 },
+    votesRecent: 5,
     comments: [
       { author: 'Jan Richter', role: 'Tech Lead & Citizen-Coding-Mentor', initials: 'JR', date: '2026-07-09', rating: 4.5, text: 'Die Beleg-Pflicht macht den Unterschied zwischen Analyse und Anekdote.' },
       { author: 'Lukas Weber', role: 'SEO Strategist', initials: 'LW', date: '2026-06-30', rating: 4.3, text: 'Findet in jedem Export die Groß-/Kleinschreibungs-Dubletten, die mir Auswertungen zerschossen haben.' }
     ],
     addedAt: '2026-07-16',
     skillRef: 'daten-aufbereiten',
-    skillRefName: 'Daten aufbereiten'
-  },
-
-  {
-    id: 'pitch-einstieg',
-    name: 'Pitch-Einstieg dramaturgisch',
-    tagline: 'Drei erprobte Dramaturgien für die ersten zwei Minuten — im Wortlaut, nicht als Stichwortliste.',
-    taskGroup: 'praesentieren',
-    platforms: { langdock: true },
-    difficulty: 'advanced',
-    tags: ['pitch', 'praesentation', 'dramaturgie', 'new-business'],
-    promptText: `Du bist Pitch-Coach für Agentur-Präsentationen. Wir pitchen bei [KUNDE] zum Thema [AUFGABE-IN-EINEM-SATZ]. Unser strategischer Kerngedanke: [KERNGEDANKE]. Im Raum sitzen: [PUBLIKUM].
-
-Entwickle 3 unterschiedliche dramaturgische Einstiege für die ersten 2 Minuten:
-a) Einstieg über eine unbequeme Wahrheit aus der Welt des Kunden
-b) Einstieg über eine konkrete Szene aus dem Alltag der Zielgruppe
-c) Einstieg über eine überraschende Zahl (nur echte, dir bekannte Zahlen — sonst markiere die Stelle im Text deutlich mit „Zahl noch prüfen“)
-
-Pro Variante:
-- Die ersten 3 gesprochenen Sätze im Wortlaut
-- Das erste Chart, beschrieben in einem Satz (nicht gestaltet)
-- Die Brücke zum Kerngedanken, in einem Satz
-
-Bewerte am Ende in je einem Satz, welcher Einstieg zu welchem Publikumstyp passt — und welchen du bei diesem Publikum wählen würdest.`,
-    warum: 'Die drei vorgegebenen Dramaturgie-Muster sind erzwungene Vielfalt: Sie zwingen zu echt unterschiedlichen Ansätzen statt dreier Variationen derselben Idee. „Im Wortlaut“ ist die entscheidende Format-Vorgabe — gesprochene Sätze lassen sich proben und bewerten, Stichpunkte nicht. Und die Anweisung, ungesicherte Zahlen als „Zahl noch prüfen“ zu markieren, baut den Fakten-Check direkt in den Prompt ein, statt erfundene Statistiken zu riskieren.',
-    exampleOutput: `VARIANTE B — Szene aus dem Alltag (Pitch: Stadtwerke Nordheide, Ökostrom-Tarif)
-
-Gesprochen: „Es ist Dienstag, 19:40 Uhr. Lena, 34, hat die Kinder ins Bett
-gebracht und öffnet zum dritten Mal in diesem Monat den Tarifvergleich.
-Nach vier Minuten macht sie ihn wieder zu — nicht weil es zu teuer ist,
-sondern weil sie niemandem dort glaubt.“
-
-Erstes Chart: Ein einziger Satz auf dunklem Grund: „Das Problem ist nicht
-der Preis. Es ist das Misstrauen.“
-
-Brücke: „Und genau deshalb reden wir heute nicht über Rabatte, sondern
-darüber, wie die Stadtwerke das einzige Energieversprechen abgeben, das
-man überprüfen kann.“
-
-PASSUNG: B für gemischte Runden mit Marketing-Beteiligung; bei einem rein
-kaufmännischen Vorstand Variante c — dann zieht die Zahl.`,
-    copyCount: 7,
-    rating: { average: 4.0, count: 6 },
-    comments: [
-      { author: 'Christopher Kipp', role: 'Innovation Lead', initials: 'CK', date: '2026-07-07', rating: 4.4, text: '„Im Wortlaut“ ist der Unterschied zwischen einem Konzept und etwas, das man am nächsten Tag proben kann.' },
-      { author: 'Mia Hoffmann', role: 'Senior UX Designerin', initials: 'MH', date: '2026-06-25', rating: 3.8, text: 'Gute Rohlinge. Die Szenen brauchen danach noch echtes Kunden-Detail, sonst bleiben sie austauschbar.' }
-    ],
-    addedAt: '2026-07-16',
-    skillRef: 'slides-aus-daten',
-    skillRefName: 'Slides aus Daten'
-  },
-
-  {
-    id: 'persona-schaerfen',
-    name: 'Zielgruppen-Persona schärfen',
-    tagline: 'Macht aus der glatten Allerwelts-Persona eine Person mit Widersprüchen, Verhalten und prüfbaren Annahmen.',
-    taskGroup: 'media',
-    platforms: { langdock: true },
-    difficulty: 'advanced',
-    tags: ['persona', 'zielgruppe', 'strategie', 'insights'],
-    promptText: `Du bist Stratege:in in einer Media-Agentur. Unten steht unsere bisherige Zielgruppen-Beschreibung für [KUNDE-PRODUKT]. Sie ist zu glatt. Schärfe sie:
-
-1) Streiche alles, was auf praktisch jede Zielgruppe zutrifft — und benenne diese Allerwelts-Aussagen ehrlich („trifft auf 80 % aller Deutschen zu“).
-2) Formuliere zu jedem verbliebenen Merkmal ein konkretes Verhalten im Alltag: statt „preisbewusst“ → „bucht Urlaub erst nach drei Vergleichsportalen“.
-3) Ergänze: das zentrale Spannungsfeld der Person (was sie will vs. was sie tatsächlich tut), drei Medienmomente eines typischen Tages und einen Satz, den diese Person wirklich sagen würde.
-4) Liste 3 Annahmen aus dieser Persona, die wir mit Daten prüfen sollten, bevor wir sie dem Kunden zeigen.
-
-Bisherige Beschreibung:
-[PERSONA-ENTWURF]`,
-    warum: 'Der Prompt arbeitet mit Negativ-Filterung: Erst wird das Austauschbare aktiv entfernt („trifft auf 80 % zu“) — das ist wirksamer, als um „mehr Tiefe“ zu bitten. Die Merkmal-zu-Verhalten-Übersetzung mit eingebautem Beispiel (Few-Shot) macht Eigenschaften kampagnenfähig, weil Verhalten targetierbar ist und Adjektive nicht. Punkt 4 kennzeichnet die Persona ehrlich als Hypothese statt als Wahrheit.',
-    exampleOutput: `PERSONA GESCHÄRFT — Kornwerk Müsli, „Bewusste Berufstätige“
-
-GESTRICHEN (Allerwelts-Aussagen): „legt Wert auf Qualität“, „ist viel
-online“, „achtet auf ihre Gesundheit“ — trifft auf nahezu alle Käufergruppen zu.
-
-VERHALTEN STATT ADJEKTIV:
-- „ernährungsbewusst“ → liest im Laden die Zutatenliste, aber nur die ersten
-  drei Zutaten; bricht bei mehr als einem unbekannten Begriff ab
-- „nachhaltig orientiert“ → zahlt 50 Cent mehr für regional, aber nicht 2 Euro
-
-SPANNUNGSFELD: Will sich morgens Zeit fürs Frühstück nehmen — isst aber an
-3 von 5 Arbeitstagen am Schreibtisch. Kauft das Müsli fürs Wunsch-Ich.
-
-SATZ, DEN SIE SAGEN WÜRDE: „Ich will nicht nachdenken müssen, ob das Zeug
-okay ist — das soll einfach stimmen.“
-
-ZU PRÜFENDE ANNAHMEN: 1) Kauft sie wirklich im Supermarkt, nicht online?
-2) Ist der Preis-Schmerzpunkt real bei ~4,50 €? 3) Morgens erreichbar — oder
-ist der Pendel-Podcast der einzige Medienmoment mit Aufmerksamkeit?`,
-    copyCount: 13,
-    rating: { average: 4.2, count: 7 },
-    comments: [
-      { author: 'Lukas Weber', role: 'SEO Strategist', initials: 'LW', date: '2026-07-05', rating: 4.4, text: 'Verhalten statt Adjektive — daraus kann ich Kanäle und Suchintentionen ableiten. Aus „qualitätsbewusst“ nicht.' },
-      { author: 'Anna Schreiber', role: 'Content Strategin', initials: 'AS', date: '2026-06-27', rating: 4.2, text: 'Der Satz, den die Person wirklich sagen würde, ist der beste Tonalitäts-Test für jede Copy.' }
-    ],
-    addedAt: '2026-07-16',
-    skillRef: 'persona-builder',
-    skillRefName: 'Persona-Builder'
-  },
-
-  {
-    id: 'wettbewerber-werbung',
-    name: 'Wettbewerber-Werbung analysieren',
-    tagline: 'Strukturierte Konkurrenz-Analyse, die sauber trennt: Was ist belegt, was ist Spekulation — und wo ist die Lücke?',
-    taskGroup: 'media',
-    platforms: { langdock: true, code: true },
-    difficulty: 'advanced',
-    tags: ['wettbewerb', 'analyse', 'werbung', 'strategie', 'positionierung'],
-    promptText: `Du bist Werbe-Analyst:in. Unten beschreibe ich [ANZAHL] Anzeigen von [WETTBEWERBER] — Texte, Motive und Kanäle, soweit bekannt.
-
-Analysiere strukturiert:
-1) Welches Kernversprechen fährt der Wettbewerber, und an wen richtet es sich erkennbar?
-2) Welche Machart wiederholt sich über die Anzeigen hinweg — Tonalität, Bildwelt, Formate?
-3) Was lässt sich daraus über die dahinterliegende Strategie ableiten? Markiere dabei jede Ableitung als „belegt durch Anzeige X“ oder „Spekulation“.
-4) Die Lücke: Welche Botschaft oder Zielgruppe besetzt der Wettbewerber NICHT, die [UNSER-KUNDE] glaubwürdig besetzen könnte?
-
-Format: kurze Analyse pro Punkt, dann ein 5-Zeilen-Fazit, das ich so in den Kunden-Jour-fixe mitnehmen kann.
-
-Anzeigen:
-[ANZEIGEN-BESCHREIBUNGEN]`,
-    warum: 'Die Belegt-oder-Spekulation-Markierung ist die zentrale Technik: Sie erlaubt der KI, Hypothesen zu bilden (das ist ihr Mehrwert), zwingt sie aber, deren Status offenzulegen — so wird die Analyse im Kundengespräch verteidigbar. Die Lücken-Frage in Punkt 4 dreht die Analyse vom Beschreiben ins Verwertbare: Konkurrenzbeobachtung ist nur so viel wert wie die Chance, die sie aufzeigt.',
-    exampleOutput: `WETTBEWERBS-BLICK: „PurAqua“ (6 Anzeigen, Mai–Juli)
-
-1) KERNVERSPRECHEN: Leistung — „Hydration für Menschen, die Ziele haben“.
-   Richtet sich erkennbar an sportlich-ambitionierte 20–35-Jährige.
-2) MACHART: Immer Einzelpersonen im Workout, kühle Blautöne, harte Schnitte,
-   Produkt als Trophäe am Ende. Kein einziges soziales Setting.
-3) STRATEGIE: Positionierung als Sport-Utility statt Alltagsgetränk (belegt
-   durch Anzeigen 1–5). Vermutlich Vorbereitung einer Functional-Range mit
-   Zusätzen (Spekulation — gestützt nur auf den Claim in Anzeige 6).
-4) DIE LÜCKE: PurAqua zeigt nie Alltag, nie Gemeinschaft, nie Ruhe. Quellgold
-   kann „das Wasser für die Pause dazwischen“ besetzen — glaubwürdig, weil
-   die eigene Bildwelt schon dort ist.
-
-FAZIT FÜRS JOUR-FIXE: PurAqua kauft die Leistungs-Nische. Nicht folgen —
-die Alltagslücke ist größer und unbesetzt.`,
-    copyCount: 10,
-    rating: { average: 4.3, count: 6 },
-    comments: [
-      { author: 'Lukas Weber', role: 'SEO Strategist', initials: 'LW', date: '2026-07-08', rating: 4.5, text: 'Die Spekulations-Markierung hat mir im Kundentermin den Rücken gerettet, als nach Quellen gefragt wurde.' },
-      { author: 'Christopher Kipp', role: 'Innovation Lead', initials: 'CK', date: '2026-06-29', rating: 4.2, text: 'Punkt 4 ist der Unterschied zwischen Beobachten und Beraten.' }
-    ],
-    addedAt: '2026-07-16',
-    skillRef: 'markt-research',
-    skillRefName: 'Markt-Research'
+    skillRefName: 'Daten aufbereiten',
+    skillRefNote: 'Der nächste Schritt nach dem Überblick: räumt die Tabelle auf — Dubletten raus, Formate vereinheitlicht, analysefertig.'
   },
 
   {
@@ -1573,13 +1131,15 @@ IN 6 MONATEN NOCH VERSTÄNDLICH: „Native Formate pro Kanal schlagen adaptierte
 Motive deutlich.“ / „Vertriebspartner-Seiten gehören in Phase 1, nicht Phase 2.“`,
     copyCount: 12,
     rating: { average: 4.3, count: 9 },
+    votesRecent: 2,
     comments: [
       { author: 'Sophie Klein', role: 'Projektmanagerin', initials: 'SK', date: '2026-07-12', rating: 4.6, text: 'Der „Können wir nicht bewerten“-Block ist ehrlicher als jede Retro, die ich vorher moderiert habe.' },
       { author: 'Lukas Weber', role: 'SEO Strategist', initials: 'LW', date: '2026-07-02', rating: 4.1, text: 'Die 6-Monate-Regel klingt banal, aber genau daran scheitern sonst alle Learnings-Dokumente.' }
     ],
     addedAt: '2026-07-16',
     skillRef: 'campaign-check',
-    skillRefName: 'Campaign Checker'
+    skillRefName: 'Campaign Checker',
+    skillRefNote: 'Setzt vorne an, wo die Learnings hingehören: prüft das Setup der nächsten Kampagne auf Tracking, UTMs, Zielgruppen und KPIs.'
   }
 
 ];

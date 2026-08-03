@@ -71,4 +71,4 @@ Wenn du etwas baust, das nach außen geht, klär die Schriftfrage vorher mit dem
 
 Brauchst du normalerweise nicht. Zwei Schriften reichen für alles, was dieses Paket abdeckt, und jede weitere macht das Ergebnis unruhiger, nicht besser.
 
-Falls doch: Der Marketplace führt in seiner Bibliothek weitere frei lizenzierte Schriften (unter anderem Fraunces, Manrope, Newsreader, Plus Jakarta Sans, Space Grotesk, Syne, IBM Plex Mono) — jeweils mit Lizenz und Bezugsquelle. Nimm eine von dort, statt eine neue zu suchen.
+Falls doch: Der Marketplace führt in seiner Bibliothek neben Inter und JetBrains Mono noch Fraunces, Space Grotesk und Syne — jeweils mit Lizenz und Bezugsquelle. Nimm eine von dort, statt eine neue zu suchen.

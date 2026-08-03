@@ -9,8 +9,28 @@
 //                   gekennzeichnet). Die Mini-Demo unter liveUrl ist ECHT, klickbar und funktioniert.
 //
 // reaktionSeed sind Demo-Startwerte (klein, ehrlich als Seed erkennbar), keine gemessenen Kennzahlen.
-// Zeit-/Aufwandsangaben sind grobe Einordnungen ("Feierabend-Projekt"), keine exakten Messungen.
+// votesRecent ist ebenfalls ein Demo-Seed: die Stimmen der letzten 90 Tage, also eine TEILMENGE
+//   von reaktionSeed. Gelesen wird das Feld von bestRated() (shared/base.js), das seinen
+//   Rotations-Pool aus „Top-n gesamt“ VEREINIGT mit „Top-n zuletzt“ bildet. Ohne das Feld fallen
+//   beide Hälften zusammen und der Pool rotiert nicht.
 // Alle Querverweis-IDs existieren in data/skills.js, data/prompts.js, data/bausteine.js (BAUSTEINE + BEISPIELDATEN).
+//
+// UMFANG STATT AUFWAND (Feedback-Runde 2026-08): Die frühere Angabe war eine geschätzte
+// Zeitspanne, die niemand nachprüfen konnte — zwei Projekte mit derselben Etikette waren
+// unterschiedlich groß, und die Filterstufe dahinter („mini“ / „halber-tag“) stand nur in diesen
+// Daten. Ersetzt durch `umfang`: GEMESSENE Kennzahlen der Datei, die hinter der Vorschau liegt.
+//   umfang.bytes    Dateigröße        —  wc -c <quelle>
+//   umfang.zeilen   Zeilen der Datei  —  wc -l <quelle>
+//   umfang.dateien  Anzahl Dateien, aus denen die Demo besteht (alle sieben: eine)
+//   umfang.quelle   der gemessene Pfad, damit jede Zahl nachrechenbar bleibt
+// Gemessen am 2026-08-03. Die STUFE (klein/mittel/groß) steht bewusst NICHT hier: showroom.html
+// leitet sie aus umfang.bytes ab (UMFANG_STUFEN) — abgeleitet statt gepflegt, damit Zahl und
+// Einstufung nicht auseinanderlaufen können. Der Zeitaufwand lebt weiter als faktenBox.dauer,
+// aber nur noch in der Detailansicht und dort ehrlich als grobe Einordnung markiert.
+//
+// nutzen ist der Ein-Satz-Nutzen für die Karte (Feedback: Karten waren zu detailreich). Die
+// ausführliche Beschreibung `kurz` steht weiterhin im Detail-Modal — die Karte trägt sie nur
+// noch in der Ansichtsstufe „Ausführlich“.
 
 const CASES = [
 
@@ -23,19 +43,22 @@ const CASES = [
     art: 'tool',
     istEcht: true,
     persona: 'Christopher Kipp',
-    aufwand: 'Feierabend-Projekt · ~1,5 Std',
-    aufwandStufe: 'mini',
+    umfang: { bytes: 8565, zeilen: 154, dateien: 1, quelle: 'umfrage-auswertung.html' },
+    nutzen: 'CSV einfügen, auf „Auswerten“ klicken — pro Frage steht die Antwortverteilung als Balken da.',
     kurz: 'Ein Single-File-Tool, das rohe Umfrage-Antworten als CSV entgegennimmt und pro Frage eine Antwortverteilung als Balken zeichnet. Erste Spalte ist die Frage, der Rest die Antwort — eine Zeile pro abgegebener Antwort. Kein Excel, keine Pivot-Tabelle, kein Login. Einfügen, auf „Auswerten“ klicken, fertig. Bewusst schmal gehalten: es zählt und stapelt, mehr nicht — und genau das reicht für den schnellen Blick nach einem Team-Voting.',
     story: {
       ausgangsproblem: 'Nach jeder internen Kurzumfrage landeten die Antworten als CSV-Wust im Postfach. Der Weg über Excel-Pivot war jedes Mal dieselbe Fummelei — für ein Ergebnis, das man in zwei Minuten sehen wollte.',
       ersterPrompt: 'Baue mir eine einzelne HTML-Datei, in die ich Umfrage-Daten als CSV einfüge. Format je Zeile: Frage;Antwort. Das Tool soll pro Frage zählen, wie oft jede Antwort vorkommt, und das als horizontale Balken mit Prozentwerten zeigen. Reines HTML/CSS/JS in einer Datei, keine Bibliothek, kein Netzwerk, funktioniert per Doppelklick.',
       stolperstein: 'Die erste Version kam mit Antworten durcheinander, die selbst ein Komma enthielten — sie wurden fälschlich als zweite Spalte gelesen. Erst die Regel „erste Spalte = Frage, alles Weitere zusammenfügen“ hat das sauber gemacht.',
-      ergebnis: 'Ein 100-Zeilen-Tool mit „Beispieldaten laden“-Knopf. Balken animieren beim Rendern, Prozentwerte sind gerundet, mobil kippt das Raster auf schmalere Spalten. Liegt als echte Datei im Repo-Root.'
+      ergebnis: 'Ein Tool in einer einzigen Datei, mit „Beispieldaten laden“-Knopf. Balken animieren beim Rendern, Prozentwerte sind gerundet, mobil kippt das Raster auf schmalere Spalten. Liegt als echte Datei im Repo-Root.'
     },
     faktenBox: {
       dauer: '~1,5 Stunden an einem Abend',
       skills: ['prototyp-bauen', 'daten-aufbereiten'],
-      prompts: ['umfrage-fragen', 'csv-erklaeren'],
+      /* „umfrage-fragen“ stand hier, ist aber aus data/prompts.js gestrichen. Ersatzlos
+         entfernt statt umgehängt: die Fakten-Box sagt, was bei der Entstehung wirklich
+         benutzt wurde — ein passend aussehender Ersatz wäre eine Erfindung. */
+      prompts: ['csv-erklaeren'],
       bausteine: ['chart-setup', 'tabellen-look']
     },
     zitat: 'Das Tool ist absichtlich dumm — es zählt und stapelt. Aber genau das wollte ich nach dem Voting sehen, nicht eine halbe Stunde Pivot-Arbeit.',
@@ -46,7 +69,6 @@ const CASES = [
         { id: 'daten-aufbereiten', label: 'Daten aufbereiten' }
       ],
       prompts: [
-        { id: 'umfrage-fragen', label: 'Umfrage-Fragen ohne Schieflage' },
         { id: 'csv-erklaeren', label: 'CSV-Datei erklären lassen' }
       ],
       bausteine: [
@@ -58,7 +80,8 @@ const CASES = [
          darum hier bewusst kein Beispieldaten-Verweis. */
     },
     liveUrl: 'umfrage-auswertung.html',
-    reaktionSeed: 23
+    reaktionSeed: 23,
+    votesRecent: 4
   },
 
   {
@@ -68,8 +91,8 @@ const CASES = [
     art: 'tool',
     istEcht: true,
     persona: 'Christopher Kipp',
-    aufwand: 'Feierabend-Projekt · ~1 Std',
-    aufwandStufe: 'mini',
+    umfang: { bytes: 5325, zeilen: 86, dateien: 1, quelle: 'tkp-rechner.html' },
+    nutzen: 'Drei Zahlen rein, Netto-Kontaktpreis raus — die Formeln stehen offen daneben.',
     kurz: 'Ein kleiner Media-Rechner: Brutto-Reichweite, TKP und Streuverlust rein — Gesamtkosten, Netto-Kontakte in der Zielgruppe und der Netto-Kontaktpreis raus. Alles rechnet live beim Tippen, ohne „Berechnen“-Knopf. Die Formeln stehen offen unter dem Ergebnis, damit niemand einer Blackbox vertrauen muss. Ein Werkzeug für die schnelle Plausibilitätsprüfung im Media-Gespräch, nicht für die finale Kalkulation.',
     story: {
       ausgangsproblem: 'Im Media-Alltag will man den Netto-Kontaktpreis oft nur überschlagen — und öffnet doch wieder ein Spreadsheet mit denselben drei Formeln. Ein Ein-Zweck-Rechner sollte das ersetzen.',
@@ -101,7 +124,8 @@ const CASES = [
       ]
     },
     liveUrl: 'tkp-rechner.html',
-    reaktionSeed: 14
+    reaktionSeed: 14,
+    votesRecent: 3
   },
 
   {
@@ -111,8 +135,11 @@ const CASES = [
     art: 'dashboard',
     istEcht: true,
     persona: 'pilot-Tool',
-    aufwand: 'Skill-Lauf · Minuten',
-    aufwandStufe: 'mini',
+    /* Die 77 Zeilen sind kein Tippfehler: Der Report ist erzeugt, nicht getippt —
+       zwei einzelne Zeilen tragen zusammen rund 140 der 149 KB. Deshalb steht die
+       Größe auf der Karte vorn und entscheidet auch über die Umfangs-Stufe. */
+    umfang: { bytes: 152241, zeilen: 77, dateien: 1, quelle: 'demo/webaudit/report.html' },
+    nutzen: 'Zeigt, wie aus einem Skill-Lauf ein teilbarer Prüfbericht als einzelne HTML-Datei wird.',
     kurz: 'Ein echter Prüfbericht, den der Skill „webaudit“ über den TKP-Rechner erzeugt hat. Der Report gibt einen Gesamt-Score von 95 von 100 aus, listet 0 Fehler, 1 Warnung und 13 bestandene Checks — jeder Fund mit Fundstelle. Erzeugt hat ihn kein Mensch, sondern der Audit-Lauf selbst; deshalb ist er neutral als pilot-Tool attribuiert. Zeigt gut, wie aus einem Skill ein teilbares, statisches HTML-Artefakt wird.',
     story: {
       ausgangsproblem: 'Vor dem Teilen eines selbstgebauten Tools will man wissen, ob Grundlagen wie Zugänglichkeit, Meta-Angaben und offensichtliche Fehler stimmen — ohne selbst Prüf-Checklisten abzuarbeiten.',
@@ -142,7 +169,8 @@ const CASES = [
       beispieldaten: []
     },
     liveUrl: 'demo/webaudit/report.html',
-    reaktionSeed: 9
+    reaktionSeed: 9,
+    votesRecent: 7
   },
 
   {
@@ -152,8 +180,10 @@ const CASES = [
     art: 'helfer',
     istEcht: true,
     persona: 'pilot-Tool',
-    aufwand: 'Skill-Lauf · Minuten',
-    aufwandStufe: 'mini',
+    /* Gemessen wird der Report selbst (report.md), nicht die geprüfte kampagne.csv:
+       das Artefakt hinter der Vorschau ist der Bericht. */
+    umfang: { bytes: 1555, zeilen: 38, dateien: 1, quelle: 'demo/campaign-check/report.md' },
+    nutzen: 'Prüft je Anzeige UTM-Tags, Landingpage und Budget-Cap — und sagt am Ende klar: Launch oder Stopp.',
     kurz: 'Ein Validierungs-Report für eine Kampagnen-CSV: Der Skill „Campaign Checker“ prüft je Anzeige die UTM-Tags, die Landingpage und den Budget-Cap und spricht am Ende eine klare Empfehlung aus — hier: STOPP wegen drei Blockern in zwei von sechs Anzeigen. Jeder Fund nennt Zeile und Grund, dazu drei konkrete Fixes. Kein Dashboard-Zauber, sondern eine nachprüfbare Startklar-Checkliste aus dem tatsächlichen Validator-Lauf.',
     story: {
       ausgangsproblem: 'Kurz vor dem Kampagnen-Launch schleichen sich Tracking-Fehler ein: ein fehlendes utm_medium, eine http-Landingpage, ein vergessener Budget-Cap. Solche Blocker fallen oft erst auf, wenn der Traffic schon falsch verbucht ist.',
@@ -185,7 +215,8 @@ const CASES = [
       ]
     },
     liveUrl: 'demo/viewer.html?f=campaign-check/report.md',
-    reaktionSeed: 11
+    reaktionSeed: 11,
+    votesRecent: 2
   },
 
   /* ==================== INSZENIERTE BEISPIEL-CASES (Demo, klickbar) ==================== */
@@ -197,8 +228,8 @@ const CASES = [
     art: 'visualisierung',
     istEcht: false,
     persona: 'Sophie Klein',
-    aufwand: 'Feierabend-Projekt · ~2 Std',
-    aufwandStufe: 'mini',
+    umfang: { bytes: 14519, zeilen: 497, dateien: 1, quelle: 'demo/showroom/flighting-visualisierer.html' },
+    nutzen: 'Macht aus einer Flightplan-Tabelle eine Zeitleiste, in der Überlappungen und Lücken sofort auffallen.',
     kurz: 'Ein Beispiel-Projekt, das einen Media-Flightplan sichtbar macht: pro Kanal eine Zeitleiste über die Wochen einer Kampagne, die Balkenbreite zeigt die Laufzeit, die Farbintensität das Wochenbudget. So sieht man auf einen Blick, wo sich Kanäle überlappen und wo Lücken klaffen. Bewusst klein: es visualisiert eine eingegebene Tabelle, es plant nicht selbst. Zeigt, wie aus einer Budget-CSV in einem Abend eine lesbare Übersicht wird.',
     story: {
       ausgangsproblem: 'Ein Flightplan lebt in einer Tabelle mit Wochenspalten — und niemand sieht darin auf einen Blick, wann welcher Kanal läuft. Die Überlappungen und Lücken erkennt man erst, wenn man es aufmalt.',
@@ -232,97 +263,8 @@ const CASES = [
       ]
     },
     liveUrl: 'demo/showroom/flighting-visualisierer.html',
-    reaktionSeed: 8
-  },
-
-  {
-    id: 'umfrage-dashboard',
-    titel: 'Umfrage-Dashboard',
-    saeule: 'insights',
-    art: 'dashboard',
-    istEcht: false,
-    persona: 'Jan Richter',
-    aufwand: 'Halber Tag · ~4 Std',
-    aufwandStufe: 'halber-tag',
-    kurz: 'Ein Beispiel-Projekt, das über die einfache Balken-Auswertung hinausgeht: aus einer Umfrage-CSV baut es ein kleines Dashboard mit Kennzahlen-Kacheln (Anzahl Antworten, Zufriedenheit als Durchschnitt, größter Kanal) plus Verteilungs-Balken je Frage. Ein NPS-artiger Wert wird aus einer 1–5-Skala grob geschätzt und ehrlich als Näherung ausgewiesen. Zeigt, wie aus rohen Antworten in wenigen Stunden ein teilbares Übersichtsbild wird.',
-    story: {
-      ausgangsproblem: 'Die reine Balken-Auswertung beantwortet „wie ist die Verteilung“, aber nicht „wie steht es insgesamt“. Für die Runde am Montag fehlten die drei, vier Kennzahlen ganz oben.',
-      ersterPrompt: 'Erweitere eine Umfrage-Auswertung zu einem kleinen Dashboard. Aus einer CSV (Frage;Antwort) sollen oben Kennzahlen-Kacheln stehen: Gesamtzahl Antworten, Durchschnitts-Zufriedenheit auf einer 1–5-Skala, meistgenannter Kanal. Darunter je Frage die Verteilung als Balken. Alles in einer HTML-Datei, keine Bibliothek.',
-      stolperstein: 'Die Zufriedenheit als Zahl brauchte eine Zuordnung von Textantworten wie „Sehr zufrieden“ auf Werte 1–5. Diese Zuordnung musste sichtbar und die abgeleitete Kennzahl klar als Schätzung markiert sein — sonst wirkt eine Näherung wie eine Messung.',
-      ergebnis: 'Ein Beispiel-Dashboard mit Kennzahlen-Band oben, Verteilungs-Balken darunter und einer offen gelegten Skala-Zuordnung. Der Zufriedenheitswert ist ausdrücklich als Näherung gekennzeichnet.'
-    },
-    faktenBox: {
-      dauer: '~4 Stunden (Beispiel-Einordnung)',
-      skills: ['daten-aufbereiten', 'prototyp-bauen'],
-      prompts: ['umfrage-fragen', 'csv-erklaeren'],
-      bausteine: ['stat-band', 'chart-setup', 'tabellen-look']
-    },
-    zitat: 'Ein Dashboard darf schätzen — aber es muss dazusagen, dass es schätzt. Sonst ist es keine Datenarbeit mehr.',
-    nachbauStartprompt: 'Baue mir ein Umfrage-Dashboard als einzelne HTML-Datei. Eingabe: CSV mit Frage;Antwort. Oben ein Band aus Kennzahlen-Kacheln (Gesamtzahl Antworten, Durchschnitts-Zufriedenheit auf 1–5, meistgenannter Kanal), darunter je Frage die Antwortverteilung als Balken. Zeige die Skala-Zuordnung offen und markiere abgeleitete Werte klar als Näherung. Keine externe Bibliothek, offline per Doppelklick, mobil-tauglich. pilot-CI: Schwarz #262626, Gelb #ffe05e, Papier #f1f1ec.',
-    querverweise: {
-      skills: [
-        { id: 'daten-aufbereiten', label: 'Daten aufbereiten' },
-        { id: 'prototyp-bauen', label: 'Prototyp bauen' }
-      ],
-      prompts: [
-        { id: 'umfrage-fragen', label: 'Umfrage-Fragen ohne Schieflage' },
-        { id: 'csv-erklaeren', label: 'CSV-Datei erklären lassen' }
-      ],
-      bausteine: [
-        { id: 'stat-band', label: 'Kennzahlen-Band' },
-        { id: 'chart-setup', label: 'Chart-Setup (ohne Bibliothek)' },
-        { id: 'tabellen-look', label: 'Tabellen-Look' }
-      ],
-      beispieldaten: [
-        { id: 'umfrage-rohdaten', label: 'Umfrage-Rohdaten (CSV)' }
-      ]
-    },
-    liveUrl: 'demo/showroom/umfrage-dashboard.html',
-    reaktionSeed: 17
-  },
-
-  {
-    id: 'moodboard-generator',
-    titel: 'Moodboard-Generator',
-    saeule: 'creation',
-    art: 'generator',
-    istEcht: false,
-    persona: 'Mia Hoffmann',
-    aufwand: 'Feierabend-Projekt · ~3 Std',
-    aufwandStufe: 'mini',
-    kurz: 'Ein Beispiel-Projekt für den frühen Kreativ-Moment: aus ein paar Stichworten und einer Stimmung würfelt das Tool eine harmonische Farbpalette samt Schrift-Paarung und legt sie als Moodboard-Kacheln nebeneinander. Keine Bilder aus dem Netz, alles aus Code — Flächen, Verläufe, Typo-Proben. Zum Weiterreichen ans Design-Team oder als Startpunkt fürs echte Board. Bewusst simpel: es inspiriert, es ersetzt keine Designerin.',
-    story: {
-      ausgangsproblem: 'Am Anfang eines Projekts steht oft eine leere Fläche und die Frage „welche Richtung“. Ein grober visueller Anstoß — Farbe, Kontrast, Schriftgefühl — hilft mehr als ein weißes Blatt.',
-      ersterPrompt: 'Baue mir einen Moodboard-Generator als einzelne HTML-Datei. Eingabe: ein paar Stichworte und eine Stimmung (z. B. ruhig, energetisch, edel). Ausgabe: eine harmonische Farbpalette, eine passende Schrift-Paarung und Moodboard-Kacheln, die das als Flächen und Typo-Proben zeigen. Alles aus Code, keine externen Bilder, keine Bibliothek.',
-      stolperstein: 'Zufällige Farben sahen schnell schmutzig aus. Erst über einen HSL-Ansatz mit festen Abständen im Farbkreis wurden die Paletten verlässlich harmonisch statt beliebig.',
-      ergebnis: 'Ein Beispiel-Generator mit „Neu würfeln“-Knopf, der aus Stichworten und Stimmung immer wieder ein stimmiges Board erzeugt — Palette, Schriften, Kacheln. Rein aus CSS und JS, offline.'
-    },
-    faktenBox: {
-      dauer: '~3 Stunden (Beispiel-Einordnung)',
-      skills: ['moodboard', 'frontend-design'],
-      prompts: ['bildbrief'],
-      bausteine: ['karten-grid', 'header-hero']
-    },
-    zitat: 'Ich brauche kein fertiges Design vom Tool — ich brauche einen Funken, gegen den ich denken kann.',
-    nachbauStartprompt: 'Baue mir einen Moodboard-Generator als einzelne HTML-Datei. Eingabe: Stichworte und eine Stimmung. Ausgabe: eine harmonische Farbpalette (HSL-basiert, verlässlich stimmig), eine Schrift-Paarung und Moodboard-Kacheln aus reinen CSS-Flächen und Typo-Proben, plus einen „Neu würfeln“-Knopf. Keine externen Bilder, keine Bibliothek, offline per Doppelklick, mobil-tauglich. pilot-CI: Schwarz #262626, Gelb #ffe05e, Papier #f1f1ec.',
-    querverweise: {
-      skills: [
-        { id: 'moodboard', label: 'Moodboard-Generator' },
-        { id: 'frontend-design', label: 'frontend-design' }
-      ],
-      prompts: [
-        { id: 'bildbrief', label: 'Bildbrief für das Design-Team' }
-      ],
-      bausteine: [
-        { id: 'karten-grid', label: 'Karten-Grid' },
-        { id: 'header-hero', label: 'Header mit Hero' }
-      ],
-      beispieldaten: [
-        { id: 'briefing-website-relaunch', label: 'Briefing Website-Relaunch (MD)' }
-      ]
-    },
-    liveUrl: 'demo/showroom/moodboard-generator.html',
-    reaktionSeed: 21
+    reaktionSeed: 8,
+    votesRecent: 5
   },
 
   {
@@ -332,8 +274,8 @@ const CASES = [
     art: 'helfer',
     istEcht: false,
     persona: 'Anna Schreiber',
-    aufwand: 'Feierabend-Projekt · ~2 Std',
-    aufwandStufe: 'mini',
+    umfang: { bytes: 20653, zeilen: 463, dateien: 1, quelle: 'demo/showroom/urlaubsuebergabe-helfer.html' },
+    nutzen: 'Formular ausfüllen, fertige Übergabe-Doku kopieren — damit die Vertretung nichts suchen muss.',
     kurz: 'Ein Beispiel-Projekt gegen das schlechte Gewissen vor dem Urlaub: ein geführtes Formular fragt Projekte, Ansprechpartner, laufende Aufgaben und Notfall-Kontakte ab und setzt daraus eine saubere, kopierfertige Übergabe-Doku zusammen. Vorschau live neben dem Formular, ein Klick kopiert den fertigen Text. Kein Speicher, kein Konto — reine Formatierungs-Hilfe, damit die Vertretung nichts sucht.',
     story: {
       ausgangsproblem: 'Übergaben vor dem Urlaub entstehen meist auf den letzten Drücker und lesen sich entsprechend: Stichworte, Lücken, kein roter Faden. Die Vertretung sucht dann doch wieder nach.',
@@ -345,7 +287,11 @@ const CASES = [
       dauer: '~2 Stunden (Beispiel-Einordnung)',
       skills: ['internal-comms', 'meeting-notes'],
       prompts: ['uebergabe-doku', 'management-sprache'],
-      bausteine: ['feature-liste', 'footer']
+      /* „feature-liste“ stand hier, ist aber aus data/bausteine.js gestrichen. Hier
+         umgehängt statt entfernt: Der Case ist ein inszeniertes Beispiel, seine Zutaten
+         sind redaktionelle Wegweiser („welcher Baustein passt dazu?“) — und ein
+         geführtes Formular mit Live-Vorschau zeigt genau die Kontaktformular-Optik. */
+      bausteine: ['kontaktformular', 'footer']
     },
     zitat: 'Eine gute Übergabe ist Fürsorge für die Vertretung — das Tool nimmt mir nur die Formatierung ab, nicht das Mitdenken.',
     nachbauStartprompt: 'Baue mir einen Urlaubsübergabe-Helfer als einzelne HTML-Datei. Links ein Formular für Projekte, Status, offene Aufgaben, Ansprechpartner und Notfall-Kontakte; rechts eine Live-Vorschau der fertigen Übergabe-Doku und ein „Übergabe kopieren“-Knopf. Leere Felder werden im Ergebnis weggelassen. Keine externe Bibliothek, kein Speicher, offline per Doppelklick, mobil untereinander. pilot-CI: Schwarz #262626, Gelb #ffe05e, Papier #f1f1ec.',
@@ -359,13 +305,14 @@ const CASES = [
         { id: 'management-sprache', label: 'Reporting-Zahlen in Management-Sprache' }
       ],
       bausteine: [
-        { id: 'feature-liste', label: 'Feature-Liste' },
+        { id: 'kontaktformular', label: 'Kontaktformular-Optik' },
         { id: 'footer', label: 'Footer' }
       ],
       beispieldaten: []
     },
     liveUrl: 'demo/showroom/urlaubsuebergabe-helfer.html',
-    reaktionSeed: 6
+    reaktionSeed: 6,
+    votesRecent: 5
   },
 
   {
@@ -375,8 +322,8 @@ const CASES = [
     art: 'tool',
     istEcht: false,
     persona: 'Lukas Weber',
-    aufwand: 'Feierabend-Projekt · ~2 Std',
-    aufwandStufe: 'mini',
+    umfang: { bytes: 16383, zeilen: 412, dateien: 1, quelle: 'demo/showroom/utm-link-baukasten.html' },
+    nutzen: 'Baut aus Ziel-URL und UTM-Feldern einen sauber kleingeschriebenen Tracking-Link zum Kopieren.',
     kurz: 'Ein Beispiel-Projekt für sauberes Tracking von Anfang an: Ziel-URL und die UTM-Parameter eintragen — Source, Medium, Campaign, optional Content und Term — und das Tool baut den korrekt kodierten Link zusammen, kleingeschrieben und ohne Leerzeichen-Fallen. Ein Klick kopiert ihn, eine kleine Liste sammelt die zuletzt gebauten Links für eine Kampagne. Bewusst schmal: es baut und prüft Links, es verwaltet keine Kampagnen.',
     story: {
       ausgangsproblem: 'UTM-Links per Hand zusammenzustöpseln geht schnell schief: ein Großbuchstabe hier, ein Leerzeichen da — und schon zerfällt die Auswertung in doppelte Quellen.',
@@ -409,48 +356,8 @@ const CASES = [
       ]
     },
     liveUrl: 'demo/showroom/utm-link-baukasten.html',
-    reaktionSeed: 13
-  },
-
-  {
-    id: 'wettbewerbs-radar',
-    titel: 'Wettbewerbs-Radar',
-    saeule: 'strategy',
-    art: 'dashboard',
-    istEcht: false,
-    persona: 'Anna Schreiber',
-    aufwand: 'Halber Tag · ~4 Std',
-    aufwandStufe: 'halber-tag',
-    kurz: 'Ein Beispiel-Projekt für den strategischen Überblick: mehrere Wettbewerber werden auf wenigen selbst gewählten Achsen bewertet — etwa Preis, Reichweite, Innovation, Markenstärke — und das Tool zeichnet daraus ein Radar-Diagramm plus eine Vergleichstabelle. Man sieht sofort, wo das eigene Haus vorn liegt und wo eine Lücke klafft. Ausdrücklich mit eigenen Einschätzungen gefüttert: es ist ein Denk- und Diskussionswerkzeug, kein Marktforschungs-Ersatz.',
-    story: {
-      ausgangsproblem: 'Wettbewerbsvergleiche versanden oft in langen Fließtext-Tabellen, in denen niemand die eigentliche Aussage sieht. Ein Bild, das Stärken und Lücken sofort zeigt, fehlt.',
-      ersterPrompt: 'Baue mir einen Wettbewerbs-Radar als einzelne HTML-Datei. Ich gebe mehrere Wettbewerber und wenige Bewertungsachsen ein (z. B. Preis, Reichweite, Innovation, Markenstärke) und vergebe je Achse einen Wert von 1 bis 5. Das Tool soll daraus ein Radar-Diagramm und eine Vergleichstabelle zeichnen. Keine Bibliothek, offline lauffähig.',
-      stolperstein: 'Ein Radar aus reinem SVG zu zeichnen, ohne Chart-Bibliothek, brauchte etwas Trigonometrie für die Achspunkte. Bei mehr als vier, fünf Wettbewerbern wurde das Bild zudem unlesbar — also eine bewusste Obergrenze und dezente Farben.',
-      ergebnis: 'Ein Beispiel-Dashboard mit SVG-Radar, Vergleichstabelle und dem klaren Hinweis, dass die Werte eigene Einschätzungen sind. Ein Denkwerkzeug für den Strategie-Termin, keine gemessene Wahrheit.'
-    },
-    faktenBox: {
-      dauer: '~4 Stunden (Beispiel-Einordnung)',
-      skills: ['markt-research'],
-      prompts: ['wettbewerber-werbung'],
-      bausteine: ['karten-grid', 'stat-band']
-    },
-    zitat: 'Das Radar liefert keine Wahrheit, es strukturiert unsere Einschätzung — und plötzlich diskutieren alle über dieselbe Lücke.',
-    nachbauStartprompt: 'Baue mir einen Wettbewerbs-Radar als einzelne HTML-Datei. Eingabe: mehrere Wettbewerber und wenige Bewertungsachsen (z. B. Preis, Reichweite, Innovation, Markenstärke), je Achse ein Wert von 1 bis 5. Ausgabe: ein Radar-Diagramm aus reinem SVG plus eine Vergleichstabelle, mit dem sichtbaren Hinweis, dass die Werte eigene Einschätzungen sind. Keine externe Bibliothek, offline per Doppelklick, mobil-tauglich. pilot-CI: Schwarz #262626, Gelb #ffe05e, Papier #f1f1ec.',
-    querverweise: {
-      skills: [
-        { id: 'markt-research', label: 'Markt-Research' }
-      ],
-      prompts: [
-        { id: 'wettbewerber-werbung', label: 'Wettbewerber-Werbung analysieren' }
-      ],
-      bausteine: [
-        { id: 'karten-grid', label: 'Karten-Grid' },
-        { id: 'stat-band', label: 'Kennzahlen-Band' }
-      ],
-      beispieldaten: []
-    },
-    liveUrl: 'demo/showroom/wettbewerbs-radar.html',
-    reaktionSeed: 12
+    reaktionSeed: 13,
+    votesRecent: 1
   }
 
 ];

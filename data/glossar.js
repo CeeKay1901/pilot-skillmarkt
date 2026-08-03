@@ -1,6 +1,6 @@
 // pilot AI Marketplace — Lernen & Hilfe: GLOSSAR & FAQ (ausgelagerte Daten, E4; Glossar-Ausbau Juli 2026).
 // Klassisches Script, definiert globale Konstanten:
-//   GLOSSAR — 49 Begriffe. Je Eintrag:
+//   GLOSSAR — 64 Begriffe. Je Eintrag:
 //     id         URL-tauglich, eindeutig (Deep-Link lernen-hilfe.html?begriff=<id>)
 //     wort       Anzeigename; buchstabe = A-Z-Sprungleiste (explizit, nicht abgeleitet)
 //     thema      Themen-Gruppe für den Filter über der Liste:
@@ -31,6 +31,31 @@
 // im Nutzertext der Asset-Bibliothek vorkommt (5×: Icon-Klick kopiert SVG, Logo-Download,
 // Beispieldaten-Zähler) und trotzdem keinen Eintrag hatte — CSV, JSON, HTML, CSS und
 // Markdown haben alle einen. Themen-Verteilung damit ki 13/web 15/daten 7/handwerk 14.
+//
+// AUSBAU 2026-08-03: 49 → 64 Begriffe. Die 15 neuen schließen die Lücken, die beim
+// Durchlesen der Seite aus Sicht einer Einsteigerin am meisten auffielen — allen voran
+// die beiden Werkzeuge selbst: claude-code und langdock standen als Wörter überall,
+// hatten aber keinen Eintrag. Dazu die Begriffe, die im Alltag zuerst gebraucht werden
+// (claude-md, slash-befehl, werkzeug-tool, berechtigung, few-shot-beispiel), die
+// Web-Grundlagen hinter dem Veröffentlichen (statische-seite, hosting-domain,
+// barrierefreiheit), das Arbeitsvokabular (mvp-prototyp, iteration, bibliothek-library)
+// und zwei Dinge, an denen die Gruppe real hängen blieb (zeichensatz-umlaute,
+// datenschutz-vertraulichkeit).
+//   · Der Eintrag `langdock` klärt ausdrücklich die Doppelbenennung: Das Produkt heißt
+//     beim Hersteller Langdock, unsere Oberfläche beschriftet es als „pilot AI“. In den
+//     LERNINHALTEN bleibt der echte Produktname stehen — wer nach Anleitungen sucht,
+//     findet sie nur darunter.
+//   · `datenschutz-vertraulichkeit` verweist bewusst ans KI-Enablement-Team und
+//     formuliert KEINE Richtlinie. Verbindlich ist allein die interne KI-Richtlinie
+//     (gleiche Haltung wie faq-kundendaten weiter unten).
+//   · `stolper` ist kein Pflichtfeld und wurde nur dort gefüllt, wo es einen echten,
+//     wiederkehrenden Stolperstein gibt — nicht, um jedes Feld zu belegen.
+//   · Zwei Verweise zeigten auf Skills, die es nach der Katalog-Kuration nicht mehr
+//     gibt: framework → gsd wurde auf brainstorm-plan-execute umgebogen (das ist jetzt
+//     der Framework-Eintrag des Katalogs), halluzination → verification-before-completion
+//     auf superpowers (dort steckt die Prüf-Disziplin heute drin) plus den passenden
+//     Glossar-Verweis wissen-anbinden.
+// Themen-Verteilung damit ki 19/web 18/daten 8/handwerk 19.
 
 const GLOSSAR = [
   {
@@ -79,6 +104,54 @@ const GLOSSAR = [
     ]
   },
   {
+    id: 'barrierefreiheit',
+    wort: 'Barrierefreiheit',
+    buchstabe: 'B',
+    thema: 'web',
+    votes: 6,
+    satz: 'Barrierefreiheit heißt, dass eine Webseite auch für Menschen nutzbar bleibt, die nicht gut sehen, keine Maus bedienen können oder auf Hilfsmittel angewiesen sind.',
+    analogie: 'Wie die Rampe neben der Treppe: Gebaut wird sie für die, die keine Stufen steigen können — benutzt wird sie am Ende von allen mit Rollkoffer, Kinderwagen oder vollen Händen.',
+    beispiel: 'Im Marketplace kommst du mit der Tabulatortaste durch jede Karte, und jeder Knopf trägt einen Namen, den ein Vorleseprogramm ansagen kann — deshalb funktioniert die Seite auch ganz ohne Maus.',
+    tiefe: 'Vier Hebel decken das Meiste ab, und du bekommst sie fast geschenkt, wenn du sie im Auftrag erwähnst: ausreichender Farbkontrast, Bedienbarkeit per Tastatur, sprechende Beschriftungen für Knöpfe und Bilder — und Text, der sich vergrößern lässt, ohne dass das Layout zerfällt. Sag Claude Code einfach „bau das barrierefrei, Kontraste und Tastaturbedienung inklusive“, dann entsteht es von Anfang an richtig; nachträglich ist es deutlich mühsamer. Für Tools, die nur im Haus laufen, ist das eine Frage der Kollegialität — sobald etwas nach außen geht, kommen je nach Auftraggeber auch verbindliche Anforderungen dazu. Das Gröbste prüfst du selbst: Maus weglegen und versuchen, dein eigenes Tool nur mit Tab und Enter zu bedienen.',
+    stolper: 'Der häufigste Fehler ist kein Programmierfehler, sondern eine Designentscheidung: hellgrauer Text auf weißem Grund. Er sieht auf dem eigenen guten Monitor elegant aus und ist im Zug bei Sonnenlicht schlicht nicht mehr lesbar.',
+    verweise: [
+      { t: 'begriff', id: 'css' },
+      { t: 'begriff', id: 'responsive' }
+    ]
+  },
+  {
+    id: 'berechtigung',
+    wort: 'Berechtigung',
+    buchstabe: 'B',
+    thema: 'ki',
+    votes: 13,
+    satz: 'Eine Berechtigung ist die Erlaubnis, die Claude Code von dir einholt, bevor es etwas an deinen Dateien ändert oder einen Befehl ausführt.',
+    analogie: 'Wie die Unterschrift auf einer Freigabe: Die Kollegin kann alles vorbereiten — raus geht es erst, wenn du abgezeichnet hast.',
+    beispiel: 'Beim ersten „Räum den Assets-Ordner auf“ fragt Claude Code Schritt für Schritt nach: Du siehst genau, welche Datei umbenannt werden soll, und bestätigst oder brichst ab.',
+    tiefe: 'Claude Code kennt mehrere Berechtigungs-Modi, und du schaltest mit Shift+Tab zwischen ihnen um. Im Standard (im Anzeiger „Manual“) wird vor jeder Änderung gefragt. „Accept Edits“ lässt Datei-Änderungen ohne Rückfrage durchlaufen, andere Aktionen weiterhin nicht. Im Plan-Modus ändert Claude gar nichts, sondern legt erst einen Plan vor. Für den Anfang ist der Standard genau richtig: Die Rückfragen sind kein Misstrauen, sondern deine Gelegenheit mitzulesen — nebenbei lernst du dabei, wie Claude arbeitet. Was du oft brauchst, kannst du dauerhaft freigeben; dann fragt Claude Code beim nächsten Mal nicht mehr danach.',
+    stolper: 'Der Plan-Modus ist keine Berechtigung, sondern eine Denkpause: Dort ändert Claude grundsätzlich nichts, auch wenn du zwischendurch etwas freigibst. Gebaut wird erst, wenn du den Plan abnimmst und den Modus verlässt.',
+    verweise: [
+      { t: 'befehl', id: 'shift-tab-modi' },
+      { t: 'begriff', id: 'claude-code' }
+    ]
+  },
+  {
+    id: 'bibliothek-library',
+    wort: 'Bibliothek (Library)',
+    buchstabe: 'B',
+    thema: 'handwerk',
+    votes: 6,
+    satz: 'Eine Bibliothek ist eine fertige Sammlung von Code-Bausteinen, die jemand anderes geschrieben hat und die du in dein Projekt einbaust, statt sie selbst zu bauen.',
+    analogie: 'Wie das Regal mit fertigen Fonds in der Profiküche: Man könnte jeden selbst ansetzen — aber niemand tut das, wenn der fertige gut ist und das Gericht damit dreimal schneller auf dem Teller steht.',
+    beispiel: 'Die Icons und Schriften der Vorlagen-Seite kommen aus solchen Bibliotheken — Claude Code bindet sie in dein Tool ein, und du hast einheitliche Symbole, ohne eines selbst zu zeichnen.',
+    tiefe: 'Bibliotheken sind der Grund, warum aus einer Idee an einem Nachmittag ein Tool werden kann: Für Diagramme, Kalender oder sortierbare Tabellen gibt es erprobte Sammlungen, die das Standardproblem schon gelöst haben. Der Unterschied zum Framework ist die Richtung: Eine Bibliothek rufst DU auf, wenn du sie brauchst — ein Framework gibt umgekehrt den Rahmen vor, in den du dich einfügst. Zwei Fragen lohnen sich, bevor etwas eingebaut wird: Was erlaubt die Lizenz, und wird die Sammlung noch gepflegt? Beides kannst du Claude vorher fragen.',
+    stolper: 'Jede eingebaute Bibliothek ist fremder Code in deinem Tool — mehr Fähigkeiten, aber auch mehr Ladezeit und mehr Abhängigkeit. Für kleine Tools gilt deshalb: einbauen, was gebraucht wird, nicht was interessant klingt.',
+    verweise: [
+      { t: 'begriff', id: 'framework' },
+      { t: 'begriff', id: 'lizenz' }
+    ]
+  },
+  {
     id: 'browser-konsole',
     wort: 'Browser-Konsole',
     buchstabe: 'B',
@@ -118,7 +191,43 @@ const GLOSSAR = [
     analogie: 'Wie der Zettelstapel neben deiner Tastatur: Statt jedes Mal im Archiv zu suchen, nimmst du die Kopie, die du dir schon einmal gemacht hast. Praktisch — bis sich das Original ändert und dein Zettel veraltet ist.',
     beispiel: 'Du hast dein Team-Tool aktualisiert, aber eine Kollegin sieht noch die alte Version — ihr Browser zeigt sie aus dem Cache; ein beherztes Neuladen mit Strg+Shift+R holt die neue.',
     tiefe: 'Der Cache ist Freund und Falle zugleich: Er spart Ladezeit und Datenvolumen, zeigt aber manchmal veraltete Stände. Das klassische Symptom: Du (oder Claude) habt etwas geändert und veröffentlicht, aber im Browser „ist nichts passiert“ — dann zeigt der Browser noch die gespeicherte alte Version. Hartes Neuladen erzwingt die frische: Strg+Shift+R (Windows) bzw. Cmd+Shift+R (Mac). Sieht eine Kollegin noch den alten Stand, gilt bei ihr dasselbe. Erst wenn das harte Neuladen nichts ändert, lohnt die echte Fehlersuche — deshalb ist „Cache leeren“ völlig zu Recht das „Einmal aus- und wieder einschalten“ des Web.',
-    verweise: []
+    stolper: 'Wenn hartes Neuladen nichts bringt, ist oft gar nicht der Cache schuld: Nach einem Push dauert es bei GitHub Pages ein bis zwei Minuten, bis die neue Fassung überhaupt online ist. Erst kurz warten, dann neu laden — und erst danach mit der Fehlersuche anfangen.',
+    verweise: [
+      { t: 'begriff', id: 'deploy' },
+      { t: 'begriff', id: 'github-pages' }
+    ]
+  },
+  {
+    id: 'claude-code',
+    wort: 'Claude Code',
+    buchstabe: 'C',
+    thema: 'ki',
+    votes: 30,
+    satz: 'Claude Code ist die KI von Anthropic als Programm für dein Terminal — sie beantwortet nicht nur Fragen, sondern arbeitet direkt in deinen Dateien und Ordnern.',
+    analogie: 'Der Unterschied zum Chat-Fenster ist der zwischen Telefonberatung und Handwerker vor Ort: Am Telefon wird dir erklärt, wie es geht — vor Ort wird es gemacht, mit deinen Sachen, in deinem Raum.',
+    beispiel: 'Du öffnest den Ordner mit den Kampagnen-Exports, tippst `claude` und sagst auf Deutsch: „Bau mir aus diesen CSVs eine Übersicht als Webseite.“ Am Ende liegt eine fertige Datei im Ordner — keine Anleitung im Chat.',
+    tiefe: 'Drei Dinge machen den Unterschied zum Chat. Erstens der Zugriff: Claude Code liest und schreibt echte Dateien — in genau dem Ordner, in dem du es gestartet hast, und sonst nirgends. Zweitens die Werkzeuge: Es kann Dateien durchsuchen, Befehle ausführen und im Netz nachschlagen und plant selbst, welche Schritte dafür nötig sind. Drittens das Gedächtnis: Regeln, die dauerhaft gelten sollen, schreibst du in eine CLAUDE.md, dann kennt Claude sie in jeder Sitzung. Bedient wird trotzdem alles auf Deutsch in ganzen Sätzen — die `/`-Befehle sind Abkürzungen, keine Voraussetzung. Die Arbeitsteilung im Alltag: Langdock ist der Ort fürs Denken, Schreiben und Recherchieren, Claude Code der Ort zum Bauen.',
+    stolper: 'Claude Code sieht nur den Ordner, in dem du es gestartet hast. Wenn es eine Datei „nicht findet“, liegt sie fast immer außerhalb dieses Ordners — es ist selten ein Fehler, meistens der falsche Startort.',
+    verweise: [
+      { t: 'begriff', id: 'terminal' },
+      { t: 'begriff', id: 'claude-md' }
+    ]
+  },
+  {
+    id: 'claude-md',
+    wort: 'CLAUDE.md',
+    buchstabe: 'C',
+    thema: 'ki',
+    votes: 24,
+    satz: 'Die CLAUDE.md ist eine einfache Textdatei in deinem Projektordner, in der die Regeln und Fakten stehen, die Claude Code in jeder Sitzung kennen soll.',
+    analogie: 'Wie das Onboarding-Dokument für eine neue Kollegin: Alles, was du sonst jeden Montag neu erklären müsstest — Kundenname, Tonalität, Was-nicht-anfassen — steht einmal drin und gilt ab dann.',
+    beispiel: 'In der CLAUDE.md deines Reporting-Tools stehen drei Zeilen: „Alle Texte in Du-Form“, „Der Kunde heißt immer ‚die Marke XY‘“, „Zahlen kommen aus der CSV, nie geschätzt“ — und du musst es nie wieder dazusagen.',
+    tiefe: 'Angelegt wird sie mit `/init`, danach bearbeitest du sie wie jede andere Textdatei — es ist Markdown, also einfacher Text mit ein paar Zeichen für Überschriften und Listen. Claude Code liest sie beim Start automatisch und behält sie auch, wenn der Gesprächsverlauf mit `/compact` verdichtet wird. Hinein gehört, was dauerhaft und projektspezifisch gilt: Sprache und Ton, Namenskonventionen, Verbote, Besonderheiten des Projekts. Was nur heute zählt, sagst du im Gespräch. Und weniger ist mehr: Eine kurze, präzise Datei wirkt besser als eine lange Wunschliste — alles darin belegt dauerhaft Platz im Kontextfenster.',
+    stolper: 'Die CLAUDE.md wirkt nur in dem Projektordner, in dem sie liegt. Startest du Claude Code woanders, gelten deine Regeln dort nicht — das ist der häufigste Grund für „warum hält es sich plötzlich nicht mehr daran?“.',
+    verweise: [
+      { t: 'befehl', id: 'init' },
+      { t: 'begriff', id: 'systemprompt' }
+    ]
   },
   {
     id: 'cli',
@@ -174,6 +283,7 @@ const GLOSSAR = [
     analogie: 'Ein Commit ist ein Spielstand wie im Videospiel: Du speicherst an einem guten Punkt — und egal, was danach schiefgeht, du kannst genau dorthin zurück.',
     beispiel: 'Nach jedem funktionierenden Schritt an deinem Mediaplan-Tool sagst du Claude „mach einen Commit“ — so entsteht eine Kette von Sicherungspunkten, zu denen du jederzeit zurück kannst.',
     tiefe: 'Commits sind das Herz der Versionierung mit Git: Jeder Commit hält fest, wer wann was geändert hat, samt kurzer Notiz („Filter für Kanäle ergänzt“). Gute Gewohnheit: lieber viele kleine Commits nach jedem funktionierenden Schritt als ein riesiger am Ende — kleine Sicherungspunkte machen das Zurückgehen präzise. Kaputtgehen kann dabei nichts: Ein Commit fügt nur Historie hinzu, er verändert keine Dateien. In Claude Code musst du keine Git-Befehle können — „mach einen Commit“ oder „sichere den Stand“ genügt, die Notiz formuliert Claude gleich mit. Erst der Push lädt deine Commits dann zu GitHub hoch; bis dahin liegen sie nur auf deinem Rechner.',
+    stolper: 'Ein Commit liegt ausschließlich auf deinem Rechner. Wer glaubt, damit sei etwas veröffentlicht, wundert sich, dass Kolleg:innen weiter den alten Stand sehen — dafür braucht es den Push.',
     verweise: [
       { t: 'skill', id: 'tool-teilen', name: 'Tool teilen' }
     ]
@@ -217,6 +327,7 @@ const GLOSSAR = [
     analogie: 'Ein Pfad ist die Postanschrift einer Datei: Land, Stadt, Straße, Hausnummer — nur eben Laufwerk, Ordner, Unterordner, Dateiname.',
     beispiel: '`C:\\Projekte\\kampagnen-tool\\index.html` sagt Claude Code exakt, welche Datei gemeint ist — viel eindeutiger als „die Datei von gestern“.',
     tiefe: 'Windows trennt Ordner mit `\\` (Backslash), Mac und Linux mit `/`. Es gibt absolute Pfade (die komplette Adresse ab Laufwerk, z. B. `C:\\Projekte\\kampagnen-tool\\index.html`) und relative (der Weg vom aktuellen Ordner aus, z. B. `daten/export.csv`). In Claude Code kannst du Dateien mit `@` erwähnen und bekommst beim Tippen Vorschläge — das erspart das Abtippen. Zwei Tricks bei Unsicherheit: die Datei im Explorer/Finder suchen und den Pfad aus der Adressleiste kopieren — oder die Datei einfach ins Terminalfenster ziehen, dann fügt sich ihr Pfad von selbst ein.',
+    stolper: 'Leerzeichen und Umlaute in Ordnernamen sind die häufigste Ursache für „Datei nicht gefunden“. `C:\\Meine Projekte\\Kampagne Müller\\` geht oft gut, aber nicht immer — bei neu angelegten Projektordnern zahlt sich `kampagne-mueller` aus.',
     verweise: [
       { t: 'befehl', id: 'datei-verweis' },
       { t: 'skill', id: 'erste-schritte', name: 'Erste Schritte' }
@@ -235,6 +346,22 @@ const GLOSSAR = [
     verweise: [
       { t: 'begriff', id: 'csv' },
       { t: 'begriff', id: 'backend' }
+    ]
+  },
+  {
+    id: 'datenschutz-vertraulichkeit',
+    wort: 'Datenschutz & Vertraulichkeit',
+    buchstabe: 'D',
+    thema: 'handwerk',
+    votes: 22,
+    satz: 'Datenschutz und Vertraulichkeit heißen hier ganz praktisch: bewusst entscheiden, welche Daten du überhaupt in ein KI-Werkzeug eingibst.',
+    analogie: 'Wie die Entscheidung, was du in einer vollen Bahn ins Telefon sprichst: Nicht jedes Gespräch ist geheim — Kundennamen, Zahlen und Personendaten sagt man dort trotzdem nicht laut.',
+    beispiel: 'Der Mediaplan-Export soll ausgewertet werden: Kundennamen und Ansprechpartner:innen vorher ersetzen — für die Rechenarbeit braucht die KI die Zahlen, nicht die Namen.',
+    tiefe: 'Zwei Fragen tragen weit. Erstens: Verlässt die Eingabe deinen Rechner? Bei Langdock und bei Claude Code geht die Anfrage an den Anbieter — auch wenn deine Dateien lokal liegen, wandert der Inhalt, den Claude liest, in die Anfrage mit. Zweitens: Wären diese Daten ein Problem, wenn sie an der falschen Stelle auftauchten? Bei personenbezogenen Daten, Kundenunterlagen und Zugangsdaten ist die Antwort fast immer ja. Der beste Reflex ist Anonymisieren statt Verzichten: Namen durch Platzhalter ersetzen, rechnen lassen, danach die echten Namen wieder einsetzen. Was bei pilot konkret erlaubt ist, steht ausdrücklich NICHT hier: Verbindlich ist allein die interne KI-Richtlinie. Im Zweifel — und vor jedem Kundenprojekt — fragst du das KI-Enablement-Team; diese Seite erfindet dazu bewusst keine Regel.',
+    stolper: 'Die häufigste Lücke ist nicht die Eingabe, sondern das Veröffentlichen: Was in ein öffentliches Repo gepusht wird, steht im Netz — samt der Beispieldatei mit echten Kundenzahlen, die „nur zum Testen“ mit hochgerutscht ist.',
+    verweise: [
+      { t: 'begriff', id: 'cloud' },
+      { t: 'begriff', id: 'github-pages' }
     ]
   },
   {
@@ -268,6 +395,22 @@ const GLOSSAR = [
     ]
   },
   {
+    id: 'few-shot-beispiel',
+    wort: 'Few-Shot (Beispiele mitgeben)',
+    buchstabe: 'F',
+    thema: 'ki',
+    votes: 14,
+    satz: 'Few-Shot heißt: Du gibst der KI ein bis drei Beispiele für das gewünschte Ergebnis mit — sie erkennt daran das Muster und liefert den Rest im selben Stil.',
+    analogie: 'Wie ein Muster-Dokument für die neue Werkstudentin: Statt den Stil zu beschreiben, legst du zwei fertige Beispiele daneben — „so ungefähr“ ist damit in einer Sekunde geklärt.',
+    beispiel: '„Schreib 10 Betreffzeilen im Stil dieser drei: …“ liefert deutlich brauchbarere Ergebnisse als „Schreib 10 Betreffzeilen, bitte knackig“ — das Muster steckt in den Beispielen, nicht im Adjektiv.',
+    tiefe: 'Der Name kommt aus der Fachsprache: „Zero-Shot“ ist eine Anweisung ohne Beispiel, „Few-Shot“ eine mit einigen. Am stärksten wirkt es bei allem, was sich schlecht beschreiben lässt — Tonalität, Aufbau, Länge, Formatierung. Drei Regeln aus der Praxis: Die Beispiele müssen gut sein, denn die KI übernimmt auch ihre Schwächen; sie müssen zueinander passen, sonst entsteht Beliebigkeit; und zwei bis drei reichen fast immer. Umgekehrt wirkt auch ein Gegenbeispiel: „So ausdrücklich NICHT: …“ grenzt genauso wirksam ein.',
+    stolper: 'Beispiele schlagen Anweisungen. Wenn du „kurz“ schreibst, aber drei lange Beispiele mitschickst, gewinnen die Beispiele — und du wunderst dich über die Länge der Antwort.',
+    verweise: [
+      { t: 'begriff', id: 'prompt' },
+      { t: 'begriff', id: 'platzhalter' }
+    ]
+  },
+  {
     id: 'framework',
     wort: 'Framework',
     buchstabe: 'F',
@@ -278,7 +421,7 @@ const GLOSSAR = [
     beispiel: 'Wenn Entwickler:innen bei pilot von React oder Vue reden, meinen sie Web-Frameworks. Für deine ersten Tools braucht es die nicht — Claude Code baut sie bewusst ohne Framework, als einzelne HTML-Datei, die überall läuft.',
     tiefe: 'Das Wort begegnet dir in zwei Bedeutungen. In der Software-Welt: eine Code-Grundlage wie React, auf der Profi-Anwendungen aufsetzen — mächtig, aber mit Lernkurve und eigener Werkzeugkette, für Feierabend-Tools meist Overkill. Im Katalog des Marketplace: die dritte Art von Eintrag neben Skill und Plugin — dort meint „Framework“ eine komplette Arbeitsweise für die Zusammenarbeit mit Claude (etwa: erst planen, dann bauen), kein Code-Paket. Die Merkhilfe aus dem Katalog: Skill = Rezept, Plugin = Kochbuch, Framework = Art zu kochen. Beide Bedeutungen teilen den Kern: ein Rahmen, der Struktur vorgibt, damit nicht jede:r alles neu erfindet.',
     verweise: [
-      { t: 'skill', id: 'gsd', name: 'gsd' },
+      { t: 'skill', id: 'brainstorm-plan-execute', name: 'Brainstorm → Plan → Execute' },
       { t: 'begriff', id: 'plugin' }
     ]
   },
@@ -322,6 +465,7 @@ const GLOSSAR = [
     analogie: 'GitHub Pages ist der Schaukasten am Projektgebäude: Was du in den Projektordner legst und pushst, hängt kurz darauf öffentlich sichtbar aus — ohne dass du eine eigene Vitrine (sprich: einen Server) mieten musst.',
     beispiel: 'Der pilot AI Marketplace selbst liegt auf GitHub Pages — keine Server-Miete, keine IT-Tickets, einfach Dateien hochladen und die Seite ist live.',
     tiefe: 'Voraussetzung ist ein Repo auf GitHub; in dessen Einstellungen aktivierst du Pages einmalig, ab dann wird jeder Push automatisch veröffentlicht. Die Adresse hat die Form `benutzername.github.io/projektname`. Es funktioniert nur für statische Seiten (HTML, CSS, JavaScript ohne eigenes Backend) — genau das, was bei Citizen-Coding-Tools meist entsteht — und kostet nichts. Die Einrichtung kann Claude Code komplett übernehmen: „Veröffentliche das über GitHub Pages“ reicht als Auftrag. Achtung: Ein öffentliches Repo bedeutet eine öffentliche Seite — Kundendaten, vertrauliche Unterlagen oder API-Schlüssel haben dort nie etwas verloren.',
+    stolper: 'Öffentlich heißt wirklich öffentlich, und zwar für ALLE Dateien im Repo — nicht nur für die, auf die eine Seite verlinkt. Eine Test-CSV mit echten Kundenzahlen ist damit über ihre Adresse abrufbar, obwohl sie nirgends verlinkt ist.',
     verweise: [
       { t: 'skill', id: 'tool-teilen', name: 'Tool teilen' },
       { t: 'skill', id: 'webseite-bauen', name: 'Webseite bauen' }
@@ -337,8 +481,26 @@ const GLOSSAR = [
     analogie: 'Wie ein eloquenter Kollege, der in Meetings nie „weiß ich nicht“ sagt: Neun Antworten sind brillant — die zehnte ist frei erfunden und klingt exakt genauso souverän.',
     beispiel: 'Claude nennt dir eine „Studie von Nielsen 2024“ mit exakten Prozentzahlen für deine Pitch-Folie — bevor die ins Kundendeck wandert, prüfst du, ob es die Studie überhaupt gibt.',
     tiefe: 'Der Grund liegt in der Funktionsweise: Sprachmodelle erzeugen Text, der wahrscheinlich klingt — nicht Text, der garantiert stimmt. Sie „wissen“ nicht im menschlichen Sinn, sie setzen plausibel fort. Besonders anfällig: konkrete Zahlen, Quellenangaben, Studien, Namen, Paragrafen, Links — und alles nach dem Wissensstand des Modells. Die Gegenmittel: Quellen mitliefern lassen und stichprobenartig öffnen, kritische Fakten vor Kundenkontakt selbst prüfen, der KI ausdrücklich erlauben, „weiß ich nicht“ zu sagen, und ihr eigene Dokumente mitgeben (Wissen anbinden) — mit echter Grundlage sinkt die Erfindungsquote deutlich. Faustregel: KI-Ergebnisse behandeln wie den Entwurf einer neuen Praktikantin — hilfreich, aber vor Veröffentlichung gegengelesen.',
+    stolper: 'Halluzinationen erkennt man nicht am Tonfall — genau das ist der Punkt. Eine erfundene Studie klingt exakt so souverän wie eine echte; „das wirkte plausibel“ ist deshalb keine Prüfung, sondern das Symptom.',
     verweise: [
-      { t: 'skill', id: 'verification-before-completion', name: 'verification-before-completion' }
+      { t: 'skill', id: 'superpowers', name: 'superpowers' },
+      { t: 'begriff', id: 'wissen-anbinden' }
+    ]
+  },
+  {
+    id: 'hosting-domain',
+    wort: 'Hosting & Domain',
+    buchstabe: 'H',
+    thema: 'web',
+    votes: 7,
+    satz: 'Hosting ist der Platz, an dem deine Webseite dauerhaft liegt und ausgeliefert wird; die Domain ist der Name, unter dem man sie im Browser erreicht.',
+    analogie: 'Hosting ist das gemietete Ladenlokal, die Domain das Schild darüber. Ohne Laden nützt das schönste Schild nichts — und ohne Schild findet niemand den Laden, selbst wenn geöffnet ist.',
+    beispiel: 'Der pilot AI Marketplace wird von GitHub Pages gehostet und ist unter einer `github.io`-Adresse erreichbar: Hosting kostenlos, Adresse inklusive, kein eigener Server im Spiel.',
+    tiefe: 'Für Citizen-Coding-Tools ist beides meist keine Kostenfrage: GitHub Pages hostet statische Seiten gratis und liefert eine Adresse der Form `name.github.io/projekt` gleich mit. Eine eigene Domain wie `mein-tool.de` ist ein separater Mietvertrag bei einem Anbieter, kostet ein paar Euro im Jahr und wird dann auf das Hosting gezeigt. Technisch ist das einfach — die Entscheidung ist es nicht: Eine eigene Domain sieht nach offiziellem pilot-Angebot aus. Für alles, was nach außen sichtbar wird, gilt deshalb: erst intern klären, dann mieten. Für Tools, die nur im Haus genutzt werden, reicht die kostenlose Adresse vollkommen.',
+    stolper: 'Gehostet heißt öffentlich erreichbar, auch ohne eigene Domain. Eine GitHub-Pages-Adresse ist nicht geheim, nur unbekannt — wer den Link hat, kommt hinein. Ein Passwort gibt es dort nicht.',
+    verweise: [
+      { t: 'begriff', id: 'github-pages' },
+      { t: 'begriff', id: 'url' }
     ]
   },
   {
@@ -354,6 +516,22 @@ const GLOSSAR = [
     verweise: [
       { t: 'skill', id: 'webseite-bauen', name: 'Webseite bauen' },
       { t: 'prompt', id: 'code-verstehen', name: 'Was tut diese Datei?' }
+    ]
+  },
+  {
+    id: 'iteration',
+    wort: 'Iteration',
+    buchstabe: 'I',
+    thema: 'handwerk',
+    votes: 10,
+    satz: 'Eine Iteration ist eine Runde aus Bauen, Anschauen und Nachbessern — und die Arbeitsweise, in der beim Vibecoding praktisch alles entsteht.',
+    analogie: 'Wie Layout-Runden mit der Kreation: Die erste Fassung ist nie die letzte, aber ohne sie gibt es nichts zu besprechen. Erst am Konkreten fällt auf, was fehlt.',
+    beispiel: 'Runde eins: Die Tabelle wird angezeigt. Runde zwei: Sie ist sortierbar. Runde drei: Sie sieht nach pilot aus. Jede Runde dauert Minuten — und nach jeder weißt du besser, was du eigentlich willst.',
+    tiefe: 'Der Fehler, den fast alle einmal machen, ist der Wunschzettel: alle zwölf Anforderungen in einen Auftrag, eine halbe Stunde warten — und am Ende ein Ergebnis, bei dem niemand mehr weiß, welcher Teil schiefging. Kleine Runden sind schneller UND sicherer: Nach jeder siehst du etwas Laufendes, kannst korrigieren, solange die Änderung klein ist, und den guten Stand mit einem Commit sichern. Eine bewährte Reihenfolge: erst die eine Funktion, um die es wirklich geht, dann die Bequemlichkeiten, dann das Aussehen. Läuft eine Runde in die falsche Richtung, nicht weiterreparieren — zum letzten guten Stand zurück und neu beschreiben.',
+    stolper: 'Iterieren heißt nicht „einfach nochmal versuchen“. Bringt dieselbe Anweisung zum dritten Mal dasselbe falsche Ergebnis, liegt es an der Beschreibung, nicht an der KI — dann lohnt es, das Ziel neu zu formulieren statt es lauter zu wiederholen.',
+    verweise: [
+      { t: 'begriff', id: 'vibecoding' },
+      { t: 'begriff', id: 'commit' }
     ]
   },
   {
@@ -396,9 +574,26 @@ const GLOSSAR = [
     analogie: 'Wie ein Schreibtisch: Was darauf liegt, hat die KI im Blick — was nicht mehr draufpasst, rutscht hinten herunter. Ein aufgeräumter Schreibtisch pro Aufgabe schlägt einen überquellenden für alles.',
     beispiel: 'Du fütterst Claude Code mit einem 80-Seiten-Briefing, drei PDFs und zwei Stunden Gespräch — irgendwann ist das Fenster voll, und Details vom Anfang gehen verloren.',
     tiefe: 'Die Größe wird in Token gemessen, und alles zählt hinein: deine Nachrichten, Claudes Antworten, gelesene Dateien, Suchergebnisse. Ist das Fenster voll, gehen Details vom Gesprächsanfang verloren — Claude wirkt dann „vergesslich“ oder verwechselt frühere Entscheidungen. In Claude Code helfen zwei Befehle: /compact fasst das bisherige Gespräch zusammen und macht Platz, /clear startet komplett frisch (deine Dateien bleiben unberührt). Gute Gewohnheiten: pro Aufgabe eine Session, lange Dokumente gezielt referenzieren statt komplett hineinzukippen — und bei großen Projekten Zwischenstände in eine Notizdatei schreiben lassen, die die nächste Session einfach liest.',
+    stolper: 'Ein volles Kontextfenster ist kein Fehler und nichts Kaputtes — die Sitzung wird nur ungenauer. Der übliche Reflex, dieselbe Anweisung noch einmal und ausführlicher zu wiederholen, füllt es allerdings weiter; /compact oder /clear lösen es in einem Schritt.',
     verweise: [
       { t: 'befehl', id: 'compact' },
       { t: 'prompt', id: 'uebergabe-doku', name: 'Übergabe-Doku vor dem Urlaub' }
+    ]
+  },
+  {
+    id: 'langdock',
+    wort: 'Langdock',
+    buchstabe: 'L',
+    thema: 'ki',
+    votes: 27,
+    satz: 'Langdock ist die Chat-Plattform, über die bei pilot mit KI gearbeitet wird — in unserer Oberfläche trägt sie den Namen „pilot AI“.',
+    analogie: 'Langdock ist der gemeinsame Besprechungsraum für die KI-Arbeit: dieselben Modelle, dieselben Regeln, dieselben abgelegten Unterlagen für alle — statt dass jede:r privat mit einem anderen Werkzeug telefoniert.',
+    beispiel: 'Du öffnest „pilot AI“ im Browser, wählst oben links ein Modell und lässt dir das Kunden-Briefing zusammenfassen — dieselbe Oberfläche, mit der deine Kolleg:innen ebenfalls arbeiten.',
+    tiefe: 'Beim Hersteller heißt das Produkt Langdock, bei uns steht „pilot AI“ darüber — gemeint ist dasselbe. Wenn du also in der Doku, in Schulungsunterlagen oder hier im Marketplace „Langdock“ liest, suchst du bei uns nach „pilot AI“. Die Plattform bündelt fünf Bereiche: Chat (das Gespräch mit einem Modell), Agenten (eigene Assistenten für wiederkehrende Aufgaben), Integrationen (Anbindung eurer Werkzeuge), Workflows (Automationen) und eine API. Der Vorteil gegenüber privaten KI-Zugängen ist die gemeinsame Grundlage: geteilte Prompts, geteilte Assistenten und ein Rahmen, in dem geregelt ist, was mit Eingaben passiert. Die Abgrenzung zu Claude Code in einem Satz: Langdock ist der Ort zum Denken, Schreiben und Recherchieren, Claude Code der Ort zum Bauen.',
+    stolper: 'Zwei Namen, ein Werkzeug: „pilot AI“ ist keine Eigenentwicklung und kein zweites Produkt, sondern unsere Beschriftung für Langdock. Wer im Netz nach Anleitungen oder Tastenkürzeln sucht, findet sie ausschließlich unter „Langdock“.',
+    verweise: [
+      { t: 'begriff', id: 'agent' },
+      { t: 'begriff', id: 'claude-code' }
     ]
   },
   {
@@ -425,6 +620,7 @@ const GLOSSAR = [
     analogie: 'localStorage ist die Schreibtischschublade der Webseite: Jede Seite hat in deinem Browser ihre eigene, kann Dinge hineinlegen und wiederfinden — aber die Schublade deiner Kollegin ist eine andere, und niemand sonst kommt heran.',
     beispiel: 'Wenn du im Katalog einen Skill bewertest, speichert dein Browser das in localStorage — es verlässt nie deinen Rechner.',
     tiefe: 'Deshalb sieht jede:r im Marketplace nur die eigenen Bewertungen und Favoriten — es gibt keinen Server dahinter, nichts verlässt deinen Rechner. Die Daten überleben das Schließen des Browsers und bleiben, bis du die Website-Daten löschst („Browserdaten löschen“ trifft auch localStorage — dann sind z. B. Favoriten weg). Für erste Tools ist localStorage ideal: Speichern ohne Backend, ohne Anmeldung, ohne Datenschutz-Kopfschmerz. Die Grenzen: Er gehört zu genau einem Browser auf genau einem Gerät (Handy und Laptop teilen nichts), fasst nur wenige Megabyte und ist kein Ort für Vertrauliches. Sag Claude einfach „merk dir die Eingaben lokal im Browser“ — es weiß dann, was gemeint ist.',
+    stolper: 'Weil alles nur lokal liegt, ist es auch nur lokal wieder weg: Wer „Browserdaten löschen“ anklickt oder das Tool in einem privaten Fenster öffnet, findet seine Eingaben nicht wieder. Für alles, was nicht verloren gehen darf, gehört ein Export ins Tool.',
     verweise: [
       { t: 'skill', id: 'prototyp-bauen', name: 'Prototyp bauen' }
     ]
@@ -468,8 +664,25 @@ const GLOSSAR = [
     analogie: 'Modelle sind wie Besetzungen für eine Aufgabe: Die erfahrene Senior-Beraterin arbeitet gründlicher, aber teurer — der fixe Junior ist schneller und günstiger. Wen du besetzt, hängt an der Aufgabe.',
     beispiel: 'In Langdock wählst du oben aus, welches Modell antwortet — dieselbe Frage kann je nach Modell unterschiedlich gut, schnell und ausführlich beantwortet werden.',
     tiefe: 'Modelle entstehen durch Training auf riesigen Textmengen und haben einen Wissensstand mit Stichtag — Ereignisse danach kennen sie nicht von selbst; dafür müssen sie suchen oder Dokumente mitbekommen. Verschiedene Modelle unterscheiden sich in Gründlichkeit, Tempo und Kosten. Faustregel: großes Modell für komplexe Aufgaben wie Konzeption und kniffliges Debugging, kleines für schnelle Routine. Claude Code nutzt die Claude-Modelle von Anthropic und wählt eine sinnvolle Vorbelegung; mit /model kannst du wechseln. In Langdock wählst du das Modell oben im Chat — dort stehen auch Modelle anderer Anbieter wie GPT (OpenAI) oder Gemini (Google) zur Auswahl, und dieselbe Frage kann je nach Modell spürbar anders beantwortet werden.',
+    stolper: 'Neuer oder größer heißt nicht automatisch besser für deine Aufgabe: Bei Routinearbeit ist das große Modell nur langsamer, ohne mehr zu liefern. Und ein Modellwechsel mitten in der Arbeit repariert keinen unklaren Auftrag.',
     verweise: [
       { t: 'befehl', id: 'model' }
+    ]
+  },
+  {
+    id: 'mvp-prototyp',
+    wort: 'MVP (kleinste nutzbare Version)',
+    buchstabe: 'M',
+    thema: 'handwerk',
+    votes: 11,
+    satz: 'Ein MVP ist die kleinste Version deines Tools, die schon jemandem echten Nutzen bringt — bewusst unfertig, aber benutzbar.',
+    analogie: 'Wie der Testaufbau eines Messestands: keine Beleuchtung, kein Teppich, aber man kann davorstehen und sehen, ob die Idee trägt. Was fehlt, entscheidet man danach — mit Blick auf etwas Echtes.',
+    beispiel: 'Dein Timing-Tool soll später Kalender anbinden, erinnern und exportieren. Das MVP kann genau eines: die Excel-Datei einlesen und die Deadlines nach Datum sortieren. Spart schon das Zeit, lohnt der Rest.',
+    tiefe: 'MVP steht für „Minimum Viable Product“, also die kleinste tragfähige Fassung. Der Punkt ist nicht Sparsamkeit, sondern Lernen: Erst wenn jemand ein Tool wirklich benutzt, zeigt sich, ob die Idee funktioniert — und meistens will man danach etwas anderes bauen als ursprünglich geplant. Für den Zuschnitt hilft eine Frage: Welche EINE Sache muss es können, damit sich das Öffnen lohnt? Alles Weitere ist Runde zwei. Prototyp und MVP werden oft gleichbedeutend benutzt; genau genommen ist ein Prototyp zum Zeigen gedacht und ein MVP zum Benutzen — beim Vibecoding fällt beides meist zusammen, weil der Prototyp ohnehin schon läuft.',
+    stolper: 'Ein MVP, das nur du selbst benutzt, hat seinen Zweck noch nicht erfüllt. Der Erkenntnisgewinn kommt, wenn eine Kollegin es ohne deine Erklärung öffnet — dabei fallen in zehn Minuten mehr Lücken auf als in zwei Wochen Nachdenken.',
+    verweise: [
+      { t: 'begriff', id: 'iteration' },
+      { t: 'skill', id: 'prototyp-bauen', name: 'Prototyp bauen' }
     ]
   },
   {
@@ -482,6 +695,7 @@ const GLOSSAR = [
     analogie: 'Open Source ist ein öffentliches Rezeptbuch: Jede:r darf nachkochen, abwandeln und die eigene Variante wieder hineinschreiben — deshalb muss niemand mehr das Grundrezept neu erfinden.',
     beispiel: 'Viele Skills im Marketplace stammen aus offenen Community-Sammlungen — du kannst nachlesen, was sie tun, sie anpassen und deine Version wieder teilen.',
     tiefe: 'Open Source ist der Grund, warum du beim Citizen Coding selten bei null anfängst: Bibliotheken, Icons, Schriften und ganze Skill-Sammlungen liegen frei verfügbar bereit — die Community-Skills im Katalog stammen aus offenen GitHub-Sammlungen, und auch Git selbst ist Open Source. Das Gegenteil heißt „proprietär“: Quellcode unter Verschluss, Nutzung nur per Kauf oder Abo. „Öffentlich einsehbar“ heißt aber nicht automatisch „alles erlaubt“ — was genau erlaubt ist (kommerzielle Nutzung, Veränderung, Weitergabe), regelt die jeweilige Lizenz. Und Offenheit ist keine Einbahnstraße: Wenn du einen Community-Skill verbesserst, kannst du deine Version wieder mit allen teilen.',
+    stolper: 'Kostenlos und frei verwendbar sind zwei verschiedene Dinge. Fehlt bei einem Fundstück im Netz die Lizenzangabe ganz, heißt das rechtlich „alle Rechte vorbehalten“ — nicht „frei für alle“. In Kundenprojekten ist das der teuerste Irrtum.',
     verweise: [
       { t: 'skill', id: 'superpowers', name: 'superpowers' },
       { t: 'begriff', id: 'lizenz' }
@@ -540,7 +754,7 @@ const GLOSSAR = [
     satz: 'Ein Prompt ist die Anweisung, die du der KI gibst — je klarer Aufgabe, Kontext und gewünschtes Ergebnis, desto besser die Antwort.',
     analogie: 'Ein Prompt ist ein Briefing im Agentur-Sinn: Dieselbe Aufgabe kann als Zweizeiler in der Kaffeeküche kommen oder als sauberes Briefing mit Ziel, Zielgruppe, Ton und Format — der Unterschied im Ergebnis ist bei der KI derselbe wie bei der Kreation.',
     beispiel: 'Statt „Fass das zusammen“ lieber: „Fasse dieses Kunden-Briefing in 5 Stichpunkten für die Kreation zusammen, Ton sachlich, max. 100 Wörter“ — gleicher Aufwand, deutlich besseres Ergebnis.',
-    tiefe: 'Ein guter Prompt beantwortet vier Fragen: Was soll entstehen? Für wen? In welchem Format? Was ist der Kontext? Dazu zwei Profi-Handgriffe: Beispiele mitgeben („so soll es klingen: …“) und eine Rolle setzen („du bist eine erfahrene Mediaplanerin“) — beides hebt die Qualität spürbar. Höflichkeitsprosa brauchst du dagegen keine; klar schlägt förmlich. Und wenn ein Ergebnis danebenliegt: nicht von vorn anfangen, sondern nachsteuern („kürzer, sachlicher, ohne Fachjargon“) — die KI behält den Zusammenhang. In der Prompt-Sammlung des Marketplace findest du 23 erprobte Vorlagen mit Platzhaltern; Kopieren ist ausdrücklich erwünscht.',
+    tiefe: 'Ein guter Prompt beantwortet vier Fragen: Was soll entstehen? Für wen? In welchem Format? Was ist der Kontext? Dazu zwei Profi-Handgriffe: Beispiele mitgeben („so soll es klingen: …“) und eine Rolle setzen („du bist eine erfahrene Mediaplanerin“) — beides hebt die Qualität spürbar. Höflichkeitsprosa brauchst du dagegen keine; klar schlägt förmlich. Und wenn ein Ergebnis danebenliegt: nicht von vorn anfangen, sondern nachsteuern („kürzer, sachlicher, ohne Fachjargon“) — die KI behält den Zusammenhang. In der Prompt-Sammlung des Marketplace findest du erprobte Vorlagen mit Platzhaltern; Kopieren ist ausdrücklich erwünscht.',
     verweise: [
       { t: 'prompt', id: 'vibecoding-kickoff', name: 'Vibecoding-Kickoff' },
       { t: 'prompt', id: 'meeting-todos', name: 'Meeting-Protokoll → To-do-Liste' }
@@ -598,6 +812,7 @@ const GLOSSAR = [
     analogie: 'Wie Wasser, das die Form seines Gefäßes annimmt: gleicher Inhalt — aber am Desktop drei Spalten nebeneinander, auf dem Handy ordentlich untereinander.',
     beispiel: 'Zieh das Browserfenster des Marketplace schmal: Die Karten ordnen sich von drei Spalten auf eine um, die Navigation rückt zusammen — das ist responsives Verhalten.',
     tiefe: 'Technisch steckt CSS dahinter: Regeln wie „unter 640 Pixel Breite: eine Spalte statt drei“ (sogenannte Media Queries). Wichtig ist Responsive vor allem, weil Kolleg:innen dein Tool oft zuerst am Handy öffnen — ein Link im Team-Chat wird unterwegs angetippt. Deshalb gehört in jeden Bau-Auftrag der Halbsatz „und mobil soll es gut aussehen“; Claude legt das Layout dann von vornherein anpassungsfähig an. Testen geht ohne Handy: Browserfenster schmal ziehen oder in den Entwicklertools (F12) die Handy-Ansicht wählen. Und wenn etwas nur mobil kaputt aussieht, sag Claude genau das — „am Handy überlappen die Karten“ ist eine präzise, reparierbare Fehlerbeschreibung.',
+    stolper: 'Ein schmal gezogenes Browserfenster ist nicht dasselbe wie ein Handy: fingerbreite Bedienelemente, die Tastatur, die das halbe Bild verdeckt, und langsamere Verbindungen fallen dabei nicht auf. Wird ein Tool wirklich unterwegs benutzt, einmal am echten Gerät öffnen.',
     verweise: [
       { t: 'begriff', id: 'css' },
       { t: 'skill', id: 'webseite-bauen', name: 'Webseite bauen' }
@@ -648,6 +863,38 @@ const GLOSSAR = [
     ]
   },
   {
+    id: 'slash-befehl',
+    wort: 'Slash-Befehl',
+    buchstabe: 'S',
+    thema: 'handwerk',
+    votes: 15,
+    satz: 'Ein Slash-Befehl ist eine Kurzanweisung, die mit einem Schrägstrich beginnt — etwa `/clear` oder `/help` — und die Claude Code sofort ausführt, statt sie als Frage zu behandeln.',
+    analogie: 'Wie die Funktionstasten neben dem Fließtext: Ausformulieren geht immer — aber für die zehn Dinge, die du täglich tust, gibt es einen Griff, der schneller ist.',
+    beispiel: 'Statt „bitte fang ein neues Gespräch an und vergiss alles bisherige“ tippst du `/clear` — ein Zeichen, ein Wort, erledigt.',
+    tiefe: 'Tippst du nur `/`, öffnet sich die Liste aller verfügbaren Befehle und filtert beim Weitertippen mit — auswendig lernen musst du also nichts. In der Liste stehen nicht nur die eingebauten Befehle, sondern auch die Skills und Plugin-Befehle, die bei dir installiert sind: Ein Skill mit eigenem Namen ist am Ende ebenfalls ein `/`-Befehl. Umgekehrt heißt das: Nicht jeder Befehl aus einer fremden Anleitung taucht bei dir auf, manche hängen an Plattform oder Plan. Die Handvoll, die im Alltag wirklich zählt, steht hier auf der Seite unter „Befehle & Kniffe“ — sortiert danach, wie oft sie geholfen hat.',
+    stolper: 'Der Schrägstrich muss am Anfang der Zeile stehen. Mitten im Satz ist `/clear` einfach Text — Claude liest es dann als Wunsch und antwortet darauf, statt den Befehl auszuführen.',
+    verweise: [
+      { t: 'befehl', id: 'help' },
+      { t: 'begriff', id: 'skill' }
+    ]
+  },
+  {
+    id: 'statische-seite',
+    wort: 'Statische Seite',
+    buchstabe: 'S',
+    thema: 'web',
+    votes: 8,
+    satz: 'Eine statische Seite besteht nur aus fertigen Dateien, die der Server unverändert ausliefert — dort rechnet nichts, alles Weitere passiert in deinem Browser.',
+    analogie: 'Wie ein gedruckter Prospekt gegenüber einem Beratungsgespräch: Der Prospekt ist für alle gleich und sofort da; wer eine individuelle Auskunft braucht, muss jemanden fragen, der nachschlägt.',
+    beispiel: 'Der pilot AI Marketplace ist eine statische Seite: Alle Skills, Prompts und Vorlagen stecken in den ausgelieferten Dateien, das Filtern und Sortieren erledigt dein Browser — deshalb läuft die Seite weiter, auch wenn die Verbindung nach dem Laden abreißt.',
+    tiefe: 'Das Gegenstück ist die dynamische Seite: Dort setzt ein Server jede Ansicht neu zusammen, meist aus einer Datenbank — nötig, sobald es Logins, gemeinsame Daten oder Inhalte gibt, die sich pro Person unterscheiden. Statisch heißt dabei nicht unbeweglich: Suche, Filter, Rechner und Animationen laufen als JavaScript im Browser und fühlen sich genauso lebendig an. Für Citizen-Coding-Tools ist das fast immer die richtige Wahl — kein Server, keine Betriebskosten, keine Wartung, und veröffentlicht wird über GitHub Pages, das ausschließlich statische Seiten ausliefert. Die Grenze ist erreicht, wenn mehrere Leute dieselben Daten gemeinsam ändern sollen.',
+    stolper: 'Daten in einer statischen Seite sind für alle einsehbar, die die Seite laden — auch dann, wenn sie im Tool erst nach einem Klick erscheinen. Eine „nur für uns“-Ansicht gibt es dort nicht: Was ausgeliefert wird, ist lesbar.',
+    verweise: [
+      { t: 'begriff', id: 'github-pages' },
+      { t: 'begriff', id: 'backend' }
+    ]
+  },
+  {
     id: 'svg',
     wort: 'SVG',
     buchstabe: 'S',
@@ -657,7 +904,7 @@ const GLOSSAR = [
     analogie: 'Ein normales Foto ist ein Mosaik aus festen Steinchen: Vergrößerst du es, siehst du die Steinchen. Ein SVG ist stattdessen der Bauplan — „Kreis hier, Linie dort“. Den kann man auf Plakatgröße ziehen, ohne dass etwas ausfranst, weil das Bild jedes Mal neu gezeichnet wird.',
     beispiel: 'Die Icons in der Asset-Bibliothek sind SVGs: Du klickst eines an, der Code landet in der Zwischenablage, und du fügst ihn direkt in deine Seite ein — ganz ohne Bilddatei.',
     tiefe: 'SVG steht für „Scalable Vector Graphics“, also skalierbare Vektorgrafik. Eine SVG-Datei ist in Wahrheit Text: Darin steht, aus welchen Formen, Pfaden und Farben das Bild besteht. Das hat drei praktische Folgen. Erstens bleibt es bei jeder Größe scharf — vom 16-Pixel-Icon bis zum Messeplakat. Zweitens sind die Dateien meist winzig, was Seiten schnell macht. Drittens kannst du ein SVG direkt in den HTML-Code schreiben („inline“) und es dann per CSS umfärben — genau davon lebt die Icon-Sammlung hier: Ein Icon nimmt automatisch die Textfarbe an, statt dass du es in fünf Farben abspeicherst. Gut geeignet ist SVG für Logos, Icons, Diagramme und Muster; für Fotos bleibt es bei JPG oder PNG, denn eine Bauanleitung für ein Foto wäre riesig.',
-    stolper: 'Weil ein SVG echter Code ist, sollte man nur Dateien aus vertrauenswürdigen Quellen ungeprüft einbinden — eine SVG kann theoretisch Skripte enthalten. Bei den Bibliotheken hier (Lucide, Heroicons, Phosphor, Simple Icons) ist das kein Thema; bei einem SVG aus einer beliebigen Google-Suche schaust du besser einmal in die Datei oder lässt Claude draufsehen.',
+    stolper: 'Weil ein SVG echter Code ist, sollte man nur Dateien aus vertrauenswürdigen Quellen ungeprüft einbinden — eine SVG kann theoretisch Skripte enthalten. Bei den Bibliotheken hier (Lucide und Simple Icons) ist das kein Thema; bei einem SVG aus einer beliebigen Google-Suche schaust du besser einmal in die Datei oder lässt Claude draufsehen.',
     verweise: [
       { t: 'begriff', id: 'html' },
       { t: 'begriff', id: 'css' }
@@ -702,6 +949,7 @@ const GLOSSAR = [
     analogie: 'Token sind die Legosteine des Textes: Die KI liest nicht Wörter, sondern Silben-Bausteine — „Mediaplanung“ besteht aus mehreren Steinen, „und“ ist ein einziger.',
     beispiel: 'Dein 50-Seiten-Mediaplan-Export sind für Claude zigtausend Token — deshalb ist bei sehr langen Dokumenten irgendwann das Kurzzeitgedächtnis voll.',
     tiefe: 'Als Faustregel entsprechen 1.000 Token grob 700 deutschen Wörtern — etwa anderthalb A4-Seiten. Token sind die Währung der KI-Welt: Die Größe des Kontextfensters wird in Token gemessen, die Preise der Anbieter ebenso („pro Million Token“), und auch Grenzen wie „Dokument zu lang“ sind Token-Grenzen. Deutsch kostet übrigens etwas mehr Token als Englisch, weil die Modelle englische Wörter kompakter zerlegen. Selbst zählen musst du nie — aber der Begriff erklärt zwei Alltagsphänomene: warum „einfach alles reinkopieren“ irgendwann kippt, und warum kompakte, aufgeräumte Eingaben schneller und günstiger sind.',
+    stolper: 'Token sind keine Wörter. Ein deutsches Kompositum wie „Kampagnenauswertung“ kann mehrere Token kosten, ein englisches „and“ genau eines — Wörter zählen bringt deshalb wenig, die Textmenge grob abschätzen schon.',
     verweise: [
       { t: 'begriff', id: 'kontextfenster' },
       { t: 'prompt', id: 'fachbegriff-erklaerer', name: 'Fachbegriff-Erklärer' }
@@ -738,6 +986,22 @@ const GLOSSAR = [
     ]
   },
   {
+    id: 'werkzeug-tool',
+    wort: 'Werkzeug (Tool)',
+    buchstabe: 'W',
+    thema: 'ki',
+    votes: 12,
+    satz: 'Ein Werkzeug ist eine Fähigkeit, die die KI selbst benutzen kann — Dateien lesen, Befehle ausführen, im Netz suchen — statt nur Text zu erzeugen.',
+    analogie: 'Der Unterschied zwischen jemandem, der dir erklärt, wo der Ordner steht, und jemandem, der aufsteht und ihn holt. Werkzeuge sind die Hände zum Kopf.',
+    beispiel: 'Wenn in Claude Code die Zeile „Read(mediaplan.csv) — 48 Zeilen gelesen“ vorbeiläuft, hat es gerade ein Werkzeug benutzt: Die Datei wurde wirklich geöffnet, nicht erraten.',
+    tiefe: 'Genau das trennt einen Agenten vom Chat: Der Chat kann antworten, ein Agent kann handeln — und entscheidet selbst, welches Werkzeug ein Schritt braucht. Dass die Werkzeugaufrufe sichtbar mitlaufen, ist Absicht: An diesen Zeilen erkennst du, worauf eine Antwort beruht. Bei Aktionen mit Folgen — Dateien ändern oder löschen, Befehle ausführen — fragt Claude Code vorher nach; das ist die Berechtigungs-Ebene. Erweitern lässt sich der Werkzeugkasten über MCP: Damit kommen Verbindungen zu weiteren Systemen dazu, etwa einem Ticket- oder Design-Tool.',
+    stolper: 'Werkzeug heißt nicht Allmacht: Claude Code kann nur, wofür es ein Werkzeug hat — und nur in dem Ordner, in dem du es gestartet hast. „Schau mal in mein Postfach“ geht ohne passende Anbindung schlicht nicht; kommt trotzdem eine Antwort, ist sie geraten.',
+    verweise: [
+      { t: 'begriff', id: 'agent' },
+      { t: 'begriff', id: 'mcp' }
+    ]
+  },
+  {
     id: 'wissen-anbinden',
     wort: 'Wissen anbinden',
     buchstabe: 'W',
@@ -749,6 +1013,22 @@ const GLOSSAR = [
     tiefe: 'Fachleute nennen das Prinzip RAG („Retrieval-Augmented Generation“): Vor der Antwort werden die passenden Stellen aus deinen Dokumenten herausgesucht und der KI ins Kontextfenster gelegt — sie zitiert dann aus euren echten Regeln statt aus dem Ungefähren. In Langdock passiert das über hochgeladene Dokumente oder angebundene Wissensquellen eines Assistenten; in Claude Code geht es noch direkter — es liest Dateien aus deinem Projektordner einfach selbst, du legst sie nur hinein. Der große Vorteil gegenüber einem Nachtraining des Modells: Dokument aktualisieren genügt. Eine Nebenwirkung sollte man kennen: Die Antwort ist nur so gut wie die angebundenen Dokumente — ein veralteter Styleguide erzeugt selbstbewusst veraltete Antworten.',
     verweise: [
       { t: 'skill', id: 'briefing-gen', name: 'Briefing Generator' }
+    ]
+  },
+  {
+    id: 'zeichensatz-umlaute',
+    wort: 'Zeichensatz (Umlaut-Problem)',
+    buchstabe: 'Z',
+    thema: 'daten',
+    votes: 9,
+    satz: 'Der Zeichensatz legt fest, wie Buchstaben als Zahlen gespeichert werden — passt er beim Öffnen nicht zu dem beim Speichern, werden aus Umlauten Zeichensalat.',
+    analogie: 'Wie zwei Menschen mit unterschiedlichen Alphabet-Tabellen: Beide lesen dieselbe Zahlenfolge, aber nur einer bekommt „Müller“ heraus — der andere „MÃ¼ller“.',
+    beispiel: 'Der CSV-Export aus dem AdServer sieht in Excel plötzlich aus wie „KampagnenstÃ¤rke“ — die Datei ist in Ordnung, nur das öffnende Programm nimmt den falschen Zeichensatz an.',
+    tiefe: 'Der heutige Standard heißt UTF-8 und kann praktisch alle Schriftzeichen der Welt darstellen; Probleme entstehen fast immer dort, wo ein älteres System noch etwas anderes ausgibt oder erwartet — typisch bei Exporten aus Kampagnen- und Buchhaltungssystemen. Zwei Muster helfen bei der Diagnose: Stehen statt der Umlaute zwei fremde Zeichen (Ã¤, Ã¶, ÃŸ), wurde UTF-8 als älterer Zeichensatz gelesen — die Information ist noch da. Stehen dort Fragezeichen oder Rauten, ist sie beim Speichern bereits verloren gegangen. Repariert wird das nicht per Suchen-und-Ersetzen, sondern beim Einlesen: Gib Claude die Datei und sag dazu, aus welchem System sie stammt.',
+    stolper: 'Öffnest du eine kaputt angezeigte Datei in Excel und speicherst sie wieder, wird der Schaden oft echt. Vor jedem Reparaturversuch das Original behalten — die unversehrte Fassung ist der schnellste Weg zurück.',
+    verweise: [
+      { t: 'begriff', id: 'csv' },
+      { t: 'skill', id: 'daten-aufbereiten', name: 'Daten aufbereiten' }
     ]
   }
 ];

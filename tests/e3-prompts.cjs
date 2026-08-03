@@ -23,18 +23,22 @@ const ARG = process.argv[2] || 'http://localhost:8412/prompts.html';
 const TARGET = /\.html/.test(ARG) ? ARG : new URL('prompts.html', ARG).href;
 const INDEX_TARGET = TARGET.replace(/prompts\.html.*$/, 'index.html');
 
-// Soll-Werte (Stand E3, 2026-07-16), abgeleitet aus data/prompts.js:
-// 23 Einträge gesamt — loslegen 3, bauen 4, texten 7, gestalten 2,
-// praesentieren 4, media 3. 5 davon haben einen Baukasten (Feld `builder`).
-const EXPECTED_TOTAL = 23;
+/* Soll-Werte NACHGEZOGEN (2026-08-03, Kurations-Runde), abgeleitet aus
+   data/prompts.js: 17 Einträge gesamt (vorher 23) — sechs Prompts wurden
+   gestrichen. Damit fällt die Aufgabe „Gestalten" auf 0 Einträge und wird gar
+   nicht mehr als Reiter gerendert; sie steht deshalb bewusst NICHT mehr in
+   dieser Tabelle (ein Sollwert 0 wäre falsch — der Reiter existiert nicht,
+   und der Test würde -1 messen). Die Reiter tragen ihre Zahl inzwischen im
+   Beschriftungstext („Alle 17"), verglichen wird deshalb per startsWith.
+   5 Einträge haben unverändert einen Baukasten (Feld `builder`). */
+const EXPECTED_TOTAL = 17;
 const EXPECTED_TAB_COUNTS = {
-  'Alle': 23,
+  'Alle': 17,
   'Loslegen': 3,
   'Bauen': 4,
-  'Texten': 7,
-  'Gestalten': 2,
-  'Präsentieren': 4,
-  'Media': 3,
+  'Texten': 6,
+  'Präsentieren': 3,
+  'Media': 1,
 };
 /* Baukasten-Prompts für die Detail-Checks. Bis Juli 2026 stand daneben ein
    handgepflegtes Set PROMPT_SPOTLIGHT in data/prompts.js; es enthielt exakt
@@ -137,9 +141,15 @@ async function runViewport(browser, vp) {
   }
   const countsOk = Object.entries(EXPECTED_TAB_COUNTS)
     .every(([k, v]) => measuredCounts[k] === v);
-  check('02_task_tabs_and_counts', tabLabels.length >= 7 && countsOk, {
-    tabLabels, expected: EXPECTED_TAB_COUNTS, measured: measuredCounts,
-  });
+  /* NACHGEZOGEN (2026-08-03): vorher `tabLabels.length >= 7`. Nach der Kuration
+     gibt es sechs Reiter statt sieben („Gestalten" fällt mit 0 Einträgen weg).
+     Statt die Untergrenze bloß auf 6 zu senken, wird jetzt auf GLEICHHEIT mit
+     der Sollwert-Tabelle geprüft — das ist strenger als die alte Untergrenze und
+     meldet auch einen neu dazugekommenen Reiter, der hier nicht eingetragen ist. */
+  check('02_task_tabs_and_counts',
+    tabLabels.length === Object.keys(EXPECTED_TAB_COUNTS).length && countsOk, {
+      tabLabels, expected: EXPECTED_TAB_COUNTS, measured: measuredCounts,
+    });
   await page.evaluate(() => {
     const btn = [...document.querySelectorAll('#cat-tabs .cat-tab')]
       .find(b => b.textContent.trim().startsWith('Alle'));
@@ -173,10 +183,15 @@ async function runViewport(browser, vp) {
   await page.fill(searchSel, '');
   await page.waitForTimeout(700);
 
-  // ---------- (4) Plattform-Chip filtert (Langdock) ----------
+  /* ---------- (4) Plattform-Chip filtert (pilot AI) ----------
+     NACHGEZOGEN (2026-08-03): Der Chip heißt „pilot AI" statt „Langdock" —
+     die Plattform wurde umbenannt (PROMPT_PLATFORMS in data/prompts.js:
+     id bleibt `langdock`, label/short sind jetzt „pilot AI"). Der Sollwert der
+     gefilterten Menge kommt weiterhin zur Laufzeit aus p.platforms.langdock,
+     also aus der ID — der Test hängt nicht an der Beschriftung. */
   const pfResult = await page.evaluate(() => {
     const chip = [...document.querySelectorAll('#filter-chips .role-chip')]
-      .find(b => b.textContent.trim() === 'Langdock');
+      .find(b => b.textContent.trim() === 'pilot AI');
     if (!chip) return null;
     chip.click();
     return true;
@@ -192,7 +207,16 @@ async function runViewport(browser, vp) {
   await page.evaluate(() => resetFilters());
   await page.waitForTimeout(300);
 
-  // ---------- (5) Modal + Tabs + Varianten + „Warum funktioniert das?" ----------
+  /* ---------- (5) Modal + Tabs + „Warum funktioniert das?" ----------
+     NACHGEZOGEN (2026-08-03): zwei Sollwerte haben sich legitim verschoben.
+     (a) Der Bewertungs-Reiter heißt seit dem Upvote-Umbau „Stimmen" statt
+         „Bewertungen" (data-tab="ratings" ist unverändert).
+     (b) Die Varianten-Umschaltung (.variant-seg) gibt es nicht mehr: kein
+         Eintrag in data/prompts.js führt noch Varianten. Die Bedingung
+         `variantLabels === 'Standard,Kurz,Ausführlich'` ist damit gegenstandslos
+         und entfällt hier — der zugehörige Check 07 ebenfalls (siehe dort).
+         variantLabels bleibt als MESSWERT im Bericht stehen, damit ein
+         versehentlich wieder auftauchendes Widget sichtbar wird. */
   await page.evaluate((id) => openModal(id), CHAT_LIGHTHOUSE);
   await page.waitForSelector('#modal-overlay.open', { timeout: 5000 });
   await page.waitForTimeout(300);
@@ -206,11 +230,10 @@ async function runViewport(browser, vp) {
     hasXref: !!document.querySelector('#modal .skill-xref a[href*="skills.html?skill="]'),
     hasSubmitCta: !!document.querySelector('#modal .modal-submit-row button'),
   }));
-  check('05_modal_tabs_variants_warum',
+  check('05_modal_tabs_warum',
     modalInfo.name.length > 0
       && modalInfo.tabs.some(t => /^Prompt$/.test(t))
-      && modalInfo.tabs.some(t => /Bewertungen/.test(t))
-      && modalInfo.variantLabels.join(',') === 'Standard,Kurz,Ausführlich'
+      && modalInfo.tabs.some(t => /Stimmen/.test(t))
       && modalInfo.hasWarum && modalInfo.hasBuilder && modalInfo.hasLive
       && modalInfo.hasXref && modalInfo.hasSubmitCta,
     modalInfo);
@@ -238,24 +261,20 @@ async function runViewport(browser, vp) {
   await page.evaluate((id) => resetBuilder(id), CHAT_LIGHTHOUSE);
   await page.waitForTimeout(200);
 
-  // ---------- (7) Variante wechselt den Prompt-Text ----------
-  const variantSwitch = await page.evaluate(() => {
-    const before = document.getElementById('prompt-live').textContent;
-    const btn = [...document.querySelectorAll('#modal .variant-seg button')]
-      .find(b => b.textContent.trim() === 'Kurz');
-    if (!btn) return null;
-    btn.click();
-    return { before };
-  });
-  await page.waitForTimeout(250);
-  const variantAfter = await page.evaluate(() => ({
-    after: document.getElementById('prompt-live').textContent,
-    activeSeg: (document.querySelector('#modal .variant-seg button.active') || {}).textContent || '',
+  /* ---------- (7) ENTFALLEN: Varianten-Umschaltung ----------
+     NACHGEZOGEN (2026-08-03): Der Check „Variante wechselt den Prompt-Text"
+     ist gegenstandslos geworden — kein Eintrag in data/prompts.js hat noch
+     Varianten, das Widget .variant-seg wird nirgends mehr gerendert. Er wurde
+     deshalb entfernt statt abgeschwächt: ein Check, der auf ein nicht mehr
+     existierendes Bedienelement zielt, kann nur noch falsch-grün werden.
+     An seine Stelle tritt die Gegenprobe, dass das Widget wirklich weg ist —
+     sonst bliebe eine halb zurückgebaute Variante unbemerkt. */
+  const variantGone = await page.evaluate(() => ({
+    segs: document.querySelectorAll('#modal .variant-seg').length,
+    segBtns: document.querySelectorAll('#modal .variant-seg button').length,
   }));
-  check('07_variant_switch',
-    variantSwitch !== null && variantAfter.after !== variantSwitch.before
-      && variantAfter.activeSeg.trim() === 'Kurz',
-    { activeSeg: variantAfter.activeSeg, changed: variantSwitch ? variantAfter.after !== variantSwitch.before : false });
+  check('07_variant_widget_entfallen',
+    variantGone.segs === 0 && variantGone.segBtns === 0, variantGone);
 
   // ---------- (8) Vorschau: Chat-Inszenierung (Langdock-Leuchtturm) ----------
   await page.evaluate(() => switchTab('vorschau'));
@@ -267,16 +286,24 @@ async function runViewport(browser, vp) {
   }));
   check('08_preview_chat', chatPreview.hasChat && chatPreview.userMsgs > 0 && chatPreview.aiMsgs > 0, chatPreview);
 
-  // ---------- (9) Rating landet im prompt-Namespace (rate:prompt:<id>, KEIN skill-Key) ----------
+  /* ---------- (9) Stimme landet im prompt-Namespace (vote:prompt:<id>, KEIN skill-Key) ----------
+     NACHGEZOGEN (2026-08-03): Sterne-Eingabe → Upvote-Knopf. Der Prüf-GEDANKE
+     ist unverändert und war hier von Anfang an der wichtigere Teil: Die
+     Interaktion speichert lokal, und zwar im RICHTIGEN Namespace. Genau das
+     ist die Fehlerklasse, die CLAUDE.md als „stumm" beschreibt — ein Widget
+     ohne expliziten Typ schreibt in den Seiten-Default, ohne dass irgendwo
+     ein Fehler erscheint. Deshalb wird weiter beides geprüft: eigener Schlüssel
+     vorhanden UND kein fremder entstanden (jetzt auf vote:* statt rate:*). */
   await page.evaluate(() => switchTab('ratings'));
-  await page.waitForSelector('#modal .star-input .star-btn', { timeout: 5000 });
-  await page.locator('#modal .star-input .star-btn').nth(3).click(); // 4 Sterne
+  await page.waitForSelector('#modal .up-btn[data-up-id]', { timeout: 5000 });
+  await page.locator('#modal .up-btn[data-up-id]').first().click();
   await page.waitForTimeout(300);
   const ratingKeys = await page.evaluate(() => ({
-    promptKeys: Object.keys(localStorage).filter(k => k.startsWith('rate:prompt:')),
-    skillKeys: Object.keys(localStorage).filter(k => k.startsWith('rate:skill:') || k.startsWith('skill-rating-')),
+    promptKeys: Object.keys(localStorage).filter(k => k.startsWith('vote:prompt:')),
+    skillKeys: Object.keys(localStorage).filter(k =>
+      k.startsWith('vote:skill:') || k.startsWith('rate:skill:') || k.startsWith('skill-rating-')),
   }));
-  check('09_rating_prompt_namespace',
+  check('09_vote_prompt_namespace',
     ratingKeys.promptKeys.length > 0 && ratingKeys.skillKeys.length === 0, ratingKeys);
   await page.keyboard.press('Escape');
   await page.waitForTimeout(300);

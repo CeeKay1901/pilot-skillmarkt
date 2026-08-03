@@ -29,10 +29,14 @@ const ARG = process.argv[2] || 'http://localhost:8412/vorlagen.html';
 const TARGET = /\.html/.test(ARG) ? ARG : new URL('vorlagen.html', ARG).href;
 const INDEX_TARGET = TARGET.replace(/vorlagen\.html.*$/, 'index.html');
 
-// Soll-Werte (Stand E7, 2026-07-17), abgeleitet aus data/bausteine.js:
-const EXPECTED_TOTAL = 12;          // BAUSTEINE.length
-const EXPECTED_LEUCHTTUERME = 4;
-const EXPECTED_DATEIEN = 8;         // BEISPIELDATEN.length (E7-Nachschlag: +1 Briefing, +2 SVG-Testbilder)
+/* Soll-Werte NACHGEZOGEN (2026-08-03, Kurations-Runde), abgeleitet aus
+   data/bausteine.js bzw. BAUKASTEN_STATS: vier Bausteine wurden gestrichen
+   (12→8), damit fällt ein Leuchtturm weg (4→3, verblieben: header-hero,
+   kontaktformular, chart-setup), und zwei Beispieldateien sind entfallen (8→6).
+   Gegengeprüft an BAUKASTEN_STATS = {total:8, leuchttuerme:3, beispieldaten:6}. */
+const EXPECTED_TOTAL = 8;           // BAUSTEINE.length
+const EXPECTED_LEUCHTTUERME = 3;
+const EXPECTED_DATEIEN = 6;         // BEISPIELDATEN.length
 const LEUCHTTURM = 'header-hero';
 const LEUCHTTURM_NAME = 'Header mit Hero';
 const DEEPLINK_ID = 'chart-setup';
@@ -155,7 +159,9 @@ async function runViewport(browser, vp) {
   check('04_detail_modal_tabs',
     modalInfo.open && modalInfo.name === LEUCHTTURM_NAME && modalInfo.tabs.length === 4
       && modalInfo.tabs[0] === 'Vorschau' && modalInfo.tabs[1] === 'Code'
-      && modalInfo.tabs[2] === 'Sag Claude' && modalInfo.tabs[3] === 'Bewertungen'
+      // NACHGEZOGEN (2026-08-03): vierter Reiter heißt „Stimmen" statt
+      // „Bewertungen" (Upvote-Umbau; data-tab="ratings" unverändert).
+      && modalInfo.tabs[2] === 'Sag Claude' && modalInfo.tabs[3] === 'Stimmen'
       && modalInfo.hasPreviewFrame && modalInfo.previewSandbox === '' && modalInfo.previewSrcdoc > 50
       && codeOk && modalClosed,
     { modalInfo, codeOk, modalClosed });
@@ -242,20 +248,30 @@ async function runViewport(browser, vp) {
     dlExist && dataLinks.bausteinRefsValid && dataLinks.hasBausteinRef && dataLinks.xrefCount > 0 && pageRefsExist,
     dataLinks);
 
-  // ---------- (9) Bewertung: rate:baustein:* persistiert + Namespace sauber ----------
+  /* ---------- (9) Stimme: vote:baustein:* persistiert + Namespace sauber ----------
+     NACHGEZOGEN (2026-08-03): Sterne-Eingabe → Upvote-Knopf (.up-btn[data-up-id],
+     base.js). Gespeichert wird vote:baustein:<id> = '1' statt rate:baustein:<id> = '4'.
+     Der Prüf-GEDANKE ist unverändert und hier besonders wichtig: `baustein` ist
+     auf vorlagen.html der Seiten-DEFAULT (window.RatingConfig). Ein Widget, das
+     seinen Typ nicht explizit mitgibt, landet also ausgerechnet hier — und zwar
+     lautlos. Deshalb wird weiter beides geprüft: eigener Schlüssel entsteht UND
+     kein fremder, plus Überleben eines Reloads. */
   await page.evaluate((id) => { openModal(id); switchTab('ratings'); }, DEEPLINK_ID);
   await page.waitForTimeout(200);
-  await page.evaluate((id) => { document.querySelector(`#star-input-${id} .star-btn[data-val="4"]`).click(); }, DEEPLINK_ID);
+  await page.evaluate((id) => {
+    document.querySelector(`#modal .up-btn[data-up-id="${id}"]`).click();
+  }, DEEPLINK_ID);
   await page.waitForTimeout(200);
   const rateInfo = await page.evaluate((id) => ({
-    lsKey: localStorage.getItem('rate:baustein:' + id),
-    foreignKeys: Object.keys(localStorage).filter(k => k.startsWith('rate:skill:') || k.startsWith('rate:prompt:') || k.startsWith('rate:asset:') || k.startsWith('vote:')).length,
+    lsKey: localStorage.getItem('vote:baustein:' + id),
+    foreignKeys: Object.keys(localStorage).filter(k =>
+      k.startsWith('rate:') || (k.startsWith('vote:') && !k.startsWith('vote:baustein:'))).length,
   }), DEEPLINK_ID);
   await page.goto(TARGET, { waitUntil: 'load' });
   await page.waitForSelector('#bk-grid .baustein-card', { timeout: 10000 });
-  const rateReload = await page.evaluate((id) => localStorage.getItem('rate:baustein:' + id), DEEPLINK_ID);
-  check('09_rating_persists_namespaced',
-    rateInfo.lsKey === '4' && rateInfo.foreignKeys === 0 && rateReload === '4',
+  const rateReload = await page.evaluate((id) => localStorage.getItem('vote:baustein:' + id), DEEPLINK_ID);
+  check('09_vote_persists_namespaced',
+    rateInfo.lsKey === '1' && rateInfo.foreignKeys === 0 && rateReload === '1',
     { rateInfo, rateReload });
 
   // ---------- (10) Deep-Link ?b=<id>: kanonischer Hash, Modal offen, Karte hervorgehoben ----------
@@ -403,6 +419,13 @@ async function runIndexChecks(browser) {
       && (typeof TEASER === 'undefined' || !('baukasten' in TEASER)),
     areaCount: parseInt((document.getElementById('area-baukasten-count') || {}).textContent || '-1', 10),
     areaMeta: (document.getElementById('area-baukasten-meta') || {}).textContent || '',
+    areaMetaNodes: document.querySelectorAll('.area-card .area-meta').length,
+    /* Soll-Eintrag der Kachel, zur Laufzeit aus derselben Quelle wie die Seite:
+       renderAreaSpot() (index.html) zeigt bestRated(items, typ, 5)[0]. Siehe i4. */
+    spotExpected: (typeof bestRated === 'function' && typeof BAUSTEINE !== 'undefined')
+      ? ((bestRated(BAUSTEINE, 'baustein', 5)[0] || {}).id || null) : null,
+    spotPool: (typeof bestRated === 'function' && typeof BAUSTEINE !== 'undefined')
+      ? bestRated(BAUSTEINE, 'baustein', 5).map(x => x.id) : null,
     areaCta: !!document.querySelector('.area-card a.c-cta[href="vorlagen.html"]'),
     areaSpotHref: (document.querySelector('a.area-spot[href^="vorlagen.html?b="]') || { getAttribute: () => '' }).getAttribute('href') || '',
     areaSpotRating: (document.getElementById('area-baukasten-spot-rating') || {}).textContent || '',
@@ -423,16 +446,40 @@ async function runIndexChecks(browser) {
   check('i2_area_card_links_vorlagen',
     indexInfo.noRouter && /Baukasten/.test(indexInfo.areaCtaText) && indexInfo.assetsCtaStillThere,
     { noRouter: indexInfo.noRouter, ctaText: indexInfo.areaCtaText, assetsCtaStillThere: indexInfo.assetsCtaStillThere });
+  /* NACHGEZOGEN (2026-08-03): Der Aufschlüsselungs-Satz `.area-meta` ist beim
+     Umbau der Startseite auf rotierende Spots entfallen — auf allen sechs
+     Bereichs-Karten zugleich, samt füllender Zeile. Gestaltungsentscheidung,
+     kein Defekt: es wurde keine Zahl falsch, es steht eine Zeile weniger da.
+     Tragend bleibt die Zahlen-Ehrlichkeit (Kachel-Zahl == Datenlage); dazu die
+     Gegenprobe, dass der Satz wirklich überall weg ist — eine halb
+     zurückgebaute Karte zeigte sonst eine veraltete Aufschlüsselung. */
   check('i3_counts_match_data',
     indexInfo.areaCount === EXPECTED_TOTAL && indexInfo.dataBausteine === EXPECTED_TOTAL
-      && indexInfo.areaMeta.includes(String(EXPECTED_LEUCHTTUERME))
-      && indexInfo.areaMeta.includes(String(EXPECTED_DATEIEN)),
-    { areaCount: indexInfo.areaCount, meta: indexInfo.areaMeta, dataBausteine: indexInfo.dataBausteine });
+      && indexInfo.areaMetaNodes === 0,
+    { areaCount: indexInfo.areaCount, meta: indexInfo.areaMeta,
+      areaMetaNodes: indexInfo.areaMetaNodes, dataBausteine: indexInfo.dataBausteine });
+  /* NACHGEZOGEN (2026-08-03): Der Spot-Link wurde vorher gegen die feste ID
+     LEUCHTTURM ('header-hero') geprüft. Die Kachel zieht ihren Eintrag jetzt
+     über bestRated() und ROTIERT tagesabhängig — ein fester Sollwert wäre an
+     den meisten Tagen rot, ohne dass irgendetwas kaputt wäre.
+     Ersatz OHNE Schutzverlust, zweiteilig:
+       (a) der Link hat die kanonische Deep-Link-Form (/^vorlagen\.html\?b=/), und
+       (b) die verlinkte ID ist exakt die, die renderAreaSpot() laut eigenem
+           Vertrag zeigt: bestRated(items, typ, 5)[0] (index.html).
+     (b) wird zur LAUFZEIT aus derselben Funktion geholt, kann also nicht
+         mitdriften — und ist strenger als der alte feste Wert: er deckt auch
+         eine falsch verdrahtete Kachel auf (falsche Liste, falscher Typ,
+         falscher href-Bauer), nicht nur eine geänderte ID.
+     LEUCHTTURM/LEUCHTTURM_NAME bleiben für die Modal-Checks oben in Gebrauch. */
+  const spotId = (indexInfo.areaSpotHref.match(/^vorlagen\.html\?b=(.+)$/) || [])[1] || '';
+  const spotOk = /^vorlagen\.html\?b=.+$/.test(indexInfo.areaSpotHref)
+    && !!indexInfo.spotExpected && spotId === indexInfo.spotExpected;
   check('i4_area_card_clickable',
-    indexInfo.areaCta && indexInfo.areaSpotHref === 'vorlagen.html?b=' + LEUCHTTURM
+    indexInfo.areaCta && spotOk
       && indexInfo.areaSpotRating.trim().length > 0 && indexInfo.navVorlagen
       && indexInfo.areaCtaCount === 6 && indexInfo.soonPills === 0,
     { areaCta: indexInfo.areaCta, areaSpotHref: indexInfo.areaSpotHref,
+      spotId, spotExpected: indexInfo.spotExpected, spotPool: indexInfo.spotPool, spotOk,
       areaSpotRating: indexInfo.areaSpotRating, navVorlagen: indexInfo.navVorlagen,
       areaCtaCount: indexInfo.areaCtaCount, soonPills: indexInfo.soonPills });
   check('i5_news_mentions_baukasten',

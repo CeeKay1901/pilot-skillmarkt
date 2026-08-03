@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>pilot AI Marketplace — Prompt-Sammlung</title>
-  <meta name="description" content="Kopierfertige Prompts aus dem Agentur-Alltag der pilot Agenturgruppe: mit gelb markierten Platzhaltern, Beispiel-Ergebnissen und einer Erklärung, warum jeder Prompt funktioniert — für Langdock und Claude Code.">
+  <meta name="description" content="Kopierfertige Prompts aus dem Agentur-Alltag der pilot Agenturgruppe: mit gelb markierten Platzhaltern, Beispiel-Ergebnissen und einer Erklärung, warum jeder Prompt funktioniert — für pilot AI und Claude Code.">
   <meta name="theme-color" content="#262626">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="pilot AI Marketplace">
@@ -73,16 +73,10 @@
     /* Live gefüllter Platzhalter: dezenter als der offene gelbe Marker */
     mark.ph.-filled { background: rgba(255,224,94,.38); font-weight: 600; }
 
-    /* ===== VARIANTEN-UMSCHALTER (Standard · Kurz · Ausführlich) ===== */
-    .variant-seg { display: inline-flex; border: 1px solid var(--c-gray-l); border-radius: var(--r-pill); overflow: hidden; margin: 0 0 1.2rem; }
-    .variant-seg button {
-      font-family: inherit; font-size: 1.3rem; font-weight: 600; cursor: pointer;
-      padding: .7rem 1.6rem; background: transparent; border: none;
-      color: var(--c-gray-m); transition: var(--trans); min-height: 3.6rem;
-    }
-    .variant-seg button + button { border-left: 1px solid var(--c-gray-l); }
-    .variant-seg button.active { background: var(--c-black); color: var(--c-yellow); }
-    .variant-hint { font-size: 1.25rem; color: var(--c-gray-m); margin: 0 0 1.2rem; }
+    /* Der Varianten-Umschalter (Standard · Kurz · Ausführlich) stand hier bis E15.
+       Er ist mit den variants-Arrays in data/prompts.js entfallen — je Prompt gibt
+       es jetzt genau EINEN Text. Die Segment-Optik lebt weiter in .density-seg
+       (base.css); wer sie sucht, findet sie dort. */
 
     /* ===== PROMPT-BUILDER (nur Leuchttürme) ===== */
     .pb-wrap { border: 1px solid var(--line); background: var(--c-white); border-radius: var(--r-md); padding: 1.8rem 2rem; margin: 0 0 1.6rem; }
@@ -107,9 +101,11 @@
       resize: vertical; min-height: 4.2rem;
     }
     .pb-field input:focus, .pb-field textarea:focus, .pb-field select:focus { outline: none; border-color: var(--c-black); }
-    /* E13: Nicht jede Variante enthält jeden Platzhalter (z. B. „Kurz“ kennt bei
-       der Briefing-Zusammenfassung kein [EMPFÄNGER]). Vorher tippte man dort ins
-       Leere — jetzt verliert der Marker sein Gelb und ein Satz sagt, warum. */
+    /* E13: Ein Builder-Feld, dessen Platzhalter im Prompt-Text gar nicht vorkommt,
+       ließ einen ins Leere tippen. Jetzt verliert der Marker sein Gelb und ein Satz
+       sagt, warum. Seit E15 (eine Fassung je Prompt) kann das nur noch eintreten,
+       wenn jemand den Text redaktionell ändert und das Feld stehen lässt — genau
+       dann soll es auffallen, statt still wirkungslos zu sein. */
     .pb-field.-off mark.ph { background: transparent; border: 1px solid var(--c-gray-l); color: var(--c-gray-m); font-weight: 600; }
     .pb-off-note { font-size: 1.2rem; line-height: 1.4; color: var(--c-gray-m); margin: 0; }
     @media (max-width: 700px) {
@@ -154,16 +150,36 @@
     }
     .warum-box p:last-child { font-size: 1.5rem; line-height: 1.65; margin: 0; }
 
-    /* Skill-Querverweis */
+    /* ===== SKILL-QUERVERWEIS =====
+       Bis E15 war das eine Textzeile, in der Beschriftung, Link und Erklärsatz
+       auf einer Grundlinie nebeneinander liefen — man las den Kasten als Fußnote
+       und übersah ihn. Jetzt ein echter Kasten mit drei Ebenen: Icon, Zeile
+       „Passender Skill“, der Name als Ziel, darunter EIN Satz Nutzen. Warum
+       Icon-Spalte statt Aufzählungspunkt: Der Kasten steht zwischen zwei anderen
+       Kästen (warum-box, Varianten) — ohne eigenes Zeichen unterscheidet er sich
+       nur durch den Rand. Das Zeichen ist LU.sparkles, dasselbe Vokabular, mit
+       dem der Katalog Skills bebildert (subIcon/LU.fallback, shared/base.js). */
     .skill-xref {
-      display: flex; gap: 1.2rem; align-items: baseline; flex-wrap: wrap;
-      border: 1px solid var(--line); border-radius: var(--r-sm);
-      background: var(--c-white); padding: 1.4rem 1.8rem; margin-top: 2rem;
-      font-size: 1.4rem; line-height: 1.55; color: var(--c-gray-m);
+      display: grid; grid-template-columns: auto 1fr; gap: 0 1.4rem;
+      border: 1px solid var(--line-strong); border-left: 3px solid var(--c-yellow);
+      border-radius: 0 var(--r-md) var(--r-md) 0;
+      background: var(--c-white); padding: 1.6rem 2rem; margin-top: 2rem;
     }
-    .skill-xref a { color: var(--c-black); font-weight: 700; text-decoration: none; border-bottom: 2px solid var(--c-yellow); white-space: nowrap; }
-    .skill-xref a:hover { background: var(--c-yellow); }
-    .xref-label { font-family: var(--font-mono); font-size: 1.1rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--c-gray-m); white-space: nowrap; }
+    .xref-ic { grid-row: 1 / span 3; color: var(--c-black); display: flex; align-items: flex-start; padding-top: .2rem; }
+    .xref-ic .lu { width: 2rem; height: 2rem; }
+    .xref-label {
+      font-family: var(--font-mono); font-size: 1.1rem; font-weight: 600;
+      letter-spacing: .08em; text-transform: uppercase; color: var(--c-gray-m);
+      margin: 0 0 .3rem;
+    }
+    .xref-name { margin: 0 0 .5rem; font-size: 1.6rem; line-height: 1.3; }
+    .xref-name a { color: var(--c-black); font-weight: 700; text-decoration: none; border-bottom: 2px solid var(--c-yellow); }
+    .xref-name a:hover { background: var(--c-yellow); }
+    .xref-note { margin: 0; font-size: 1.4rem; line-height: 1.55; color: var(--c-gray-m); }
+    @media (max-width: 560px) {
+      .skill-xref { grid-template-columns: 1fr; gap: .8rem 0; }
+      .xref-ic { grid-row: auto; }
+    }
 
     /* ===== KARTE: Kopier-Aktion + Meistkopiert (Zähler lebt im Modal) ===== */
     .copy-count { font-size: 1.2rem; color: var(--c-gray-m); white-space: nowrap; font-variant-numeric: tabular-nums; }
@@ -175,12 +191,14 @@
     /* E12-Mobil: der „Kopieren"-Chip ist die primäre Aktion je Prompt-Karte —
        auf Touch auf WCAG-Trefferfläche (≥44px) heben. Desktop unverändert.
        E13 ergänzt die restlichen eigenständigen Bedienelemente dieser Seite,
-       die auf Touch gemessen darunter lagen: Varianten-Umschalter (36px),
-       „Zurücksetzen“ im Builder (23px), Demo-Replay im Terminal (26×28px). */
+       die auf Touch gemessen darunter lagen: „Zurücksetzen“ im Builder (23px),
+       Demo-Replay im Terminal (26×28px). (Der Varianten-Umschalter stand hier
+       auch — den gibt es seit E15 nicht mehr. .up-btn und .density-seg bringen
+       ihre Touch-Regeln aus base.css selbst mit.) */
     @media (hover: none) and (pointer: coarse) {
       .prompt-copy-chip { min-height: 4.4rem; }
-      .variant-seg button { min-height: 4.4rem; }
       .pb-reset { min-height: 4.4rem; display: inline-flex; align-items: center; }
+      .sv-toggle { min-height: 4.4rem; }
       /* flex-shrink: 0 — in der Terminalleiste (flex) drückte der lange Fenstertitel
          den runden Knopf sonst auf 38,8px zusammen. */
       .demo-replay { width: 4.4rem; height: 4.4rem; font-size: 1.8rem; flex-shrink: 0; }
@@ -213,6 +231,59 @@
       border-top: 1px solid var(--line); margin-top: 2.4rem; padding-top: 2rem;
       font-size: 1.4rem; color: var(--c-gray-m);
     }
+
+    /* ===== EINGEREICHTE VARIANTEN (.sv-*) =====
+       Der Einreich-Flow endete bisher im Nichts: Man füllte das Formular aus, bekam
+       ein Danke und sah seinen Beitrag nie wieder. Jetzt landet er sichtbar unter dem
+       Haupt-Prompt — mit dem Zustand, den er in einer echten Version hätte
+       (eingereicht → freigegeben). Der Freigabe-Umschalter steht bewusst daneben:
+       Ohne ihn bliebe der Status eine Behauptung, die niemand nachvollziehen kann.
+       Alles liegt in localStorage; die Kennzeichnung dafür steht IM Kasten (harte
+       Regel 3 in CLAUDE.md) und nicht nur zentral im Footer. */
+    .sv-wrap {
+      border: 1px solid var(--line); border-radius: var(--r-md);
+      background: var(--c-white); padding: 1.6rem 2rem; margin: 1.8rem 0 0;
+    }
+    .sv-title {
+      font-family: var(--font-mono); font-size: 1.15rem; font-weight: 600;
+      letter-spacing: .1em; text-transform: uppercase; color: var(--c-gray-m);
+      margin: 0 0 .4rem;
+    }
+    .sv-note { font-size: 1.25rem; line-height: 1.5; color: var(--c-gray-m); margin: 0 0 1.4rem; }
+    .sv-item { border-top: 1px solid var(--line); padding-top: 1.4rem; margin-top: 1.4rem; }
+    .sv-item:first-of-type { border-top: none; padding-top: 0; margin-top: 0; }
+    .sv-item-head { display: flex; align-items: center; gap: .8rem; flex-wrap: wrap; margin-bottom: .9rem; }
+    .sv-author { font-size: 1.45rem; font-weight: 700; color: var(--c-black); }
+    .sv-date { font-size: 1.25rem; color: var(--c-gray-m); }
+    /* Statusmarker: „wartet“ bleibt eine ruhige Umrandung, „freigegeben“ bekommt
+       das Gelb — der freigegebene Zustand ist der, den man auf einen Blick sucht. */
+    .sv-status {
+      display: inline-flex; align-items: center; gap: .45rem;
+      font-size: 1.15rem; font-weight: 600; line-height: 1.4;
+      border: 1px solid var(--c-gray-l); border-radius: var(--r-pill);
+      padding: .25rem .9rem; color: var(--c-gray-m); background: transparent;
+    }
+    .sv-status.-frei { background: var(--c-yellow); border-color: var(--c-yellow); color: var(--c-black); }
+    .sv-status .lu { width: 1.3rem; height: 1.3rem; flex-shrink: 0; }
+    .sv-del { margin-left: auto; }
+    .sv-text {
+      font-family: var(--font-mono); font-size: 1.3rem; line-height: 1.65;
+      background: var(--c-bg); border: 1px solid var(--line); border-radius: var(--r-sm);
+      padding: 1.2rem 1.4rem; white-space: pre-wrap; word-break: break-word; margin: 0 0 1rem;
+      color: var(--c-ink-strong, var(--c-black));
+    }
+    .sv-warum { font-size: 1.35rem; line-height: 1.55; color: var(--c-gray-m); margin: 0 0 1.1rem; }
+    .sv-actions { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+    .sv-toggle { color: var(--c-black); border-color: var(--c-black); font-weight: 600; }
+    .sv-toggle:hover { background: var(--c-yellow); border-color: var(--c-yellow); }
+
+    /* Ansichtsdichte sitzt bei den Sortier-Controls (initDensity, shared/base.js).
+       Bewusst NACH dem Sortierfeld: Erst entscheidet man, wonach sortiert wird,
+       dann wie viel je Karte zu sehen ist. */
+    .filter-controls [data-density-slot] { display: inline-flex; }
+    /* Beschreibung auf der Karte: in „Kompakt“ weg, in „Standard“ auf zwei Zeilen
+       gekürzt, erst in „Ausführlich“ vollständig. */
+    .prompt-card .skill-tagline { --density-clamp-s: 2; }
 
     /* Mitmachen-Band am Seitenende: .submit-band-Primitive aus base.css */
 
@@ -273,8 +344,26 @@
        („Präsentieren & / Daten“) — gemessen bei 320 und 360 px. Mit Umbruch
        rutschen die beiden Fähnchen als Ganzes in die zweite Zeile. */
     .card-top-left { display: inline-flex; flex-wrap: wrap; align-items: center; gap: .8rem; row-gap: .6rem; min-width: 0; }
-    /* Klammer um „Baukasten“ + „Neu“: umzieht als Paar, statt einzeln zu zerfallen. */
+    /* Klammer um „Baukasten“ + „Neu“ + „Fang hier an“: umzieht als Paar, statt
+       einzeln zu zerfallen. */
     .card-flaggen { display: inline-flex; align-items: center; gap: .8rem; flex-shrink: 0; }
+
+    /* „Fang hier an“: die eine Karte, die die Redaktion oben anheftet (PROMPT_START).
+       Das Fähnchen ist seit E15 nötig, nicht Schmuck. Vorher hieß die Standard-
+       Sortierung „Empfohlen zuerst“ — da war eine redaktionelle Ausnahme unsichtbar
+       stimmig. Jetzt heißt sie „Meiste Stimmen“, und die Karten tragen ihre
+       Stimmenzahl sichtbar im Fuß: Ohne Fähnchen stünde eine Karte mit 14 Stimmen
+       über einer mit 18, und die Sortierung sähe kaputt aus. Das Fähnchen sagt, dass
+       genau diese eine Karte bewusst aus der Reihe steht.
+       Umriss statt Gelbfüllung: „Neu“ und „Baukasten“ füllen bereits gelb — drei
+       gelbe Klötze nebeneinander wären ein Schilderwald. */
+    .card-start-flag {
+      font-family: var(--font-mono); font-size: 1rem; font-weight: 700;
+      letter-spacing: .14em; text-transform: uppercase;
+      background: transparent; color: var(--c-black);
+      border: 1px solid var(--c-black); border-radius: var(--r-pill);
+      padding: .25rem .8rem .2rem; white-space: nowrap; flex-shrink: 0;
+    }
   </style>
 </head>
 <body>
@@ -291,11 +380,11 @@
            in der .page-sub ist dafür entfallen — base.css sagt „ein
            Marker-Moment pro Sichtbereich", zwei im selben Kopf wären einer zu viel. -->
       <h1><span class="mk">Prompts</span></h1>
-      <!-- Zahlen-Ehrlichkeit: die 23 stand hart im Markup und konnte gegen
+      <!-- Zahlen-Ehrlichkeit: die Zahl stand hart im Markup und konnte gegen
            PROMPTS.length driften. Statischer Wert ist nur noch Fallback für
            deaktiviertes JS; gesetzt wird er zur Laufzeit aus der Datenquelle
            (Muster aus skills.html: #page-sub-count ← VISIBLE_SKILL_COUNT). -->
-      <p class="page-sub"><span id="page-sub-count">23</span> kopierfertige Prompts mit markierten Platzhaltern — aus dem Agentur-Alltag.</p>
+      <p class="page-sub"><span id="page-sub-count">17</span> kopierfertige Prompts mit markierten Platzhaltern — aus dem Agentur-Alltag.</p>
     </div>
   </header>
 
@@ -315,11 +404,17 @@
             <div class="role-chips" id="filter-chips"></div>
             <div class="filter-controls">
               <span class="results-count-lg" id="results-count"></span>
+              <!-- Der Wert 'recommended' bleibt, obwohl die Beschriftung jetzt
+                   „Meiste Stimmen“ heißt: an ihm hängen state.sort (Startwert),
+                   die „Fang hier an“-Anheftung in render() und die Re-Sortierung
+                   nach einer Stimme. Er benennt die STANDARD-Sortierung, nicht
+                   mehr ihr Kriterium — das steht jetzt sichtbar im Label. -->
               <select id="sort-select" aria-label="Prompts sortieren">
-                <option value="recommended">Empfohlen zuerst</option>
+                <option value="recommended">Meiste Stimmen</option>
                 <option value="copies">Meistkopiert</option>
                 <option value="alpha">Name A–Z</option>
               </select>
+              <div data-density-slot></div>
             </div>
           </div>
           <div class="active-filters" id="active-filters" hidden></div>
@@ -343,7 +438,7 @@
       <div class="submit-band-inner">
         <p class="section-label">Mitmachen</p>
         <h2 id="submit-band-h">Dein Prompt funktioniert besser?</h2>
-        <p class="submit-band-text">Die Sammlung lebt von den Formulierungen, die sich im Alltag bewährt haben. Reich deine Variante ein — sie erscheint mit deinem Namen im Katalog.</p>
+        <p class="submit-band-text">Die Sammlung lebt von den Formulierungen, die sich im Alltag bewährt haben. Reich deine Variante ein — am besten direkt im Prompt, den sie verbessert: Dort erscheint sie mit deinem Namen unter dem Original und wartet auf die Freigabe.</p>
         <button type="button" class="c-cta -yellow-bg" id="submit-band-cta" onclick="openPromptSubmit()">Variante einreichen</button>
         <p class="submit-band-note">Demo-Flow: deine Eingabe bleibt lokal in deinem Browser.</p>
       </div>
@@ -380,12 +475,16 @@
     // ===== DATA ===== (data/prompts.js: PROMPTS, PROMPT_PLATFORMS, PROMPT_START)
     // ===== ENGINE ===== (Nav, Modal, Rating, Utils: shared/base.js)
 
-    // Rating-/Favoriten-/Tried-Engine dieser Seite arbeitet im prompt-Namespace
-    // (rate:prompt:<id>, comments:prompt:<id>, …) — MUSS vor jedem Engine-Aufruf stehen.
+    // Kommentar-/Favoriten-/Tried-Engine dieser Seite arbeitet im prompt-Namespace
+    // (comments:prompt:<id>, fav:prompt:<id>, tried:prompt:<id>) — MUSS vor jedem
+    // Engine-Aufruf stehen. Sterne (rate:prompt:<id>) schreibt die Seite seit E15
+    // nicht mehr; getComments/submitComment/deleteComment lösen ihren Namensraum
+    // aber weiterhin über diesen Wert auf. Die Stimmen (vote:prompt:<id>) bekommen
+    // ihren Typ bei jedem Aufruf ausdrücklich mit und hängen nicht daran.
     window.RatingConfig = { type: 'prompt' };
 
     // Zahlen-Ehrlichkeit: die Prompt-Zahl im Seitenkopf ist eine ITEM-Zahl und
-    // kommt aus der Datenquelle, nicht aus dem Markup (gemessen: PROMPTS.length = 23,
+    // kommt aus der Datenquelle, nicht aus dem Markup (gemessen: PROMPTS.length = 17,
     // exakt der Wert, der vorher hart im HTML stand und jederzeit hätte driften können).
     (function setPageSubCount() {
       const el = document.getElementById('page-sub-count');
@@ -402,7 +501,6 @@
       activeSkill: null,
       activeTab: 'overview',
       activeFile: 0,
-      activeVariant: 'standard', // Prompt-Variante im Modal (standard | kurz | ausfuehrlich)
       pendingRating: {}
     };
 
@@ -413,9 +511,21 @@
     });
 
     // ===== HELPERS =====
-    const GROUP_LABELS = { loslegen: 'Loslegen', bauen: 'Bauen', texten: 'Texten', gestalten: 'Gestalten', praesentieren: 'Präsentieren', media: 'Media' };
-    const GROUP_CARD_LABELS = { loslegen: 'Loslegen', bauen: 'Bauen', texten: 'Texten & Reden', gestalten: 'Gestalten', praesentieren: 'Präsentieren & Daten', media: 'Media & Strategie' };
-    function groupLabel(g) { return GROUP_CARD_LABELS[g] || g; }
+    /* EINE Beschriftung je Aufgaben-Gruppe — für Filterzeile, Karte, Modal und
+       Aktiv-Filter-Pille. Bis E15 standen hier ZWEI Listen nebeneinander:
+       GROUP_LABELS („Texten“, „Präsentieren“, „Media“) für Reiter und Pillen,
+       GROUP_CARD_LABELS („Texten & Reden“, „Präsentieren & Daten“,
+       „Media & Strategie“) für die Karten. Wer auf „Texten“ filterte, bekam
+       Karten mit der Aufschrift „Texten & Reden“ — dieselbe Gruppe unter zwei
+       Namen, und niemand konnte sicher sein, dass es dieselbe ist.
+       Maßgeblich sind die Langformen: Es sind die TASK_LABELS aus data/skills.js,
+       also die Namen, unter denen der Skill-Katalog dieselben sechs Gruppen führt.
+       Der Name der Konstante ist absichtlich derselbe. Warum hier trotzdem eine
+       eigene Kopie steht: prompts.html lädt data/skills.js nicht (und soll es
+       nicht — das sind 240 KB für sechs Wörter). Wer dort etwas umbenennt, muss
+       diese Zeile mitziehen; deshalb steht der Hinweis direkt daneben. */
+    const TASK_LABELS = { loslegen: 'Loslegen', bauen: 'Bauen', texten: 'Texten & Reden', gestalten: 'Gestalten', praesentieren: 'Präsentieren & Daten', media: 'Media & Strategie' };
+    function groupLabel(g) { return TASK_LABELS[g] || g; }
 
     function diffLabel(d) {
       if (d === 'easy') return 'Einfach';
@@ -463,6 +573,10 @@
 
     // ===== „VARIANTE EINREICHEN“ — Demo-Flow-Baustein aus shared/base.js (Plan §5.4) =====
     // Aus dem Modal kommt die Prompt-ID mit (Bezug vorbefüllt), vom Seiten-CTA ohne.
+    // Kommt eine ID mit, wird die eingereichte Fassung zusätzlich AN DIESEM PROMPT
+    // gemerkt und im Modal sichtbar (siehe eingereichteVarianten weiter unten). Ohne
+    // ID gibt es keinen Ort, an dem sie erscheinen könnte — dann bleibt es beim
+    // Entwurf, den der Flow selbst in localStorage ablegt.
     function openPromptSubmit(id) {
       const p = id ? PROMPTS.find(x => x.id === id) : null;
       openSubmitFlow({
@@ -477,8 +591,122 @@
           { key: 'variante', label: 'Deine Prompt-Variante', type: 'textarea', required: true, placeholder: 'Der komplette Prompt-Text — Platzhalter in [ECKIGEN KLAMMERN] schreiben.', hint: 'Tipp: Rolle, Aufgabe, Format und Regeln mitgeben — wie im Erklär-Block oben.' },
           { key: 'warum', label: 'Was macht deine Variante besser?', type: 'textarea', placeholder: 'z. B. „Liefert konkretere Ergebnisse, weil …“' }
         ],
-        submitLabel: 'Variante einreichen (Demo)'
+        submitLabel: 'Variante einreichen (Demo)',
+        onSubmitted: p ? vals => addEingereichteVariante(p.id, vals) : undefined
       });
+    }
+
+    /* ===== EINGEREICHTE VARIANTEN (lokal) =====
+       Der Einreich-Flow war bis E15 eine Sackgasse: Formular ausfüllen, Danke lesen,
+       fertig — der eigene Beitrag tauchte nirgends wieder auf. Damit war das Feature
+       für die Nutzerin nicht von „nichts passiert“ zu unterscheiden.
+       Jetzt ist die Einreichung sichtbar, inklusive des Zustands, den sie in einer
+       echten Version durchlaufen würde: eingereicht → vom Eigentümer freigegeben.
+       Der Freigabe-Umschalter simuliert genau diesen einen Schritt und ist als
+       Simulation gekennzeichnet — es gibt kein Backend, keine zweite Person, keine
+       geteilte Sichtbarkeit. Speicher: eingereicht:prompt:<id> als Liste, damit
+       mehrere Varianten je Prompt nebeneinander stehen können.
+       Bewusst NICHT über den Kommentar-Speicher: Ein Kommentar ist eine Meinung zum
+       Prompt, eine Variante ist ein Gegenvorschlag mit eigenem Zustand. */
+    function svKey(promptId) { return 'eingereicht:prompt:' + promptId; }
+    function eingereichteVarianten(promptId) {
+      try {
+        const parsed = JSON.parse(lsGet(svKey(promptId)) || '[]');
+        // Gleiche Härte wie getComments() in base.js: gültiges JSON vom falschen Typ
+        // kam dort einmal ungeprüft durch und hat den ganzen Render-Lauf gerissen.
+        return Array.isArray(parsed) ? parsed.filter(v => v && typeof v === 'object') : [];
+      } catch (e) { return []; }
+    }
+    function _svSave(promptId, arr) {
+      if (!lsSet(svKey(promptId), JSON.stringify(arr))) {
+        showToast('Konnte nicht speichern — privater Modus oder Speicher voll.');
+        return false;
+      }
+      return true;
+    }
+    function addEingereichteVariante(promptId, vals) {
+      if (!vals || !vals.variante) return;
+      const list = eingereichteVarianten(promptId);
+      list.unshift({
+        name: vals.name || 'Ohne Namen',
+        text: vals.variante,
+        warum: vals.warum || '',
+        date: vals._submittedAt || new Date().toISOString().slice(0, 10),
+        freigegeben: false
+      });
+      if (!_svSave(promptId, list)) return;
+      // Das Modal liegt hinter dem Einreich-Overlay und wird nicht neu aufgebaut —
+      // ohne diesen Aufruf sähe man die eigene Einreichung erst beim nächsten Öffnen.
+      if (state.activeSkill && state.activeSkill.id === promptId && state.activeTab === 'overview') renderModalBody();
+    }
+    function toggleFreigabe(promptId, idx) {
+      const list = eingereichteVarianten(promptId);
+      if (!list[idx]) return;
+      list[idx].freigegeben = !list[idx].freigegeben;
+      if (!_svSave(promptId, list)) return;
+      renderModalBody();
+      // Gleiche Falle wie in resetBuilder(): renderModalBody baut den Body komplett
+      // neu, der gedrückte Knopf ist danach ein anderes Element. Ohne das hier
+      // landet die Tastatur wieder ganz oben im Modal.
+      document.querySelector(`#modal .sv-toggle[data-sv-idx="${idx}"]`)?.focus({ preventScroll: true });
+      showToast(list[idx].freigegeben
+        ? 'Freigegeben (simuliert — nur auf diesem Gerät)'
+        : 'Freigabe zurückgezogen (simuliert — nur auf diesem Gerät)');
+    }
+    /* Kopiert bewusst OHNE copyPrompt(): dessen Zähler copies:prompt:<id> gehört dem
+       Redaktions-Prompt. Eine kopierte Fremd-Variante dort mitzuzählen würde die
+       Sortierung „Meistkopiert“ mit etwas füllen, das gar nicht der Prompt ist.
+       Der Text kommt aus dem Speicher, nicht aus einem Attribut — sonst müsste er
+       durch zwei Escaping-Ebenen (HTML-Attribut und JS-Literal), und ein „&“ oder
+       Anführungszeichen in der Einreichung käme still verändert in der Zwischenablage an. */
+    function copyEingereichteVariante(evt, promptId, idx) {
+      if (evt) evt.stopPropagation();
+      const v = eingereichteVarianten(promptId)[idx];
+      if (!v) return;
+      copyToClipboard(v.text, 'Eingereichte Variante kopiert ✓');
+    }
+
+    function deleteEingereichteVariante(promptId, idx) {
+      const list = eingereichteVarianten(promptId);
+      if (!list[idx]) return;
+      if (!confirm('Deine eingereichte Variante wirklich löschen?')) return;
+      list.splice(idx, 1);
+      if (!_svSave(promptId, list)) return;
+      renderModalBody();
+      showToast('Variante gelöscht');
+    }
+
+    // Der Block unter dem Haupt-Prompt. Ohne Einreichungen entsteht er gar nicht —
+    // ein leerer Kasten mit „noch nichts da“ wäre auf jeder der 17 Karten dieselbe
+    // Enttäuschung; der CTA am Modal-Ende lädt bereits zum Mitmachen ein.
+    function eingereichteVariantenHtml(p) {
+      const list = eingereichteVarianten(p.id);
+      if (!list.length) return '';
+      const items = list.map((v, i) => {
+        const frei = !!v.freigegeben;
+        return `
+          <div class="sv-item">
+            <div class="sv-item-head">
+              <span class="sv-author">${escHtml(v.name)}</span>
+              <span class="sv-date">${escHtml(formatDate(v.date))}</span>
+              <span class="sv-status${frei ? ' -frei' : ''}">${frei ? LU.check + 'Freigegeben' : 'Eingereicht — wartet auf Freigabe'}</span>
+              <button type="button" class="comment-delete sv-del" onclick="deleteEingereichteVariante('${p.id}', ${i})"
+                aria-label="Diese eingereichte Variante löschen" title="Diese eingereichte Variante löschen">✕</button>
+            </div>
+            <pre class="sv-text">${escHtml(v.text)}</pre>
+            ${v.warum ? `<p class="sv-warum"><strong>Warum besser:</strong> ${escHtml(v.warum)}</p>` : ''}
+            <div class="sv-actions">
+              <button type="button" class="chip sv-toggle" data-sv-idx="${i}" onclick="toggleFreigabe('${p.id}', ${i})">${frei ? 'Freigabe zurückziehen' : 'Freigeben'}</button>
+              <button type="button" class="chip prompt-copy-chip" onclick="copyEingereichteVariante(event,'${p.id}', ${i})">${LU.copy} Kopieren</button>
+            </div>
+          </div>`;
+      }).join('');
+      return `
+        <div class="sv-wrap">
+          <p class="sv-title">Eingereichte Varianten (${list.length})</p>
+          <p class="sv-note">Demo: Einreichungen und ihr Freigabe-Status liegen nur in deinem Browser — Kolleg:innen sehen sie nicht. „Freigeben“ stellt den Schritt nach, den in einer echten Version die Person macht, der der Prompt gehört.</p>
+          ${items}
+        </div>`;
     }
 
     // ===== PROMPT-BUILDER (Leuchttürme): Eingaben füllen die [PLATZHALTER] live =====
@@ -508,19 +736,11 @@
       showToast('Eingaben zurückgesetzt');
     }
 
-    // Aktive Variante des offenen Prompts ('standard' = Haupttext)
-    function activeVariantOf(p) {
-      if (!p.variants || !state.activeVariant || state.activeVariant === 'standard') return null;
-      return p.variants.find(v => v.id === state.activeVariant) || null;
-    }
-    function currentPromptText(p) {
-      const v = activeVariantOf(p);
-      return v ? v.promptText : p.promptText;
-    }
-    // Roher Text der aktiven Variante mit eingesetzten Builder-Werten — fürs Kopieren.
-    // Platzhalter, die in der Variante nicht vorkommen, bleiben einfach unberührt.
+    // Roher Prompt-Text mit eingesetzten Builder-Werten — fürs Kopieren.
+    // Platzhalter ohne Eingabe bleiben unberührt im Text stehen (ehrlich: es wird
+    // nichts erfunden, man sieht in der Zwischenablage, was noch fehlt).
     function appliedPromptText(p) {
-      let text = currentPromptText(p);
+      let text = p.promptText;
       const fields = (p.builder && p.builder.fields) || [];
       const vals = getBuilderValues(p.id);
       fields.forEach(f => {
@@ -533,20 +753,12 @@
     function livePromptHtml(p) {
       const fields = (p.builder && p.builder.fields) || [];
       const vals = getBuilderValues(p.id);
-      return escHtml(currentPromptText(p)).replace(/\[([A-ZÄÖÜ][^\]]*)\]/g, m => {
+      return escHtml(p.promptText).replace(/\[([A-ZÄÖÜ][^\]]*)\]/g, m => {
         const f = fields.find(x => x.ph === m);
         const v = f ? String(vals[f.key] || '').trim() : '';
         if (v) return `<mark class="ph -filled">${escHtml(v)}</mark>`;
         return `<mark class="ph">${m}</mark>`;
       });
-    }
-
-    function setVariant(vid) {
-      state.activeVariant = vid;
-      renderModalBody();
-      // Gleiche Falle wie in resetBuilder: der neu gebaute Knopf bekommt den
-      // Fokus zurück, damit man mit der Tastatur direkt weiterschalten kann.
-      document.querySelector(`#modal .variant-seg button[data-variant="${vid}"]`)?.focus({ preventScroll: true });
     }
 
     // ===== FILTER & SORT =====
@@ -584,13 +796,19 @@
           if (d) return d;
         }
         if (state.sort === 'recommended') {
-          // Prompts mit Baukasten nach vorn. Kriterium ist die Fähigkeit selbst,
-          // nicht eine gepflegte Liste daneben — ein neuer Baukasten-Prompt steht
-          // damit sofort vorn, ohne dass jemand eine zweite Stelle nachzieht.
+          // „Meiste Stimmen“: Rangkriterium ist voteScore (shared/base.js) — Seed
+          // aus den Daten plus die eigene Stimme. Vorher stand hier bayesScore über
+          // den Sterne-Durchschnitten; die Sterne gibt es auf dieser Seite nicht mehr.
+          // Bei Gleichstand entscheidet der Baukasten: Prompts, in denen man die
+          // Angaben in Felder tippen kann, sind für Einsteiger:innen der bessere
+          // Startpunkt. Kriterium ist die Fähigkeit selbst (p.builder), nicht eine
+          // gepflegte Liste daneben.
+          const d = voteScore(b, 'prompt') - voteScore(a, 'prompt');
+          if (d) return d;
           const aBau = a.builder ? 1 : 0;
           const bBau = b.builder ? 1 : 0;
           if (bBau !== aBau) return bBau - aBau;
-          return bayesScore(b) - bayesScore(a);
+          return a.name.localeCompare(b.name, 'de');
         }
         if (state.sort === 'copies') return copyCountOf(b) - copyCountOf(a);
         if (state.sort === 'alpha') return a.name.localeCompare(b.name, 'de');
@@ -610,16 +828,13 @@
         && (!state.difficulty || p.difficulty === state.difficulty)
         && (!terms.length || promptSearchScore(p, terms) > 0)).length;
     }
+    // Die Reiter kommen aus TASK_LABELS statt aus einer zweiten Liste: Beschriftung
+    // und Reihenfolge stehen damit an genau einer Stelle, und ein Reiter kann nicht
+    // anders heißen als das, was auf den Karten darunter steht. Gruppen ohne Treffer
+    // blendet die Schleife unten ohnehin aus (aktuell: „Gestalten“ ist leer).
     function renderCatTabs() {
-      const subs = [
-        { id: 'all', label: 'Alle' },
-        { id: 'loslegen', label: 'Loslegen' },
-        { id: 'bauen', label: 'Bauen' },
-        { id: 'texten', label: 'Texten' },
-        { id: 'gestalten', label: 'Gestalten' },
-        { id: 'praesentieren', label: 'Präsentieren' },
-        { id: 'media', label: 'Media' }
-      ];
+      const subs = [{ id: 'all', label: 'Alle' }]
+        .concat(Object.keys(TASK_LABELS).map(id => ({ id, label: TASK_LABELS[id] })));
       const total = subs.slice(1).reduce((a, s) => a + groupCount(s.id), 0);
       document.getElementById('cat-tabs').innerHTML = subs.map(s => {
         const count = s.id === 'all' ? total : groupCount(s.id);
@@ -671,7 +886,7 @@
       const bar = document.getElementById('active-filters');
       if (!bar) return;
       const pills = [];
-      if (state.taskGroup) pills.push({ label: GROUP_LABELS[state.taskGroup] || state.taskGroup, clear: `setTaskGroup('all')` });
+      if (state.taskGroup) pills.push({ label: groupLabel(state.taskGroup), clear: `setTaskGroup('all')` });
       if (state.platform) {
         const pf = PROMPT_PLATFORMS.find(x => x.id === state.platform);
         pills.push({ label: 'Plattform: ' + (pf ? pf.label : state.platform), clear: `setPlatform('${state.platform}')` });
@@ -703,31 +918,26 @@
     }
 
     // ===== MERKEN (Favoriten) =====
-    /* Mechanik kommt komplett aus shared/base.js (isFavorite/toggleFavorite,
-       Speicherschlüssel fav:<typ>:<id>). Der Typ 'prompt' wird EXPLIZIT
-       übergeben, obwohl window.RatingConfig ihn hier ohnehin auflösen würde:
-       das dokumentiert den Namensraum direkt am Aufruf und bleibt richtig,
-       falls die Seite später ohne RatingConfig oder mit gemischten Typen
-       arbeitet. Ein falscher Typ landete sonst still unter fav:skill:<id>.
-       aria-label trägt den Prompt-Namen, weil im Grid sonst 30 Knöpfe
-       identisch „Zu Favoriten hinzufügen“ heißen (gleiches Muster wie beim
-       Kopier-Chip daneben). */
-    function favBtnHtml(p) {
-      const fav = isFavorite(p.id, 'prompt');
-      return `<button type="button" class="fav-btn${fav ? ' active' : ''}" data-fav-id="${p.id}"
-        onclick="toggleFavorite(event,'${p.id}','prompt')"
-        aria-pressed="${fav}"
-        aria-label="${escHtml(p.name)} ${fav ? 'aus Favoriten entfernen' : 'zu Favoriten hinzufügen'}">${fav ? '★' : '☆'}</button>`;
-    }
+    /* Markup und Mechanik kommen komplett aus shared/base.js: favBookmarkHtml()
+       rendert den Lesezeichen-Knopf, toggleFavorite() speichert unter fav:<typ>:<id>.
+       Bis E15 hatte diese Seite (wie vier andere) ihre eigene Kopie desselben
+       Markups mit den Glyphen ☆/★ — fünf Fassungen eines Knopfes, die schon
+       auseinandergelaufen waren. Der Typ 'prompt' wird EXPLIZIT übergeben, obwohl
+       window.RatingConfig ihn hier auflösen würde: das dokumentiert den Namensraum
+       am Aufruf; ein fehlender Typ landete sonst still unter fav:skill:<id>.
+       Der Name geht mit, weil im Grid sonst 17 Knöpfe identisch
+       „Zu Favoriten hinzufügen“ heißen. */
 
     /* Zustand gezielt nachziehen statt das Grid neu zu rendern: der Fokus bleibt
-       auf dem Knopf (Tastaturbedienung) und die Karten springen nicht. */
+       auf dem Knopf (Tastaturbedienung) und die Karten springen nicht.
+       WICHTIG gegenüber der alten Glyphen-Fassung: hier wird KEIN textContent mehr
+       gesetzt — das würde das Bookmark-SVG aus dem Knopf werfen. Gefüllt wird über
+       die Klasse `active` (.fav-btn.-lu.active in base.css). */
     window.onFavoritesChanged = (id, isNowFav) => {
       document.querySelectorAll(`.fav-btn[data-fav-id="${id}"]`).forEach(btn => {
         const p = PROMPTS.find(x => x.id === id);
         btn.classList.toggle('active', isNowFav);
         btn.setAttribute('aria-pressed', String(isNowFav));
-        btn.textContent = isNowFav ? '★' : '☆';
         btn.setAttribute('aria-label', `${p ? p.name : 'Prompt'} ${isNowFav ? 'aus Favoriten entfernen' : 'zu Favoriten hinzufügen'}`);
       });
     };
@@ -740,20 +950,38 @@
        auseinanderlaufen. (Ein aria-label täte es nicht: auf einem <span> ohne
        Rolle ist es laut ARIA-in-HTML unzulässig und wird nicht verlässlich
        vorgelesen — sichtbarer Text plus .sr-only ist die robuste Form.) */
-    const BAUKASTEN_ERKLAERUNG = 'Hier trägst du deine Angaben in Felder ein und wählst eine Variante. Der fertige Prompt stellt sich daraus zusammen — du musst die Platzhalter nicht von Hand ersetzen.';
+    const BAUKASTEN_ERKLAERUNG = 'Hier trägst du deine Angaben in Felder ein. Der fertige Prompt stellt sich daraus zusammen — du musst die Platzhalter nicht von Hand ersetzen.';
     function baukastenFlagHtml() {
       return `<span class="card-baukasten-flag" title="Baukasten: ${escHtml(BAUKASTEN_ERKLAERUNG)}">Baukasten<span class="flag-erklaerung sr-only">: ${escHtml(BAUKASTEN_ERKLAERUNG)}</span></span>`;
     }
 
+    /* Die Kennzahl im Kartenfuß folgt der SORTIERUNG. Wer nach „Meistkopiert“
+       sortiert, sieht die Kopien-Zahl; sonst die Stimmen. Grund: Eine Rangfolge,
+       deren Kriterium man auf den Karten nicht ablesen kann, wirkt willkürlich —
+       das war der Kern der Rückmeldung. Statt beide Zahlen dauerhaft nebeneinander
+       zu stellen (zwei Zahlen, und keine erklärt die Reihenfolge), zeigt die Karte
+       die eine, um die es gerade geht.
+       „Meistkopiert“ ist deshalb bewusst eine reine Anzeige und kein Knopf: Kopiert
+       wird über den Chip daneben. Abstimmen bleibt in diesem Fall dem Modal
+       vorbehalten — dort steht der Knopf immer. */
+    function cardMetricHtml(p) {
+      if (state.sort === 'copies') {
+        return `<span class="copy-count" data-copies="${p.id}">${copyCountOf(p)}× kopiert</span>`;
+      }
+      return renderUpvoteBtn(p.id, 'prompt', getUpvoteCount(p, 'prompt'), { label: '', compact: true, name: p.name });
+    }
+
     // ===== RENDER CARD =====
-    /* E11 Karten-Diät: Titel + ein Satz + Aufgaben-Gruppe + kompakte Bewertung +
-       Kopierchip. Prompt-Vorschau, Schwierigkeit, Plattformen und Kopier-Zähler
-       leben im Detail-Modal.
+    /* E11 Karten-Diät: Titel + ein Satz + Aufgaben-Gruppe + eine Kennzahl +
+       Kopierchip. Prompt-Vorschau, Schwierigkeit und Plattformen leben im
+       Detail-Modal.
        E13-Tastatur: Das onkeydown der Karte reagiert nur, wenn die Karte SELBST
        das Ziel ist. Vorher blubberte Enter vom „Kopieren“-Chip hoch und riss
-       zusätzlich das Modal auf (copyPrompt stoppt nur den Klick, nicht die Taste). */
-    function renderCard(p, idx = 0) {
-      const eff = getEffectiveRating(p);
+       zusätzlich das Modal auf (copyPrompt stoppt nur den Klick, nicht die Taste).
+       E15: data-prompt-id trägt die FLIP-Bewegung beim Umsortieren nach einer
+       Stimme (siehe window.onUpvoteChanged) — ohne stabile Kennung am Element
+       lässt sich die alte Position keiner Karte zuordnen. */
+    function renderCard(p, idx = 0, istStart = false) {
       const delay = Math.min(idx, 11) * 35;
       // Das Fähnchen ist abgeleitet, nicht gepflegt: Es trägt genau die Prompts,
       // die einen Baukasten HABEN. Filter und Zähler bleiben unberührt — der
@@ -767,23 +995,25 @@
          weil `gap` zwischen Flex-Kindern auch für 0 px breite gilt. */
       const neuFlagHtml = (typeof istNeu === 'function' && istNeu('PROMPTS', p.id))
         ? '<span class="card-neu-flag">Neu</span>' : '';
-      const flaggen = `${hatBaukasten ? baukastenFlagHtml() : ''}${neuFlagHtml}`;
+      // Nur die angeheftete Startkarte trägt das Fähnchen — es erklärt, warum sie
+      // trotz „Meiste Stimmen“ ganz oben steht (siehe .card-start-flag im Stilblock).
+      const startFlagHtml = istStart
+        ? '<span class="card-start-flag" title="Empfehlung der Redaktion für den Einstieg — steht unabhängig von der Sortierung oben.">Fang hier an</span>'
+        : '';
+      const flaggen = `${startFlagHtml}${hatBaukasten ? baukastenFlagHtml() : ''}${neuFlagHtml}`;
       return `
-        <article class="skill-card prompt-card${hatBaukasten ? ' -baukasten' : ''}${state._noCardAnim ? '' : ' card-in'}" style="animation-delay:${state._noCardAnim ? 0 : delay}ms" onclick="openModal('${p.id}')">
+        <article class="skill-card prompt-card${hatBaukasten ? ' -baukasten' : ''}${state._noCardAnim ? '' : ' card-in'}" style="animation-delay:${state._noCardAnim ? 0 : delay}ms" data-prompt-id="${p.id}" onclick="openModal('${p.id}')">
           <div class="card-top">
             <span class="card-top-left">
               <span class="card-sub">${escHtml(groupLabel(p.taskGroup))}</span>
               ${flaggen ? `<span class="card-flaggen">${flaggen}</span>` : ''}
             </span>
-            ${favBtnHtml(p)}
+            ${favBookmarkHtml(p.id, 'prompt', p.name)}
           </div>
           <h3 class="skill-name"><button type="button" class="card-open-btn" onclick="event.stopPropagation();openModal('${p.id}')">${escHtml(p.name)}</button></h3>
-          <p class="skill-tagline">${escHtml(p.tagline)}</p>
+          <p class="skill-tagline density-hide-kompakt density-clamp">${escHtml(p.tagline)}</p>
           <div class="card-footer">
-            <div class="stars-display-wrap">
-              ${renderStars(eff.average)}
-              <span class="rating-text">${eff.average.toFixed(1)} (${eff.count})</span>
-            </div>
+            ${cardMetricHtml(p)}
             <button class="chip prompt-copy-chip" onclick="copyPrompt(event,'${p.id}')" title="Kompletten Prompt-Text mit allen [PLATZHALTERN] kopieren" aria-label="${escHtml(p.name)} kopieren">${LU.copy} Kopieren</button>
           </div>
         </article>
@@ -815,30 +1045,91 @@
       }
       // Ohne aktive Filter/Suche und nur bei Standard-Sortierung: Redaktions-Kandidat
       // als „Fang hier an“ anpinnen — eine explizite Sortierung (Meistkopiert, A–Z)
-      // bleibt ehrlich und wird nicht vom Pin durchbrochen.
+      // bleibt ehrlich und wird nicht vom Pin durchbrochen. Die angeheftete Karte
+      // sagt seit E15 selbst, dass sie angeheftet ist (drittes Argument von
+      // renderCard) — sonst widerspräche sie sichtbar der Stimmen-Sortierung.
       const noFilter = !state.search && !state.taskGroup && !state.platform && !state.difficulty
         && state.sort === 'recommended';
       const start = noFilter ? filtered.find(p => p.id === PROMPT_START) : null;
       const rest = start ? filtered.filter(p => p.id !== start.id) : filtered;
-      let html = start ? renderCard(start, 0) : '';
+      let html = start ? renderCard(start, 0, true) : '';
       let idx = start ? 1 : 0;
       html += rest.map(p => renderCard(p, idx++)).join('');
       grid.innerHTML = html;
     }
 
+    /* ===== STIMME ABGEGEBEN: LISTE NACHFÜHREN (FLIP) =====
+       toggleUpvote() in shared/base.js aktualisiert die Knöpfe selbst und ruft dann
+       hier herein — bewusst OHNE selbst neu zu rendern, damit diese Seite die alten
+       Kartenpositionen noch messen kann.
+       Nur bei „Meiste Stimmen“ wird umsortiert, denn nur dort ändert eine Stimme die
+       Reihenfolge. Bei aktiver Suche entscheidet die Trefferbewertung, bei
+       „Meistkopiert“ und „A–Z“ etwas anderes — dort würde ein Sprung nur verwirren.
+       FLIP statt Neuzeichnen: Ohne die Bewegung springt die Karte, die man gerade
+       gedrückt hat, unangekündigt an eine andere Stelle, und man sucht sie wieder.
+       Reduzierte Bewegung wird respektiert (dann nur die neue Reihenfolge, kein Weg
+       dorthin), und die Karten-Einblendung wird für diesen Lauf abgeschaltet —
+       zwei Animationen übereinander sähen aus wie ein Fehler. */
+    window.onUpvoteChanged = (id, type) => {
+      if (type !== 'prompt') return;
+      const grid = document.getElementById('prompts-grid');
+      if (!grid || state.sort !== 'recommended' || state.search) return;
+
+      const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const vorher = new Map();
+      if (!reduce) {
+        grid.querySelectorAll('.prompt-card[data-prompt-id]').forEach(el => {
+          vorher.set(el.dataset.promptId, el.getBoundingClientRect());
+        });
+      }
+
+      state._noCardAnim = true;
+      render();
+      state._noCardAnim = false;
+      if (reduce) return;
+
+      grid.querySelectorAll('.prompt-card[data-prompt-id]').forEach(el => {
+        const alt = vorher.get(el.dataset.promptId);
+        if (!alt) return;
+        const neu = el.getBoundingClientRect();
+        const dx = alt.left - neu.left;
+        const dy = alt.top - neu.top;
+        if (!dx && !dy) return;
+        el.style.transition = 'none';
+        el.style.transform = `translate(${dx}px, ${dy}px)`;
+        // Zwei Frames: der erste setzt die Startposition, der zweite startet die
+        // Bewegung. Mit nur einem Frame fasst der Browser beides zu einem Schritt
+        // zusammen und es passiert sichtbar nichts.
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          el.style.transition = 'transform .32s cubic-bezier(.2,.7,.2,1)';
+          el.style.transform = '';
+          // Inline-Styles wieder abräumen: ein stehengebliebenes
+          // `transition: transform …` überschriebe die Karten-Transition aus dem
+          // Stylesheet und der Hover-Effekt (Rand + gelber Schatten) liefe danach
+          // ohne Übergang.
+          el.addEventListener('transitionend', function ab() {
+            el.style.transition = '';
+            el.removeEventListener('transitionend', ab);
+          });
+        }));
+      });
+    };
+
     // ===== MODAL =====
-    // Tab-Leiste (E3): Prompt · Vorschau/Beispiel · Bewertungen.
+    // Tab-Leiste (E3): Prompt · Vorschau/Beispiel · Stimmen.
     // Leuchttürme mit preview-Daten bekommen die Inszenierung „So sieht's aus“
     // (Chat bzw. Terminal), Breite-Einträge das statische „Beispiel-Ergebnis“.
+    // Der dritte Reiter hieß bis E15 „Bewertungen“ und zeigte Sterne. Die Seite
+    // kennt jetzt eine Stimme statt fünf Abstufungen; der Reiter-SCHLÜSSEL bleibt
+    // 'ratings', weil Deep-Links der Form #<id>/ratings weiterlaufen müssen.
     function modalTabsFor(p) {
       const second = p.preview
         ? ['vorschau', 'So sieht’s aus']
         : ['beispiel', 'Beispiel-Ergebnis'];
-      return [['overview', 'Prompt'], second, ['ratings', 'Bewertungen']];
+      return [['overview', 'Prompt'], second, ['ratings', 'Stimmen']];
     }
 
     function renderModalHead(p) {
-      state.activeVariant = 'standard'; // jedes Öffnen startet bei der Standard-Variante
       document.getElementById('modal-name').textContent = p.name;
       const tabBar = document.querySelector('#modal .modal-tabs');
       if (tabBar) {
@@ -846,10 +1137,10 @@
           `<button class="tab-btn${i === 0 ? ' active' : ''}" role="tab" aria-selected="${i === 0 ? 'true' : 'false'}" data-tab="${id}" onclick="switchTab('${id}')">${escHtml(label)}</button>`
         ).join('');
       }
-      const eff = getEffectiveRating(p);
+      // Stimme statt Sterne-Durchschnitt: im Modal MIT Wortlabel (auf den Karten
+      // reicht Icon + Zahl, hier ist Platz für die Aufforderung).
       document.getElementById('modal-meta').innerHTML = `
-        ${renderStars(eff.average)}
-        <span>${eff.average.toFixed(1)} (${eff.count} Bewertungen)</span>
+        ${renderUpvoteBtn(p.id, 'prompt', getUpvoteCount(p, 'prompt'), { label: 'Hilfreich', name: p.name })}
         <span class="modal-meta-sep">·</span>
         <span class="diff-badge ${p.difficulty}">${diffLabel(p.difficulty)}</span>
         <span class="modal-meta-sep">·</span>
@@ -861,11 +1152,11 @@
     }
 
     // Ein Builder-Feld (Text, Auswahl oder Textfläche) — Tippen füllt den Prompt live.
-    // Kommt der Platzhalter in der GERADE gewählten Variante nicht vor, sagt das Feld
-    // das offen („-off“), statt den Eindruck zu erwecken, die Eingabe hätte Wirkung.
+    // Kommt der Platzhalter im Prompt-Text nicht vor, sagt das Feld das offen („-off“),
+    // statt den Eindruck zu erwecken, die Eingabe hätte Wirkung.
     function builderFieldHtml(p, f) {
       const v = String(getBuilderValues(p.id)[f.key] || '');
-      const off = !currentPromptText(p).includes(f.ph);
+      const off = !p.promptText.includes(f.ph);
       const inputId = `pb-${p.id}-${f.key}`;
       const on = `oninput="onBuilderInput('${p.id}','${f.key}',this.value)"`;
       let control;
@@ -883,24 +1174,12 @@
         <div class="pb-field${f.type === 'textarea' ? ' -wide' : ''}${off ? ' -off' : ''}">
           <label class="pb-label" for="${inputId}">${escHtml(f.label)}<mark class="ph">${escHtml(f.ph)}</mark></label>
           ${control}
-          ${off ? `<p class="pb-off-note">Diese Variante enthält <strong>${escHtml(f.ph)}</strong> nicht — deine Eingabe wirkt erst wieder in einer anderen Variante.</p>` : ''}
+          ${off ? `<p class="pb-off-note">Im Prompt-Text steht <strong>${escHtml(f.ph)}</strong> derzeit nicht — was du hier einträgst, landet nirgends.</p>` : ''}
         </div>`;
     }
 
     function renderModalPrompt(p) {
       const hasBuilder = !!(p.builder && p.builder.fields && p.builder.fields.length);
-      const hasVariants = !!(p.variants && p.variants.length);
-
-      // Varianten-Umschalter (Standard · Kurz · Ausführlich) — nur wo Varianten existieren
-      let segHtml = '';
-      if (hasVariants) {
-        const segs = [{ id: 'standard', label: 'Standard' }].concat(p.variants);
-        segHtml = `<div class="variant-seg" role="group" aria-label="Prompt-Variante wählen">${
-          segs.map(s => `<button type="button" class="${state.activeVariant === s.id ? 'active' : ''}" data-variant="${s.id}" aria-pressed="${state.activeVariant === s.id}" onclick="setVariant('${s.id}')">${escHtml(s.label)}</button>`).join('')
-        }</div>`;
-        const av = activeVariantOf(p);
-        if (av && av.hint) segHtml += `<p class="variant-hint">${escHtml(av.hint)}</p>`;
-      }
 
       const builderHtml = hasBuilder ? `
         <div class="pb-wrap">
@@ -921,18 +1200,20 @@
           <button class="c-cta -yellow-bg" onclick="copyCurrentPrompt(null,'${p.id}')">${LU.copy} Prompt kopieren</button>
           <span class="prompt-copy-hint">${copyHint}</span>
         </div>
-        ${segHtml}
         ${builderHtml}
         <pre class="prompt-code" id="prompt-live">${livePromptHtml(p)}</pre>
+        ${eingereichteVariantenHtml(p)}
         <div class="warum-box">
           <p class="warum-label">Warum funktioniert das?</p>
           <p>${escHtml(p.warum)}</p>
         </div>
         ${p.skillRef ? `
-        <p class="skill-xref">
-          <span class="xref-label">Passender Skill</span>
-          <span><a href="skills.html?skill=${encodeURIComponent(p.skillRef)}">${escHtml(p.skillRefName || p.skillRef)} →</a>${p.skillRefNote ? ' ' + escHtml(p.skillRefNote) : ''}</span>
-        </p>` : ''}
+        <div class="skill-xref">
+          <span class="xref-ic" aria-hidden="true">${LU.sparkles}</span>
+          <p class="xref-label">Passender Skill</p>
+          <p class="xref-name"><a href="skills.html?skill=${encodeURIComponent(p.skillRef)}">${escHtml(p.skillRefName || p.skillRef)} →</a></p>
+          <p class="xref-note">${escHtml(p.skillRefNote || 'Derselbe Weg als fertiges Werkzeug im Skill-Katalog.')}</p>
+        </div>` : ''}
         <div class="modal-submit-row">
           <span>Du formulierst das anders — und es funktioniert besser?</span>
           <button type="button" class="c-cta -black-border" onclick="openPromptSubmit('${p.id}')">Variante einreichen</button>
@@ -985,9 +1266,12 @@
             <div class="chat-bubble">${chatRich(m.text)}</div>
           </div>`).join('');
         return `
-          <p class="example-note">Nachgestellte Chat-Ansicht mit fiktiven Marken — so sieht der ausgefüllte Prompt in Langdock aus, und so kann die Antwort aussehen.</p>
+          <!-- „pilot AI“ ist der Name, unter dem die Kolleg:innen die Chat-KI im
+               Haus öffnen — derselbe Name, den auch der Plattform-Filter trägt
+               (PROMPT_PLATFORMS in data/prompts.js). -->
+          <p class="example-note">Nachgestellte Chat-Ansicht mit fiktiven Marken — so sieht der ausgefüllte Prompt in pilot AI aus, und so kann die Antwort aussehen.</p>
           <div class="chat">
-            <div class="chat-bar"><span class="chat-bar-title">Langdock — nachgestellte Ansicht</span></div>
+            <div class="chat-bar"><span class="chat-bar-title">pilot AI — nachgestellte Ansicht</span></div>
             <div class="chat-body">${msgs}</div>
           </div>`;
       }
@@ -1003,11 +1287,16 @@
       playScript(item.preview.script, { artifacts: [] }, { body, actions: null });
     }
 
+    /* Der Reiter hieß „Bewertungen“ und begann mit einer großen Sterne-Zahl.
+       Aus der Feedback-Runde: Eine fünfstufige Bewertung verlangt ein Urteil, das
+       man zu einem Prompt kaum fällen kann („ist das eine 4 oder eine 5?“) — und
+       die Durchschnitte lagen erwartungsgemäß alle zwischen 4,0 und 4,6, sagten
+       also nichts. Geblieben ist die eine Stimme („Hilfreich“) und der Kommentar,
+       der wirklich Inhalt trägt. Die Sterne in den Seed-Kommentaren bleiben in den
+       Daten stehen, werden hier aber nicht mehr angezeigt. */
     function renderModalRatings(p) {
-      const eff = getEffectiveRating(p);
       const userComments = getComments(p.id);
       const allComments = [...userComments, ...(p.comments || [])];
-      const userRating = getRating(p.id);
       const cid = p.id;
 
       const commentsHtml = allComments.length === 0
@@ -1018,7 +1307,6 @@
             <div style="flex:1">
               <div class="comment-author">${escHtml(c.author)}${i < userComments.length ? ' <span class="comment-own-badge">von dir · nur auf diesem Gerät</span>' : ''}</div>
               <div class="comment-role-date">${escHtml(c.role)} · ${formatDate(c.date)}</div>
-              ${c.rating ? `<div class="comment-stars">${renderStars(c.rating)}</div>` : ''}
               <p class="comment-text">${escHtml(c.text)}</p>
             </div>
             ${i < userComments.length ? `<button type="button" class="comment-delete" onclick="deleteComment('${cid}', ${i})" aria-label="Deinen Kommentar löschen" title="Deinen Kommentar löschen">✕</button>` : ''}
@@ -1028,19 +1316,15 @@
       return `
         <div class="rating-overview" style="margin-bottom:2rem">
           <div>
-            <div class="rating-big">${eff.average.toFixed(1)}</div>
-            <div>${renderStars(eff.average)}</div>
-            <div class="rating-sub">${eff.count} Bewertungen gesamt</div>
+            <div class="rating-big">${getUpvoteCount(p, 'prompt')}</div>
+            <div class="rating-sub">Stimmen — Kolleg:innen, die diesen Prompt hilfreich fanden</div>
           </div>
+          <div>${renderUpvoteBtn(p.id, 'prompt', getUpvoteCount(p, 'prompt'), { label: 'Hilfreich', name: p.name })}</div>
         </div>
 
         <form class="comment-form" onsubmit="event.preventDefault();submitComment('${cid}')">
-          <h3>Deine Bewertung & Kommentar</h3>
-          <p class="rating-form-label">Deine Sternebewertung</p>
-          ${renderInteractiveStars(`comment-${cid}`)}
-          <p class="user-rating-hint" id="rating-hint-comment-${cid}">
-            ${userRating > 0 ? `Du hast diesen Prompt bereits mit ${userRating} Sternen bewertet.` : 'Klick auf die Sterne, um zu bewerten.'}
-          </p>
+          <h3>Dein Kommentar</h3>
+          <p class="rating-form-label">Was hat bei dir funktioniert — und was nicht?</p>
           <div class="form-row" style="margin-top:1.6rem">
             <div>
               <label for="comment-author-${cid}">Dein Name *</label>
@@ -1054,7 +1338,7 @@
           <label for="comment-text-${cid}" style="margin-top:1.2rem">Dein Kommentar *</label>
           <textarea id="comment-text-${cid}" rows="3" required></textarea>
           <button type="submit" class="c-cta -black-bg">Kommentar speichern</button>
-          <p class="comment-local-hint">Demo-Hinweis: Bewertungen &amp; Kommentare werden nur in deinem Browser gespeichert — Kolleg:innen sehen sie (noch) nicht.</p>
+          <p class="comment-local-hint">Demo-Hinweis: Stimmen &amp; Kommentare werden nur in deinem Browser gespeichert — Kolleg:innen sehen sie (noch) nicht. Die angezeigte Stimmenzahl ist ein Startwert aus der Redaktion plus deine eigene Stimme.</p>
         </form>
 
         <p class="section-label">Alle Kommentare (${allComments.length})</p>
@@ -1170,6 +1454,14 @@
     document.addEventListener('DOMContentLoaded', () => {
       renderCatTabs();
       renderFilterChips();
+      /* Ansichtsdichte (initDensity, shared/base.js). Kompakt ist der Standard:
+         Wer die Prompt-Sammlung öffnet, sucht meistens etwas Bekanntes wieder —
+         dafür zählen Titel, Aufgaben-Gruppe und die Kennzahl, nicht der
+         Beschreibungssatz. Das data-density landet auf dem Grid, die
+         Utility-Klassen sitzen an der Beschreibung in renderCard().
+         VOR dem ersten render(): die Karten sollen gleich in der richtigen Stufe
+         entstehen, statt sichtbar von „alles“ auf „kompakt“ zu springen. */
+      initDensity({ page: 'prompts', container: '#prompts-grid', mount: '[data-density-slot]', default: 'kompakt' });
       render();
 
       // Deep-Link-Schema prompts.html?p=<id>: auf die kanonische Hash-Form

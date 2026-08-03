@@ -4,14 +4,30 @@
    Kein export/import — die Datei wird per <script src> geladen und
    muss auch unter file:// tragen.
 
+   KURATION (03.08.2026): Vier Fotos sind gestrichen —
+   notizbuch-stift-umschlag, gebaeude-baeume, wendeltreppe-oben und
+   betonwand-lichtkante. Sie doppelten Motive, die hier schon standen
+   (zweites Notizbuch, zweite Architekturaufnahme, zweite ruhige Fläche);
+   für einen Entwurf braucht man je Motivsorte eine Wahl, keine zwei.
+   Die acht zugehörigen WebP-Dateien (groß + Vorschau) sind mitgelöscht.
+
    Definierte Globals:
-     BILDER       — 11 frei nutzbare Bilder als Übungsmaterial: 9 Fotos
-                    (WebP, längste Kante 1600, dazu je eine Vorschau mit
-                    längster Kante 400) und 2 selbst gezeichnete Test-SVGs.
+     BILDER       — frei nutzbare Bilder als Übungsmaterial: Fotos (WebP,
+                    längste Kante 1600, dazu je eine Vorschau mit längster
+                    Kante 400) und selbst gezeichnete Test-SVGs. Aufteilung
+                    zählt BILDER_STATS — keine Bestandszahl in diesem Kopf.
                     Felder: id, name, datei, vorschau, format, breite,
                     hoehe, bytes, beschreibung, tags, lizenz, lizenzUrl,
                     quelle, urheber.
      BILDER_STATS — abgeleitete Kennzahlen, aus dem Array gerechnet.
+
+   QUELLE FÜR DIE ZWEI TEST-SVGs IST DIESE DATEI. Sie standen bis zum
+   03.08.2026 zusätzlich als BEISPIELDATEN in data/bausteine.js — beide
+   Abschnitte liegen im selben Reiter „Daten", man sah dieselbe Datei
+   also zweimal untereinander. Geblieben ist der Bild-Eintrag, weil er
+   die Angaben führt, die man vor dem Benutzen eines Bildes braucht:
+   Vorschau, Pixelmaße, Lizenz und Urheber. Eine Übungsdatei-Karte kennt
+   davon nichts. Der Beispieldaten-Abschnitt verweist jetzt hierher.
 
    HERKUNFT DER ZAHLEN: breite/hoehe der Fotos stammen aus dem WebP-
    Dateikopf (VP8X-Container, Canvas-Maße), breite/hoehe der SVGs aus
@@ -20,13 +36,16 @@
 
    LIZENZ — zwei verschiedene Sachlagen, bewusst nicht gleichgemacht:
 
-   (1) Die neun Fotos stehen unter der Unsplash License. Das ist eine
+   (1) Die Fotos stehen unter der Unsplash License. Das ist eine
        eigene Lizenz und ausdrücklich weder CC0 noch MIT — sie wird hier
        deshalb auch nicht als solche geführt. Sie erlaubt kommerzielle
        Nutzung und verlangt KEINE Namensnennung. Trotzdem trägt jeder
        Eintrag seinen urheber: Herkunft wird hier auch dort genannt, wo
        sie nicht verlangt ist. Der lange Beleg je Datei (Maße, Bytes,
-       Prüfdatum) steht in assets/bilder/HERKUNFT.md.
+       Prüfdatum) steht in assets/bilder/HERKUNFT.md. Diese Datei führt
+       auch die am 03.08.2026 gestrichenen vier Fotos noch — sie ist ein
+       Herkunftsprotokoll, kein Bestandsverzeichnis, und ein Protokoll
+       streicht man nicht rückwirkend.
 
    (2) Die zwei Test-SVGs sind Eigenarbeit dieses Repos — von Hand
        gezeichnete Vektorgrafik, keine fremde Vorlage, kein fremder
@@ -40,7 +59,8 @@
    FALLE FÜR DIE LINKPRÜFUNG: `node tools/qa/index.mjs links` schickt
    einen festen Chrome-126-User-Agent. Unsplash antwortet genau darauf
    mit 401 (Anti-Scraper-Schranke), während dieselbe URL per Plain-curl
-   200 liefert — am 25.07.2026 für alle zehn URLs hier einzeln gemessen.
+   200 liefert — am 25.07.2026 für jede damals hinterlegte URL einzeln
+   nachgemessen.
    Die Links sind also nicht tot, der Prüfer sieht sie nur nicht. Wer
    die Meldung als Link-Rot liest, löscht eine korrekte Quellenangabe.
 
@@ -50,24 +70,8 @@
 const BILDER = [
 
   /* ============================================================ *
-   * FOTOS — Unsplash License, 9 Stück.                           *
+   * FOTOS — Unsplash License. Zahl siehe BILDER_STATS.webp.       *
    * ============================================================ */
-  {
-    id: 'notizbuch-stift-umschlag',
-    name: 'Notizbuch mit Füller',
-    datei: 'assets/bilder/notizbuch-stift-umschlag.webp',
-    vorschau: 'assets/bilder/notizbuch-stift-umschlag-klein.webp',
-    format: 'WebP',
-    breite: 1600,
-    hoehe: 1600,
-    bytes: 203330,
-    beschreibung: 'Aufsicht auf ein braunes Lederheft mit Gummiband, darauf ein karierter Block und ein goldener Füller, daneben ein grober Juteteppich. Quadratisch und hell — passt als Kopfbild für alles, wo es um Notieren, Planen und Festhalten geht.',
-    tags: ['notizbuch', 'schreibtisch', 'aufsicht', 'hell'],
-    lizenz: 'Unsplash License',
-    lizenzUrl: 'https://unsplash.com/license',
-    quelle: 'https://unsplash.com/photos/gold-and-silver-pen-on-brown-envelope-bdvycycdu-M',
-    urheber: 'Hayley Maxwell'
-  },
   {
     id: 'haftnotizen-wand',
     name: 'Leere Haftnotizen',
@@ -101,38 +105,6 @@ const BILDER = [
     urheber: 'Benjamin Child'
   },
   {
-    id: 'gebaeude-baeume',
-    name: 'Heller Bau mit Bäumen',
-    datei: 'assets/bilder/gebaeude-baeume.webp',
-    vorschau: 'assets/bilder/gebaeude-baeume-klein.webp',
-    format: 'WebP',
-    breite: 1200,
-    hoehe: 1600,
-    bytes: 176804,
-    beschreibung: 'Heller Steinbau mit geschwungener Wand, davor zwei runde Pinien und ein gepflasterter Vorplatz, oben blasser Himmel. Hochformat mit viel ruhiger Fläche — brauchbar als Seitenbild neben einem Textblock.',
-    tags: ['architektur', 'aussen', 'natur', 'hell'],
-    lizenz: 'Unsplash License',
-    lizenzUrl: 'https://unsplash.com/license',
-    quelle: 'https://unsplash.com/photos/green-trees-beside-white-concrete-building-WfCePInWrlQ',
-    urheber: 'niklas schoenberger'
-  },
-  {
-    id: 'betonwand-lichtkante',
-    name: 'Betonwand mit Lichtkante',
-    datei: 'assets/bilder/betonwand-lichtkante.webp',
-    vorschau: 'assets/bilder/betonwand-lichtkante-klein.webp',
-    format: 'WebP',
-    breite: 1067,
-    hoehe: 1600,
-    bytes: 121574,
-    beschreibung: 'Eine beigegraue Betonfläche mit weichem Verlauf, unten zwei helle geometrische Lichtkanten. Fast motivlos und deshalb der ruhigste Hintergrund im Bestand — gut zum Üben von hellem Text auf Bild.',
-    tags: ['betonwand', 'textur', 'minimal', 'hintergrund'],
-    lizenz: 'Unsplash License',
-    lizenzUrl: 'https://unsplash.com/license',
-    quelle: 'https://unsplash.com/photos/concrete-wall-with-geometric-light-and-shadow-u7VDgNGb78w',
-    urheber: 'Bernard Hermant'
-  },
-  {
     id: 'farbflaechen-wand',
     name: 'Gemalte Farbflächen',
     datei: 'assets/bilder/farbflaechen-wand.webp',
@@ -147,22 +119,6 @@ const BILDER = [
     lizenzUrl: 'https://unsplash.com/license',
     quelle: 'https://unsplash.com/photos/blue-yellow-and-brown-wall-decor-KZNTEn2r6tw',
     urheber: 'Photo Boards'
-  },
-  {
-    id: 'wendeltreppe-oben',
-    name: 'Wendeltreppe von oben',
-    datei: 'assets/bilder/wendeltreppe-oben.webp',
-    vorschau: 'assets/bilder/wendeltreppe-oben-klein.webp',
-    format: 'WebP',
-    breite: 1600,
-    hoehe: 1067,
-    bytes: 265690,
-    beschreibung: 'Blick von oben in eine weiße Wendeltreppe: gefliestes Stufenband als Spirale, in der Mitte ein Fleck grünes Laub. Starke Form mit klarem Blickfang — geeignet, wenn ein Aufmacher Struktur zeigen soll statt Inhalt.',
-    tags: ['treppe', 'architektur', 'aufsicht', 'geometrie'],
-    lizenz: 'Unsplash License',
-    lizenzUrl: 'https://unsplash.com/license',
-    quelle: 'https://unsplash.com/photos/white-and-brown-concrete-spiral-stairs-WHPsxhB4mWQ',
-    urheber: 'Dan Freeman'
   },
   {
     id: 'notizbuch-holztisch',
@@ -198,16 +154,15 @@ const BILDER = [
   },
 
   /* ============================================================ *
-   * TEST-SVGS — Eigenarbeit dieses Repos, 2 Stück.               *
-   * Von Hand gezeichnet, keine fremde Vorlage. Deshalb kein      *
-   * Lizenzkürzel, quelle null. Beleg: Kopfkommentar der Dateien  *
-   * plus Commit 30e4988 vom 23.07.2026 (Autor CeeKay1901).       *
-   * breite/hoehe kommen aus der viewBox der jeweiligen Datei.    *
-   * Beide liegen zusätzlich als BEISPIELDATEN in bausteine.js —  *
-   * dort als Übungsdatei, hier als Bild. Gleiche id, aber        *
-   * anderer Typ, also getrennte Namensräume für Deep-Link,       *
-   * Sterne und tools/seit.mjs (dessen Pickaxe je Datendatei      *
-   * sucht).                                                      *
+   * TEST-SVGS — Eigenarbeit dieses Repos. Von Hand gezeichnet,    *
+   * keine fremde Vorlage. Deshalb kein Lizenzkürzel, quelle       *
+   * null. Beleg: Kopfkommentar der Dateien plus Commit 30e4988    *
+   * vom 23.07.2026 (Autor CeeKay1901). breite/hoehe kommen aus    *
+   * der viewBox der jeweiligen Datei.                             *
+   * HIER IST IHR EINZIGER PLATZ: Bis 03.08.2026 standen sie       *
+   * zusätzlich als BEISPIELDATEN in bausteine.js — dieselbe       *
+   * Datei zweimal im selben Reiter. Der dortige Eintrag ist       *
+   * gestrichen, der Abschnitt verweist stattdessen hierher.       *
    * ============================================================ */
   {
     id: 'testbild-kampagne',

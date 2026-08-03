@@ -27,19 +27,22 @@ const ARG = process.argv[2] || 'http://localhost:8412/skills.html';
 const TARGET = /\.html/.test(ARG) ? ARG : new URL('skills.html', ARG).href;
 
 // Soll-Werte: sichtbare Karten pro Aufgaben-Tab, Merge-Karten zählen als 1 Karte.
-// E12-Soll (2026-07-23): Kaskade nach der Kuratierung — Alle 36→37, Bauen 12→13,
-// Präsentieren 4→5, Media 7→6. Herleitung:
-//  - STREICHEN wettbewerbs-monitor (Media-Skill, keine Merge-Karte) → Media −1 (7→6),
-//    Alle −1.
-//  - NEU webapp-testing (Community, Aufgabe „Bauen") → Bauen +1 (12→13), Alle +1.
-//  - NEU dataviz (Community, Aufgabe „Präsentieren") → Präsentieren +1 (4→5), Alle +1.
-//  Summe „Alle" = 4+13+5+4+5+6 = 37. Loslegen/Texten/Gestalten unverändert.
+// NACHGEZOGEN (2026-08-03, Kurations-Runde): Der Bestand hat sich legitim
+// verschoben — zehn Skills wurden gestrichen (u. a. wettbewerbs-monitor,
+// webapp-testing, pitch-deck, theme-factory, web-artifacts-builder), grill-me kam
+// neu dazu. Endstand data/skills.js: 36 Einträge, davon 32 sichtbar
+// (VISIBLE_SKILL_COUNT) und 31 Karten im Reiter „Alle", weil Merge-Karten als
+// eine Karte zählen. Die Zahlen sind an der laufenden Seite gemessen, nicht
+// gerechnet: Summe der sechs Aufgaben-Reiter = 5+8+5+2+5+6 = 31 = „Alle".
+// Warum die Reiter-Beschriftung hier nur mit dem Präfix verglichen wird: die
+// Tabs tragen ihre Zahl inzwischen im Text („Alle Aufgaben 31", „Bauen 8"), der
+// Test matcht deshalb per startsWith und nicht per Gleichheit.
 const EXPECTED_TAB_COUNTS = {
-  'Alle': 37,
-  'Loslegen': 4,
-  'Bauen': 13,
+  'Alle': 31,
+  'Loslegen': 5,
+  'Bauen': 8,
   'Texten': 5,
-  'Gestalten': 4,
+  'Gestalten': 2,
   'Präsentieren': 5,
   'Media': 6,
 };
@@ -196,21 +199,46 @@ async function runViewport(browser, vp) {
     hasStartpromptCopy: !!document.querySelector('#modal .startprompt-copy'),
   }));
   const hasFilesTab = modalInfo.tabs.some(t => /Dateien\s*&\s*Download/.test(t));
-  const hasRatingsTab = modalInfo.tabs.some(t => /Bewertungen/.test(t));
+  // NACHGEZOGEN (2026-08-03): Der Reiter heißt seit dem Upvote-Umbau „Stimmen &
+  // Kommentare" statt „Bewertungen" — es gibt keine Sterne mehr, die man
+  // „bewerten" könnte. Der Schlüssel (data-tab="ratings") und der Deep-Link
+  // #<id>/ratings sind bewusst unverändert geblieben, deshalb ändert sich hier
+  // nur die sichtbare Beschriftung.
+  const hasRatingsTab = modalInfo.tabs.some(t => /Stimmen/.test(t));
   check('04_modal_opens_with_tabs_and_runway',
     modalInfo.name.length > 0 && hasFilesTab && hasRatingsTab
       && modalInfo.hasRunway && modalInfo.hasStartpromptCopy,
     modalInfo);
 
-  // ---------- (5) Rating: Sterne klickbar, localStorage-Key entsteht ----------
+  /* ---------- (5) Stimme: Upvote klickbar, localStorage-Key entsteht ----------
+     NACHGEZOGEN (2026-08-03): Die Fünf-Sterne-Eingabe (#modal .star-input
+     .star-btn) gibt es nicht mehr — bewertet wird jetzt mit EINEM Upvote-Knopf
+     (.up-btn[data-up-id], base.js renderUpvoteBtn/toggleUpvote), gespeichert
+     unter vote:<typ>:<id> statt unter skill-rating-<id>.
+     Der Prüf-GEDANKE bleibt exakt derselbe: Die Bewertungs-Interaktion im Modal
+     ist erreichbar, klickbar und schreibt lokal. Zusätzlich wird jetzt der
+     Namespace mitgeprüft (vote:skill:), weil ein Widget ohne expliziten Typ
+     still in den Seiten-Default fallen würde — genau die Fehlerklasse, die
+     CLAUDE.md als „stumm" beschreibt. aria-pressed und .-on prüfen wir mit,
+     damit ein Knopf, der speichert aber optisch nichts tut, nicht durchrutscht. */
   await page.click('#modal .tab-btn[data-tab="ratings"]');
-  await page.waitForSelector('#modal .star-input .star-btn', { timeout: 5000 });
-  await page.locator('#modal .star-input .star-btn').nth(3).click(); // 4 Sterne
+  await page.waitForSelector('#modal .up-btn[data-up-id]', { timeout: 5000 });
+  await page.locator('#modal .up-btn[data-up-id]').first().click();
   await page.waitForTimeout(300);
-  const ratingKeys = await page.evaluate(() =>
-    Object.keys(localStorage).filter(k => k.startsWith('skill-rating-'))
-  );
-  check('05_rating_stars_localstorage', ratingKeys.length > 0, { ratingKeys });
+  const voteState = await page.evaluate(() => {
+    const btn = document.querySelector('#modal .up-btn[data-up-id]');
+    return {
+      voteKeys: Object.keys(localStorage).filter(k => k.startsWith('vote:skill:')),
+      foreignVoteKeys: Object.keys(localStorage)
+        .filter(k => k.startsWith('vote:') && !k.startsWith('vote:skill:')),
+      pressed: btn ? btn.getAttribute('aria-pressed') : null,
+      on: btn ? btn.classList.contains('-on') : false,
+    };
+  });
+  check('05_upvote_localstorage',
+    voteState.voteKeys.length > 0 && voteState.foreignVoteKeys.length === 0
+      && voteState.pressed === 'true' && voteState.on,
+    voteState);
   await page.keyboard.press('Escape');
   await page.waitForTimeout(300);
 

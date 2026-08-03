@@ -16,6 +16,15 @@ Thumbs.db
 .vscode/
 .idea/
 
+# Lizenzpflichtige Marken-Schrift — DARF NICHT INS ÖFFENTLICHE REPO.
+# „Centra No1/No2" ist die pilot-Hausschrift und kommerziell lizenziert; dieses
+# Repo ist public (GitHub Pages). Die Dateien liegen deshalb nur lokal, die
+# @font-face-Blöcke in shared/base.css zeigen aber auf sie: fehlen sie, liefert
+# der Server 404, font-display:swap greift und alles rendert in Inter weiter —
+# genau so, wie die Seite es vor der Centra-Einbindung tat. Beim Re-Sync ins
+# private Org-Repo wird der Ordner mitgeliefert, siehe docs/CENTRA-RESYNC.md.
+assets/fonts/centra/
+
 # Achtung, NICHT ignorieren: .nojekyll (wird von GitHub Pages gebraucht),
 # skills/manifest.json und skills/files-all.json (erzeugt build-skills.mjs,
 # aber sie werden ausgeliefert und müssen im Repo liegen).

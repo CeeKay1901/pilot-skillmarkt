@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>pilot AI Marketplace — Lernen &amp; Hilfe</title>
-  <meta name="description" content="Ein Bereich für alles, was dich weiterbringt: geprüfte Lern-Ressourcen, das Befehle-Ranking für Claude Code und Langdock, ein Glossar, das jeden Begriff in einem Satz erklärt, und Schritt-für-Schritt-Antworten auf die häufigsten Blocker.">
+  <meta name="description" content="Ein Bereich für alles, was dich weiterbringt: geprüfte Lern-Ressourcen, das Befehle-Ranking für Claude Code und pilot AI, ein Glossar, das jeden Begriff in einem Satz erklärt, und Schritt-für-Schritt-Antworten auf die häufigsten Blocker.">
   <meta name="theme-color" content="#262626">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="pilot AI Marketplace">
@@ -32,8 +32,8 @@
        Vier Bereiche unter einer Sticky-Sub-Nav, in dieser Reihenfolge:
          1) RESSOURCEN — editoriales Link-Regal (aus lernen.html):
             2-spaltige Link-Karten, Filter Typ/Niveau/Sprache + Suche,
-            bayesScore-Sortierung. Die DAUER hängt allein an der
-            Zeit-Schnellauswahl unterm Seitenkopf (Signature-Element) —
+            Sortierung nach Stimmen/Dauer/Titel. Die DAUER hängt allein an
+            der Zeit-Schnellauswahl unterm Seitenkopf (Signature-Element) —
             bewusst kein zweiter Dauer-Regler in der Filterleiste.
          2) BEFEHLE & KNIFFE — heller Rahmen, das Upvote-Ranking selbst
             bleibt als Terminal-Moment dunkel.
@@ -113,7 +113,11 @@
     /* Ressourcen-Bereich: Intro-Kopf + Filterleiste + Regal */
     .res-intro { background: var(--c-bg); padding: 5.2rem 0 2.4rem; }
     .res-intro-inner { max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-d); }
-    .res-section-h2 { font-size: var(--fs-h2); font-weight: 700; letter-spacing: -.02em; margin: .6rem 0 1.2rem; }
+    /* margin-top 0 statt .6rem: Der Kicker über dieser Überschrift ist entfallen
+       (Feedback) — er benannte nur noch einmal, was die Überschrift und die aktive
+       Sub-Nav ohnehin sagen. Die .6rem waren sein Abstandshalter; ohne ihn hinge
+       die Überschrift sonst an einer Lücke, die zu nichts mehr gehört. */
+    .res-section-h2 { font-size: var(--fs-h2); font-weight: 700; letter-spacing: -.02em; margin: 0 0 1.2rem; }
     .res-lead { font-size: 1.6rem; line-height: 1.6; color: var(--c-ink-body); max-width: 74ch; margin: 0; }
 
     /* Chip-Zeile horizontal (Muster lernen.html): base.css stellt .role-chips für
@@ -130,33 +134,37 @@
     /* ===== RESSOURCEN-REGAL: 2-spaltige editoriale Liste aus Link-Karten ===== */
     .res-section { padding: 2.4rem 0 8rem; background: var(--c-bg); }
     .res-inner { max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-d); }
-    .res-note {
-      font-family: var(--font-mono); font-size: 1.15rem; line-height: 1.6;
-      color: var(--c-gray-m); margin: 0 0 2.4rem; max-width: 88ch;
-    }
-    .res-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.8rem; align-items: start; }
+    /* (Die frühere .res-note stand hier: ein Vorspann über Link-Prüfdatum und
+       Demo-Werten, den niemand las, weil er vor dem Regal lag statt an der Sache.
+       Beide Aussagen stehen jetzt DORT, wo die Zahl steht — das Prüfdatum am Fuß
+       jedes Aufklapp-Details, die Demo-Kennzeichnung direkt an der Stimmenzahl.) */
+    /* align-items: stretch (Vorgabe des Rasters, deshalb nicht notiert) statt start:
+       Die Karten einer Zeile sind jetzt gleich hoch, das Raster steht ruhig. Möglich
+       wird das erst durch die feste Kartenanatomie darunter — Kopf, Titel, Kurzinfo,
+       Meta, Fuß an festen Plätzen, Fuß per margin-top:auto unten angeschlagen. */
+    .res-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.8rem; }
     /* Karten-Primitive: --paper + --r-lg, wie .skill-card, .area-card,
        .pilot-card und .sr-card. Die drei Kartentypen dieser Seite (.res-card,
        .g-card, .faq-card) waren zusammen die letzte Ausnahme (--c-white +
        --r-md). Alle drei angeglichen, damit die Seite weder intern noch
        gegenueber den Schwesterseiten aus der Reihe faellt. */
+    /* cursor:pointer, weil die ganze Kartenfläche das Detail aufklappt (Feedback 31).
+       Die Karte bleibt dabei ein <article> ohne role/tabindex — sie enthält Knöpfe,
+       und eine Schaltfläche darf keine Schaltflächen enthalten (CLAUDE.md, axe
+       nested-interactive). Den Tastaturweg trägt weiterhin „Mehr dazu“. */
     .res-card {
-      position: relative;
+      position: relative; cursor: pointer;
       display: grid; grid-template-columns: 6.2rem 1fr;
       background: var(--paper); border: 1px solid var(--line); border-radius: var(--r-lg);
       transition: transform .22s cubic-bezier(.2,.7,.2,1), box-shadow .22s ease, border-color .22s ease;
     }
     /* Editorial-Pass: Karten-Hover-Sprache der Startseite (Offset-Schatten in Gelb) */
     .res-card:hover { transform: translate(-2px,-2px); border-color: var(--c-black); box-shadow: 6px 6px 0 var(--c-yellow); }
+    /* Tastaturbedienung sichtbar machen: Der Fokus liegt auf einem Kind (Titel-Link,
+       Merken, Hilfreich, Mehr dazu) — die Karte zeigt ihn mit an, sonst wüsste
+       niemand, WELCHE Karte gerade dran ist. */
+    .res-card:focus-within { border-color: var(--c-black); box-shadow: 6px 6px 0 var(--c-yellow); }
     .res-card.-highlight { border-color: var(--c-yellow); box-shadow: 0 0 0 3px rgba(255,224,94,.45); }
-    .res-card.start-here { border-color: var(--c-black); box-shadow: 6px 6px 0 var(--c-yellow); }
-    .start-here-ribbon {
-      position: absolute; top: 0; right: 2rem; transform: translateY(-50%);
-      background: var(--c-black); color: var(--c-yellow);
-      font-family: var(--font-mono); font-size: 1.05rem; font-weight: 600;
-      letter-spacing: .08em; text-transform: uppercase;
-      padding: .35rem 1rem; border-radius: var(--r-pill); z-index: 2;
-    }
     .res-ico {
       display: flex; align-items: flex-start; justify-content: center;
       padding: 2.2rem 0 0; background: var(--paper-warm);
@@ -165,7 +173,11 @@
     }
     .res-card.-intern .res-ico { background: rgba(255,224,94,.25); }
     .res-ico .lu { width: 2.2rem; height: 2.2rem; color: var(--c-gray-m); }
-    .res-main { padding: 1.8rem 2rem 1.6rem; min-width: 0; }
+    /* Feste Kartenanatomie (Feedback 10): Kopf · Titel · Kurzinfo · Meta · Fuß.
+       Als Flex-Spalte, damit der Fuß per margin-top:auto immer unten sitzt — sonst
+       wandert er bei kurzem Titel nach oben und das Raster wirkt unruhig, obwohl
+       die Karten gleich hoch sind. */
+    .res-main { padding: 1.8rem 2rem 1.6rem; min-width: 0; display: flex; flex-direction: column; }
     .res-kopf { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; margin-bottom: .8rem; }
     .res-typ {
       font-family: var(--font-mono); font-size: 1.05rem; font-weight: 600;
@@ -194,9 +206,20 @@
       margin: 1.2rem 0 1.4rem;
     }
     .res-fuerdich strong { font-weight: 700; }
+    /* Textmenge begrenzen statt Karten wachsen lassen (Feedback 10): In der Stufe
+       „Standard“ bleiben zwei Zeilen Kurzinfo stehen, in „Kompakt“ ist sie ganz weg,
+       in „Ausführlich“ vollständig da. Die Zeilenzahl kommt aus der geteilten
+       .density-clamp-Utility (base.css), gesteuert über --density-clamp-s. */
+    .res-fuerdich.density-clamp { --density-clamp-s: 2; }
+    /* Die eine ruhige Meta-Zeile jeder Karte (Feedback 9): IMMER dieselben vier
+       Angaben in derselben Reihenfolge — Dauer · Niveau · Sprache · Thema. Vorher
+       stand hier nur die Dauer, Niveau/Sprache/Plattform lagen im Aufklapp-Detail
+       und eine einzelne Karte trug zusätzlich ein „Start hier“-Band. Ein Hinweis auf
+       genau einer Karte hilft beim ersten Besuch und ist ab dem zweiten im Weg;
+       eine gleiche Zeile auf allen Karten trägt dauerhaft. */
     .res-meta {
       display: flex; align-items: center; gap: .6rem 1rem; flex-wrap: wrap;
-      font-size: 1.3rem; color: var(--c-gray-m); margin-bottom: 1.4rem;
+      font-size: 1.3rem; color: var(--c-gray-m); margin: 0 0 1.4rem;
     }
     .res-dauer { display: inline-flex; align-items: center; gap: .5rem; font-variant-numeric: tabular-nums; white-space: nowrap; }
     .res-dauer .lu { width: 1.4rem; height: 1.4rem; color: var(--c-gray-m); }
@@ -211,29 +234,46 @@
       padding: .25rem .9rem; white-space: nowrap; color: var(--c-gray-m);
     }
     .res-meta .meta-dot { color: var(--c-gray-l); }
-    .res-foot { display: flex; align-items: center; gap: 1rem 1.4rem; flex-wrap: wrap; }
+    /* margin-top:auto schlägt den Fuß an die Unterkante — siehe .res-main. */
+    .res-foot { display: flex; align-items: center; gap: 1rem 1.4rem; flex-wrap: wrap; margin-top: auto; }
     /* UX5-Fix (WCAG AA): informative Rating-Zahl war --c-ink-faded (3.0–3.3:1 < AA).
        --c-gray-m (#66655d) = 5,65:1 auf --paper — ≥4.5:1.
        (Stand früher als „5.71:1 auf --c-white". Beides veraltet: .res-card wurde
        bei der Kartenangleichung auf --paper umgestellt, 5.71 galt für --c-white.
        Der Wert hier ist am laufenden Element nachgemessen, nicht übertragen.) */
-    .res-rating { display: flex; align-items: center; gap: .6rem; font-size: 1.25rem; color: var(--c-gray-m); }
-    .res-rating .stars-display { font-size: 1.3rem; }
+    /* Stimmen-Angabe im Aufklapp-Detail. Bis zum Feedback-Pass stand hier die
+       Sterne-Anzeige aus base.js — ein Bewertungs-DURCHSCHNITT, den auf dieser
+       Seite niemand abgeben kann, weil es kein Sterne-Formular gibt. Jetzt steht
+       hier die Zahl, die die Karte wirklich erhebt: die Upvotes. Der Zusatz
+       „redaktioneller Startwert … nur in diesem Browser“ ist die Demo-Kennzeichnung
+       (CLAUDE.md, harte Regel 3). Sie ist mit der .res-note weggefallen und sitzt
+       jetzt an der Zahl, auf die sie sich bezieht — zusätzlich zur seitenweiten
+       Kennzeichnung im „Über diese Seite“-Fenster (base.js). */
+    .res-rating { display: flex; align-items: flex-start; gap: .6rem; font-size: 1.25rem; line-height: 1.5; color: var(--c-gray-m); }
+    .res-rating .lu { width: 1.4rem; height: 1.4rem; flex-shrink: 0; margin-top: .2rem; }
+    .res-rating strong { font-family: var(--font-mono); color: var(--c-black); }
     .res-intern-hint { font-size: 1.25rem; color: var(--c-gray-m); font-style: italic; }
 
-    /* Ressourcen-Vote-Button: helle Variante. Die Basis-.vote-btn/.vote-count
-       weiter unten sind für die DUNKLE Befehle-Säule gebaut — hier auf .res-card
-       gescoped überschreiben (höhere Spezifität), damit beide Kontexte auf einer
-       Seite koexistieren, ohne die HTML-Klassen zu ändern. */
-    .res-card .vote-btn {
-      border: 1px solid var(--line-strong); background: transparent;
-      color: var(--c-black); padding: .55rem 1.3rem; font-size: 1.25rem;
+    /* Linkout im Aufklapp-Detail (Feedback 30). Der Titel ist zwar verlinkt, aber
+       im aufgeklappten Zustand steht er weit oben und liest sich als Überschrift —
+       am Ende des Details fehlte der eindeutige, benannte Ausgang zur Quelle.
+       Als einziges gefülltes Element der Karte ist er unmissverständlich DIE Aktion. */
+    .res-linkout {
+      display: inline-flex; align-items: center; gap: .8rem;
+      background: var(--c-black); color: var(--c-white); text-decoration: none;
+      border: 1px solid var(--c-black); border-radius: var(--r-pill);
+      font-size: 1.35rem; font-weight: 600; padding: .9rem 1.8rem;
+      transition: var(--trans);
     }
-    .res-card .vote-btn .lu { width: 1.4rem; height: 1.4rem; }
-    .res-card .vote-btn:hover { border-color: var(--c-black); color: var(--c-black); }
-    .res-card .vote-btn.voted { background: var(--c-yellow); border-color: var(--c-yellow); color: var(--c-black); }
-    .res-card .vote-count { background: rgba(38,38,38,.08); color: var(--c-black); }
-    .res-card .vote-btn.voted .vote-count { background: rgba(38,38,38,.15); }
+    .res-linkout .lu { width: 1.5rem; height: 1.5rem; }
+    .res-linkout:hover { background: var(--c-yellow); border-color: var(--c-yellow); color: var(--c-black); }
+
+    /* Der Ressourcen-Fuß nutzt jetzt den geteilten .up-btn aus base.css statt der
+       seitenlokalen Hell-Variante von .vote-btn. Der .up-btn ist bereits für helle
+       Gründe gerechnet (Kontrast im base.css-Kommentar nachgewiesen) — die früheren
+       sechs Überschreibungen hier sind damit ersatzlos entfallen. Der dunkle
+       .vote-btn der Befehle-Säule bleibt unberührt, weil es ein anderer Klassenname
+       ist; genau dafür wurde .up-btn eigenständig benannt. */
 
     /* „Merken“-Stern im Ressourcen-Kartenkopf. Gestalt kommt fertig aus base.css
        (.fav-btn), hier nur die Einpassung:
@@ -247,14 +287,17 @@
          dem Handy die verlinkte Seite, statt zu merken. Gegenprobe gemacht:
          mit der Regel treffen alle neun Rasterpunkte des Knopfes den Knopf,
          ohne sie zwei davon den Link bzw. die Quellenangabe darüber.
-         z-index 3 liegt über dem „Start hier“-Band (z-index 2).
+         z-index 3 hält ihn über der vergrößerten Titel-Trefferfläche.
        Die negativen Ränder ersetzen die aus base.css (dort für den Katalog-
        Kartenkopf gerechnet) — sie verschieben die Trefferfläche, verkleinern sie
-       nicht. Das kleinere font-size tat das aber: real 43×43px statt 44 (nach-
-       gemessen). base.css hält die 44px seit der Korrektur per min-width/
-       min-height fest, unabhängig von der Schriftgröße. */
+       nicht.
+       Seit dem Feedback-Pass rendert favBookmarkHtml() (base.js) den Knopf: gleiche
+       Klasse .fav-btn plus .-lu, gleiche data-/aria-Attribute — nur das Zeichen ist
+       das Lesezeichen-SVG statt ☆/★. Die frühere font-size-Korrektur hier ist damit
+       gegenstandslos und entfernt: Ein SVG hängt nicht an der Schriftgröße, und die
+       44px-Trefffläche hält base.css seit der Korrektur per min-width/min-height. */
     .res-card .fav-btn {
-      position: relative; z-index: 3; font-size: 1.9rem;
+      position: relative; z-index: 3;
       margin: -1.1rem -1.1rem -1.1rem auto;
     }
     .res-toggle {
@@ -294,7 +337,15 @@
       background: var(--c-bg); color: var(--c-black);
       border-top: 1px solid var(--line); padding: 6.4rem 0 0;
     }
-    .bef-inner { max-width: 108rem; margin: 0 auto; padding: 0 var(--pad-d) 8rem; }
+    /* BÜNDIGKEIT DER VIER SÄULEN (Feedback 28): Alle vier Bereiche liegen jetzt im
+       gleichen Rahmen wie die Ressourcen — max-width: var(--max-w), linke Kante
+       identisch. Vorher hatte jede Säule ihre eigene Breite (Befehle 108rem, FAQ
+       86rem), was beim Tabwechsel wie ein Sprung zwischen „bündig“ und „mittig“
+       aussah: Überschrift und Vorspann rückten je nach Reiter ein Stück nach innen.
+       Die Lesebreite geht dabei nicht verloren — sie sitzt jetzt an den INHALTEN
+       (.rank-list, .faq-list, die Vorspann-Absätze), nicht am äußeren Rahmen.
+       Genau darum ging es: Der Rahmen richtet aus, der Inhalt bestimmt die Zeilenlänge. */
+    .bef-inner { max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-d) 8rem; }
     .bef-h2 {
       font-size: var(--fs-h2); font-weight: 700;
       letter-spacing: -.02em; color: var(--c-black); margin: .6rem 0 1.2rem;
@@ -315,6 +366,10 @@
       /* Editorial-Pass: das dunkle Panel trägt den gelben Offset-Schatten der
          Karten-Sprache — EIN markanter dunkler Moment, keine neue dunkle Fläche. */
       box-shadow: 6px 6px 0 var(--c-yellow);
+      /* Lesebreite der Rangliste. Sie saß früher am äußeren .bef-inner (108rem);
+         seit der Bündigkeits-Angleichung trägt sie der Inhalt selbst — die linke
+         Kante bleibt damit auf einer Linie mit allen anderen Säulen. */
+      max-width: 108rem;
     }
     .cmd-card {
       background: rgba(252,252,252,.045);
@@ -552,10 +607,14 @@
 
     /* ===== BEREICH 4: FAQ (ruhiges Akkordeon) ===== */
     .faq-section { background: var(--c-bg); border-top: 1px solid var(--line); padding: 6.4rem 0 8rem; }
-    .faq-inner { max-width: 86rem; margin: 0 auto; padding: 0 var(--pad-d); }
+    /* Bündig wie die anderen drei Säulen (Feedback 28) — die Lesebreite von 86rem
+       ist an die .faq-list gewandert, wo sie hingehört: Ein Akkordeon über die volle
+       Rasterbreite ergäbe Zeilen, die niemand lesen will, aber der Bereichskopf muss
+       auf derselben Kante beginnen wie Ressourcen, Befehle und Glossar. */
+    .faq-inner { max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-d); }
     .faq-h2 { font-size: var(--fs-h2); font-weight: 700; letter-spacing: -.02em; margin: .6rem 0 1.2rem; }
     .faq-sub { font-size: 1.6rem; line-height: 1.6; color: var(--c-ink-body); max-width: 62ch; margin: 0; }
-    .faq-list { display: flex; flex-direction: column; gap: 1.2rem; margin-top: 3.2rem; }
+    .faq-list { display: flex; flex-direction: column; gap: 1.2rem; margin-top: 3.2rem; max-width: 86rem; }
     .faq-card {
       background: var(--paper); border: 1px solid var(--line); border-radius: var(--r-lg);
       transition: border-color .25s ease, box-shadow .25s ease;
@@ -647,7 +706,7 @@
     }
     @media (hover: none) and (pointer: coarse) {
       .vote-btn, .cmd-toggle, .cmd-copy, .chip, .term-play { min-height: 4.4rem; }
-      .pillar-link, .g-head, .az-btn, .xref, .res-toggle { min-height: 4.4rem; }
+      .pillar-link, .g-head, .az-btn, .xref, .res-toggle, .res-linkout { min-height: 4.4rem; }
       .az-btn { min-width: 4rem; }
       /* Ressourcen-Titel ist ein Inline-Link: die Trefferfläche einer Zeile ist
          nur die Schriftgröße (~21px). min-height greift bei display:inline nicht,
@@ -699,11 +758,13 @@
   <!-- MAIN -->
   <main id="main-content">
 
-    <!-- BEREICH 1: RESSOURCEN (Lern-Regal — kompletter Lernen-Inhalt) -->
+    <!-- BEREICH 1: RESSOURCEN (kompletter Lernen-Inhalt) -->
     <section id="ressourcen" aria-labelledby="ressourcen-h" role="tabpanel">
       <div class="res-intro">
         <div class="res-intro-inner">
-          <p class="kicker">Lern-Regal</p>
+          <!-- Kein Kicker (Feedback): Er stand als drittes Etikett über derselben
+               Sache — der aktive Reiter sagt „Ressourcen“, die Überschrift sagt
+               „Ressourcen“, und der Kicker sagte es noch einmal mit anderem Wort. -->
           <h2 class="res-section-h2" id="ressourcen-h">Ressourcen</h2>
           <p class="res-lead">Redaktionell geprüfte Links — mit ehrlicher Dauer, Niveau und Sprache.</p>
         </div>
@@ -733,8 +794,19 @@
               <div class="role-chips" id="filter-chips"></div>
               <div class="filter-controls">
                 <span class="results-count-lg" id="results-count"></span>
+                <!-- Ansichtsdichte (Feedback 43): Slot für initDensity() aus base.js,
+                     gleiches Slot-Muster wie [data-page-search]. Standard ist KOMPAKT —
+                     wer die Seite zum Arbeiten öffnet, sucht meistens etwas Bekanntes
+                     wieder und braucht dafür Titel und Meta, nicht den Fließtext. -->
+                <div data-density-slot></div>
                 <select id="sort-select" aria-label="Ressourcen sortieren">
-                  <option value="bewertung">Team-Bewertung</option>
+                  <!-- Sortiert nach der Zahl, die auf der Karte steht. Die frühere
+                       Option „Team-Bewertung“ rechnete mit dem Sterne-Durchschnitt —
+                       und der ist seit dem Feedback-Pass nirgends mehr zu sehen. Eine
+                       Reihenfolge, deren Kriterium unsichtbar ist, kann niemand
+                       nachvollziehen oder anzweifeln; deshalb sortiert die Liste jetzt
+                       nach demselben Wert, den der „Hat mir geholfen“-Knopf zeigt. -->
+                  <option value="stimmen">Meiste Stimmen</option>
                   <option value="dauer">Kürzeste zuerst</option>
                   <option value="alpha">Titel A–Z</option>
                 </select>
@@ -748,7 +820,12 @@
       <!-- RESSOURCEN-REGAL -->
       <div class="res-section" aria-label="Lern-Ressourcen">
         <div class="res-inner">
-          <p class="res-note">Externe Links am 17. Juli 2026 redaktionell geprüft; Bewertungs- und Stimmen-Startwerte sind Demo-Werte, deine Stimme kommt lokal in deinem Browser dazu.</p>
+          <!-- Der frühere Vorspann („Externe Links am 17. Juli geprüft; Demo-Werte …“)
+               ist entfallen (Feedback 29). Beide Aussagen sind nicht verschwunden,
+               sondern dorthin gewandert, wo sie geprüft werden können: Das Prüfdatum
+               steht am Fuß jedes Aufklapp-Details bei der jeweiligen Ressource, die
+               Demo-Kennzeichnung direkt an der Stimmenzahl — und seitenweit weiterhin
+               im „Über diese Seite“-Fenster aus dem Footer (base.js). -->
           <div class="res-list" id="res-list"></div>
         </div>
       </div>
@@ -770,7 +847,7 @@
       <div class="bef-inner">
         <p class="kicker">Ranking</p>
         <h2 class="bef-h2" id="befehle-h">Befehle &amp; Kniffe</h2>
-        <p class="bef-sub"><span id="bef-count">0</span> Befehle, Flags und Tastentricks für Claude Code und Langdock — „Hat mir geholfen“ sortiert die Rangliste live neu.</p>
+        <p class="bef-sub"><span id="bef-count">0</span> Befehle, Flags und Tastentricks für Claude Code und pilot AI — „Hat mir geholfen“ sortiert die Rangliste live neu.</p>
 
         <div class="bef-chips" role="group" aria-label="Nach Kategorie filtern" id="bef-chips"></div>
 
@@ -837,9 +914,9 @@
     // ===== DATA =====
     //   data/befehle.js:   BEFEHLE, BEFEHL_LEUCHTTUERME, BEFEHL_KOMMENTARE
     //   data/glossar.js:   GLOSSAR, FAQ
-    //   data/ressourcen.js: RESSOURCEN, RESSOURCE_START, RESSOURCE_TYPEN
-    // ===== ENGINE ===== (Nav, Vote-Helfer, bayesScore, searchScore, renderStars,
-    //   playScript, openSubmitFlow, Utils: shared/base.js)
+    //   data/ressourcen.js: RESSOURCEN, RESSOURCE_TYPEN
+    // ===== ENGINE ===== (Nav, Vote-/Upvote-Helfer inkl. voteScore, favBookmarkHtml,
+    //   initDensity, searchScore, playScript, openSubmitFlow, Utils: shared/base.js)
     //
     // BEWUSST OHNE window.RatingConfig und window.ModalConfig: diese Seite nutzt
     // keine Sterne-EINGABE und kein Modal — alles klappt inline auf. Auf einer
@@ -847,8 +924,11 @@
     // vote:begriff). Die Vote-Helfer hasVoted/getVotes/toggleVote nehmen den Typ
     // IMMER explizit (pro Aufruf typisiert) — ein seitenweiter RatingConfig-Default
     // würde alle drei fälschlich in EINEN Namespace zwingen, deshalb bleibt er weg.
-    // (bayesScore für die Ressourcen liest nur den Seed — es gibt keine Sterne-
-    // Eingabe, ein Upvote verändert die Sterne NIE.)
+    //
+    // KEINE Sterne mehr auf dieser Seite: Weder Anzeige noch Eingabe noch Sortierung.
+    // Das rating-Feld steht weiterhin in data/ressourcen.js, wird hier aber nirgends
+    // gelesen — die einzige Bewertungsgröße der Ressourcen ist die Stimme, und die
+    // läuft über dieselben typisierten Vote-Helfer wie Befehle und Begriffe.
 
     // ===== STATE ===== (Minimal-Global, wird von base.js defensiv gelesen)
     const state = {
@@ -863,7 +943,7 @@
       niveau: null,      // einsteiger | fortgeschritten | null
       dauer: null,       // '5' | '15' | '30' | 'ueber30' | null
       sprache: null,     // 'de' | 'en' | null
-      sort: 'bewertung',
+      sort: 'stimmen',   // stimmen | dauer | alpha — Wert = <option value> im Sortierfeld
       search: ''
     };
     const _expanded = new Set();     // aufgeklappte Befehl-IDs (überlebt Re-Sort)
@@ -899,7 +979,7 @@
     const TYP_CARD_LABEL = { video: 'Video', doku: 'Doku', artikel: 'Artikel', kurs: 'Kurs', podcast: 'Podcast', intern: 'pilot-intern' };
     const NIVEAU_LABEL = { einsteiger: 'Einsteiger', fortgeschritten: 'Fortgeschritten' };
     // gemeinsames Plattform-Label für Befehle UND Ressourcen (Superset)
-    const PF_LABEL = { code: 'Claude Code', langdock: 'Langdock', allgemein: 'Allgemein' };
+    const PF_LABEL = { code: 'Claude Code', langdock: 'pilot AI', allgemein: 'Allgemein' };
     const SPRACHE_LABEL = { de: 'Deutsch', en: 'Englisch' };
     // Kumulative Dauer-Buckets — identisch mit den Zeit-Kacheln im Hero.
     const DAUER_BUCKETS = [
@@ -954,12 +1034,19 @@
           const d = (state._searchScore[b.id] || 0) - (state._searchScore[a.id] || 0);
           if (d) return d;
         }
-        if (state.sort === 'bewertung') {
-          // Interne Platzhalter haben ehrlich KEIN Rating — sie sortieren ans Ende
-          // statt den Bayes-Prior (4.2) geschenkt zu bekommen.
-          const av = a.rating ? bayesScore(a) : 0, bv = b.rating ? bayesScore(b) : 0;
-          if (bv !== av) return bv - av;
-          return (b.votes || 0) - (a.votes || 0) || a.titel.localeCompare(b.titel, 'de');
+        if (state.sort === 'stimmen') {
+          // voteScore() = getUpvoteCount() aus base.js: Seed aus den Daten plus die
+          // eigene Stimme — also exakt die Zahl, die im Kartenfuß steht. Damit ist die
+          // Reihenfolge am Bildschirm nachprüfbar; vorher entschied ein Sterne-
+          // Durchschnitt, der seit dem Feedback-Pass nirgends mehr angezeigt wird.
+          // Interne Platzhalter haben ehrlich keine Stimmen (kein Link, kein Knopf):
+          // _upSeed findet bei ihnen weder votesSeed noch votes und liefert 0 — sie
+          // sortieren von selbst ans Ende, ohne Sonderfall.
+          // Das rating-Feld der Daten bleibt unangetastet, wird hier aber nicht mehr
+          // gelesen: Jede externe Ressource hat ein votes-Feld, das in _upSeed vor
+          // rating.count greift.
+          const av = voteScore(a, 'ressource'), bv = voteScore(b, 'ressource');
+          return bv - av || a.titel.localeCompare(b.titel, 'de');
         }
         if (state.sort === 'dauer') return a.dauerMin - b.dauerMin || a.titel.localeCompare(b.titel, 'de');
         if (state.sort === 'alpha') return a.titel.localeCompare(b.titel, 'de');
@@ -1117,17 +1204,13 @@
       render(); // setzt via updateZeitTiles auch die Zeit-Kacheln zurück
     }
 
-    // ===== KARTE (LINK-Karte: Klick-Ziel ist der externe Link, Details klappen auf) =====
+    // ===== KARTE =====
+    // Die Meta-Angaben (Niveau, Sprache, Plattform) standen früher NUR hier im
+    // Aufklapp-Detail unter „Auf einen Blick“. Seit dem Feedback-Pass tragen sie alle
+    // Karten sichtbar in der Meta-Zeile (resMetaHtml) — der Block ist deshalb hier
+    // entfallen statt doppelt zu stehen.
     function resBodyHtml(r) {
-      const detailBits = [
-        `<span class="diff-badge ${r.niveau === 'einsteiger' ? 'easy' : 'advanced'}">${NIVEAU_LABEL[r.niveau]}</span>`,
-        `<span class="lang-pill">${r.sprache.toUpperCase()}</span>`,
-        `<span class="res-pf">${PF_LABEL[r.plattform] || r.plattform}</span>`,
-      ];
-      if (!r.intern) detailBits.push(`<span class="res-rating">${renderStars(r.rating.average)}<span>${r.rating.average.toFixed(1)} · ${r.rating.count} ${r.rating.count === 1 ? 'Bewertung' : 'Bewertungen'}</span></span>`);
-      let h = `
-        <div><span class="res-body-label">Auf einen Blick</span><div class="res-meta" style="margin-bottom:0">${detailBits.join('<span class="meta-dot">·</span>')}</div></div>
-        <div><span class="res-body-label">Was drin ist</span><p>${escHtml(r.beschreibung)}</p></div>`;
+      let h = `<div><span class="res-body-label">Was drin ist</span><p>${escHtml(r.beschreibung)}</p></div>`;
       if (r.gelernt && r.gelernt.length) h += `
         <div><span class="res-body-label">Das nimmst du mit</span>
           <ul class="res-gelernt">${r.gelernt.map(g => `<li>${escHtml(g)}</li>`).join('')}</ul>
@@ -1140,68 +1223,107 @@
             <figcaption>${escHtml(v.autor)} · ${escHtml(v.rolle)}</figcaption>
           </figure>`).join('')}
         </div>`;
+      // Stimmenzahl MIT Demo-Kennzeichnung (CLAUDE.md, harte Regel 3). Bewusst als
+      // Text und nicht als zweiter Knopf: Gedrückt wird im Kartenfuß, hier wird
+      // eingeordnet, woher die Zahl kommt. Interne Platzhalter haben ehrlich keine.
+      if (!r.intern) h += `
+        <div><span class="res-body-label">Stimmen</span>
+          <span class="res-rating">${LU.vote}<span><strong>${getUpvoteCount(r, 'ressource')}</strong> × „Hat mir geholfen“ — redaktioneller Startwert plus deine eigene Stimme, gespeichert nur in diesem Browser.</span></span>
+        </div>`;
+      // Linkout (Feedback 30): eindeutiger, benannter Ausgang zur Quelle, zusätzlich
+      // zum verlinkten Titel. stopPropagation, damit der Klick nicht zugleich die
+      // Karte zuklappt (siehe resCardClick).
+      if (r.url) h += `
+        <div><a class="res-linkout" href="${escHtml(r.url)}" target="_blank" rel="noopener"
+             onclick="event.stopPropagation()"
+             aria-label="${escHtml(r.titel)} bei ${escHtml(r.quelle)} öffnen (neues Fenster)">${LU.extern}<span>Zur Quelle: ${escHtml(r.quelle)}</span></a></div>`;
       h += r.intern
         ? `<div><span class="res-geprueft">pilot-interner Eintrag — Link folgt, bis dahin: frag das KI-Enablement-Team.</span></div>`
         : `<div><span class="res-geprueft">Link geprüft am ${formatDate(r.geprueft)}.</span></div>`;
       return h;
     }
 
+    /* Die eine ruhige Meta-Zeile jeder Karte (Feedback 9): Dauer · Niveau · Sprache ·
+       Thema, immer in dieser Reihenfolge, auch wenn ein Wert unspektakulär ist. Der
+       Wert liegt in der Gleichheit — man lernt die Position einmal und liest danach
+       nur noch ab. Sie ersetzt das „Start hier“-Band, das genau EINE Karte hervorhob. */
+    function resMetaHtml(r) {
+      return [
+        `<span class="res-dauer">${LU.uhr}${dauerText(r)}</span>`,
+        `<span class="diff-badge ${r.niveau === 'einsteiger' ? 'easy' : 'advanced'}">${NIVEAU_LABEL[r.niveau]}</span>`,
+        `<span class="lang-pill">${r.sprache.toUpperCase()}</span>`,
+        `<span class="res-pf">${PF_LABEL[r.plattform] || r.plattform}</span>`
+      ].join('<span class="meta-dot" aria-hidden="true">·</span>');
+    }
+
     /* ===== MERKEN (Favoriten) — nur Ressourcen =====
        Mechanik komplett aus shared/base.js (isFavorite/toggleFavorite,
-       Speicherschlüssel fav:<typ>:<id>); es fehlte nur das Bedienelement.
-       Der Typ 'ressource' MUSS hier explizit übergeben werden: diese Seite hat
-       bewusst KEIN window.RatingConfig (siehe Kopf des Seiten-Scripts), weil sie
-       drei Typen nebeneinander führt. Ohne expliziten Typ fiele base.js auf den
-       Standard 'skill' zurück und die Merkung landete still unter fav:skill:<id>.
-       aria-label trägt den Titel, weil im Regal sonst Dutzende Sterne identisch
-       „Zu Favoriten hinzufügen“ hießen. */
-    function resFavBtnHtml(r) {
-      const fav = isFavorite(r.id, 'ressource');
-      return `<button type="button" class="fav-btn${fav ? ' active' : ''}" data-fav-id="${escHtml(r.id)}" onclick="toggleFavorite(event,'${r.id}','ressource')" aria-pressed="${fav}" aria-label="${escHtml(r.titel)} ${fav ? 'aus Favoriten entfernen' : 'zu Favoriten hinzufügen'}">${fav ? '★' : '☆'}</button>`;
-    }
+       Speicherschlüssel fav:<typ>:<id>). Gerendert wird der Knopf seit dem
+       Feedback-Pass vom geteilten favBookmarkHtml() — dieselbe Klasse .fav-btn,
+       dieselben data-/aria-Attribute, nur das Lesezeichen-SVG statt der ☆/★-Glyphe.
+       Die frühere seitenlokale Kopie resFavBtnHtml() ist damit ersatzlos entfallen.
+       Der Typ 'ressource' MUSS explizit übergeben werden: diese Seite hat bewusst
+       KEIN window.RatingConfig (siehe Kopf des Seiten-Scripts), weil sie drei Typen
+       nebeneinander führt. Ohne expliziten Typ fiele base.js auf den Standard 'skill'
+       zurück und die Merkung landete still unter fav:skill:<id>. Der Titel geht als
+       `name` mit, weil im Regal sonst Dutzende Knöpfe identisch hießen.
+       toggleFavorite() ruft selbst evt.stopPropagation() — der Klick klappt die
+       Karte also nicht zusätzlich auf (base.js:721). */
+
     /* Zustand gezielt nachziehen statt neu zu rendern: der Fokus bleibt auf dem
-       Knopf (Tastaturbedienung), aufgeklappte Karten bleiben stehen. */
+       Knopf (Tastaturbedienung), aufgeklappte Karten bleiben stehen.
+       Kein textContent mehr: Das würde das Lesezeichen-SVG aus dem Knopf löschen.
+       Den Zustand trägt jetzt die Klasse .active — base.css füllt die Kontur darüber
+       gelb (.fav-btn.-lu.active svg.lu), die Form bleibt gleich. */
     window.onFavoritesChanged = function (id, isNowFav) {
       document.querySelectorAll(`.fav-btn[data-fav-id="${CSS.escape(id)}"]`).forEach(btn => {
         const r = resById(id);
         btn.classList.toggle('active', isNowFav);
         btn.setAttribute('aria-pressed', String(isNowFav));
-        btn.textContent = isNowFav ? '★' : '☆';
         btn.setAttribute('aria-label', `${r ? r.titel : 'Ressource'} ${isNowFav ? 'aus Favoriten entfernen' : 'zu Favoriten hinzufügen'}`);
       });
     };
 
-    function resCardHtml(r, idx, isStart) {
+    /* Kartenanatomie (Feedback 9/10/31), auf jeder Karte identisch:
+         Kopf   Typ · Quelle · Merken
+         Titel  verlinkt auf die Quelle (bei internen Platzhaltern reiner Text)
+         Kurz   „Für dich, wenn …“ — hängt an der Ansichtsdichte
+         Meta   Dauer · Niveau · Sprache · Thema
+         Fuß    Hilfreich + Mehr dazu, per margin-top:auto an der Unterkante
+       Die ganze Fläche klappt auf (onclick am <article>), der Text bleibt Text.
+       KEIN role="button"/tabindex an der Karte: Sie enthält Knöpfe, und eine
+       Schaltfläche darf keine Schaltflächen enthalten (CLAUDE.md, axe
+       nested-interactive). Den Tastaturweg zum Detail trägt „Mehr dazu“. */
+    function resCardHtml(r, idx) {
       const open = _resExpanded.has(r.id);
-      const voted = hasVoted('ressource', r.id);
       const delay = Math.min(idx, 11) * 35;
       const titleHtml = r.url
-        ? `<a class="res-title" href="${escHtml(r.url)}" target="_blank" rel="noopener">${escHtml(r.titel)}${LU.extern}</a>`
+        ? `<a class="res-title" href="${escHtml(r.url)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${escHtml(r.titel)}${LU.extern}</a>`
         : `<span class="res-title">${escHtml(r.titel)}</span>`;
+      // Interne Platzhalter haben ehrlich keine Stimmen (kein Link, niemand hat sie
+      // gesehen) — deshalb dort ein Hinweis statt eines Knopfes.
+      // renderUpvoteBtn schreibt in denselben Speicher wie vorher (vote:ressource:<id>)
+      // und rechnet den Seed über getUpvoteCount aus r.votes: gleiche Zahl, gleiches
+      // Verhalten, nur die gemeinsame Optik aller Gattungen statt einer Sonderfassung.
       const footHtml = r.intern
         ? `<span class="res-intern-hint">Noch nicht bewertbar — der Link folgt.</span>`
-        : `<button type="button" class="vote-btn${voted ? ' voted' : ''}" aria-pressed="${voted}" onclick="voteRessource('${r.id}')">
-             ${LU.vote}<span>Hat mir geholfen</span><span class="vote-count">${getVotes('ressource', r.id, r.votes)}</span>
-           </button>`;
+        : renderUpvoteBtn(r.id, 'ressource', getUpvoteCount(r, 'ressource'), { label: 'Hat mir geholfen', name: r.titel });
       return `
-        <article class="res-card${r.intern ? ' -intern' : ''}${isStart ? ' start-here' : ''}${state._noCardAnim ? '' : ' card-in'}" style="animation-delay:${state._noCardAnim ? 0 : delay}ms" id="res-${r.id}" data-id="${r.id}">
-          ${isStart ? '<span class="start-here-ribbon">Start hier</span>' : ''}
+        <article class="res-card${r.intern ? ' -intern' : ''}${state._noCardAnim ? '' : ' card-in'}" style="animation-delay:${state._noCardAnim ? 0 : delay}ms" id="res-${r.id}" data-id="${r.id}" onclick="resCardClick(event,'${r.id}')">
           <div class="res-ico" aria-hidden="true">${typIcon(r.typ)}</div>
           <div class="res-main">
             <div class="res-kopf">
               <span class="res-typ">${TYP_CARD_LABEL[r.typ] || r.typ}</span>
               <span class="res-quelle">${escHtml(r.quelle)}</span>
               ${r.intern ? '<span class="intern-tag">Link folgt</span>' : ''}
-              ${resFavBtnHtml(r)}
+              ${favBookmarkHtml(r.id, 'ressource', r.titel)}
             </div>
             ${titleHtml}
-            <p class="res-fuerdich"><strong>Für dich, wenn</strong> ${escHtml(r.fuerDich)}</p>
-            <div class="res-meta">
-              <span class="res-dauer">${LU.uhr}${dauerText(r)}</span>
-            </div>
+            <p class="res-fuerdich density-hide-kompakt density-clamp"><strong>Für dich, wenn</strong> ${escHtml(r.fuerDich)}</p>
+            <div class="res-meta">${resMetaHtml(r)}</div>
             <div class="res-foot">
               ${footHtml}
-              <button type="button" class="res-toggle" aria-expanded="${open}" aria-controls="res-body-${r.id}" onclick="toggleRessource('${r.id}')">
+              <button type="button" class="res-toggle" aria-expanded="${open}" aria-controls="res-body-${r.id}" onclick="event.stopPropagation();toggleRessource('${r.id}')">
                 <span>Mehr dazu</span><span class="ct-arrow" aria-hidden="true">›</span>
               </button>
             </div>
@@ -1235,31 +1357,34 @@
           </div>`;
         return;
       }
-      // Ohne aktive Filter/Suche und nur bei Standard-Sortierung: Redaktions-Kandidat
-      // als „Start hier“ anpinnen — eine explizite Sortierung (Dauer, A–Z) bleibt
-      // ehrlich und wird nicht vom Pin durchbrochen.
-      const noFilter = !state.search && !state.typ && !state.niveau && !state.dauer && !state.sprache
-        && state.sort === 'bewertung';
-      const start = noFilter ? filtered.find(r => r.id === RESSOURCE_START) : null;
-      const rest = start ? filtered.filter(r => r.id !== start.id) : filtered;
-      let html = start ? resCardHtml(start, 0, true) : '';
-      let idx = start ? 1 : 0;
-      html += rest.map(r => resCardHtml(r, idx++, false)).join('');
-      host.innerHTML = html;
+      // Kein „Start hier“-Pin mehr (Feedback 9): Früher wurde bei leerem Filter eine
+      // redaktionell gesetzte Ressource nach oben gezogen und mit einem Band markiert.
+      // Das half beim allerersten Besuch und stand ab dem zweiten im Weg — und es
+      // durchbrach still die gewählte Sortierung. Was es leisten sollte (Orientierung,
+      // welche Ressource zu mir passt), leistet jetzt die Meta-Zeile auf JEDER Karte.
+      // Die Liste zeigt damit ausnahmslos die Reihenfolge, die im Sortierfeld steht.
+      host.innerHTML = filtered.map((r, i) => resCardHtml(r, i)).join('');
     }
 
-    function voteRessource(id) {
-      const r = resById(id);
-      if (!r || r.intern) return;
-      const now = toggleVote('ressource', id);
-      const btn = document.querySelector(`#res-${id} .vote-btn`);
-      if (btn) {
-        btn.classList.toggle('voted', now);
-        btn.setAttribute('aria-pressed', now ? 'true' : 'false');
-        const count = btn.querySelector('.vote-count');
-        if (count) count.textContent = getVotes('ressource', id, r.votes);
-      }
-      showToast(now ? 'Danke — deine Stimme zählt (gespeichert in deinem Browser)' : 'Stimme zurückgenommen');
+    /* (Die frühere voteRessource() ist entfallen: toggleUpvote() aus base.js macht
+       exakt dasselbe — denselben Speicherschlüssel vote:ressource:<id>, dieselbe
+       Zahl, denselben Toast — und zieht zusätzlich alle Knöpfe desselben Eintrags
+       gleichzeitig nach. Die Ressourcen-Stimme bleibt dabei getrennt von der
+       Sterne-Engine, genau wie vorher.) */
+
+    /* Ganze Karte klappt auf (Feedback 31). Zwei Fälle bleiben ausgenommen:
+       — Klicks auf Bedienelemente. Merken (toggleFavorite), Hilfreich (toggleUpvote),
+         Linkout, Titel-Link und „Mehr dazu“ rufen alle selbst stopPropagation, dieser
+         Test ist die zweite Sicherung — auch für alles, was später dazukommt.
+       — Klicks IM aufgeklappten Detail. Sonst würde der Versuch, dort etwas zu lesen
+         oder zu markieren, die Karte wieder zuklappen.
+       Dazu: Eine Textauswahl per Maus endet ebenfalls in einem click. Ist etwas
+       markiert, wollte die Person lesen, nicht schalten. */
+    function resCardClick(evt, id) {
+      const t = evt.target;
+      if (t.closest && t.closest('a, button, .res-body')) return;
+      try { if (String(window.getSelection())) return; } catch (e) {}
+      toggleRessource(id);
     }
 
     function toggleRessource(id) {
@@ -1305,7 +1430,7 @@
       { id: 'slash',    label: 'Slash-Befehle' },
       { id: 'taste',    label: 'Tastentricks' },
       { id: 'cli',      label: 'Terminal-Flags' },
-      { id: 'langdock', label: 'Langdock' }
+      { id: 'langdock', label: 'pilot AI' }
     ];
 
     function befehlById(id) { return BEFEHLE.find(b => b.id === id); }
@@ -1902,6 +2027,10 @@
       });
 
       // Bereich 1: Ressourcen
+      // Ansichtsdichte VOR dem ersten render(): initDensity setzt data-density auf
+      // #res-list, und die Karten fallen beim Einfügen gleich in die richtige Stufe
+      // statt einmal in voller Länge aufzublitzen. Standard kompakt (Feedback 43).
+      initDensity({ page: 'lernen-hilfe', container: '#res-list', mount: '[data-density-slot]', label: 'Ansicht', default: 'kompakt' });
       renderZeitTiles();
       renderCatTabs();
       renderFilterChips();

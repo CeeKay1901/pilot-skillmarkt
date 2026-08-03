@@ -3,18 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>pilot AI Marketplace — Katalog</title>
-  <meta name="description" content="Der interne Skill-Marktplatz der pilot Agenturgruppe: 35 echte Skills für Claude Code &amp; Langdock entdecken, verstehen und selbst nutzen — von Briefings über Mediaplan-Checks bis zum eigenen Tool.">
+  <title>pilot AI Marketplace — Skills</title>
+  <meta name="description" content="Der interne Skill-Marktplatz der pilot Agenturgruppe: 32 echte Skills für Claude Code &amp; pilot AI entdecken, verstehen und selbst nutzen — von Briefings über Mediaplan-Checks bis zum eigenen Tool.">
   <meta name="theme-color" content="#262626">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="pilot AI Marketplace">
-  <meta property="og:title" content="pilot AI Marketplace — Katalog">
-  <meta property="og:description" content="35 echte Skills für Claude Code &amp; Langdock entdecken, verstehen und selbst nutzen. Von Piloten gebaut, von Piloten empfohlen.">
+  <meta property="og:title" content="pilot AI Marketplace — Skills">
+  <meta property="og:description" content="32 echte Skills für Claude Code &amp; pilot AI entdecken, verstehen und selbst nutzen. Von Piloten gebaut, von Piloten empfohlen.">
   <meta property="og:url" content="https://ceekay1901.github.io/pilot-skillmarkt/skills.html">
   <meta property="og:image" content="https://ceekay1901.github.io/pilot-skillmarkt/og-image.png">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="pilot AI Marketplace">
-  <meta name="twitter:description" content="35 echte Skills für Claude Code &amp; Langdock entdecken, verstehen und selbst nutzen.">
+  <meta name="twitter:description" content="32 echte Skills für Claude Code &amp; pilot AI entdecken, verstehen und selbst nutzen.">
   <meta name="twitter:image" content="https://ceekay1901.github.io/pilot-skillmarkt/og-image.png">
   <!-- canonical fehlte auf allen Seiten (gemessen: null), og:url war dagegen korrekt.
        Absolut und deckungsgleich mit og:url — sonst widersprechen sich beide Signale. -->
@@ -34,10 +34,12 @@
       white-space: nowrap;
       font-family: var(--font-mono);
     }
-    .cat-badge.pilot-inhouse { background: var(--c-black); color: var(--c-yellow); }
+    /* E16: Quellen zusammengelegt — pilot inhouse + pilot Workflows sind jetzt EINE
+       Gruppe („pilot"), Community heißt „Extern". Die alten Klassen .pilot-inhouse,
+       .gsd und .community sind mit den category-Werten in data/skills.js verschwunden. */
+    .cat-badge.pilot { background: var(--c-black); color: var(--c-yellow); }
     .cat-badge.anthropic { background: var(--c-yellow); color: var(--c-black); }
-    .cat-badge.gsd { background: var(--c-gray-l); color: var(--c-black); }
-    .cat-badge.community { background: transparent; border: 1px solid var(--c-gray-l); color: var(--c-gray-m); }
+    .cat-badge.extern { background: transparent; border: 1px solid var(--c-gray-l); color: var(--c-gray-m); }
     /* Typ-Badge (E2): nur Plugins & Frameworks tragen ihn — Skills bleiben ruhig */
     .type-badge {
       font-family: var(--font-mono); font-size: 1.05rem; font-weight: 600;
@@ -362,10 +364,44 @@
       .pilots-grid { grid-template-columns: repeat(2, 1fr); }
     }
 
-    /* E12 M4: Karten-Fuß balancieren — Rating bleibt immer links, der Slot behält
+    /* E12 M4: Karten-Fuß balancieren — das Signal bleibt immer links, der Slot behält
        dieselbe Höhe, ob ein /trigger-Chip da ist oder nicht (kein Layout-Sprung,
        keine neuen Inhalte). */
     .skill-card .card-footer { min-height: 3rem; justify-content: space-between; }
+
+    /* ===== E16: STIMMEN STATT STERNEN =====
+       Die Sterne sind weg (Karte, Modal-Kopf, Bewertungs-Tab). An ihrer Stelle steht
+       .up-btn aus base.css. Der Knopf selbst kann keinen title tragen — die
+       Demo-Kennzeichnung (CLAUDE.md, harte Regel 3) hängt deshalb an dieser Hülle:
+       sie ist nur ein Träger für title, kein eigenes Bedienelement. */
+    .card-votes, .modal-votes { display: inline-flex; }
+    .modal-votes { margin-right: .4rem; }
+    /* Ergebnis-Ansicht (initDensity): auf der Karte regelt die Dichte, wie viel
+       Fließtext sichtbar ist. Kompakt = 2 Zeilen Tagline, Standard = 4, Ausführlich
+       = ungekürzt plus die Beschreibung. Mehr steckt bewusst nicht drin — was tiefer
+       geht, gehört ins Modal. */
+    .skill-card .skill-tagline.density-clamp { --density-clamp-k: 2; --density-clamp-s: 4; }
+    .skill-desc {
+      font-size: 1.35rem; line-height: 1.5; color: var(--c-gray-m);
+      margin: -.4rem 0 1.2rem;
+    }
+    .density-row { display: flex; justify-content: flex-end; padding-top: 1rem; }
+    @media (max-width: 640px) { .density-row { justify-content: flex-start; } }
+    /* Erweiterte Filter: EIN Aufklapper über Themen- und Quellen-Filter, damit die
+       Filterzeile im Normalfall ruhig bleibt (Feedback-Item 27). Innen liegt das
+       bestehende .tag-section-Muster unverändert weiter. */
+    .adv-filters { margin-top: .4rem; }
+    .adv-filters .tag-section { margin-top: 1.2rem; }
+    /* Die erste innere Sektion sitzt direkt unter dem äußeren Aufklapper — deren
+       border-top (base.css) ergäbe dort zwei Linien übereinander. */
+    .adv-filters .tag-section:first-child { border-top: none; padding-top: 0; margin-top: .8rem; }
+    /* Favoriten-Filter trägt jetzt dasselbe Lesezeichen wie die Karten (favBookmarkHtml).
+       base.css färbt .ff-star gelb — das war für einen ★-Glyph gedacht; ein Strich-Icon
+       in Gelb auf hellem Grund ist nicht mehr erkennbar. Deshalb hier: Strich schwarz,
+       Füllung gelb, im aktiven (schwarzen) Zustand Strich weiß. */
+    .fav-filter-btn .ff-star { color: var(--c-black); display: inline-flex; align-items: center; }
+    .fav-filter-btn .ff-star .lu { width: 1.5rem; height: 1.5rem; fill: var(--c-yellow); }
+    .fav-filter-btn.active .ff-star { color: var(--c-white); }
     /* Card Trigger Chip */
     .card-trigger-chip {
       font-size: 1.2rem; padding: .3rem .8rem;
@@ -467,7 +503,7 @@
     /* Terminal-Prompt-Zeichen (in Ohne/Mit-Skill & Auslöser genutzt) */
     .ex-term-prompt { color: var(--c-yellow); font-weight: 700; margin-right: .6rem; }
 
-    /* Vergleichsmatrix Langdock & Claude Code (E11: helle Fläche) */
+    /* Vergleichsmatrix pilot AI & Claude Code (E11: helle Fläche) */
     .cmp { margin-top: 4rem; border: 1px solid var(--line-strong); border-radius: var(--r-lg); overflow: hidden; background: var(--paper); }
     .cmp-row { display: grid; grid-template-columns: 1.1fr 1fr 1fr; align-items: stretch; }
     .cmp-row + .cmp-row { border-top: 1px solid var(--line); }
@@ -491,7 +527,7 @@
       .cmp-dim { padding-bottom: .4rem; color: var(--c-gray-m); font-size: 1.3rem; text-transform: uppercase; letter-spacing: .08em; }
       .cmp-head { display: none; }
       .cmp-cell.cmp-hl::after { content: 'Claude Code'; }
-      .cmp-cell:not(.cmp-hl)::after { content: 'Langdock'; }
+      .cmp-cell:not(.cmp-hl)::after { content: 'pilot AI'; }
       .cmp-cell::after { display: block; font-size: 1.1rem; color: var(--c-gray-m); text-transform: uppercase; letter-spacing: .08em; margin-top: .4rem; }
       .cmp-cell { flex-direction: column; align-items: flex-start; gap: 0; }
     }
@@ -919,7 +955,9 @@
     }
     .mini-trigger:hover { border-color: var(--c-black); }
 
-    /* Langdock-Toggle in der Filterleiste (einzige verbliebene Filterachse neben Tabs) */
+    /* „Läuft auch in pilot AI"-Toggle in der Filterleiste (einzige verbliebene
+       Filterachse neben den Tabs). Die Klasse heißt weiter .lang-toggle — sie hängt
+       an der Plattform-ID 'langdock', die absichtlich unverändert bleibt. */
     .role-chip.lang-toggle::before { content: ''; display: inline-block; width: .6rem; height: .6rem; border-radius: 50%; background: var(--c-gray-l); margin-right: .5rem; vertical-align: middle; transition: background .15s; }
     .role-chip.lang-toggle.active::before { background: var(--c-black); }
 
@@ -957,17 +995,20 @@
            den Marker komplett — die .page-sub bleibt marker-frei, base.css sagt
            „ein Marker-Moment pro Sichtbereich". -->
       <h1><span class="mk">Skills</span></h1>
-      <p class="page-sub"><span id="page-sub-count">35</span> Skills aus dem Agentur-Alltag — von Piloten gebaut und empfohlen.</p>
+      <p class="page-sub"><span id="page-sub-count">32</span> Skills aus dem Agentur-Alltag — von Piloten gebaut und empfohlen.</p>
     </div>
   </header>
 
   <!-- ===================== SEITEN-LOKALE SUB-NAV =====================
-       Katalog | Was sind Skills? | Skill bauen. Ersetzt die früheren
+       Skills | Was sind Skills? | Skill bauen. Ersetzt die früheren
        Header-Nav-Peers (nav-explainer/nav-builder). Persistent über allen
-       drei Views; der aktive Tab spiegelt den aktiven View (showView). -->
+       drei Views; der aktive Tab spiegelt den aktiven View (showView).
+       E16: Der erste Tab hieß „Katalog" — der Bereich heißt jetzt überall „Skills".
+       Die internen Schlüssel ('catalog', #view-catalog, renderNav('katalog'))
+       bleiben, sie stecken in Deep-Links und in der geteilten Nav. -->
   <nav class="skills-subnav">
     <div class="skills-subnav-inner" role="tablist" aria-label="Skills-Bereiche" onkeydown="skillsSubnavKey(event)">
-      <button type="button" class="skills-subtab active" id="subtab-catalog" role="tab" aria-selected="true" aria-controls="view-catalog" tabindex="0" onclick="showView('catalog')">Katalog</button>
+      <button type="button" class="skills-subtab active" id="subtab-catalog" role="tab" aria-selected="true" aria-controls="view-catalog" tabindex="0" onclick="showView('catalog')">Skills</button>
       <button type="button" class="skills-subtab" id="subtab-explainer" role="tab" aria-selected="false" aria-controls="view-explainer" tabindex="-1" onclick="showView('explainer')">Was sind Skills?</button>
       <button type="button" class="skills-subtab" id="subtab-builder" role="tab" aria-selected="false" aria-controls="view-builder" tabindex="-1" onclick="showView('builder')">Skill bauen</button>
     </div>
@@ -1006,34 +1047,60 @@
             <div class="role-chips" id="role-chips"></div>
             <div class="filter-controls">
               <span class="results-count-lg" id="results-count"></span>
+              <!-- E16: Sortierung von fünf auf drei Optionen. „Beste Bewertung" und
+                   „Meiste Bewertungen" sind mit den Sternen gegangen; „Zuletzt
+                   aktualisiert" ist raus, weil updatedAt die redaktionelle Pflege
+                   meint und nicht „neu hier" — das sagt das Neu-Fähnchen aus
+                   data/seit.js bereits auf der Karte. -->
               <select id="sort-select" aria-label="Skills sortieren">
                 <option value="recommended">Empfohlen zuerst</option>
-                <option value="rating">Beste Bewertung</option>
+                <option value="votes">Meiste Stimmen</option>
                 <option value="alpha">Name A–Z</option>
               </select>
               <label class="endorsed-toggle">
                 <input type="checkbox" id="endorsed-only"> Nur empfohlene
               </label>
               <button class="fav-filter-btn" id="fav-filter-btn" onclick="toggleFavoritesOnly()" aria-pressed="false" style="display:none">
-                <span class="ff-star">★</span> Favoriten <span class="ff-count" id="fav-count">0</span>
+                <span class="ff-star"></span> Favoriten <span class="ff-count" id="fav-count">0</span>
               </button>
             </div>
           </div>
-          <div class="tag-section">
-            <button class="tag-toggle" id="tag-toggle" onclick="toggleTagSection()" aria-expanded="false" aria-controls="tag-chips">
-              <span>Nach Themen filtern</span>
-              <span class="tt-count" id="tag-active-count" hidden></span>
+          <!-- Dichte-Regler (initDensity, shared/base.js) in EIGENER Zeile: er ist
+               kein Filter, sondern regelt die Ansicht — und die Segment-Steuerung
+               plus Hinweistext („Viel auf einen Blick.") passt nicht mehr neben
+               Ergebniszähler, Sortierung und Favoriten, ohne die Zeile umbrechen
+               zu lassen. Rechtsbündig, damit die Zeile darüber ruhig bleibt. -->
+          <div class="density-row"><div class="density-slot" data-density-slot></div></div>
+          <!-- E16 (Feedback-Item 27): Themen- und Quellen-Filter lagen als zwei
+               gleich aussehende Aufklapper untereinander in der Zeile. Beide sind
+               Spezialfälle — jetzt stecken sie hinter EINEM Aufklapper, damit die
+               Filterzeile im Normalfall bei Suche, Reitern und Sortierung bleibt.
+               Der Zähler summiert beide, damit ein aktiver Filter nicht unsichtbar
+               eingeklappt liegt. -->
+          <div class="tag-section adv-section">
+            <button class="tag-toggle" id="adv-toggle" onclick="toggleAdvFilters()" aria-expanded="false" aria-controls="adv-filters">
+              <span>Erweiterte Filter</span>
+              <span class="tt-count" id="adv-active-count" hidden></span>
               <span class="tt-arrow" aria-hidden="true">▾</span>
             </button>
-            <div class="tag-chips" id="tag-chips" hidden></div>
-          </div>
-          <div class="tag-section">
-            <button class="tag-toggle" id="source-toggle" onclick="toggleSourceSection()" aria-expanded="false" aria-controls="source-chips">
-              <span>Nach Quelle filtern</span>
-              <span class="tt-count" id="source-active-count" hidden></span>
-              <span class="tt-arrow" aria-hidden="true">▾</span>
-            </button>
-            <div class="tag-chips" id="source-chips" hidden></div>
+            <div class="adv-filters" id="adv-filters" hidden>
+              <div class="tag-section">
+                <button class="tag-toggle" id="tag-toggle" onclick="toggleTagSection()" aria-expanded="false" aria-controls="tag-chips">
+                  <span>Nach Themen filtern</span>
+                  <span class="tt-count" id="tag-active-count" hidden></span>
+                  <span class="tt-arrow" aria-hidden="true">▾</span>
+                </button>
+                <div class="tag-chips" id="tag-chips" hidden></div>
+              </div>
+              <div class="tag-section">
+                <button class="tag-toggle" id="source-toggle" onclick="toggleSourceSection()" aria-expanded="false" aria-controls="source-chips">
+                  <span>Nach Quelle filtern</span>
+                  <span class="tt-count" id="source-active-count" hidden></span>
+                  <span class="tt-arrow" aria-hidden="true">▾</span>
+                </button>
+                <div class="tag-chips" id="source-chips" hidden></div>
+              </div>
+            </div>
           </div>
           <div class="active-filters" id="active-filters" hidden></div>
         </div>
@@ -1047,7 +1114,7 @@
              die Gliederung von der Seiten-H1 direkt auf h3 (WCAG 1.3.1 / 2.4.10).
              Visuell überflüssig — die Filterleiste darüber sagt bereits, was folgt —
              deshalb nur für Screenreader. -->
-        <h2 class="sr-only">Alle Einträge im Katalog</h2>
+        <h2 class="sr-only">Alle Skills, Plugins und Frameworks</h2>
         <div class="skills-grid" id="skills-grid"></div>
         <div class="empty-state" id="empty-state" style="display:none">
           <p>Keine Skills gefunden.</p>
@@ -1072,7 +1139,7 @@
     <div class="submit-band-inner">
       <p class="section-label">Mitmachen</p>
       <h2 id="skills-submit-h">Du hast einen Skill gebaut?</h2>
-      <p class="submit-band-text">Der Katalog lebt von dem, was im Alltag wirklich hilft. Bau deinen Skill im Formular, lade die fertige <code>SKILL.md</code> herunter — oder reich sie mit einem Klick ein.</p>
+      <p class="submit-band-text">Diese Sammlung lebt von dem, was im Alltag wirklich hilft. Bau deinen Skill im Formular, lade die fertige <code>SKILL.md</code> herunter — oder reich sie mit einem Klick ein.</p>
       <a class="c-cta -yellow-bg" href="skills.html?view=builder" onclick="event.preventDefault();showView('builder');">Skill bauen &amp; einreichen</a>
       <p class="submit-band-note">Demo-Flow: deine Eingaben bleiben lokal in deinem Browser.</p>
     </div>
@@ -1087,10 +1154,10 @@
       <div class="ex-wrap">
         <p class="overline">Citizen Coding bei pilot</p>
         <h1 class="ex-h1">Was ist<br>ein <span class="ex-hl">Skill</span>?</h1>
-        <p class="ex-lead">Ihr kennt KI bisher als <strong>Chat</strong>: fragen, Antwort bekommen. Ein Skill ist der nächste Schritt — ein <strong>gespeicherter Arbeitsablauf</strong>, den die KI für dich ausführt. Zuhause ist er in <strong>Claude Code</strong>, viele laufen aber auch in <strong>Langdock</strong>. Und ihr könnt damit <strong>selbst Dinge bauen</strong>.</p>
+        <p class="ex-lead">Ihr kennt KI bisher als <strong>Chat</strong>: fragen, Antwort bekommen. Ein Skill ist der nächste Schritt — ein <strong>gespeicherter Arbeitsablauf</strong>, den die KI für dich ausführt. Zuhause ist er in <strong>Claude Code</strong>, viele laufen aber auch in <strong>pilot AI</strong>. Und ihr könnt damit <strong>selbst Dinge bauen</strong>.</p>
         <div class="ex-hero-cta">
           <button class="c-cta -yellow-bg" onclick="exScrollTo('ex-demo')">Live-Demo ansehen</button>
-          <button class="c-cta -black-border" onclick="showView('catalog')">Zum Skill-Katalog</button>
+          <button class="c-cta -black-border" onclick="showView('catalog')">Zu den Skills</button>
         </div>
         <div class="ex-scroll-hint" aria-hidden="true">
           <span>Scroll</span><span class="ex-arrow-down">↓</span>
@@ -1123,24 +1190,27 @@
     <!-- Früh-CTA: kompakte Handlungsaufforderung direkt nach der ersten Erklärung -->
     <section class="ex-cta-strip reveal">
       <div class="ex-wrap ex-cta-strip-inner">
-        <p class="ex-cta-strip-text">Der Katalog ist eine Kiste fertiger Helfer — stöber einfach los.</p>
+        <p class="ex-cta-strip-text">Die Skills sind eine Kiste fertiger Helfer — stöber einfach los.</p>
         <div class="ex-cta-strip-btns">
-          <button class="c-cta -black-bg" onclick="showView('catalog')">Zum Skill-Katalog</button>
+          <button class="c-cta -black-bg" onclick="showView('catalog')">Zu den Skills</button>
           <button class="c-cta -black-border" onclick="exScrollTo('ex-demo')">Live-Demo ansehen</button>
         </div>
       </div>
     </section>
 
-    <!-- Langdock & Claude Code -->
+    <!-- pilot AI & Claude Code — die EINE Stelle, an der das Produkt hinter „pilot AI"
+         beim Namen genannt wird (Langdock). Überall sonst heißt die Plattform
+         durchgängig „pilot AI"; wer sie im Alltag kennt, soll sie hier trotzdem
+         wiedererkennen. -->
     <section class="ex-section ex-bg reveal">
       <div class="ex-wrap">
-        <p class="ex-eyebrow">Langdock &amp; Claude Code</p>
+        <p class="ex-eyebrow">pilot AI &amp; Claude Code</p>
         <h2 class="ex-h2">Zwei Werkzeuge,<br>zwei <span class="ex-hl">Stärken</span></h2>
-        <p class="ex-body">Langdock ist bei uns zu Recht gesetzt: die Top-Modelle im Chat, eigene Assistenten fürs Team, Workflows, euer Firmenwissen angebunden — DSGVO-konform in der EU gehostet. Claude Code nimmt davon nichts weg. Es beginnt dort, wo aus einer guten Antwort ein <em>fertiges Ergebnis</em> werden soll: eine Datei, ein Tool, eine Webseite, die du behältst und weiterentwickelst.</p>
+        <p class="ex-body"><strong>pilot AI</strong> — die Chat-Plattform, die ihr aus dem Alltag kennt (sie läuft auf Langdock) — ist bei uns zu Recht gesetzt: die Top-Modelle im Chat, eigene Assistenten fürs Team, Workflows, euer Firmenwissen angebunden, DSGVO-konform in der EU gehostet. Claude Code nimmt davon nichts weg. Es beginnt dort, wo aus einer guten Antwort ein <em>fertiges Ergebnis</em> werden soll: eine Datei, ein Tool, eine Webseite, die du behältst und weiterentwickelst.</p>
         <div class="cmp">
           <div class="cmp-row cmp-head">
             <div class="cmp-dim"></div>
-            <div class="cmp-tool"><span class="cmp-tool-name">Langdock</span><span class="cmp-tool-kind">KI-Plattform · im Alltag gesetzt</span></div>
+            <div class="cmp-tool"><span class="cmp-tool-name">pilot AI</span><span class="cmp-tool-kind">KI-Plattform · im Alltag gesetzt</span></div>
             <div class="cmp-tool cmp-tool-hl"><span class="cmp-tool-name">Claude&nbsp;Code</span><span class="cmp-tool-kind">KI-Agent · der nächste Schritt</span></div>
           </div>
           <div class="cmp-row">
@@ -1171,7 +1241,7 @@
         </div>
         <div class="cmp-rule">
           <span class="cmp-rule-k">Faustregel</span>
-          <span><strong>Fragen, Texte &amp; Firmenwissen</strong> → Langdock. <strong>Eigene Tools, laufende Automationen &amp; alles, was wachsen soll</strong> → Claude Code. Beides zu können macht dich stark.</span>
+          <span><strong>Fragen, Texte &amp; Firmenwissen</strong> → pilot AI. <strong>Eigene Tools, laufende Automationen &amp; alles, was wachsen soll</strong> → Claude Code. Beides zu können macht dich stark.</span>
         </div>
       </div>
     </section>
@@ -1250,7 +1320,7 @@ Gib einen priorisierten Report aus:
       <div class="ex-wrap">
         <p class="ex-eyebrow">Die größeren Bausteine</p>
         <h2 class="ex-h2">Vom Skill zum <span class="ex-hl">Framework</span></h2>
-        <p class="ex-body">Im Katalog begegnen dir neben Skills noch zwei größere Bausteine — gleiches Prinzip, eine Nummer größer. Bleiben wir beim Bild vom Rezept:</p>
+        <p class="ex-body">Neben Skills begegnen dir hier noch zwei größere Bausteine — gleiches Prinzip, eine Nummer größer. Bleiben wir beim Bild vom Rezept:</p>
         <div class="expf-panel" style="margin-top:2.4rem">
           <div class="expf-grid" style="margin:0">
             <div class="expf-cell" data-analogie="rezept">
@@ -1267,7 +1337,7 @@ Gib einen priorisierten Report aus:
             </div>
           </div>
         </div>
-        <p class="ex-anatomy-cta">Im Katalog filterst du oben über die Typ-Leiste: <strong>Skills · Plugins · Frameworks</strong> — Plugins und Frameworks tragen ihren Typ als Badge auf der Karte.</p>
+        <p class="ex-anatomy-cta">Oben filterst du über die Typ-Leiste: <strong>Skills · Plugins · Frameworks</strong> — Plugins und Frameworks tragen ihren Typ als Badge auf der Karte.</p>
       </div>
     </section>
 
@@ -1310,9 +1380,9 @@ Gib einen priorisierten Report aus:
                beide 5 hart im Markup, ohne Abgleich mit BUNDLES.<x>.ids.length. -->
           <button class="c-cta -yellow-bg" onclick="downloadStarterPack(this)">⬇ Starter-Paket (<span id="starter-pack-count">5</span> Skills, .zip)</button>
           <button class="c-cta -black-border" onclick="downloadPowerPack(this)">⬇ Power-Paket (<span id="power-pack-count">5</span> beliebte Skills, .zip)</button>
-          <button class="c-cta -black-bg" onclick="showView('catalog')">Alle Skills im Katalog entdecken</button>
+          <button class="c-cta -black-bg" onclick="showView('catalog')">Alle Skills entdecken</button>
         </div>
-        <p class="ex-body" style="font-size:1.4rem;color:var(--c-gray-m);margin-top:1.2rem">Beide Pakete enthalten die echten Skill-Dateien — entpacken nach <code>.claude/skills/</code>, Anleitung liegt bei. Das Power-Paket bündelt beliebte Skills aus <code>anthropics/skills</code>, <code>obra/superpowers</code> und von pilot.</p>
+        <p class="ex-body" style="font-size:1.4rem;color:var(--c-gray-m);margin-top:1.2rem">Beide Pakete enthalten die echten Skill-Dateien — entpacken nach <code>.claude/skills/</code>, Anleitung liegt bei. Das Power-Paket bündelt beliebte Skills aus der Community (u.&nbsp;a. <code>obra/superpowers</code>), von Anthropic und von pilot.</p>
       </div>
     </section>
 
@@ -1467,12 +1537,12 @@ Gib einen priorisierten Report aus:
     };
 
     // ===== NAV & FOOTER (shared/base.js) =====
-    // Geteilte Nav trägt global nur noch „Katalog". Die View-Punkte
+    // Geteilte Nav trägt global nur noch „Skills". Die View-Punkte
     // („Was sind Skills?", „Skill bauen") leben seitenlokal als Sub-Tabs
     // über dem Katalog (Tablist #skills-subnav) — nicht mehr in der Header-Nav.
     renderNav('katalog', {
       sharedOnclick: { katalog: "showView('catalog')" }, // gleiche Seite: View-Wechsel statt Reload
-      search: { id: 'search', label: 'Nur diese Seite: Skills filtern', placeholder: 'Nur Katalog filtern …' },
+      search: { id: 'search', label: 'Nur diese Seite: Skills filtern', placeholder: 'Nur Skills filtern …' },
       footerExtra: [
         { label: 'Was sind Skills?', onclick: "showView('explainer')" },
         { label: 'Eigenen Skill bauen', onclick: "showView('builder')" }
@@ -1530,9 +1600,11 @@ Gib einen priorisierten Report aus:
       try { if (localStorage.getItem('cta-seen:' + id)) return; } catch (e) {}
       const item = state.activeSkill;
       if (!item || item.id !== id) return; // nur im offenen Modal des Items
-      // Rating-Engine speichert typunabhängig im 'skill'-Namespace (rate:skill:<id>) —
-      // deshalb hier ohne Typ-Argument lesen, sonst prüfen wir nie geschriebene Keys.
-      if (getRating(id) || getComments(id).length) return; // Feedback gibt es schon
+      /* Feedback gibt es schon → nicht noch einmal fragen. Geprüft wird auf beides:
+         eine abgegebene Stimme (vote:skill:<id>, das aktuelle Signal) und einen
+         Kommentar. Der alte Sterne-Key rate:skill:<id> steht bewusst noch mit drin —
+         wer vor E16 bewertet hat, soll nicht plötzlich wieder angesprochen werden. */
+      if (hasVoted('skill', id) || getRating(id) || getComments(id).length) return;
       // warten, bis der Kopier-Toast (2,5s) verschwunden ist — die Leiste soll leise nachkommen
       setTimeout(() => {
         if (!state.activeSkill || state.activeSkill.id !== id) return; // Modal inzwischen zu
@@ -1544,7 +1616,7 @@ Gib einen priorisierten Report aus:
         bar.setAttribute('role', 'status');
         bar.innerHTML = `
           <span class="tc-text"><strong>Wie lief’s?</strong> Wenn du’s ausprobiert hast: 20 Sekunden Feedback helfen den Kolleg:innen bei der Auswahl.</span>
-          <button type="button" class="tc-btn" onclick="removeTriedCta(); switchTab('ratings')">Kurz bewerten</button>
+          <button type="button" class="tc-btn" onclick="removeTriedCta(); switchTab('ratings')">Kurz Feedback geben</button>
           <button type="button" class="tc-close" onclick="removeTriedCta()" aria-label="Feedback-Hinweis schließen">✕</button>`;
         modal.appendChild(bar);
       }, 2700);
@@ -1553,11 +1625,15 @@ Gib einen priorisierten Report aus:
     // ===== HELPERS =====
     // LU-Icon-Map + subIcon: shared/base.js
 
+    /* E16: Herkunft in DREI Gruppen statt vier. „pilot inhouse" und „pilot Workflows"
+       waren für die Zielgruppe dieselbe Antwort („von uns"), und „Community" las sich
+       wie ein Qualitätsurteil statt wie eine Herkunft. Die category-Werte in
+       data/skills.js tragen jetzt genau diese drei Namen — hier steht nur noch die
+       Schreibweise, keine Zusammenfassungs-Logik mehr. */
     function catLabel(cat) {
-      if (cat === 'pilot-inhouse') return 'pilot inhouse';
+      if (cat === 'pilot') return 'pilot';
       if (cat === 'anthropic') return 'Anthropic';
-      if (cat === 'gsd') return 'pilot Workflows';
-      if (cat === 'community') return 'Community';
+      if (cat === 'extern') return 'Extern';
       return cat;
     }
 
@@ -1578,8 +1654,18 @@ Gib einen priorisierten Report aus:
 
     // formatDate: shared/base.js
 
-    // Rating-Engine (renderStars, Sterne-Widget, getRating/submitRating,
-    // getEffectiveRating, bayesScore): shared/base.js
+    /* Stimmen-Engine (getUpvoteCount, renderUpvoteBtn, toggleUpvote, voteScore):
+       shared/base.js. Sterne gibt es auf dieser Seite nicht mehr — eine Stimme ist
+       für die Zielgruppe die ehrlichere Frage („hat mir geholfen: ja") als eine
+       Skala von eins bis fünf, die niemand kalibriert hat. Die Seed-Zahl kommt
+       weiterhin aus rating.count in data/skills.js (siehe _upSeed in base.js):
+       „so viele Leute haben sich dazu geäußert" — keine umgerechnete Zahl. */
+
+    // Kurzform mit festem Typ — die Seite kennt nur 'skill'.
+    function upCount(s) { return getUpvoteCount(s, 'skill'); }
+    function upScore(s) { return voteScore(s, 'skill'); }
+    // Ein Satz, überall derselbe — die Kennzeichnung darf nicht je Fläche driften.
+    const VOTE_DEMO_HINT = 'Demo-Wert: Startzahl aus den Daten plus deine eigene Stimme — nur auf diesem Gerät gespeichert.';
 
     function isFeatured(s) { return SPOTLIGHT.has(s.id); }
 
@@ -1707,15 +1793,24 @@ Gib einen priorisierten Report aus:
           const d = (state._searchScore[b.id] || 0) - (state._searchScore[a.id] || 0);
           if (d) return d;
         }
+        /* E16: aus fünf Sortier-Zweigen wurden drei.
+           · recommended — Spotlight zuerst, danach die Stimmen. Bleibt der Standard
+             und behält seinen Wert, weil er in state, resetFilters und im <select>
+             steht.
+           · votes       — reine Stimmenzahl, das ist die neue „Beste Bewertung".
+           · alpha       — unverändert.
+           Weggefallen: 'rating' und 'count' (hingen an den Sternen, die es hier nicht
+           mehr gibt) und 'newest' (updatedAt ist die redaktionelle Pflege, nicht
+           „neu hier" — das sagt das Neu-Fähnchen aus data/seit.js auf der Karte).
+           Gleichstand bricht der Name, sonst hinge die Reihenfolge an der
+           Sortier-Implementierung und wäre nur scheinbar stabil. */
         if (state.sort === 'recommended') {
           const aFeat = isFeatured(a) ? 1 : 0;
           const bFeat = isFeatured(b) ? 1 : 0;
           if (bFeat !== aFeat) return bFeat - aFeat;
-          return bayesScore(b) - bayesScore(a);
+          return (upScore(b) - upScore(a)) || a.name.localeCompare(b.name, 'de');
         }
-        if (state.sort === 'rating') return bayesScore(b) - bayesScore(a);
-        if (state.sort === 'count') return getEffectiveRating(b).count - getEffectiveRating(a).count;
-        if (state.sort === 'newest') return new Date(b.updatedAt) - new Date(a.updatedAt);
+        if (state.sort === 'votes') return (upScore(b) - upScore(a)) || a.name.localeCompare(b.name, 'de');
         if (state.sort === 'alpha') return a.name.localeCompare(b.name, 'de');
         return 0;
       });
@@ -1792,14 +1887,17 @@ Gib einen priorisierten Report aus:
     }
 
     // ===== RENDER CARD =====
-    /* E11 Karten-Diät: Titel + ein Satz + Kategorie/Typ + kompakte Bewertung +
-       Befehl-Kopierchip. Tags, Ergebnis-Vorschau, Schwierigkeit, Dauer,
-       Plattform-Chips und Empfehlungs-Avatare leben im Detail-Modal. */
+    /* E11 Karten-Diät: Titel + ein Satz + Kategorie/Typ + Stimmen + Befehl-Kopierchip.
+       Tags, Ergebnis-Vorschau, Schwierigkeit, Dauer, Plattform-Chips und
+       Empfehlungs-Avatare leben im Detail-Modal.
+       E16: Statt Sternen steht hier der Stimmen-Knopf (kompakt), und der Fließtext
+       hängt am Dichte-Regler — siehe .density-clamp weiter oben im CSS. */
     function renderCard(skill, isFeatured = false, idx = 0, isStart = false) {
-      const eff = getEffectiveRating(skill);
-
-      const starsHtml = renderStars(eff.average);
-      const fav = isFavorite(skill.id);
+      // Demo-Kennzeichnung (CLAUDE.md, harte Regel 3) an der Hülle, weil .up-btn
+      // selbst kein title-Attribut anbietet.
+      const voteHtml = `<span class="card-votes" title="${VOTE_DEMO_HINT}">`
+        + renderUpvoteBtn(skill.id, 'skill', upCount(skill), { compact: true, name: skill.name })
+        + `</span>`;
 
       // Typ-Badge nur für Plugins/Frameworks — Skills bleiben unmarkiert (kein Rausch)
       const _type = itemType(skill);
@@ -1818,15 +1916,13 @@ Gib einen priorisierten Report aus:
         <article class="skill-card${state._noCardAnim ? '' : ' card-in'}" style="animation-delay:${state._noCardAnim ? 0 : delay}ms" onclick="openModal('${skill.id}')">
           <div class="card-top">
             <span class="card-top-left"><span class="card-sub">${escHtml(subLabel(skill.subcategory))}</span>${typeBadgeHtml}${neuFlagHtml}</span>
-            <button class="fav-btn ${fav ? 'active' : ''}" onclick="toggleFavorite(event,'${skill.id}','skill')" aria-label="${escHtml(skill.name)} ${fav ? 'aus Favoriten entfernen' : 'zu Favoriten hinzufügen'}" aria-pressed="${fav}">${fav ? '★' : '☆'}</button>
+            ${favBookmarkHtml(skill.id, 'skill', skill.name)}
           </div>
           <h3 class="skill-name"><button type="button" class="card-open-btn" onclick="event.stopPropagation();openModal('${skill.id}')">${escHtml(skill.name)}</button></h3>
-          <p class="skill-tagline">${escHtml(skill.tagline)}</p>
+          <p class="skill-tagline density-clamp">${escHtml(skill.tagline)}</p>
+          <p class="skill-desc density-only-ausfuehrlich">${escHtml(skill.description)}</p>
           <div class="card-footer">
-            <div class="stars-display-wrap">
-              ${starsHtml}
-              <span class="rating-text">${eff.average.toFixed(1)} (${eff.count})</span>
-            </div>
+            ${voteHtml}
             ${triggerHtml}
           </div>
         </article>
@@ -1881,11 +1977,12 @@ Gib einen priorisierten Report aus:
     // ===== RENDER PILOTS =====
     // Einzige Quelle der Wahrheit: SKILLS[].endorsedBy (data/skills.js). Die Chips je
     // Pilot:in werden daraus invertiert — HIDDEN-Skills tauchen nicht auf, sortiert
-    // nach bayesScore (beste Empfehlungen zuerst).
+    // nach Stimmen (E16: vorher bayesScore, das gibt es ohne Sterne nicht mehr).
+    // Nur die ersten fünf Chips sind sichtbar — deshalb muss die Reihenfolge stimmen.
     function pilotSkills(pilotName) {
       return SKILLS
         .filter(s => !HIDDEN.has(s.id) && (s.endorsedBy || []).includes(pilotName))
-        .sort((a, b) => bayesScore(b) - bayesScore(a));
+        .sort((a, b) => (upScore(b) - upScore(a)) || a.name.localeCompare(b.name, 'de'));
     }
     function renderPilots() {
       const grid = document.getElementById('pilots-grid');
@@ -1919,7 +2016,7 @@ Gib einen priorisierten Report aus:
       state.subcategory = null;
       renderCounters();
       render();
-      showToast(`Nur Skills, die ${pilotName.split(' ')[0]} empfiehlt ★`);
+      showToast(`Nur Skills, die ${pilotName.split(' ')[0]} empfiehlt`);
     }
     function clearPilotFilter() {
       state.pilotFilter = null;
@@ -2045,6 +2142,7 @@ Gib einen priorisierten Report aus:
       if (!badge) return;
       if (state.tags.length > 0) { badge.hidden = false; badge.textContent = state.tags.length; }
       else badge.hidden = true;
+      updateAdvCount();
     }
 
     function toggleMoreTags() {
@@ -2156,7 +2254,7 @@ Gib einen priorisierten Report aus:
             <span class="card-sub">${escHtml(subLabel(g.group))} · ${g.members.length} Skills</span>
           </div>
           <h3 class="skill-name"><button type="button" class="card-open-btn" onclick="event.stopPropagation();openModal('${g.anchor}')">${escHtml(g.name)}</button></h3>
-          <p class="skill-tagline">${escHtml(g.tagline)}</p>
+          <p class="skill-tagline density-clamp">${escHtml(g.tagline)}</p>
           <div class="facet-list">${facets}</div>
           <div class="card-actions">
             <span class="card-open-hint">Alle ${g.members.length} ansehen →</span>
@@ -2255,13 +2353,13 @@ Gib einen priorisierten Report aus:
       if (t === 'plugin') {
         const tabs = [['overview', 'Übersicht'], ['installation', 'Installation']];
         if (item.filesMirrored) tabs.push(['files', 'Dateien & Download']);
-        tabs.push(['ratings', 'Bewertungen'], ['pilots', 'Piloten']);
+        tabs.push(['ratings', 'Stimmen & Kommentare'], ['pilots', 'Piloten']);
         return tabs;
       }
       if (t === 'framework') {
-        return [['overview', 'Übersicht'], ['arbeiten', 'So arbeitest du damit'], ['ratings', 'Bewertungen'], ['pilots', 'Piloten']];
+        return [['overview', 'Übersicht'], ['arbeiten', 'So arbeitest du damit'], ['ratings', 'Stimmen & Kommentare'], ['pilots', 'Piloten']];
       }
-      return [['overview', 'Übersicht'], ['files', 'Dateien & Download'], ['ratings', 'Bewertungen'], ['pilots', 'Piloten']];
+      return [['overview', 'Übersicht'], ['files', 'Dateien & Download'], ['ratings', 'Stimmen & Kommentare'], ['pilots', 'Piloten']];
     }
 
     function renderModalHead(skill) {
@@ -2307,12 +2405,11 @@ Gib einen priorisierten Report aus:
         triggerHint.style.display = 'block';
       }
 
-      // Meta
-      const eff = getEffectiveRating(skill);
+      // Meta — E16: der Stimmen-Knopf steht vorn und trägt hier sein Wort
+      // („Hilfreich"), anders als die kompakte Fassung auf der Karte.
       const meta = document.getElementById('modal-meta');
       meta.innerHTML = `
-        ${renderStars(eff.average)}
-        <span>${eff.average.toFixed(1)} (${eff.count} Bewertungen)</span>
+        <span class="modal-votes" title="${VOTE_DEMO_HINT}">${renderUpvoteBtn(skill.id, 'skill', upCount(skill), { name: skill.name })}</span>
         <span class="modal-meta-sep">·</span>
         <span class="diff-badge ${skill.difficulty}">${diffLabel(skill.difficulty)}</span>
         <span class="modal-meta-sep">·</span>
@@ -2824,8 +2921,8 @@ Mehr Skills und alle Details: pilot AI Marketplace.
             skill.install === 'builtin'
               ? `<strong>Steckt schon in Claude Code:</strong> Die Office-Fähigkeiten laufen über diesen Skill — du musst nichts installieren. Der Download ist zum Reinschauen und Lernen.`
               : skill.install === 'plugin'
-                ? `<strong>Einmalig installieren:</strong> In Claude Code <code>/plugin marketplace add anthropics/skills</code> und dann <code>/plugin install example-skills@anthropic-agent-skills</code> — oder das ZIP nach <code>.claude/skills/</code> entpacken.${skillPlatforms(skill).langdock ? ' Für <strong>Langdock</strong> reicht die <code>SKILL.md</code>: unter Skills → Add Skill hochladen.' : ''}`
-                : `Enthält alle Dateien des Skills — entpacken nach <code>.claude/skills/</code> und loslegen.${skillPlatforms(skill).langdock ? ' Für <strong>Langdock</strong> reicht die <code>SKILL.md</code>: unter Skills → Add Skill hochladen.' : ''} Deine Anmerkungen kommen als <code>ANMERKUNGEN.md</code> mit.`
+                ? `<strong>Einmalig installieren:</strong> In Claude Code <code>/plugin marketplace add anthropics/skills</code> und dann <code>/plugin install example-skills@anthropic-agent-skills</code> — oder das ZIP nach <code>.claude/skills/</code> entpacken.${skillPlatforms(skill).langdock ? ' Für <strong>pilot AI</strong> reicht die <code>SKILL.md</code>: unter Skills → Add Skill hochladen.' : ''}`
+                : `Enthält alle Dateien des Skills — entpacken nach <code>.claude/skills/</code> und loslegen.${skillPlatforms(skill).langdock ? ' Für <strong>pilot AI</strong> reicht die <code>SKILL.md</code>: unter Skills → Add Skill hochladen.' : ''} Deine Anmerkungen kommen als <code>ANMERKUNGEN.md</code> mit.`
           }</span>
         </div>` : ''}
         <div class="files-browser">
@@ -3226,7 +3323,7 @@ Mehr Skills und alle Details: pilot AI Marketplace.
               <span class="runway-num">2</span>
               <div class="runway-body">
                 <strong>In Claude Code einfügen und loslegen</strong>
-                <p class="runway-desc">Kopier diesen Satz und füg ihn in Claude Code ein — genau wie du es aus Langdock kennst:</p>
+                <p class="runway-desc">Kopier diesen Satz und füg ihn in Claude Code ein — genau wie du es aus pilot AI kennst:</p>
                 <div class="startprompt">
                   <p class="startprompt-text">${escHtml(startPrompt(skill))}</p>
                   <button class="startprompt-copy" onclick="copyStartPrompt(event,'${skill.id}')" aria-label="Startprompt kopieren">Kopieren</button>
@@ -3241,10 +3338,10 @@ Mehr Skills und alle Details: pilot AI Marketplace.
         <p class="section-label">Läuft in</p>
         <div class="run-in">
           <span class="run-chip ok">Claude Code</span>
-          <span class="run-chip ${skillPlatforms(skill).langdock ? 'ok' : 'na'}">Langdock</span>
+          <span class="run-chip ${skillPlatforms(skill).langdock ? 'ok' : 'na'}">pilot AI</span>
         </div>
         <p class="run-note">${skillPlatforms(skill).langdock
-          ? `In Langdock: die <code>SKILL.md</code> unter <strong>Skills → Add Skill</strong> hochladen — sie aktiviert sich automatisch anhand der Beschreibung.`
+          ? `In pilot AI: die <code>SKILL.md</code> unter <strong>Skills → Add Skill</strong> hochladen — sie aktiviert sich automatisch anhand der Beschreibung.`
           : itemType(skill) === 'plugin'
           ? `Nur Claude Code — Plugins sind ein Claude-Code-Mechanismus (Installation über <code>/plugin</code>).`
           : itemType(skill) === 'framework'
@@ -3304,18 +3401,26 @@ Mehr Skills und alle Details: pilot AI Marketplace.
           `).join('');
 
           return `
-            <p class="section-label" style="margin-top:2.4rem">${itemType(current) === 'skill' ? 'Ähnliche Skills' : 'Ähnliches im Katalog'}</p>
+            <p class="section-label" style="margin-top:2.4rem">${itemType(current) === 'skill' ? 'Ähnliche Skills' : 'Ähnliches hier'}</p>
             <div class="similar-grid">${cards}</div>
           `;
         })()}
       `;
     }
 
+    /* E16: aus dem Bewertungs-Tab ist ein Stimmen-Tab geworden.
+       Weg sind: die große Durchschnittsnote, die Sterne je Kommentar und das
+       Sterne-Widget im Formular. Grund ist nicht Aufräumen, sondern Ehrlichkeit —
+       eine Skala von eins bis fünf braucht eine gemeinsame Kalibrierung, die es hier
+       nie gab, und eine Durchschnittsnote aus einer Handvoll Seed-Werten liest sich
+       präziser, als sie ist. „Hilfreich: ja" beantwortet dieselbe Frage belastbar.
+       Alte Kommentare tragen ihr rating-Feld weiter (data/skills.js und
+       localStorage) — es wird nur nicht mehr angezeigt. submitComment() in base.js
+       schreibt ohne Sterne-Widget rating:null und kommt damit klar. */
     function renderModalRatings(skill) {
-      const eff = getEffectiveRating(skill);
+      const votes = upCount(skill);
       const userComments = getComments(skill.id);
       const allComments = [...userComments, ...skill.comments];
-      const userRating = getRating(skill.id);
       const commentSkillId = skill.id;
 
       const commentsHtml = allComments.length === 0
@@ -3326,7 +3431,6 @@ Mehr Skills und alle Details: pilot AI Marketplace.
             <div style="flex:1">
               <div class="comment-author">${escHtml(c.author)}${i < userComments.length ? ' <span class="comment-own-badge">von dir · nur auf diesem Gerät</span>' : ''}</div>
               <div class="comment-role-date">${escHtml(c.role)} · ${formatDate(c.date)}</div>
-              ${c.rating ? `<div class="comment-stars">${renderStars(c.rating)}</div>` : ''}
               <p class="comment-text">${escHtml(c.text)}</p>
             </div>
             ${i < userComments.length ? `<button type="button" class="comment-delete" onclick="deleteComment('${commentSkillId}', ${i})" aria-label="Deinen Kommentar löschen" title="Deinen Kommentar löschen">✕</button>` : ''}
@@ -3336,19 +3440,15 @@ Mehr Skills und alle Details: pilot AI Marketplace.
       return `
         <div class="rating-overview" style="margin-bottom:2rem">
           <div>
-            <div class="rating-big">${eff.average.toFixed(1)}</div>
-            <div>${renderStars(eff.average)}</div>
-            <div class="rating-sub">${eff.count} Bewertungen gesamt</div>
+            <div class="rating-big">${votes}</div>
+            <div class="rating-sub" title="${VOTE_DEMO_HINT}">${votes === 1 ? 'Stimme' : 'Stimmen'} — „hat mir geholfen“ (Demo-Wert)</div>
           </div>
+          <span class="modal-votes" title="${VOTE_DEMO_HINT}">${renderUpvoteBtn(skill.id, 'skill', votes, { name: skill.name })}</span>
         </div>
 
         <form class="comment-form" onsubmit="event.preventDefault();submitComment('${commentSkillId}')">
-          <h3>Deine Bewertung & Kommentar</h3>
-          <p class="rating-form-label">Deine Sternebewertung</p>
-          ${renderInteractiveStars(`comment-${commentSkillId}`)}
-          <p class="user-rating-hint" id="rating-hint-comment-${commentSkillId}">
-            ${userRating > 0 ? `Du hast diesen Skill bereits mit ${userRating} Sternen bewertet.` : 'Klick auf die Sterne, um zu bewerten.'}
-          </p>
+          <h3>Dein Kommentar</h3>
+          <p class="user-rating-hint">Was ist dir aufgefallen? Zwei Sätze reichen — sie helfen den Kolleg:innen bei der Auswahl.</p>
           <div class="form-row" style="margin-top:1.6rem">
             <div>
               <label for="comment-author-${commentSkillId}">Dein Name *</label>
@@ -3362,7 +3462,7 @@ Mehr Skills und alle Details: pilot AI Marketplace.
           <label for="comment-text-${commentSkillId}" style="margin-top:1.2rem">Dein Kommentar *</label>
           <textarea id="comment-text-${commentSkillId}" rows="3" required></textarea>
           <button type="submit" class="c-cta -black-bg">Kommentar speichern</button>
-          <p class="comment-local-hint">Demo-Hinweis: Die angezeigten Startwerte (Sterne, Anzahl, „Team-Favorit“) sind redaktionelle Demo-Werte. Deine Bewertung &amp; Kommentare werden nur in deinem Browser gespeichert — Kolleg:innen sehen sie (noch) nicht.</p>
+          <p class="comment-local-hint">Demo-Hinweis: Die angezeigte Stimmenzahl ist eine redaktionelle Startzahl. Deine Stimme &amp; deine Kommentare werden nur in deinem Browser gespeichert — Kolleg:innen sehen sie (noch) nicht.</p>
         </form>
 
         <p class="section-label">Alle Kommentare (${allComments.length})</p>
@@ -3445,7 +3545,7 @@ Mehr Skills und alle Details: pilot AI Marketplace.
 
         <p class="section-label">Quelle &amp; Vertrauen</p>
         <p class="install-note">${skill.source ? `Quellcode offen einsehbar: <a class="src-link" href="${escHtml(skill.source)}" target="_blank" rel="noopener">${escHtml(skill.source.replace('https://github.com/', 'github.com/'))} ↗</a>. ` : ''}Installiere Plugins nur aus Quellen, denen du vertraust — Anthropic prüft nicht jeden Inhalt von Drittanbieter-Plugins.</p>
-        <p class="install-note">Zum Stöbern: <code>/plugin</code> öffnet den Katalog-Dialog in Claude Code (Discover · Installed · Marketplaces), im Web unter claude.com/plugins. Befehle aus Plugins heißen immer <code>/&lt;plugin&gt;:&lt;befehl&gt;</code> — z.&nbsp;B. <code>/ralph-loop:help</code>.</p>
+        <p class="install-note">Zum Stöbern: <code>/plugin</code> öffnet den Plugin-Dialog in Claude Code (Discover · Installed · Marketplaces), im Web unter claude.com/plugins. Befehle aus Plugins heißen immer <code>/&lt;plugin&gt;:&lt;befehl&gt;</code> — der Plugin-Name steht also vorn, damit sich zwei Plugins nicht denselben Befehl streitig machen.</p>
       `;
     }
     function startModalInstallDemo() {
@@ -3689,14 +3789,14 @@ Mehr Skills und alle Details: pilot AI Marketplace.
     // ===== QUELLE- & ROLLEN-FILTER =====
     // Entrümpelt: statt drei fast gleicher Chip-Reihen (Quelle/Rolle/Einsatz) nur EIN sinnvoller Toggle.
     // „Quelle" (Herkunft) ist für Einsteiger:innen irrelevant und lebt als Karten-Badge weiter; „Rolle" doppelte
-    // die Themen-Tabs. Übrig bleibt der für Langdock-Umsteiger:innen wertvollste Anker: „Läuft auch in Langdock".
+    // die Themen-Tabs. Übrig bleibt der für Umsteiger:innen wertvollste Anker: „Läuft auch in pilot AI" (Plattform-ID bleibt 'langdock').
     function renderRoleChips() {
       const container = document.getElementById('role-chips');
       if (!container) return;
       // ebenfalls über countFor — sonst zählte der Chip quer durch alle aktiven Filter
       const ldCount = countFor({ platform: 'langdock' });
       const active = state.platform === 'langdock';
-      container.innerHTML = `<div class="chip-row"><button class="role-chip lang-toggle${active ? ' active' : ''}" onclick="setPlatform('langdock')" aria-pressed="${active}">Läuft auch in Langdock <span class="rc-count">${ldCount}</span></button></div>`;
+      container.innerHTML = `<div class="chip-row"><button class="role-chip lang-toggle${active ? ' active' : ''}" onclick="setPlatform('langdock')" aria-pressed="${active}">Läuft auch in pilot AI <span class="rc-count">${ldCount}</span></button></div>`;
     }
 
     function setSource(id) {
@@ -3714,17 +3814,20 @@ Mehr Skills und alle Details: pilot AI Marketplace.
     // Wie die übrigen Zähler über countFor: die Quellen-Chips versprachen sonst
     // dieselben Treffer-Lügen unter aktiver Suche/Tag-Auswahl wie die Reiter.
     function visibleSourceCount(catId) { return countFor({ category: catId }); }
+    // E16: drei Gruppen statt vier — die Reihenfolge ist die Antwort auf „woher
+    // kommt das?": erst wir, dann Anthropic, dann alles Übrige.
+    const SOURCE_IDS = ['pilot', 'anthropic', 'extern'];
     function renderSourceChips() {
       const container = document.getElementById('source-chips');
       if (!container) return;
-      const sources = ['pilot-inhouse', 'gsd', 'anthropic', 'community'];
-      container.innerHTML = `<div class="chip-row">` + sources.map(id => {
+      container.innerHTML = `<div class="chip-row">` + SOURCE_IDS.map(id => {
         const n = visibleSourceCount(id);
         const active = state.category === id;
         return `<button class="role-chip${active ? ' active' : ''}" onclick="setSource('${id}')" aria-pressed="${active}">${catLabel(id)} <span class="rc-count">${n}</span></button>`;
       }).join('') + `</div>`;
       const badge = document.getElementById('source-active-count');
       if (badge) { badge.hidden = state.category === 'all'; badge.textContent = '1'; }
+      updateAdvCount();
     }
     function toggleSourceSection() {
       const btn = document.getElementById('source-toggle');
@@ -3733,6 +3836,28 @@ Mehr Skills und alle Details: pilot AI Marketplace.
       const expanded = btn.getAttribute('aria-expanded') === 'true';
       btn.setAttribute('aria-expanded', expanded ? 'false' : 'true');
       chips.hidden = expanded;
+    }
+
+    /* ===== ERWEITERTE FILTER (E16, Feedback-Item 27) =====
+       Themen- und Quellen-Filter stecken zusammen hinter einem Aufklapper. Der
+       Zähler daran summiert BEIDE — sonst könnte ein aktiver Filter eingeklappt
+       unsichtbar bleiben, und die Ergebnisliste widerspräche der Filterzeile.
+       (Die Pillen in .active-filters zeigen ihn zusätzlich; doppelt ist hier
+       richtig, weil die Pillen auf Mobil unter dem Fold liegen können.) */
+    function toggleAdvFilters() {
+      const btn = document.getElementById('adv-toggle');
+      const panel = document.getElementById('adv-filters');
+      if (!btn || !panel) return;
+      const expanded = btn.getAttribute('aria-expanded') === 'true';
+      btn.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+      panel.hidden = expanded;
+    }
+    function updateAdvCount() {
+      const badge = document.getElementById('adv-active-count');
+      if (!badge) return;
+      const n = state.tags.length + (state.category !== 'all' ? 1 : 0);
+      badge.hidden = n === 0;
+      badge.textContent = n;
     }
 
     function setRole(id) {
@@ -3980,8 +4105,68 @@ Mehr Skills und alle Details: pilot AI Marketplace.
       renderBuilderPreview();
     }
 
+    /* ===== STIMME ABGEGEBEN → LISTE NACHZIEHEN (E16) =====
+       toggleUpvote() in base.js aktualisiert nur die Knöpfe und ruft dann hierher.
+       Zwei Fälle:
+         · Die aktive Sortierung hängt an den Stimmen ('recommended', 'votes') —
+           dann muss die Liste neu sortiert werden, sonst zeigt sie eine Reihenfolge,
+           die ihrer eigenen Beschriftung widerspricht.
+         · Sonst passiert nichts. Ein Neu-Rendern ohne Ordnungsänderung nähme dem
+           gerade gedrückten Knopf nur den Fokus.
+       Die Bewegung ist FLIP: erst alte Position je Karte messen, dann neu schreiben,
+       dann von der Differenz zurück auf 0 animieren. Ohne das springen die Karten
+       und man verliert die eigene gerade bewertete Karte aus den Augen.
+       prefers-reduced-motion und fehlende Web-Animations-API überspringen die
+       Animation, nicht die Sortierung. */
+    window.onUpvoteChanged = function (id, type, count) {
+      /* Erst die große Zahl im offenen Stimmen-Tab nachziehen. toggleUpvote()
+         aktualisiert nur .up-count in den Knöpfen — die Kennzahl daneben stünde
+         sonst eine Stimme daneben, im selben Blickfeld. */
+      if (typeof count === 'number' && state.activeSkill && state.activeSkill.id === id) {
+        const big = document.querySelector('#modal .rating-big');
+        if (big) big.textContent = count;
+        const sub = document.querySelector('#modal .rating-sub');
+        if (sub) sub.textContent = (count === 1 ? 'Stimme' : 'Stimmen') + ' — „hat mir geholfen“ (Demo-Wert)';
+      }
+      if (state.sort !== 'recommended' && state.sort !== 'votes') return;
+      const grid = document.getElementById('skills-grid');
+      if (!grid) return;
+      const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const canAnim = !reduce && typeof Element !== 'undefined' && Element.prototype.animate;
+      const before = new Map();
+      if (canAnim) {
+        grid.querySelectorAll('.skill-card').forEach(el => {
+          const btn = el.querySelector('.up-btn[data-up-id]');
+          if (btn) before.set(btn.dataset.upId, el.getBoundingClientRect().top);
+        });
+      }
+      state._noCardAnim = true;   // die Einblend-Animation der Karten hier aussetzen
+      render();
+      state._noCardAnim = false;
+      if (!canAnim) return;
+      grid.querySelectorAll('.skill-card').forEach(el => {
+        const btn = el.querySelector('.up-btn[data-up-id]');
+        if (!btn) return;
+        const old = before.get(btn.dataset.upId);
+        if (old === undefined) return;
+        const dy = old - el.getBoundingClientRect().top;
+        if (!dy) return;
+        el.animate([{ transform: `translateY(${dy}px)` }, { transform: 'none' }],
+                   { duration: 320, easing: 'cubic-bezier(.2,.7,.3,1)' });
+      });
+    };
+
     // ===== INIT =====
     document.addEventListener('DOMContentLoaded', () => {
+      /* Dichte-Regler: kompakt ist der Standard (Nutzer-Entscheid, siehe base.js).
+         Muss VOR dem ersten render() laufen — initDensity setzt data-density auf
+         das Grid, und die Karten fragen es über .density-clamp / .density-only-*
+         ab. Umgekehrte Reihenfolge zeigte für einen Frame die ausführliche Fassung. */
+      initDensity({ page: 'skills', container: '#skills-grid', mount: '[data-density-slot]', label: 'Ansicht', default: 'kompakt' });
+      // Favoriten-Filter trägt dasselbe Lesezeichen wie die Karten. Das Icon lebt in
+      // base.js (LU) und kann deshalb nicht im statischen Markup stehen.
+      const ffStar = document.querySelector('#fav-filter-btn .ff-star');
+      if (ffStar) ffStar.innerHTML = LU.bookmark;
       renderRecentlyViewed();
       renderCounters();
       renderPilots();

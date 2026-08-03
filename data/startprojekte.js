@@ -8,6 +8,22 @@
      STARTPROJEKTE — 3 Gerüste zum Herunterladen, je eines pro Projekttyp
                      aus ANWEISUNGEN: einseiter | dashboard | auswerter.
 
+   NAMEN (03.08.2026): Die drei Projekttypen heißen im ganzen Marketplace
+   gleich — EINSEITER, DASHBOARD, AUSWERTER. Vorher stand hier
+   „Kampagnen-Dashboard" und „Umfrage-Auswerter", während die zugehörige
+   Vorlage in data/anweisungen.js „Kleines Tool" bzw. „Datenauswertung" hieß:
+   dieselbe Sache, drei Namen, keine sichtbare Verbindung. Die Kampagne bzw.
+   die Umfrage waren ohnehin nur der Beispielinhalt IM Gerüst, nicht sein
+   Gegenstand — beim „Umfrage-Auswerter" kollidierte der Name zusätzlich mit
+   dem echten Team-Tool gleichen Namens in data/cases.js.
+   Die IDs bleiben unverändert: an ihnen hängen der Deep-Link
+   `showroom.html?g=<id>`, der Anker `#sp-<id>`, der Ordnername unter
+   startprojekte/, der ZIP-Name und die Ersterscheinungs-Daten in data/seit.js
+   (deren Generator umbenannte IDs in der Git-Historie nicht mehr findet).
+   Der Beispielinhalt im Gerüst selbst (startprojekte/dashboard/index.html
+   trägt weiter die Überschrift „Kampagnen-Dashboard") ist bewusst nicht
+   angefasst: das ist der Demo-Text, den man beim Weiterbauen ersetzt.
+
    Was ein Gerüst ist: ein Ordner, der schon läuft, aber noch nichts von
    dir weiss. Doppelklick auf die `index.html` und es passiert etwas — mit
    Beispielinhalt, den du ersetzt. Kein Server, keine Installation, kein
@@ -73,7 +89,7 @@ const STARTPROJEKTE = [
 
   {
     id: 'dashboard',
-    name: 'Kampagnen-Dashboard',
+    name: 'Dashboard',
     kurz: 'Tabelle rein, Diagramme raus: Kacheln mit den Summen, ein Balkenvergleich je Gruppe und ein Streudiagramm für zwei Zahlen.',
     wofuer: 'Für wiederkehrende Zahlen, die du sonst jedes Mal von Hand in Excel formst. Es liest eine CSV-Datei oder eine aus Excel kopierte Tabelle, erkennt das Trennzeichen selbst und rechnet im Browser. Unter jedem Diagramm steht der Rechenweg, damit du prüfen kannst, was es aus deiner Datei gemacht hat.',
     anweisung: 'kleines-tool',
@@ -85,7 +101,7 @@ const STARTPROJEKTE = [
 
   {
     id: 'auswerter',
-    name: 'Umfrage-Auswerter',
+    name: 'Auswerter',
     kurz: 'Wertet eine Antwort-Tabelle aus und schreibt zuerst hin, welches Format es erkannt hat — erkennt es nichts, rechnet es nichts.',
     wofuer: 'Für Tabellen mit Antworten: je Frage die Verteilung, dazu eine offene Bilanz, in der gelesene, verwertete und übersprungene Zeilen zusammen genau die Zeilenzahl der Datei ergeben. Im Ordner liegen die beiden üblichen Tabellenformate als Beispiel und eine absichtlich unbrauchbare Datei, damit du siehst, wie das Gerüst sich weigert statt zu raten.',
     anweisung: 'datenauswertung',
