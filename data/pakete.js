@@ -93,7 +93,7 @@ const PAKETE = [
     wofuer: 'Nimm es, wenn du etwas baust, das nach pilot aussehen soll — ein internes Tool, eine Auswertung, eine Seite zum Weitergeben. Du bindest eine Datei ein und hast Farben, Größen und Abstände, ohne dich zu entscheiden. Nimm es NICHT für Material, das nach außen geht: verbindliche Vorlagen, Logo-Guidelines und Schriftlizenzen kommen ausschließlich vom pilot-Brand- und KI-Enablement-Team, und die offizielle Brand-Schrift Centra No1 liegt hier nicht bei.',
     inhalt: [
       'tokens.css — alle Farben, Größen, Radien und Schatten als CSS-Variablen, Wert für Wert aus shared/base.css abgeschrieben.',
-      'index.html — eine Beispielseite, die jeden Baustein einmal fertig zeigt: Kopfbereich, Überschriften, Knöpfe in ihren vier Zuständen, Karte, Tabelle, Formularfeld, Hinweiskasten, dunkles Band. Öffnet per Doppelklick, ohne Server und ohne Netz.',
+      'index.html — eine Beispielseite, die jeden Baustein einmal fertig zeigt: Kopfbereich, Überschriften, Knöpfe in ihren vier Zuständen, Karte mit Stimmen-Knopf, Tabelle, Formularfeld, Hinweiskasten, dunkles Band. Öffnet per Doppelklick, ohne Server und ohne Netz.',
       'CLAUDE.md — die Designregeln in Worten, damit Claude Code sie beim Bauen kennt. Jede Regel nennt ihre Fundstelle in shared/base.css oder trägt das Wort „Vorschlag".',
       'schriften.css — die fertigen @font-face-Blöcke für Inter und JetBrains Mono. Absichtlich noch nicht eingebunden; wie du sie einschaltest, steht in schriften.md.',
       'schriften.md — woher die Schriften kommen, unter welcher Lizenz sie stehen, und warum die offizielle pilot-Schrift nicht dabei ist.',
@@ -143,6 +143,16 @@ const PAKETE = [
                          Marketplace kein Token, sondern lebt in der Palette.
                          Der Kontrastwert 11,58:1, den CLAUDE.md nennt, ist das
                          Paar Schwarz-auf-Signal-Gelb aus genau dieser Palette.
+         lucide          NEU seit der Feedback-Runde 2026-08: Der Kartenfuß der
+                         Beispielseite zeigt den Stimmen-Knopf des Marketplace
+                         statt der abgeschafften Sterne-Zeile, und der trägt den
+                         Lucide-Pfeil `arrow-up` als Inline-SVG. Genau zwei
+                         Vorkommen, sonst kein Icon im Paket. Bis dahin stand
+                         hier die Begründung „kein Verweis auf ein Icon-Set, die
+                         Beispielseite enthält kein einziges <svg>" — die stimmt
+                         seitdem nicht mehr, also steht der Verweis jetzt da.
+                         Eine Datei kommt dadurch nicht ins ZIP: ICONSETS führt
+                         `dateien: []`, das SVG steht wörtlich in der index.html.
 
        Was hier bewusst NICHT steht:
          Kein Verweis auf ein Muster (PATTERNS). Nachgesehen statt vermutet:
@@ -150,8 +160,6 @@ const PAKETE = [
          Verlauf im Paket ist der Textmarker `.mk` (base.css:250–252) — ein
          Bauteil, kein Hintergrund-Asset. Ein Verweis auf ein Muster wäre
          hübsch und falsch.
-         Kein Verweis auf ein Icon-Set. Die Beispielseite enthält kein einziges
-         <svg>; sie kommt ohne Icons aus.
          Kein vierter Eintrag in ANWEISUNGEN für die CLAUDE.md dieses Pakets.
          Ein ANWEISUNGEN-Eintrag ist eine Projektstart-Vorlage für einen der
          drei Projekttypen; Designregeln sind das nicht. Die CLAUDE.md liegt
@@ -161,6 +169,7 @@ const PAKETE = [
       { typ: 'asset', id: 'inter', name: 'Inter' },
       { typ: 'asset', id: 'jetbrains-mono', name: 'JetBrains Mono' },
       { typ: 'asset', id: 'pilot-ci', name: 'pilot CI' },
+      { typ: 'asset', id: 'lucide', name: 'Lucide' },
     ],
     tags: ['design', 'farben', 'schriften', 'css', 'vorlage', 'pilot'],
   },

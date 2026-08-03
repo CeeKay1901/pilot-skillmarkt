@@ -148,7 +148,7 @@
        .g-card, .faq-card) waren zusammen die letzte Ausnahme (--c-white +
        --r-md). Alle drei angeglichen, damit die Seite weder intern noch
        gegenueber den Schwesterseiten aus der Reihe faellt. */
-    /* cursor:pointer, weil die ganze Kartenfläche das Detail aufklappt (Feedback 31).
+    /* cursor:pointer, weil die ganze Kartenfläche das Detail aufklappt (Feedback: ganze Karte klappt auf).
        Die Karte bleibt dabei ein <article> ohne role/tabindex — sie enthält Knöpfe,
        und eine Schaltfläche darf keine Schaltflächen enthalten (CLAUDE.md, axe
        nested-interactive). Den Tastaturweg trägt weiterhin „Mehr dazu“. */
@@ -173,7 +173,8 @@
     }
     .res-card.-intern .res-ico { background: rgba(255,224,94,.25); }
     .res-ico .lu { width: 2.2rem; height: 2.2rem; color: var(--c-gray-m); }
-    /* Feste Kartenanatomie (Feedback 10): Kopf · Titel · Kurzinfo · Meta · Fuß.
+    /* Feste Kartenanatomie (Feedback: weniger auf der Karte, feste Reihenfolge):
+       Kopf · Titel · Kurzinfo · Meta · Fuß.
        Als Flex-Spalte, damit der Fuß per margin-top:auto immer unten sitzt — sonst
        wandert er bei kurzem Titel nach oben und das Raster wirkt unruhig, obwohl
        die Karten gleich hoch sind. */
@@ -206,13 +207,24 @@
       margin: 1.2rem 0 1.4rem;
     }
     .res-fuerdich strong { font-weight: 700; }
-    /* Textmenge begrenzen statt Karten wachsen lassen (Feedback 10): In der Stufe
-       „Standard“ bleiben zwei Zeilen Kurzinfo stehen, in „Kompakt“ ist sie ganz weg,
-       in „Ausführlich“ vollständig da. Die Zeilenzahl kommt aus der geteilten
-       .density-clamp-Utility (base.css), gesteuert über --density-clamp-s. */
-    .res-fuerdich.density-clamp { --density-clamp-s: 2; }
-    /* Die eine ruhige Meta-Zeile jeder Karte (Feedback 9): IMMER dieselben vier
-       Angaben in derselben Reihenfolge — Dauer · Niveau · Sprache · Thema. Vorher
+    /* Textmenge begrenzen statt Karten wachsen lassen (Feedback: Karten kürzen):
+       „Kompakt“ EINE Zeile, „Standard“ zwei, „Ausführlich“ vollständig. Der Satz ist
+       das einzige „passt das zu mir?“ auf der Karte und bleibt deshalb in JEDER Stufe
+       sichtbar — Kompakt ist zugleich die Stufe, in der die Seite beim ersten Besuch
+       steht. Gekappt statt versteckt: die Zeile endet sichtbar mit „…“
+       (-webkit-line-clamp setzt die Ellipse selbst, kein text-overflow nötig).
+       Das <p> trug bis hierher ZUSÄTZLICH .density-hide-kompakt. Die Klasse war
+       wirkungslos: In base.css steht die Clamp-Regel NACH der Hide-Regel, beide mit
+       Spezifität 0,2,0 — bei zwei Regeln gleicher Spezifität gewinnt die spätere, das
+       display:-webkit-box überschrieb also das display:none. Sichtbar waren damit
+       stillschweigend zwei Zeilen (--density-clamp-k, Vorgabewert 2), während das
+       Markup „in Kompakt weg“ behauptete. Die Klasse ist raus, die Stufen stehen jetzt
+       ausschließlich in den beiden Variablen: --density-clamp-k (kompakt),
+       --density-clamp-s (standard). ACHTUNG bei neuen Elementen: .density-hide-kompakt
+       und .density-clamp schließen sich aus demselben Grund gegenseitig aus. */
+    .res-fuerdich.density-clamp { --density-clamp-k: 1; --density-clamp-s: 2; }
+    /* Die eine ruhige Meta-Zeile jeder Karte (Feedback: gleiche Angaben auf jeder
+       Karte): IMMER dieselben vier Angaben in derselben Reihenfolge — Dauer · Niveau · Sprache · Thema. Vorher
        stand hier nur die Dauer, Niveau/Sprache/Plattform lagen im Aufklapp-Detail
        und eine einzelne Karte trug zusätzlich ein „Start hier“-Band. Ein Hinweis auf
        genau einer Karte hilft beim ersten Besuch und ist ab dem zweiten im Weg;
@@ -254,7 +266,8 @@
     .res-rating strong { font-family: var(--font-mono); color: var(--c-black); }
     .res-intern-hint { font-size: 1.25rem; color: var(--c-gray-m); font-style: italic; }
 
-    /* Linkout im Aufklapp-Detail (Feedback 30). Der Titel ist zwar verlinkt, aber
+    /* Linkout im Aufklapp-Detail (Feedback: eindeutiger, benannter Ausgang zur
+       Quelle). Der Titel ist zwar verlinkt, aber
        im aufgeklappten Zustand steht er weit oben und liest sich als Überschrift —
        am Ende des Details fehlte der eindeutige, benannte Ausgang zur Quelle.
        Als einziges gefülltes Element der Karte ist er unmissverständlich DIE Aktion. */
@@ -310,7 +323,11 @@
     .res-toggle .ct-arrow { transition: transform .2s; font-size: 1.6rem; line-height: 1; }
     .res-toggle[aria-expanded="true"] .ct-arrow { transform: rotate(90deg); }
 
-    .res-body { grid-column: 1 / -1; border-top: 1px dashed var(--line-strong); padding: 1.8rem 2rem 2rem; }
+    /* cursor zurück auf default: Die Karte setzt cursor:pointer für ihre ganze Fläche,
+       im aufgeklappten Detail passiert bei einem Klick aber bewusst NICHTS
+       (resCardClick steigt bei .res-body aus, damit Lesen die Karte nicht zuklappt).
+       Der geerbte Zeigefinger versprach dort eine Aktion, die es nicht gibt. */
+    .res-body { grid-column: 1 / -1; cursor: default; border-top: 1px dashed var(--line-strong); padding: 1.8rem 2rem 2rem; }
     .res-body[hidden] { display: none; }
     .res-body > div + div { margin-top: 1.8rem; }
     .res-body-label {
@@ -333,12 +350,21 @@
        das Mitmachen-Band ist das letzte Kind des Panels, ein Sektions-Padding
        schob sonst einen hellen Streifen zwischen dunkles Band und dunklen Footer
        (der Ressourcen-Tab schließt bündig — gleiches Muster jetzt hier). */
+    /* GLEICHE STARTHÖHE, GLEICHE FLÄCHE (Feedback: bündig und ruhig wie die
+       Ressourcen). Die vier Bereiche sind seit E11 TABS — sichtbar ist immer genau
+       einer. Trotzdem trugen drei von ihnen noch die Kleidung der alten Scroll-Seite:
+       6,4rem Kopfpolster plus Kicker (Ressourcen: 5,2rem ohne Kicker) und eine
+       border-top als Bereichstrenner. Beim Reiterwechsel sprang die Überschrift
+       deshalb um ~2,5rem, und unter der Sub-Nav (die ihre eigene Hairline als
+       box-shadow trägt) stand bei drei Reitern eine zweite Linie, bei einem keine.
+       Alle vier jetzt auf dem Ressourcen-Maß: 5,2rem, kein Kicker, keine border-top,
+       --c-bg als Fläche. */
     .bef-section {
       background: var(--c-bg); color: var(--c-black);
-      border-top: 1px solid var(--line); padding: 6.4rem 0 0;
+      padding: 5.2rem 0 0;
     }
-    /* BÜNDIGKEIT DER VIER SÄULEN (Feedback 28): Alle vier Bereiche liegen jetzt im
-       gleichen Rahmen wie die Ressourcen — max-width: var(--max-w), linke Kante
+    /* BÜNDIGKEIT DER VIER SÄULEN (Feedback: Bereiche bündig ausrichten): Alle vier
+       Bereiche liegen jetzt im gleichen Rahmen wie die Ressourcen — max-width: var(--max-w), linke Kante
        identisch. Vorher hatte jede Säule ihre eigene Breite (Befehle 108rem, FAQ
        86rem), was beim Tabwechsel wie ein Sprung zwischen „bündig“ und „mittig“
        aussah: Überschrift und Vorspann rückten je nach Reiter ein Stück nach innen.
@@ -346,14 +372,22 @@
        (.rank-list, .faq-list, die Vorspann-Absätze), nicht am äußeren Rahmen.
        Genau darum ging es: Der Rahmen richtet aus, der Inhalt bestimmt die Zeilenlänge. */
     .bef-inner { max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-d) 8rem; }
+    /* margin-top 0 wie .res-section-h2: die .6rem waren der Abstandshalter des
+       entfallenen Kickers (siehe Sektions-Kommentar oben). */
     .bef-h2 {
       font-size: var(--fs-h2); font-weight: 700;
-      letter-spacing: -.02em; color: var(--c-black); margin: .6rem 0 1.2rem;
+      letter-spacing: -.02em; color: var(--c-black); margin: 0 0 1.2rem;
     }
     .bef-sub { font-size: 1.6rem; line-height: 1.6; color: var(--c-ink-body); max-width: 72ch; margin: 0; }
 
     /* Kategorie-Filter: base.css-.chip-Primitive (.-yellow.-active, .chip-count) */
-    .bef-chips { display: flex; gap: .8rem; flex-wrap: wrap; margin: 3rem 0 2.4rem; }
+    .bef-chips { display: flex; gap: .8rem; flex-wrap: wrap; margin: 3rem 0 1.8rem; }
+
+    /* Dichte-Regler über der Rangliste: eigene Zeile, rechtsbündig an derselben
+       Kante wie die .rank-list (gleiche max-width) — dasselbe Muster wie .density-row
+       auf skills.html und .sr-density im Showroom. Er ist kein Filter, deshalb steht
+       er nicht in der Chip-Zeile. */
+    .bef-tools { display: flex; justify-content: flex-end; max-width: 108rem; margin: 0 0 1.4rem; }
 
     /* ===== RANKING-LISTE (Signature: Upvote sortiert live) =====
        Terminal-Moment: die Liste sitzt als dunkles Panel im hellen Rahmen.
@@ -418,12 +452,28 @@
       background: rgba(255,224,94,.15); color: var(--c-yellow);
       border-radius: var(--r-pill); padding: .25rem .9rem; white-space: nowrap;
     }
-    /* Nutzen: zugeklappt EINE Zeile (Dichte), aufgeklappt der volle Satz */
+    /* Nutzen-Satz — die Textmenge dieses Bereichs steckt fast vollständig hier
+       (28 Einträge × ein Satz). Er hängt deshalb an der Ansichtsdichte:
+         Kompakt      weg  → eine Zeile pro Befehl, die Liste ist ein Index
+         Standard     EINE Zeile (der bisherige Zustand)
+         Ausführlich  ganzer Satz
+       Das Ausblenden macht die geteilte Utility .density-hide-kompakt (base.css),
+       die Kürzung bleibt seitenlokal: .density-clamp wäre hier keine Option, weil
+       ihre base.css-Regel NACH der Hide-Regel steht und beide Spezifität 0,2,0
+       haben — ein Element mit beiden Klassen ist in „Kompakt“ nicht ausgeblendet,
+       sondern nur gekürzt (siehe .res-fuerdich weiter oben). */
     .cmd-nutzen {
       font-size: 1.4rem; line-height: 1.55; color: rgba(252,252,252,.82);
       margin: .5rem 0 0; max-width: 78ch;
+    }
+    [data-density="standard"] .cmd-nutzen {
       display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 1; overflow: hidden;
     }
+    /* Aufgeklappt gilt in JEDER Stufe der volle Satz — auch in „Kompakt“, wo die
+       Zeile zugeklappt gar nicht steht. Drei Klassen ergeben Spezifität 0,3,0 und
+       schlagen damit sowohl die Standard-Kürzung darüber als auch das display:none
+       der Utility (beide 0,2,0); die Regel steht also unabhängig von der
+       Datei-Reihenfolge sicher. */
     .cmd-card.open .cmd-nutzen { display: block; overflow: visible; }
     .cmd-nutzen code, .cmd-body code {
       font-family: var(--font-mono); font-size: .92em;
@@ -498,10 +548,15 @@
     /* Leerlauf, falls ein Filter nichts trifft (defensiv) */
     .bef-empty { font-size: 1.5rem; color: rgba(252,252,252,.6); padding: 3rem 0; }
 
-    /* ===== BEREICH 3: GLOSSAR (hell, Nachschlagewerk auf Papier) ===== */
-    .glossar-section { background: var(--paper-warm); border-top: 1px solid var(--line); padding: 6.4rem 0 8rem; }
+    /* ===== BEREICH 3: GLOSSAR (hell, Nachschlagewerk auf Papier) =====
+       Fläche --c-bg wie die drei anderen Reiter (Feedback: bündig und ruhig, siehe
+       .bef-section). Das --paper-warm war die einzige abweichende Sektionsfläche der
+       Seite: beim Wechsel auf „Glossar“ wechselte die ganze Seite den Farbton, ohne
+       dass dahinter eine Aussage stand. Die Karten (.g-card, --paper) heben sich vom
+       ruhigeren --c-bg sogar deutlicher ab als vorher. */
+    .glossar-section { background: var(--c-bg); padding: 5.2rem 0 8rem; }
     .glo-inner { max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-d); }
-    .glo-h2 { font-size: var(--fs-h2); font-weight: 700; letter-spacing: -.02em; margin: .6rem 0 1.2rem; }
+    .glo-h2 { font-size: var(--fs-h2); font-weight: 700; letter-spacing: -.02em; margin: 0 0 1.2rem; }
     .glo-sub { font-size: 1.6rem; line-height: 1.6; color: var(--c-ink-body); max-width: 72ch; margin: 0; }
 
     /* Themen-Filter (base.css-.chip-Primitive): bewusst NICHT sticky — einmal
@@ -511,7 +566,7 @@
     /* Werkzeugleiste: Suche + A-Z — klebt beim Blättern unter der Sub-Nav */
     .glo-tools {
       position: sticky; top: calc(var(--header-h) + 4.6rem); z-index: 40;
-      background: var(--paper-warm); margin: 1.4rem 0 0; padding: 1.2rem 0 1.4rem;
+      background: var(--c-bg); margin: 1.4rem 0 0; padding: 1.2rem 0 1.4rem;
       display: flex; align-items: center; gap: 2rem; flex-wrap: wrap;
       border-bottom: 1px solid var(--line);
     }
@@ -606,13 +661,15 @@
     }
 
     /* ===== BEREICH 4: FAQ (ruhiges Akkordeon) ===== */
-    .faq-section { background: var(--c-bg); border-top: 1px solid var(--line); padding: 6.4rem 0 8rem; }
-    /* Bündig wie die anderen drei Säulen (Feedback 28) — die Lesebreite von 86rem
+    /* Kopfmaß wie die drei anderen Reiter, keine border-top (siehe .bef-section). */
+    .faq-section { background: var(--c-bg); padding: 5.2rem 0 8rem; }
+    /* Bündig wie die anderen drei Säulen (Feedback: Bereiche bündig ausrichten) —
+       die Lesebreite von 86rem
        ist an die .faq-list gewandert, wo sie hingehört: Ein Akkordeon über die volle
        Rasterbreite ergäbe Zeilen, die niemand lesen will, aber der Bereichskopf muss
        auf derselben Kante beginnen wie Ressourcen, Befehle und Glossar. */
     .faq-inner { max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-d); }
-    .faq-h2 { font-size: var(--fs-h2); font-weight: 700; letter-spacing: -.02em; margin: .6rem 0 1.2rem; }
+    .faq-h2 { font-size: var(--fs-h2); font-weight: 700; letter-spacing: -.02em; margin: 0 0 1.2rem; }
     .faq-sub { font-size: 1.6rem; line-height: 1.6; color: var(--c-ink-body); max-width: 62ch; margin: 0; }
     .faq-list { display: flex; flex-direction: column; gap: 1.2rem; margin-top: 3.2rem; max-width: 86rem; }
     .faq-card {
@@ -654,9 +711,12 @@
       .cmd-code { font-size: 1.5rem; }
       .cmd-body { padding: 1.8rem 1.4rem 2rem; }
       .rank-list { padding: .8rem; }
-      .bef-section { padding: 4.4rem 0 0; }
+      /* Mobil dasselbe Kopfmaß für alle vier Reiter (4rem) — sonst kehrt der
+         Sprung beim Reiterwechsel hier zurück, den die Desktop-Werte gerade
+         verloren haben. */
+      .bef-section { padding: 4rem 0 0; }
       .bef-inner { padding-bottom: 5.6rem; }
-      .glossar-section, .faq-section { padding: 4.4rem 0 5.6rem; }
+      .glossar-section, .faq-section { padding: 4rem 0 5.6rem; }
       .res-intro { padding: 4rem 0 2rem; }
       .glo-tools { gap: 1.2rem; }
       .glo-search { flex: 1 1 100%; }
@@ -674,7 +734,7 @@
       .az-rail::after {
         content: ''; flex: 0 0 3.2rem;
         position: sticky; right: 0;
-        background: linear-gradient(to right, rgba(244,241,234,0), var(--paper-warm) 75%);
+        background: linear-gradient(to right, rgba(241,241,236,0), var(--c-bg) 75%);
         pointer-events: none;
       }
       /* Zeit-Schnellauswahl: die vier Kacheln stapelten mobil untereinander und
@@ -698,6 +758,9 @@
       .faq-body { padding: 0 1.6rem 2rem; }
     }
     @media (max-width: 640px) {
+      /* Rechtsbündig ergibt auf schmalem Schirm nur eine gedrängte rechte Kante —
+         gleiche Umkehr wie .density-row (skills.html) und .sr-density (Showroom). */
+      .bef-tools { justify-content: flex-start; }
       .res-card { grid-template-columns: 4.6rem 1fr; }
       .res-main { padding: 1.6rem 1.4rem 1.4rem; }
       .res-body { padding: 1.6rem 1.4rem 1.8rem; }
@@ -794,7 +857,8 @@
               <div class="role-chips" id="filter-chips"></div>
               <div class="filter-controls">
                 <span class="results-count-lg" id="results-count"></span>
-                <!-- Ansichtsdichte (Feedback 43): Slot für initDensity() aus base.js,
+                <!-- Ansichtsdichte (Feedback: Textmenge auf den Karten regelbar
+                     machen): Slot für initDensity() aus base.js,
                      gleiches Slot-Muster wie [data-page-search]. Standard ist KOMPAKT —
                      wer die Seite zum Arbeiten öffnet, sucht meistens etwas Bekanntes
                      wieder und braucht dafür Titel und Meta, nicht den Fließtext. -->
@@ -821,7 +885,8 @@
       <div class="res-section" aria-label="Lern-Ressourcen">
         <div class="res-inner">
           <!-- Der frühere Vorspann („Externe Links am 17. Juli geprüft; Demo-Werte …“)
-               ist entfallen (Feedback 29). Beide Aussagen sind nicht verschwunden,
+               ist entfallen (Feedback: Vorspann vor dem Regal streichen). Beide
+               Aussagen sind nicht verschwunden,
                sondern dorthin gewandert, wo sie geprüft werden können: Das Prüfdatum
                steht am Fuß jedes Aufklapp-Details bei der jeweiligen Ressource, die
                Demo-Kennzeichnung direkt an der Stimmenzahl — und seitenweit weiterhin
@@ -845,11 +910,26 @@
     <!-- BEREICH 2: BEFEHLE & KNIFFE -->
     <section class="bef-section" id="befehle" aria-labelledby="befehle-h" role="tabpanel" hidden>
       <div class="bef-inner">
-        <p class="kicker">Ranking</p>
+        <!-- Kein Kicker — gleiche Begründung wie bei den Ressourcen und dazu die
+             gleiche Starthöhe der Überschrift über alle vier Reiter: Der aktive
+             Reiter sagt „Befehle & Kniffe“, die Überschrift sagt es noch einmal,
+             der Kicker sagte „Ranking“ — was der Vorspann darunter ohnehin erklärt
+             („Hat mir geholfen“ sortiert die Rangliste live neu). -->
         <h2 class="bef-h2" id="befehle-h">Befehle &amp; Kniffe</h2>
         <p class="bef-sub"><span id="bef-count">0</span> Befehle, Flags und Tastentricks für Claude Code und pilot AI — „Hat mir geholfen“ sortiert die Rangliste live neu.</p>
 
         <div class="bef-chips" role="group" aria-label="Nach Kategorie filtern" id="bef-chips"></div>
+
+        <!-- Ansichtsdichte für die Rangliste (initDensity, shared/base.js). Dieser
+             Bereich ist der textlastigste der Seite: 28 Einträge, jeder mit einem
+             Nutzen-Satz. EIGENER Slot und EIGENER Speicher-Schlüssel
+             (density:lernen-hilfe-befehle statt density:lernen-hilfe) — sonst würde
+             der Regler des Ressourcen-Reiters die Rangliste mitverstellen, obwohl
+             die beiden Reiter nichts miteinander zu tun haben. Dasselbe Muster wie
+             vorlagen-code / vorlagen-design. Der Slot heißt bewusst NICHT
+             data-density-slot: initDensity() greift ohne expliziten mount den
+             ERSTEN Treffer im Dokument, und das ist der Slot der Filterleiste. -->
+        <div class="bef-tools"><div data-density-befehle></div></div>
 
         <ol class="rank-list" id="rank-list"></ol>
       </div>
@@ -866,10 +946,18 @@
       </section>
     </section>
 
-    <!-- BEREICH 3: GLOSSAR (Nachschlagewerk mit Suche und A-Z-Sprungleiste) -->
+    <!-- BEREICH 3: GLOSSAR (Nachschlagewerk mit Suche und A-Z-Sprungleiste)
+         BEWUSST OHNE Dichte-Regler (Ressourcen und Befehle haben einen): Jede Karte
+         rendert eingeklappt (_gExpanded startet leer), sichtbar ist also ohnehin nur
+         das Wort. Ein Regler hätte hier nichts zu kürzen — er würde eine Wahl
+         anbieten, die nichts ändert. Was aufgeklappt ist, hat jemand selbst
+         aufgeklappt; das ist die Dichte-Entscheidung an dieser Stelle. -->
+
     <section class="glossar-section" id="glossar" aria-labelledby="glossar-h" role="tabpanel" hidden>
       <div class="glo-inner">
-        <p class="kicker">Nachschlagewerk</p>
+        <!-- Kein Kicker (gleiche Starthöhe über alle vier Reiter): „Nachschlagewerk“
+             stand als drittes Etikett über derselben Sache — der Vorspann darunter
+             nennt Suche und A–Z beim Namen. -->
         <h2 class="glo-h2" id="glossar-h">Glossar</h2>
         <p class="glo-sub"><span id="glo-count">0</span> Begriffe aus der KI-Welt — jeder in einem einfachen Satz erklärt, mit Alltagsvergleich, pilot-Beispiel und Vertiefung zum Aufklappen. Zum Nachschlagen gibt es Suche und A–Z, zum Durchlesen die Themen-Filter.</p>
 
@@ -889,10 +977,18 @@
       </div>
     </section>
 
-    <!-- BEREICH 4: FAQ & TROUBLESHOOTING (ruhiges Akkordeon, nur eine Karte offen) -->
+    <!-- BEREICH 4: FAQ & TROUBLESHOOTING (ruhiges Akkordeon, nur eine Karte offen)
+         BEWUSST OHNE Dichte-Regler (Ressourcen und Befehle haben einen): Sichtbar
+         sind zehn Fragen, je eine Zeile, und höchstens EINE Antwort — das Akkordeon
+         ist der Dichte-Regler dieses Bereichs. Zehn Zeilen lassen sich nicht
+         sinnvoll in drei Stufen kürzen; ein zweiter Regler daneben wäre eine
+         Bedienung, die nichts bedient. -->
+
     <section class="faq-section" id="faq" aria-labelledby="faq-h" role="tabpanel" hidden>
       <div class="faq-inner">
-        <p class="kicker">Erste Hilfe</p>
+        <!-- Kein Kicker (gleiche Starthöhe über alle vier Reiter): „Erste Hilfe“
+             sagte dasselbe wie „Troubleshooting“ in der Überschrift und wie der
+             Vorspann („die häufigsten Blocker aus dem Agentur-Alltag“). -->
         <h2 class="faq-h2" id="faq-h">FAQ &amp; Troubleshooting</h2>
         <p class="faq-sub">Die <span id="faq-count">0</span> häufigsten Blocker aus dem Agentur-Alltag — jede Karte mit einer Schritt-für-Schritt-Lösung.</p>
         <div class="faq-list" id="faq-liste"></div>
@@ -1230,7 +1326,7 @@
         <div><span class="res-body-label">Stimmen</span>
           <span class="res-rating">${LU.vote}<span><strong>${getUpvoteCount(r, 'ressource')}</strong> × „Hat mir geholfen“ — redaktioneller Startwert plus deine eigene Stimme, gespeichert nur in diesem Browser.</span></span>
         </div>`;
-      // Linkout (Feedback 30): eindeutiger, benannter Ausgang zur Quelle, zusätzlich
+      // Linkout (Feedback: eindeutiger, benannter Ausgang zur Quelle) — zusätzlich
       // zum verlinkten Titel. stopPropagation, damit der Klick nicht zugleich die
       // Karte zuklappt (siehe resCardClick).
       if (r.url) h += `
@@ -1243,7 +1339,8 @@
       return h;
     }
 
-    /* Die eine ruhige Meta-Zeile jeder Karte (Feedback 9): Dauer · Niveau · Sprache ·
+    /* Die eine ruhige Meta-Zeile jeder Karte (Feedback: gleiche Angaben auf jeder
+       Karte): Dauer · Niveau · Sprache ·
        Thema, immer in dieser Reihenfolge, auch wenn ein Wert unspektakulär ist. Der
        Wert liegt in der Gleichheit — man lernt die Position einmal und liest danach
        nur noch ab. Sie ersetzt das „Start hier“-Band, das genau EINE Karte hervorhob. */
@@ -1284,7 +1381,8 @@
       });
     };
 
-    /* Kartenanatomie (Feedback 9/10/31), auf jeder Karte identisch:
+    /* Kartenanatomie (Feedback: feste Anatomie, weniger auf der Karte, ganze Karte
+       klappt auf), auf jeder Karte identisch:
          Kopf   Typ · Quelle · Merken
          Titel  verlinkt auf die Quelle (bei internen Platzhaltern reiner Text)
          Kurz   „Für dich, wenn …“ — hängt an der Ansichtsdichte
@@ -1319,7 +1417,7 @@
               ${favBookmarkHtml(r.id, 'ressource', r.titel)}
             </div>
             ${titleHtml}
-            <p class="res-fuerdich density-hide-kompakt density-clamp"><strong>Für dich, wenn</strong> ${escHtml(r.fuerDich)}</p>
+            <p class="res-fuerdich density-clamp"><strong>Für dich, wenn</strong> ${escHtml(r.fuerDich)}</p>
             <div class="res-meta">${resMetaHtml(r)}</div>
             <div class="res-foot">
               ${footHtml}
@@ -1357,7 +1455,8 @@
           </div>`;
         return;
       }
-      // Kein „Start hier“-Pin mehr (Feedback 9): Früher wurde bei leerem Filter eine
+      // Kein „Start hier“-Pin mehr (Feedback: gleiche Angaben auf jeder Karte):
+      // Früher wurde bei leerem Filter eine
       // redaktionell gesetzte Ressource nach oben gezogen und mit einem Band markiert.
       // Das half beim allerersten Besuch und stand ab dem zweiten im Weg — und es
       // durchbrach still die gewählte Sortierung. Was es leisten sollte (Orientierung,
@@ -1372,7 +1471,7 @@
        gleichzeitig nach. Die Ressourcen-Stimme bleibt dabei getrennt von der
        Sterne-Engine, genau wie vorher.) */
 
-    /* Ganze Karte klappt auf (Feedback 31). Zwei Fälle bleiben ausgenommen:
+    /* Ganze Karte klappt auf (Feedback: ganze Karte klappt auf). Zwei Fälle bleiben ausgenommen:
        — Klicks auf Bedienelemente. Merken (toggleFavorite), Hilfreich (toggleUpvote),
          Linkout, Titel-Link und „Mehr dazu“ rufen alle selbst stopPropagation, dieser
          Test ist die zweite Sicherung — auch für alles, was später dazukommt.
@@ -1502,6 +1601,15 @@
       return h;
     }
 
+    /* Ansichtsdichte in der Ranking-Zeile (Regler über der Liste):
+         Kompakt      Rang · Befehl · Kopieren · Plattform · Hilfreich · Aufklapper
+         Standard     zusätzlich „Mini-Demo“-Marke und der Nutzen-Satz (eine Zeile)
+         Ausführlich  Nutzen-Satz vollständig
+       Bewusst OHNE .density-hide-kompakt bleiben zwei Dinge:
+       — .pf-tag (Claude Code / pilot AI): keine Zusatzinfo, sondern die Bedingung,
+         unter der der Befehl überhaupt funktioniert. Ein Befehl ohne sein Werkzeug
+         ist eine falsche Fährte, egal wie dicht die Ansicht ist.
+       — der „Hat mir geholfen“-Knopf: er sortiert die Liste, die man gerade ansieht. */
     function cardHtml(b, rank) {
       const open = _expanded.has(b.id);
       const voted = hasVoted('befehl', b.id);
@@ -1518,7 +1626,7 @@
                 <code class="cmd-code">${escHtml(b.cmd)}</code>
                 ${copyable ? `<button type="button" class="cmd-copy" onclick="copyBefehl(event,'${b.id}')" title="Befehl kopieren" aria-label="Befehl ${escHtml(b.cmd)} kopieren">${LU.copy} Kopieren</button>` : ''}
                 <span class="pf-tag">${PF_LABEL[b.plattform] || b.plattform}</span>
-                ${isLh ? '<span class="lh-tag">Mini-Demo</span>' : ''}
+                ${isLh ? '<span class="lh-tag density-hide-kompakt">Mini-Demo</span>' : ''}
                 <span class="cmd-actions">
                   <button type="button" class="vote-btn${voted ? ' voted' : ''}" aria-pressed="${voted}" onclick="voteBefehl('${b.id}')">
                     ${LU.vote}<span>Hat mir geholfen</span><span class="vote-count">${votesOf(b)}</span>
@@ -1528,7 +1636,7 @@
                   </button>
                 </span>
               </div>
-              <p class="cmd-nutzen">${mdInline(b.nutzen)}</p>
+              <p class="cmd-nutzen density-hide-kompakt">${mdInline(b.nutzen)}</p>
             </div>
           </div>
           <div class="cmd-body" id="cmd-body-${b.id}"${open ? '' : ' hidden'}>${cardBodyHtml(b)}</div>
@@ -2029,7 +2137,7 @@
       // Bereich 1: Ressourcen
       // Ansichtsdichte VOR dem ersten render(): initDensity setzt data-density auf
       // #res-list, und die Karten fallen beim Einfügen gleich in die richtige Stufe
-      // statt einmal in voller Länge aufzublitzen. Standard kompakt (Feedback 43).
+      // statt einmal in voller Länge aufzublitzen. Standard kompakt (Feedback: Textmenge regelbar machen).
       initDensity({ page: 'lernen-hilfe', container: '#res-list', mount: '[data-density-slot]', label: 'Ansicht', default: 'kompakt' });
       renderZeitTiles();
       renderCatTabs();
@@ -2037,6 +2145,13 @@
       render();
 
       // Bereich 2: Befehle
+      // Zweiter, unabhängiger Dichte-Regler: eigener Seiten-Schlüssel
+      // (density:lernen-hilfe-befehle), eigener Container (#rank-list), eigener Slot.
+      // Muss wie oben VOR dem ersten renderRanking() laufen, damit die Zeilen gleich
+      // in der richtigen Stufe erscheinen. initDensity() verträgt zwei Aufrufe pro
+      // Seite ohne Weiteres: die Registry in base.js liegt pro Seiten-SCHLÜSSEL,
+      // nicht pro Dokument (gleiches Muster wie vorlagen-code/vorlagen-design).
+      initDensity({ page: 'lernen-hilfe-befehle', container: '#rank-list', mount: '[data-density-befehle]', label: 'Ansicht', default: 'kompakt' });
       renderChips();
       renderRanking();
 

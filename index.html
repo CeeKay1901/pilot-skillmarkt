@@ -5,7 +5,7 @@
   frühere „Was willst du tun?"-Schnellzugriff wurde in E12 auf Nutzerwunsch
   entfernt. Aufbau: kompakter „Neu im Marketplace"-Block, die sechs Bereiche
   als ruhiges 3×2-Raster (in Nav-Reihenfolge, Lernen & Hilfe zuletzt),
-  „Gemerkt & bewertet" (localStorage) zum Schluss.
+  „Gemerkt & gestimmt" (localStorage) zum Schluss.
 -->
 <html lang="de">
 <head>
@@ -34,7 +34,7 @@
     })();
   </script>
   <title>pilot AI Marketplace — Ein Ort für alles, was ihr mit KI baut</title>
-  <meta name="description" content="Die Startseite des internen pilot AI Marketplace: Skills, Prompt-Sammlung, Lernen & Hilfe, Asset-Bibliothek, Baukasten und Showroom — Citizen Coding für die pilot Agenturgruppe.">
+  <meta name="description" content="Die Startseite des internen pilot AI Marketplace: Skills, Prompts, Lernen & Hilfe, Asset-Bibliothek, Baukasten und Showroom — Citizen Coding für die pilot Agenturgruppe.">
   <meta name="theme-color" content="#262626">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="pilot AI Marketplace">
@@ -268,7 +268,7 @@
           <article class="area-card area-live-sm anim-reveal">
             <div class="area-head">
               <span class="area-ic"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M7 9h10"/><path d="M7 13h6"/></svg></span>
-              <h3>Prompt-Sammlung</h3>
+              <h3>Prompts</h3>
             </div>
             <div class="area-count">
               <span class="area-count-num" id="area-prompt-count">0</span>
@@ -277,7 +277,7 @@
             <p class="area-text">Kopierfertige Prompts mit Platzhaltern, Varianten und der Erklärung, warum sie funktionieren.</p>
             <div class="area-spot-slot" id="area-prompt-spot"></div>
             <div class="area-cta-row">
-              <a class="c-cta -yellow-bg" href="prompts.html">Sammlung öffnen</a>
+              <a class="c-cta -yellow-bg" href="prompts.html">Prompts öffnen</a>
             </div>
           </article>
 
@@ -364,7 +364,7 @@
     <section class="jrow" id="reise" aria-label="Dein Fortschritt">
       <div class="jrow-inner">
         <div class="jcol anim-reveal">
-          <p class="kicker">Gemerkt & bewertet</p>
+          <p class="kicker">Gemerkt & gestimmt</p>
           <h2>Deine Sachen</h2>
           <div id="journey-body"><!-- per JS: Fortschritt oder Empty-State --></div>
         </div>
@@ -431,7 +431,7 @@
       skills: (typeof VISIBLE_SKILL_COUNT === 'number')
         ? VISIBLE_SKILL_COUNT
         : SKILLS.filter(s => (s.itemType || 'skill') === 'skill' && (typeof HIDDEN === 'undefined' || !HIDDEN.has(s.id))).length,
-      // Prompt-Sammlung (data/prompts.js, ab E3) — die kuratierten Einträge auf prompts.html
+      // Prompts (data/prompts.js, ab E3) — die kuratierten Einträge auf prompts.html
       promptItems: PROMPTS.length
     };
 
@@ -443,10 +443,15 @@
        Gesamtstimmen ∪ Top 5 nach votesRecent und schneidet daraus tagesbasiert
        heraus; [0] ist der Eintrag des Tages.
        Seit der Feedback-Runde 2026-08 tragen die Sammlungen votesRecent-Seeds,
-       der Pool ist damit größer als n und die Fläche ROTIERT täglich — gewollt
-       (Produktentscheidung, Feedback-Item 20): das Label „Bestbewertete" meint
-       den Top-5-Pool, nicht zwingend den Erstplatzierten des Tages. Bewusst
-       KEINE zweite, seiteneigene Tagesrechnung neben der in base.js.
+       der Pool ist damit meist größer als n und die Fläche ROTIERT täglich —
+       gewollt (Produktentscheidung, Feedback-Item 20): das Label „Bestbewertete"
+       meint den Top-5-Pool, nicht zwingend den Erstplatzierten des Tages.
+       Auch ein Pool, der nicht größer ist als n, rotiert: bestRated() legt den
+       Tagesversatz ab zwei Einträgen an und liefert dann dieselbe Menge in
+       täglich anderer Reihenfolge. Das betrifft hier genau die Asset-Kachel —
+       Stimmen-Signale tragen dort nur die fünf Schriften, sie stand deshalb
+       vorher dauerhaft auf demselben Eintrag. Bewusst KEINE zweite,
+       seiteneigene Tagesrechnung neben der in base.js.
 
        ANZEIGE: Stimmen statt Sterne (getUpvoteCount, Seed aus den Daten + eigene
        Stimme). Bewusst KEIN renderUpvoteBtn(): der Spot ist selbst ein <a>, und
@@ -649,25 +654,27 @@
         triedCount += getTried(t).length;
       });
 
-      // Bewertungen = eigene Sterne (rate:<typ>:*) + eigene Kommentare (comments:<typ>:*),
-      // typübergreifend. Identität „typ:id", damit Alt-Key skill-rating-* nicht doppelt zählt.
-      const rated = new Set();
-      lsKeysWithPrefix('rate:').forEach(k => rated.add(k.slice('rate:'.length)));
-      lsKeysWithPrefix('skill-rating-').forEach(k => rated.add('skill:' + k.slice('skill-rating-'.length)));
+      /* Kommentare = eigene Kommentare (comments:<typ>:*), typübergreifend gezählt.
+         Bis zur Feedback-Runde 2026-08 hieß diese Kennzahl „Bewertungen" und
+         addierte die Kommentare zu den rate:<typ>:*-Schlüsseln des abgeschafften
+         Sterne-Systems. Das Label versprach damit etwas, das es auf der Seite
+         nicht mehr gibt — bewertet wird hier niemand mehr, gestimmt schon. Die
+         rate:-Altdaten bleiben im Speicher liegen (siehe migrateLegacyStorage()
+         in base.js), sie werden nur nicht mehr als „Bewertung" mitgezählt. */
       let ownComments = 0;
       lsKeysWithPrefix('comments:').forEach(k => {
         try { ownComments += (JSON.parse(lsGet(k)) || []).length; } catch (e) {}
       });
-      const bewertungen = rated.size + ownComments;
 
-      // Reaktionen/Stimmen: jede abgegebene vote:<typ>:* (Showroom-„Will ich auch",
-      // Hilfe-„Hat mir geholfen", Lern-Stimmen …) — binär, kein Stern, eigene Kennzahl.
-      const reaktionen = lsKeysWithPrefix('vote:').filter(k => lsGet(k) === '1').length;
+      // Stimmen: jede abgegebene vote:<typ>:* (Showroom-„Will ich auch",
+      // Hilfe-„Hat mir geholfen", „Hilfreich" auf den Karten …) — binär, ein
+      // Schlüssel pro Eintrag. Dasselbe, was „Deine Sachen" als Sektion listet.
+      const stimmen = lsKeysWithPrefix('vote:').filter(k => lsGet(k) === '1').length;
 
-      if (favItems.length + triedCount + bewertungen + reaktionen === 0) {
+      if (favItems.length + triedCount + ownComments + stimmen === 0) {
         body.innerHTML = `
           <div class="jr-empty">
-            <p>Noch nichts gemerkt. Sobald du etwas mit dem Lesezeichen merkst, ausprobierst oder bewertest, sammelt es sich hier — über alle Bereiche hinweg, damit du es wiederfindest.</p>
+            <p>Noch nichts gemerkt. Sobald du etwas mit dem Lesezeichen merkst, ausprobierst oder dafür stimmst, sammelt es sich hier — über alle Bereiche hinweg, damit du es wiederfindest.</p>
             <a class="c-cta -black-border" href="skills.html">Bei den Skills stöbern</a>
           </div>`;
         return;
@@ -685,8 +692,8 @@
         <div class="jr-stats">
           <div class="jr-stat"><span class="jr-num">${favItems.length}</span><span class="jr-label">Favoriten</span></div>
           <div class="jr-stat"><span class="jr-num">${triedCount}</span><span class="jr-label">Ausprobiert</span></div>
-          <div class="jr-stat"><span class="jr-num">${bewertungen}</span><span class="jr-label">Bewertungen</span></div>
-          <div class="jr-stat"><span class="jr-num">${reaktionen}</span><span class="jr-label">Reaktionen</span></div>
+          <div class="jr-stat"><span class="jr-num">${stimmen}</span><span class="jr-label">Stimmen</span></div>
+          <div class="jr-stat"><span class="jr-num">${ownComments}</span><span class="jr-label">Kommentare</span></div>
         </div>
         ${favItems.length ? `<div class="jr-favs">${favChips}${more}</div>`
           : `<p class="area-text">Merke dir Einträge im Marketplace über das Lesezeichen, dann tauchen sie hier auf.</p>`}`;

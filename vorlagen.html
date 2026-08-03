@@ -1322,7 +1322,7 @@
               <span class="baustein-name">${escHtml(b.name)}</span>
               <span class="vl-kopf-rechts"><span class="baustein-schwer">${escHtml(kategorieLabel(b))}</span>${favBookmarkHtml(b.id, 'baustein', b.name)}</span>
             </div>
-            <p class="baustein-desc density-hide-kompakt density-clamp">${escHtml(b.beschreibung)}</p>
+            <p class="baustein-desc density-clamp">${escHtml(b.beschreibung)}</p>
             <div class="baustein-meta">
               <span class="copy-count" data-copies="${b.id}">${LU.copy}${copyCountOf(b)}× kopiert</span>
               <!-- Die Stimme steht auf der KARTE, nicht nur im Modal: Sie ist die
@@ -2283,7 +2283,7 @@
               <span class="vl-kopf-rechts">${badge ? `<span class="ac-badge">${escHtml(badge)}</span>` : ''}${favBookmarkHtml(m.id, 'asset', m.name)}</span>
             </div>
             ${stimmung ? `<p class="ac-stimmung density-clamp">${escHtml(stimmung)}</p>` : ''}
-            ${m.beschreibung ? `<p class="ac-beschreibung density-hide-kompakt density-clamp">${escHtml(m.beschreibung)}</p>` : ''}
+            ${m.beschreibung ? `<p class="ac-beschreibung density-clamp">${escHtml(m.beschreibung)}</p>` : ''}
             ${assetAusschnittHtml(m)}
             ${tagsHtml ? `<div class="ac-tags density-hide-kompakt">${tagsHtml}</div>` : ''}
             <div class="ac-foot">

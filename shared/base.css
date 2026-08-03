@@ -2380,7 +2380,6 @@
     .ds-item:focus-visible { outline: 2px solid var(--c-black); outline-offset: 2px; border-radius: var(--r-xs); }
     .ds-item-title { font-size: 1.5rem; font-weight: 500; color: var(--c-black); }
     .ds-item-meta { font-size: 1.25rem; color: var(--c-gray-m); flex-shrink: 0; display: inline-flex; gap: .8rem; align-items: baseline; }
-    .ds-stars { color: var(--c-warn); letter-spacing: .1em; font-size: 1.2rem; }
     @media (max-width: 640px) {
       .ds-panel { width: 100%; border-left: none; }
       .nav-ds-btn { min-width: 4rem; padding: 0 .8rem; }
@@ -2457,6 +2456,9 @@
     [data-density="kompakt"] .density-only-ausfuehrlich,
     [data-density="standard"] .density-only-ausfuehrlich { display: none; }
     /* Textkürzung statt Ausblenden, wo der Absatz nicht ganz verschwinden soll.
+       Nie mit .density-hide-kompakt am selben Element kombinieren: beide Regeln
+       haben Spezifität 0,2,0, diese hier steht später und gewinnt — das Element
+       würde gekürzt statt ausgeblendet, entgegen dem, was das Markup behauptet.
        Zeilenzahl pro Element über --density-clamp-k / --density-clamp-s regelbar. */
     [data-density="kompakt"] .density-clamp,
     [data-density="standard"] .density-clamp {

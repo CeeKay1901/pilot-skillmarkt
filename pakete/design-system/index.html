@@ -208,9 +208,36 @@ h1, h2, h3 { text-wrap: balance; overflow-wrap: anywhere; }
   border-radius: var(--r-pill); padding: .3rem .8rem .25rem;
   white-space: nowrap;
 }
-.stars { font-size: 1.4rem; letter-spacing: .1em; }
-.stars .filled { color: var(--c-yellow); }      /* base.css:380 */
-.stars .empty  { color: var(--c-gray-l); }      /* base.css:381 */
+/* ----- Stimmen-Knopf im Kartenfuß (base.css:2404-2423) -----
+   Hier stand bis zur Feedback-Runde 2026-08 eine Fünf-Sterne-Zeile. Der
+   Marketplace kennt keine Sterne mehr: gestimmt wird mit EINER Stimme pro
+   Person und Eintrag, der Knopf zeigt Pfeil und Gesamtzahl. Die kompakte
+   Fassung ist die, die real in Kartenfüßen steht (skills.html, prompts.html).
+   `.-on` ist der gedrückte Zustand — auf dieser Seite fest gesetzt, damit
+   beide Zustände nebeneinander zu sehen sind. */
+.up-btn {
+  display: inline-flex; align-items: center; gap: .5rem;
+  border: 1px solid var(--line-strong); background: transparent; color: var(--c-ink-strong);
+  border-radius: var(--r-pill); padding: .55rem 1.2rem;
+  font-family: inherit; font-size: 1.3rem; font-weight: 600;
+  cursor: pointer; transition: var(--trans);
+}
+.up-btn:hover { border-color: var(--c-black); color: var(--c-black); }
+.up-btn .lu { width: 1.4rem; height: 1.4rem; }
+.up-btn.-on { background: var(--c-yellow); border-color: var(--c-yellow); color: var(--c-black); }
+.up-btn.-on .lu { stroke-width: 2.6; }
+.up-count {
+  font-family: var(--font-mono); font-variant-numeric: tabular-nums;
+  font-weight: 700; min-width: 2.2rem; text-align: center;
+}
+.up-btn.-kompakt { padding: .4rem .9rem; gap: .4rem; font-size: 1.25rem; }
+/* Touch: Trefffläche mindestens 44px (WCAG 2.5.8). base.css:2471-2478 —
+   gehört zur Komponente, sonst wäre die Kompaktfassung am Finger zu klein. */
+@media (hover: none) and (pointer: coarse) {
+  .up-btn { min-height: 4.4rem; }
+  .up-btn.-kompakt { position: relative; }
+  .up-btn.-kompakt::after { content: ''; position: absolute; inset: 0 -6px; }
+}
 .card-meta { font-size: 1.3rem; color: var(--c-gray-m); }
 
 /* ----- Tabelle — VORSCHLAG ---------------------------------
@@ -459,16 +486,17 @@ footer {
           <p>Papierfläche, Haarlinie, weicher kleiner Schatten. So liegt die Karte da, solange
           niemand sie anfasst.</p>
           <div class="card-foot">
-            <span class="stars"><span class="filled">★★★★</span><span class="empty">★</span></span>
-            <span class="card-meta">4,2 · 18 Stimmen</span>
+            <button type="button" class="up-btn -kompakt" aria-label="Hilfreich"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg><span class="up-count">18</span></button>
+            <span class="card-meta">Stimmen</span>
           </div>
         </article>
 
         <article class="card is-hover">
           <h3>Zeiger darüber</h3>
           <p>Der gelbe Block ist kein weicher Schatten, sondern eine harte Kante. Das ist die
-          Karten-Sprache des Marketplace.</p>
+          Karten-Sprache des Marketplace. Der Stimmen-Knopf steht hier im gedrückten Zustand.</p>
           <div class="card-foot">
+            <button type="button" class="up-btn -kompakt -on" aria-label="Hilfreich" aria-pressed="true"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg><span class="up-count">19</span></button>
             <span class="flag">Neu</span>
             <span class="card-meta">seit 25.07.2026</span>
           </div>
@@ -481,7 +509,10 @@ footer {
         <span class="tk">--r-lg</span>
         <span class="tk">--shadow-sm</span>
         <span class="tk">--c-yellow</span>
-        <span class="tk">--c-gray-l</span>
+        <span class="tk">--line-strong</span>
+        <span class="tk">--c-ink-strong</span>
+        <span class="tk">--r-pill</span>
+        <span class="tk">--font-mono</span>
       </div>
     </div>
   </section>

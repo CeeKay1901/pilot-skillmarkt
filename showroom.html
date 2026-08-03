@@ -31,9 +31,9 @@
        ebenfalls schon — hier NICHT duplizieren. Nur ein paar seiten-
        lokale Feinheiten für den ehrlichen Hero-Hinweis.
        ============================================================ */
-    /* KARTEN-DIÄT (Feedback 2026-08, Item 11: „zu viele Details, bessere Leser-
-       führung"). Die Karte trägt jetzt genau fünf Dinge: Vorschau, Ehrlichkeits-
-       Marker, Titel, EIN Satz Nutzen und die gemessene Umfangs-Zeile. Alles
+    /* KARTEN-DIÄT (Feedback: „zu viele Details, bessere Leserführung"). Die
+       Karte trägt jetzt genau fünf Dinge: Vorschau, Ehrlichkeits-Marker,
+       Titel, EIN Satz Nutzen und die gemessene Umfangs-Zeile. Alles
        darüber hinaus — Entstehungsgeschichte, Fakten-Box, die ausführliche
        Beschreibung — liegt im Detail-Modal.
        Die frühere 4-Zeilen-Kürzung von .sr-desc ist damit hinfällig: der lange
@@ -41,8 +41,9 @@
        dort dann vollständig (sonst hieße „alle Details sichtbar" nichts). */
     .sr-nutzen { font-size: 1.45rem; line-height: 1.5; color: var(--c-ink-body); margin: 0; }
     /* Die Metrik-Zeile ist die messbare Einordnung, die den früheren, nicht
-       nachprüfbaren Zeit-Schätzwert ersetzt (Item 33). Mono + tabellarische
-       Ziffern, damit die Zahlen im Raster untereinander stehen. */
+       nachprüfbaren Zeit-Schätzwert ersetzt (Feedback: „Umfang statt Aufwand").
+       Mono + tabellarische Ziffern, damit die Zahlen im Raster untereinander
+       stehen. */
     .sr-metrik {
       display: flex; align-items: center; gap: .5rem; margin: 0;
       font-family: var(--font-mono); font-size: 1.15rem; font-variant-numeric: tabular-nums;
@@ -164,7 +165,7 @@
     .sr-card .sr-actions { margin-top: auto; }
 
     /* Karten-Titel sind <h2>: Seit die Sektions-Überschrift „Alle Projekte“ als
-       Dublette zur Seitenüberschrift entfallen ist (Feedback Item 34), sitzen die
+       Dublette zur Seitenüberschrift entfallen ist (Feedback: doppelte Überschrift), sitzen die
        Karten direkt unter der h1 — als h3 entstünde eine übersprungene Ebene
        (h1→h3, axe `heading-order`). Optik hängt an .sr-name, nicht am Tag. */
     .sr-card .sr-name { line-height: 1.25; }
@@ -207,9 +208,9 @@
 
   <main>
     <!-- (a) CASE-GRID -->
-    <!-- Feedback Item 34: Die frühere h2 „Alle Projekte“ (#cases-h) sagte dasselbe
-         wie die Seitenüberschrift eine Bildschirmhöhe darüber — zwei Überschriften,
-         eine Aussage. Sie ist ersatzlos entfallen. Der Abschnitt behält seinen
+    <!-- Feedback „doppelte Überschrift“: Die frühere h2 „Alle Projekte“ (#cases-h)
+         sagte dasselbe wie die Seitenüberschrift eine Bildschirmhöhe darüber —
+         zwei Überschriften, eine Aussage. Sie ist ersatzlos entfallen. Der Abschnitt behält seinen
          barrierefreien Namen über aria-label (die Landmarke bleibt also auffindbar),
          und weil damit die h2-Ebene hier fehlt, sind die Kartentitel von h3 auf h2
          gezogen — sonst spränge die Gliederung von h1 direkt auf h3.
@@ -236,8 +237,8 @@
                 <option value="all">Alle Arten</option>
               </select>
             </div>
-            <!-- Item 33: Hieß „Aufwand“ und bot zwei geschätzte Zeitspannen an,
-                 die niemand nachprüfen konnte.
+            <!-- Feedback „Umfang statt Aufwand“: Hieß „Aufwand“ und bot zwei
+                 geschätzte Zeitspannen an, die niemand nachprüfen konnte.
                  Jetzt „Umfang“ mit gemessenen Stufen (siehe UMFANG_STUFEN im Script);
                  die Optionen füllt fillSelect() aus den Daten, nicht von Hand. -->
             <div class="sr-select">
@@ -413,7 +414,7 @@
     const ART_LABEL = { tool: 'Tool', dashboard: 'Dashboard', helfer: 'Helfer', visualisierung: 'Visualisierung', generator: 'Generator' };
     const ART_ORDER = ['tool', 'dashboard', 'helfer', 'visualisierung', 'generator'];
 
-    /* ===== UMFANG (Feedback Item 33: „Umfang statt Aufwand") ==================
+    /* ===== UMFANG (Feedback: „Umfang statt Aufwand") ==================
        Vorher standen hier zwei geschätzte Zeitspannen als Filterstufen —
        weder nachrechenbar noch vergleichbar, und in den Daten als zweites Feld
        (aufwandStufe) von Hand gepflegt.
@@ -601,7 +602,8 @@
       return arr;
     }
 
-    /* KARTEN-ANATOMIE (Feedback Item 11) — bewusst fünf Bausteine, mehr nicht:
+    /* KARTEN-ANATOMIE (Feedback: „zu viele Details, bessere Leserführung“) —
+       bewusst fünf Bausteine, mehr nicht:
          Vorschau · Ehrlichkeits-Marker · Titel · EIN Satz Nutzen · Metrik-Zeile.
        Was vorher zusätzlich auf der Karte stand, ist nicht verschwunden, sondern
        umgezogen: die ausführliche Beschreibung ins Modal (Reiter „Überblick“), die
@@ -622,8 +624,9 @@
           <div class="sr-body">
             <div class="sr-marker-row">${markerHtml(c)}${favBookmarkHtml(c.id, 'case', c.titel)}</div>
             <div class="sr-kopf">
-              <!-- h2: Die Sektions-Überschrift ist entfallen (Item 34), die Karten
-                   sitzen jetzt direkt unter der h1 — als h3 entstünde ein Sprung
+              <!-- h2: Die Sektions-Überschrift ist entfallen (Feedback: doppelte
+                   Überschrift), die Karten sitzen jetzt direkt unter der h1 —
+                   als h3 entstünde ein Sprung
                    über die h2-Ebene. .sr-name bleibt der Hook für Tests/CSS,
                    der Textinhalt bleibt exakt der Projekttitel. -->
               <h2 class="sr-name">${escHtml(c.titel)}</h2>
@@ -891,13 +894,20 @@
       /* Die Fakten-Box trennt seit dem Feedback-Pass zwei Dinge, die vorher unter
          „Aufwand" zusammenfielen: den GEMESSENEN Umfang (Datei, nachrechenbar) und
          die GESCHÄTZTE Zeit (faktenBox.dauer, bei Beispiel-Projekten ausdrücklich
-         eine Einordnung). Nur so bleibt erkennbar, welche Zahl woher kommt. */
+         eine Einordnung). Nur so bleibt erkennbar, welche Zahl woher kommt.
+         Das Zeit-Fakt hieß bis hierher „Zeitaufwand (geschätzt)" und trug damit als
+         einzige Stelle der Seite das Wort weiter, das die Filter- und Kartenwelt
+         längst abgelegt hat (Feedback: „Umfang statt Aufwand"). Die ANGABE bleibt
+         unangetastet — sie ist eine ehrliche Zeit-Schätzung und soll eine bleiben;
+         geändert ist nur die Beschriftung: „Entstanden in (geschätzt)" sagt dasselbe
+         und liest sich an der gleichen Stelle wie „Umfang (gemessen)" darüber —
+         Sache vorn, Herkunft der Zahl in Klammern. */
       return `
         <p class="sr-desc" style="font-size:1.55rem;line-height:1.6">${escHtml(item.kurz)}</p>
         ${item.zitat ? `<blockquote class="sr-quote">${escHtml(item.zitat)}</blockquote>` : ''}
         <div class="sr-facts">
           <div><span class="sr-fact-label">Umfang (gemessen)</span><div class="sr-fact-val">${escHtml(umfangText(item))}${u.quelle ? `<br><span style="font-family:var(--font-mono);font-size:1.15rem;color:var(--c-gray-m)">${escHtml(u.quelle)}</span>` : ''}</div></div>
-          ${fb.dauer ? `<div><span class="sr-fact-label">Zeitaufwand (geschätzt)</span><div class="sr-fact-val">${escHtml(fb.dauer)}</div></div>` : ''}
+          ${fb.dauer ? `<div><span class="sr-fact-label">Entstanden in (geschätzt)</span><div class="sr-fact-val">${escHtml(fb.dauer)}</div></div>` : ''}
           <div><span class="sr-fact-label">Von</span><div class="sr-fact-val">${escHtml(item.persona)}${rolle ? ' · ' + escHtml(rolle) : ''}</div></div>
           <div><span class="sr-fact-label">Genutzte Skills</span><div class="sr-fact-val">${(fb.skills || []).map(id => { const s = SKILLS.find(x => x.id === id); return escHtml(s ? s.name : id); }).join(', ') || '—'}</div></div>
           <div><span class="sr-fact-label">Prompts &amp; Bausteine</span><div class="sr-fact-val">${np} ${np === 1 ? 'Prompt' : 'Prompts'} · ${nb} ${nb === 1 ? 'Baustein' : 'Bausteine'}</div></div>
@@ -1090,7 +1100,8 @@
     // ===== INIT =====
     document.addEventListener('DOMContentLoaded', () => {
       // Sektions-Icons setzen (Lucide aus der LU-Map). #cases-ic ist mit der
-      // Sektions-Überschrift entfallen (Item 34) und steht deshalb nicht mehr hier.
+      // Sektions-Überschrift entfallen (Feedback: doppelte Überschrift) und steht
+      // deshalb nicht mehr hier.
       const icons = { 'sp-ic': LU.bauen, 'rank-ic': LU.trophy };
       Object.entries(icons).forEach(([id, svg]) => { const el = document.getElementById(id); if (el) el.innerHTML = svg; });
 

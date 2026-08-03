@@ -501,7 +501,7 @@ async function runIndexChecks(browser) {
     // E12: Schnellzugriff-Kacheln (.rt-grid) auf Nutzerwunsch entfernt —
     // der Index-Einstieg in den Bereich läuft über die Bereichs-Karten-CTAs.
   check('i2_area_card_links_prompts',
-    indexInfo.noRouter && /Sammlung/.test(indexInfo.areaCtaText),
+    indexInfo.noRouter && /Prompts/.test(indexInfo.areaCtaText),  // Feedback-Runde: Kachel-CTA heißt „Prompts öffnen" (vorher „Sammlung öffnen")
     { noRouter: indexInfo.noRouter, ctaText: indexInfo.areaCtaText });
   // E11-Soll: die Hero-Stat-Zeile (#stat-prompts) ist mit dem Hero der Startseite
   // entfallen — der Daten-Abgleich läuft jetzt allein über die Bereichs-Karte

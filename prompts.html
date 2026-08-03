@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>pilot AI Marketplace — Prompt-Sammlung</title>
+  <title>pilot AI Marketplace — Prompts</title>
   <meta name="description" content="Kopierfertige Prompts aus dem Agentur-Alltag der pilot Agenturgruppe: mit gelb markierten Platzhaltern, Beispiel-Ergebnissen und einer Erklärung, warum jeder Prompt funktioniert — für pilot AI und Claude Code.">
   <meta name="theme-color" content="#262626">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="pilot AI Marketplace">
-  <meta property="og:title" content="pilot AI Marketplace — Prompt-Sammlung">
+  <meta property="og:title" content="pilot AI Marketplace — Prompts">
   <meta property="og:description" content="Kopierfertige Prompts aus dem Agentur-Alltag: Platzhalter ausfüllen, einfügen, loslegen — mit Erklärung, warum jeder Prompt funktioniert.">
   <meta property="og:url" content="https://ceekay1901.github.io/pilot-skillmarkt/prompts.html">
   <meta property="og:image" content="https://ceekay1901.github.io/pilot-skillmarkt/og-image.png">
@@ -16,7 +16,7 @@
        ohne sie fällt der Twitter/X-Prefetch auf eine kleine Karte zurück. Werte
        seitenspezifisch, gespiegelt an den og:-Feldern oben. -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="pilot AI Marketplace — Prompt-Sammlung">
+  <meta name="twitter:title" content="pilot AI Marketplace — Prompts">
   <meta name="twitter:description" content="Kopierfertige Prompts aus dem Agentur-Alltag: Platzhalter ausfüllen, einfügen, loslegen — mit Erklärung, warum jeder Prompt funktioniert.">
   <meta name="twitter:image" content="https://ceekay1901.github.io/pilot-skillmarkt/og-image.png">
   <!-- canonical fehlte auf allen Seiten (gemessen: null), og:url war dagegen korrekt.
@@ -28,7 +28,7 @@
   <link rel="stylesheet" href="shared/base.css">
   <style>
     /* ============================================================
-       prompts.html — Prompt-Sammlung (seitenspezifisch, E3).
+       prompts.html — Prompts (seitenspezifisch, E3).
        Gemeinsames Design-System liegt in shared/base.css.
        ============================================================ */
 
@@ -572,11 +572,20 @@
     }
 
     // ===== „VARIANTE EINREICHEN“ — Demo-Flow-Baustein aus shared/base.js (Plan §5.4) =====
-    // Aus dem Modal kommt die Prompt-ID mit (Bezug vorbefüllt), vom Seiten-CTA ohne.
-    // Kommt eine ID mit, wird die eingereichte Fassung zusätzlich AN DIESEM PROMPT
-    // gemerkt und im Modal sichtbar (siehe eingereichteVarianten weiter unten). Ohne
-    // ID gibt es keinen Ort, an dem sie erscheinen könnte — dann bleibt es beim
-    // Entwurf, den der Flow selbst in localStorage ablegt.
+    /* Zwei Einstiege, EIN Weg: aus dem Modal kommt die Prompt-ID mit (Bezug
+       vorbelegt), vom Band am Seitenende ohne. Wohin die Variante gespeichert wird,
+       entscheidet in beiden Fällen allein das Feld „Bezieht sich auf“ — das
+       Formular ist die Quelle der Wahrheit, nicht der Aufruf.
+       Bis E16 hing der Speicherweg an der übergebenen ID, und „Bezieht sich auf“
+       war ein freies Textfeld. Wer über das Band einreichte, bekam „Danke für
+       deinen Entwurf!“ zu lesen — die Variante wurde aber nirgends abgelegt und
+       tauchte in keinem Prompt auf, obwohl der Bandtext genau das verspricht
+       („Dort erscheint sie … und wartet auf die Freigabe“). Ein Auswahlfeld statt
+       freiem Text, weil ein Tippfehler im Prompt-Namen denselben stillen Verlust
+       erzeugt hätte: nur die Namen aus PROMPTS lassen sich überhaupt auflösen. */
+    const SV_KEIN_BEZUG = 'Neuer Prompt — noch nicht in der Sammlung';
+    function svZielPrompt(bezug) { return PROMPTS.find(x => x.name === bezug) || null; }
+
     function openPromptSubmit(id) {
       const p = id ? PROMPTS.find(x => x.id === id) : null;
       openSubmitFlow({
@@ -587,13 +596,44 @@
           : 'Dein Prompt für die Sammlung — die Formulierung, die bei dir im Alltag funktioniert.',
         fields: [
           { key: 'name', label: 'Dein Name', required: true, placeholder: 'z. B. Kim Weber' },
-          { key: 'bezug', label: 'Bezieht sich auf', value: p ? p.name : '', placeholder: 'z. B. Briefing auf eine Seite — oder „Neuer Prompt“' },
+          { key: 'bezug', label: 'Bezieht sich auf', type: 'select', required: true, value: p ? p.name : '',
+            options: PROMPTS.map(x => x.name).concat(SV_KEIN_BEZUG),
+            hint: 'Bei einem Prompt aus der Liste erscheint deine Variante unter dessen Original — genau dort, wo sie gebraucht wird.' },
           { key: 'variante', label: 'Deine Prompt-Variante', type: 'textarea', required: true, placeholder: 'Der komplette Prompt-Text — Platzhalter in [ECKIGEN KLAMMERN] schreiben.', hint: 'Tipp: Rolle, Aufgabe, Format und Regeln mitgeben — wie im Erklär-Block oben.' },
           { key: 'warum', label: 'Was macht deine Variante besser?', type: 'textarea', placeholder: 'z. B. „Liefert konkretere Ergebnisse, weil …“' }
         ],
         submitLabel: 'Variante einreichen (Demo)',
-        onSubmitted: p ? vals => addEingereichteVariante(p.id, vals) : undefined
+        onSubmitted: vals => {
+          const ziel = svZielPrompt(vals.bezug);
+          if (ziel) addEingereichteVariante(ziel.id, vals);
+          svThanksZiel(ziel);
+        }
       });
+      /* Ein älterer Entwurf gewinnt in base.js (_sfFieldHtml) über field.value —
+         nach der ersten Einreichung stünde im Formular also dauerhaft der zuletzt
+         gewählte Bezug, auch wenn man es aus einem anderen Prompt heraus öffnet.
+         Das change-Event zieht den Entwurf in base.js mit (dort hängt der Handler
+         am Markup), damit Anzeige und Speicherort nicht auseinanderlaufen. */
+      if (p) {
+        const sel = document.querySelector('#submit-overlay [data-sf-key="bezug"]');
+        if (sel && sel.value !== p.name) { sel.value = p.name; sel.dispatchEvent(new Event('change')); }
+      }
+    }
+
+    /* Der Danke-Zustand in base.js ist typunabhängig und kann nicht wissen, ob die
+       Variante einen Ort gefunden hat. Vom Band aus ist dieser Satz die einzige
+       Rückmeldung — das Modal, in dem sie erscheint, ist ja gar nicht offen.
+       Steht bewusst ÜBER dem Demo-Hinweis von base.js, der direkt darunter sagt,
+       dass nichts gesendet wurde. */
+    function svThanksZiel(ziel) {
+      const box = document.getElementById('sf-thanks');
+      if (!box) return;
+      const el = document.createElement('p');
+      el.className = 'sv-thanks-ziel';
+      el.textContent = ziel
+        ? `Deine Variante steht ab sofort bei „${ziel.name}“ — dort wartet sie auf die Freigabe.`
+        : 'Ohne Bezug zu einem Prompt aus der Sammlung gibt es noch keinen Ort, an dem sie erscheinen könnte — sie bleibt als Entwurf in diesem Formular gespeichert.';
+      box.insertBefore(el, box.querySelector('.sf-thanks-note'));
     }
 
     /* ===== EINGEREICHTE VARIANTEN (lokal) =====
@@ -1011,7 +1051,7 @@
             ${favBookmarkHtml(p.id, 'prompt', p.name)}
           </div>
           <h3 class="skill-name"><button type="button" class="card-open-btn" onclick="event.stopPropagation();openModal('${p.id}')">${escHtml(p.name)}</button></h3>
-          <p class="skill-tagline density-hide-kompakt density-clamp">${escHtml(p.tagline)}</p>
+          <p class="skill-tagline density-clamp">${escHtml(p.tagline)}</p>
           <div class="card-footer">
             ${cardMetricHtml(p)}
             <button class="chip prompt-copy-chip" onclick="copyPrompt(event,'${p.id}')" title="Kompletten Prompt-Text mit allen [PLATZHALTERN] kopieren" aria-label="${escHtml(p.name)} kopieren">${LU.copy} Kopieren</button>
@@ -1455,7 +1495,7 @@
       renderCatTabs();
       renderFilterChips();
       /* Ansichtsdichte (initDensity, shared/base.js). Kompakt ist der Standard:
-         Wer die Prompt-Sammlung öffnet, sucht meistens etwas Bekanntes wieder —
+         Wer die Prompts-Seite öffnet, sucht meistens etwas Bekanntes wieder —
          dafür zählen Titel, Aufgaben-Gruppe und die Kennzahl, nicht der
          Beschreibungssatz. Das data-density landet auf dem Grid, die
          Utility-Klassen sitzen an der Beschreibung in renderCard().

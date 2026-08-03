@@ -32,7 +32,7 @@ Er ist ausdrücklich **keine Demo, kein Showcase, kein Marketing-Artefakt**. Der
 ```
 index.html            Startseite = Verteiler auf die sechs Bereiche
 skills.html           Katalog + Onepager „Was sind Skills?" + Skill-Baukasten (3 Views)
-prompts.html          Prompt-Sammlung mit Live-Baukasten und Varianten
+prompts.html          Prompts — Sammlung mit Live-Baukasten und Varianten
 vorlagen.html         Asset-Bibliothek + Code-Baukasten (E11-Merge zweier Seiten)
 showroom.html         Projekte: echte Team-Tools + Beispiel-Projekte
 lernen-hilfe.html     Ressourcen + Befehle + Glossar + FAQ (E11-Merge zweier Seiten)

@@ -433,7 +433,7 @@ const GLOSSAR = [
     votes: 6,
     satz: 'Das Frontend ist der sichtbare Teil einer Anwendung — alles, was du im Browser siehst und anklickst.',
     analogie: 'Das Frontend ist Schaufenster und Verkaufsraum: alles, was Besucher:innen sehen und anfassen. Was im Lager passiert (Backend), bekommen sie nicht mit.',
-    beispiel: 'Katalog, Suchfeld und Bewertungssterne im pilot AI Marketplace sind Frontend; es gibt dahinter keinen Server, die ganze Seite läuft in deinem Browser.',
+    beispiel: 'Katalog, Suchfeld und die „Hilfreich“-Knöpfe im pilot AI Marketplace sind Frontend; es gibt dahinter keinen Server, die ganze Seite läuft in deinem Browser — deine Stimme bleibt deshalb auch nur in deinem Browser.',
     tiefe: 'Frontend besteht typischerweise aus drei Sprachen: HTML (Struktur), CSS (Aussehen) und JavaScript (Verhalten) — alle drei laufen direkt im Browser der Nutzer:innen. Reine Frontend-Tools sind ideal für den Einstieg ins Vibecoding: Sie sind schnell gebaut, laufen ohne Server, lassen sich als einzelne Datei verschicken oder über GitHub Pages teilen — und sie können keine zentralen Daten kaputt machen. Der ganze pilot AI Marketplace ist bewusst so gebaut. Erst wenn mehrere Leute gemeinsame, zentrale Daten brauchen, kommt ein Backend ins Spiel.',
     verweise: [
       { t: 'skill', id: 'webseite-bauen', name: 'Webseite bauen' },
@@ -709,8 +709,8 @@ const GLOSSAR = [
     votes: 5,
     satz: 'Ein Platzhalter ist eine markierte Lücke in einer Textvorlage, die du vor dem Abschicken mit deinen echten Angaben füllst.',
     analogie: 'Wie ein Serienbrief: „Sehr geehrte/r [NAME]“ — die Vorlage bleibt gleich, nur die Lücken werden pro Empfänger:in gefüllt.',
-    beispiel: 'In der Prompt-Sammlung stehen Platzhalter in eckigen Klammern wie [KUNDE] oder [ZIELGRUPPE] — beim Kopieren bleiben sie stehen, damit du sie bewusst ersetzt.',
-    tiefe: 'Platzhalter machen Prompts wiederverwendbar: einmal gut formuliert, hundertmal befüllt. In der Prompt-Sammlung stehen sie in eckigen Klammern wie [KUNDE] oder [ZIELGRUPPE]; beim Kopieren bleiben sie absichtlich stehen, damit du sie bewusst ersetzt — bei den Highlight-Prompts füllt der Prompt-Builder die Lücken live aus deinen Eingaben. Kontrolliere vor dem Absenden, dass keine eckige Klammer übrig ist: Ein vergessener Platzhalter ist die häufigste Ursache für seltsam generische Antworten — die KI beantwortet dann wörtlich die Frage nach „[ZIELGRUPPE]“ statt nach deiner echten. Dieselbe Idee gibt es übrigens im Code: Dort heißen die benannten Lücken Variablen.',
+    beispiel: 'Unter „Prompts“ stehen Platzhalter in eckigen Klammern wie [KUNDE] oder [ZIELGRUPPE] — beim Kopieren bleiben sie stehen, damit du sie bewusst ersetzt.',
+    tiefe: 'Platzhalter machen Prompts wiederverwendbar: einmal gut formuliert, hundertmal befüllt. Unter „Prompts“ stehen sie in eckigen Klammern wie [KUNDE] oder [ZIELGRUPPE]; beim Kopieren bleiben sie absichtlich stehen, damit du sie bewusst ersetzt — bei den Highlight-Prompts füllt der Prompt-Builder die Lücken live aus deinen Eingaben. Kontrolliere vor dem Absenden, dass keine eckige Klammer übrig ist: Ein vergessener Platzhalter ist die häufigste Ursache für seltsam generische Antworten — die KI beantwortet dann wörtlich die Frage nach „[ZIELGRUPPE]“ statt nach deiner echten. Dieselbe Idee gibt es übrigens im Code: Dort heißen die benannten Lücken Variablen.',
     verweise: [
       { t: 'prompt', id: 'briefing-zusammenfassung', name: 'Briefing-Zusammenfassung' },
       { t: 'prompt', id: 'betreffzeilen-batterie', name: 'Betreffzeilen-Batterie' }
@@ -754,7 +754,7 @@ const GLOSSAR = [
     satz: 'Ein Prompt ist die Anweisung, die du der KI gibst — je klarer Aufgabe, Kontext und gewünschtes Ergebnis, desto besser die Antwort.',
     analogie: 'Ein Prompt ist ein Briefing im Agentur-Sinn: Dieselbe Aufgabe kann als Zweizeiler in der Kaffeeküche kommen oder als sauberes Briefing mit Ziel, Zielgruppe, Ton und Format — der Unterschied im Ergebnis ist bei der KI derselbe wie bei der Kreation.',
     beispiel: 'Statt „Fass das zusammen“ lieber: „Fasse dieses Kunden-Briefing in 5 Stichpunkten für die Kreation zusammen, Ton sachlich, max. 100 Wörter“ — gleicher Aufwand, deutlich besseres Ergebnis.',
-    tiefe: 'Ein guter Prompt beantwortet vier Fragen: Was soll entstehen? Für wen? In welchem Format? Was ist der Kontext? Dazu zwei Profi-Handgriffe: Beispiele mitgeben („so soll es klingen: …“) und eine Rolle setzen („du bist eine erfahrene Mediaplanerin“) — beides hebt die Qualität spürbar. Höflichkeitsprosa brauchst du dagegen keine; klar schlägt förmlich. Und wenn ein Ergebnis danebenliegt: nicht von vorn anfangen, sondern nachsteuern („kürzer, sachlicher, ohne Fachjargon“) — die KI behält den Zusammenhang. In der Prompt-Sammlung des Marketplace findest du erprobte Vorlagen mit Platzhaltern; Kopieren ist ausdrücklich erwünscht.',
+    tiefe: 'Ein guter Prompt beantwortet vier Fragen: Was soll entstehen? Für wen? In welchem Format? Was ist der Kontext? Dazu zwei Profi-Handgriffe: Beispiele mitgeben („so soll es klingen: …“) und eine Rolle setzen („du bist eine erfahrene Mediaplanerin“) — beides hebt die Qualität spürbar. Höflichkeitsprosa brauchst du dagegen keine; klar schlägt förmlich. Und wenn ein Ergebnis danebenliegt: nicht von vorn anfangen, sondern nachsteuern („kürzer, sachlicher, ohne Fachjargon“) — die KI behält den Zusammenhang. Unter „Prompts“ findest du im Marketplace erprobte Vorlagen mit Platzhaltern; Kopieren ist ausdrücklich erwünscht.',
     verweise: [
       { t: 'prompt', id: 'vibecoding-kickoff', name: 'Vibecoding-Kickoff' },
       { t: 'prompt', id: 'meeting-todos', name: 'Meeting-Protokoll → To-do-Liste' }

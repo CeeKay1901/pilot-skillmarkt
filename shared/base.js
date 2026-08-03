@@ -50,7 +50,9 @@
       Lesen bevorzugt neue Keys und fällt auf die alten zurück;
       Schreiben pflegt beide. Einmalige Migration beim Laden kopiert
       Bestandsdaten in die neuen Keys — für Bestandsnutzer geht nichts
-      verloren. Unverändert bleiben seiten-spezifische Keys
+      verloren. AUSGENOMMEN die Sterne (skill-rating-<id>): dafür gibt es
+      seit E16 weder Schreiber noch Anzeige, die Begründung steht am
+      Kopf von migrateLegacyStorage(). Unverändert bleiben seiten-spezifische Keys
       (skill-history, gs-seen, skill-annotations-*, skill-ann-author,
       skill-builder-draft).
    ============================================================ */
@@ -70,13 +72,22 @@ function lsKeysWithPrefix(prefix) {
   return out;
 }
 
-/* Einmalige Migration der Alt-Keys in die typ-namespaced Keys */
+/* Einmalige Migration der Alt-Keys in die typ-namespaced Keys.
+
+   OHNE STERNE-MIGRATION (E16-Nachzug): Hier stand eine Schleife, die
+   skill-rating-<id> nach rate:skill:<id> kopierte. Sie ist ersatzlos entfallen,
+   weil ihr letzter Zweck weggefallen ist:
+     · Es gibt keinen Schreiber für rate: mehr — die Sterne-Engine ist gestrichen.
+     · getRating() liest den Alt-Key selbst mit (`skill-rating-<id>` als Fallback
+       im skill-Namensraum), die Kopie brachte also keinen Zugriff dazu.
+     · Die beiden verbliebenen Leser sind skills.html („hat die Person vor E16
+       schon Feedback gegeben?") und submitComment() — beide gehen über
+       getRating() und sehen den Alt-Key damit weiterhin.
+     · Der dritte Leser war „Deine Sachen" und die Kennzahl auf der Startseite;
+       beide zeigen seit dem Sterne-Abbau Stimmen statt Sterne.
+   Bestandsdaten bleiben liegen, gelöscht wird nichts. */
 (function migrateLegacyStorage() {
   if (lsGet('mp-storage-migrated') === '1') return;
-  lsKeysWithPrefix('skill-rating-').forEach(k => {
-    const id = k.slice('skill-rating-'.length);
-    if (lsGet('rate:skill:' + id) === null) lsSet('rate:skill:' + id, lsGet(k));
-  });
   lsKeysWithPrefix('skill-comments-').forEach(k => {
     const id = k.slice('skill-comments-'.length);
     if (lsGet('comments:skill:' + id) === null) lsSet('comments:skill:' + id, lsGet(k));
@@ -621,12 +632,16 @@ function toggleFavorite(evt, id, type) {
   type = _ratingType(type);
   if (evt) evt.stopPropagation();
   const wasFav = isFavorite(id, type);
-  if (wasFav) { lsRemove(`fav:${type}:${id}`); showToast('Aus Favoriten entfernt'); }
+  if (wasFav) { lsRemove(`fav:${type}:${id}`); showToast('Nicht mehr gemerkt'); }
   else {
     // Ehrlich bleiben: schlägt das Speichern fehl (privater Modus/Speicher voll),
     // gibt es KEINEN Erfolgs-Toast, sondern einen dezenten Hinweis.
     if (!lsSet(`fav:${type}:${id}`, '1')) { showToast('Konnte nicht speichern — privater Modus oder Speicher voll.'); return; }
-    showToast('Zu Favoriten hinzugefügt ★');
+    // Wortlaut wie die Knopf-Sprache der Seite: gemerkt wird mit dem Lesezeichen
+    // (favBookmarkHtml → LU.bookmark), nicht mit einem Stern. Die Stern-Glyphe
+    // stand hier noch aus der Zeit vor dem Lesezeichen-Knopf. Das Gegenstück
+    // oben ist mitgezogen, damit Merken und Zurücknehmen dasselbe Wort benutzen.
+    showToast('Gemerkt — du findest es unter „Deine Sachen“');
   }
   if (type === 'skill') { // Alt-Key synchron halten
     try {
@@ -834,7 +849,20 @@ function _upDayIndex() {
    Daraus schneidet ein tagesbasierter Versatz n Einträge heraus. Deterministisch:
    gleicher Tag + gleiche Daten = gleiche Auswahl, auch über zwei Browser hinweg.
    Der Gleichstand wird über die id aufgelöst, sonst hinge die Reihenfolge an
-   der Sortier-Implementierung und die Rotation wäre nur scheinbar stabil. */
+   der Sortier-Implementierung und die Rotation wäre nur scheinbar stabil.
+
+   DER VERSATZ GILT AUCH FÜR EINEN KLEINEN POOL. Früher stand hier
+   `if (pool.length <= n) return pool;` — ein Pool, der nicht größer ist als n,
+   kam damit UNGEDREHT zurück, immer in derselben Reihenfolge. Auf der Startseite
+   liest renderAreaSpot() nur pool[0], und die Asset-Kachel hat einen Pool von
+   genau 5 bei n = 5 (nur die fünf Schriften in data/assets.js tragen
+   Stimmen-Signale, Paletten/Muster/Icon-Sets bewusst nicht). Ergebnis: Dieselbe
+   Kachel zeigte auf Dauer „Inter" — die Fläche, deren ganzer Zweck das Rotieren
+   ist, rotierte als einzige nie. Der Versatz dreht jetzt ab pool.length > 1;
+   bei einem Pool ≤ n ist das Ergebnis dieselbe MENGE in täglich anderer
+   Reihenfolge, also ein täglich anderer Erstplatzierter.
+   `take` deckelt auf die Poolgröße: ohne das würde die Schleife bei
+   pool.length < n Einträge doppelt ausgeben. */
 function bestRated(items, type, n) {
   const list = Array.isArray(items) ? items.filter(Boolean) : [];
   n = n || 3;
@@ -851,10 +879,11 @@ function bestRated(items, type, n) {
     : [];
   const pool = [];
   byTotal.concat(byRecent).forEach(it => { if (!pool.some(p => p.id === it.id)) pool.push(it); });
-  if (pool.length <= n) return pool;
+  if (pool.length < 2) return pool;
   const off = _upDayIndex() % pool.length;
+  const take = Math.min(n, pool.length);
   const out = [];
-  for (let i = 0; i < n; i++) out.push(pool[(off + i) % pool.length]);
+  for (let i = 0; i < take; i++) out.push(pool[(off + i) % pool.length]);
   return out;
 }
 
@@ -1328,7 +1357,10 @@ const _SF_BEREICH = {
      („unter Lernen & Hilfe"), weil „Skills" ein Bereichsname ist und kein
      Behälter, in den etwas hineingelegt wird. */
   skill:     { wo: 'unter Skills',            wohin: 'zu Skills' },
-  prompt:    { wo: 'in der Prompt-Sammlung',  wohin: 'in die Prompt-Sammlung' },
+  /* „unter Prompts"/„zu Prompts" — gleiche Fügung wie bei skill, seit die
+     Startseiten-Kachel und das Nav-Label den Bereich schlicht „Prompts"
+     nennen (Feedback-Runde 2026-08). */
+  prompt:    { wo: 'unter Prompts',           wohin: 'zu Prompts' },
   ressource: { wo: 'unter Lernen & Hilfe',    wohin: 'zu Lernen & Hilfe' },
   kniff:     { wo: 'unter Lernen & Hilfe',    wohin: 'zu Lernen & Hilfe' },
   asset:     { wo: 'in der Asset-Bibliothek', wohin: 'in die Asset-Bibliothek' },
@@ -1394,7 +1426,7 @@ function openSubmitFlow(config) {
     <p class="sf-demo-note">${LU.check} Demo — deine Eingabe bleibt lokal in deinem Browser, es wird nichts gesendet.</p>
     ${_sfStepsHtml(steps, false, config.type)}
     ${config.intro ? `<p class="sf-intro">${escHtml(config.intro)}</p>` : ''}
-    <form class="sf-form" onsubmit="event.preventDefault(); submitFlowSend();">
+    <form class="sf-form" novalidate onsubmit="event.preventDefault(); submitFlowSend();">
       ${config.fields.map(f => _sfFieldHtml(config, f)).join('')}
       <div class="sf-actions">
         <button type="submit" class="c-cta -yellow-bg">${escHtml(config.submitLabel || 'Entwurf einreichen (Demo)')}</button>
@@ -1459,7 +1491,27 @@ function closeSubmitFlow() {
     document.body.style.overflow = '';
   }
   _submitFlowConfig = null;
-  if (_submitFlowOpener) { try { _submitFlowOpener.focus(); } catch (e) {} _submitFlowOpener = null; }
+  /* Fokus zurück auf den auslösenden Knopf — WENN es ihn noch gibt.
+     Der Einreichen-Knopf steht oft im Detail-Modal, und onSubmitted() der Seite
+     ruft renderModalBody() auf: der gemerkte Knoten ist danach ausgetauscht und
+     hängt nicht mehr im Dokument. .focus() auf einem abgehängten Element tut
+     nichts und wirft auch nicht — der Fokus fiel still auf <body> zurück, und
+     die nächste Tab-Taste begann wieder ganz oben auf der Seite, obwohl das
+     Modal noch offen davor stand. Deshalb: nur fokussieren, wenn der Knoten
+     noch verbunden ist, sonst den Schließen-Knopf des noch offenen Modals
+     nehmen (das ist die Stelle, an der man weiterarbeitet). Ist auch das Modal
+     zu, bleibt es beim bisherigen Verhalten. */
+  const opener = _submitFlowOpener;
+  _submitFlowOpener = null;
+  if (opener && (opener.isConnected === undefined || opener.isConnected)) {
+    try { opener.focus(); } catch (e) {}
+    if (document.activeElement === opener) return;
+  }
+  const modal = document.getElementById('modal-overlay');
+  if (modal && modal.classList.contains('open')) {
+    const ziel = modal.querySelector('.modal-close') || modal.querySelector('button, a[href]');
+    if (ziel) { try { ziel.focus(); } catch (e) {} }
+  }
 }
 
 /* ===== GLOBALES SUCH-OVERLAY (E9, additiv) =====
@@ -1504,7 +1556,7 @@ function _gsHiddenSkillIds() {
 /* Sprechende Fundort-Labels für die Trefferliste — statt roher Dateinamen. */
 const GS_AREA_LABELS = {
   'skills.html':       'Skills',      /* Fundort-Label = Nav-Label (früher „Katalog") */
-  'prompts.html':      'Prompt-Sammlung',
+  'prompts.html':      'Prompts',       /* Fundort-Label = Nav-Label (früher „Prompt-Sammlung") */
   'lernen-hilfe.html': 'Lernen & Hilfe',
   'vorlagen.html':     'Vorlagen',
   'bibliothek.html':   'Vorlagen',   /* Alt-URL (Stub) — Label zeigt den neuen Ort */
@@ -2077,30 +2129,45 @@ function closeAboutModal() {
 }
 
 /* ===== „DEINE SACHEN“ (E11) =====
-   Gemerktes, Bewertetes und Ausprobiertes — von jeder Seite über das Header-
+   Gemerktes, Gestimmtes und Ausprobiertes — von jeder Seite über das Header-
    Menü erreichbar. Aggregation per Prefix-Scan über die typ-namespaced
-   localStorage-Keys (fav:/rate:/tried:); Titel und Links kommen aus
+   localStorage-Keys (fav:/vote:/tried:); Titel und Links kommen aus
    GSEARCH_GROUPS, fehlende Daten werden wie bei der globalen Suche lazy
-   nachgeladen. Alles bleibt lokal im Browser. */
+   nachgeladen. Alles bleibt lokal im Browser.
+
+   E16-NACHZUG: Die Sektion „Bewertet" hat rate:<typ>:<id> gelesen und daraus
+   eine Fünf-Sterne-Zeile gebaut. Das Sterne-System ist abgeschafft (siehe
+   Feedback-Engine oben), abgestimmt wird über vote:<typ>:<id> — die Fläche
+   zeigte also ausschließlich Altbestand in einer Sprache, die es nicht mehr
+   gibt. An ihrer Stelle steht jetzt „Deine Stimmen" aus den vote:-Schlüsseln.
+   Die rate:-Daten bleiben unangetastet im Speicher liegen (skills.html liest
+   sie weiter, um Bestandsnutzern den Feedback-CTA zu ersparen) — sie werden
+   hier nur nicht mehr angezeigt. */
 
 const DS_TYPE_LABEL = {
   skill: 'Skill', plugin: 'Plugin', framework: 'Framework', prompt: 'Prompt',
   baustein: 'Baustein', asset: 'Asset', case: 'Projekt', befehl: 'Befehl',
   begriff: 'Begriff', faq: 'FAQ', ressource: 'Ressource', daten: 'Beispieldatei',
   anweisung: 'Projektanweisung', startprojekt: 'Startprojekt',
-  bild: 'Bild', paket: 'Paket'
+  bild: 'Bild', paket: 'Paket',
+  /* Der Showroom stimmt unter dem eigenen Typ 'reaktion' ab („Will ich auch"),
+     zeigt damit aber auf CASES. Ohne diese Zeile stünde in „Deine Stimmen" der
+     rohe Schlüssel „reaktion" statt „Projekt" — der Fallback in
+     _dsSectionHtml() ist der Typ selbst. */
+  reaktion: 'Projekt'
 };
 
 function _dsScan() {
-  const kinds = { fav: [], rate: [], tried: [] };
+  const kinds = { fav: [], vote: [], tried: [] };
   Object.keys(kinds).forEach(kind => {
     lsKeysWithPrefix(kind + ':').forEach(k => {
       const parts = k.split(':');
       if (parts.length < 3) return;
       const typ = parts[1], id = parts.slice(2).join(':');
-      const e = { typ, id };
-      if (kind === 'rate') { const v = parseInt(lsGet(k), 10); if (!v) return; e.stars = v; }
-      kinds[kind].push(e);
+      // Eine zurückgenommene Stimme entfernt den Schlüssel (toggleVote), ein
+      // fremder Wert ist keine Stimme — nur '1' zählt.
+      if (kind === 'vote' && lsGet(k) !== '1') return;
+      kinds[kind].push({ typ, id });
     });
   });
   return kinds;
@@ -2134,13 +2201,15 @@ function _dsUpdateCount() {
   badge.hidden = n === 0;
 }
 
-function _dsSectionHtml(label, entries, withStars) {
+/* marker: optionales Zeichen hinter dem Typ-Label. „Deine Stimmen" trägt dort
+   denselben Pfeil wie der Upvote-Knopf (LU.vote, aria-hidden) — dieselbe
+   Bildsprache wie auf den Karten, ohne eigene CSS-Klasse und ohne Schaltfläche
+   in einer Zeile, die selbst schon ein Link ist (CLAUDE.md, nested-interactive). */
+function _dsSectionHtml(label, entries, marker) {
   const rows = entries.map(e => {
     const r = _dsResolve(e.typ, e.id);
     if (!r) return '';
-    const stars = withStars && e.stars
-      ? `<span class="ds-stars" aria-label="${e.stars} von 5 Sternen">${'★'.repeat(e.stars)}${'☆'.repeat(5 - e.stars)}</span>` : '';
-    return `<a class="ds-item" href="${r.href}"><span class="ds-item-title">${escHtml(r.title)}</span><span class="ds-item-meta">${DS_TYPE_LABEL[r.typ] || r.typ}${stars}</span></a>`;
+    return `<a class="ds-item" href="${r.href}"><span class="ds-item-title">${escHtml(r.title)}</span><span class="ds-item-meta">${DS_TYPE_LABEL[r.typ] || r.typ}${marker || ''}</span></a>`;
   }).filter(Boolean).join('');
   if (!rows) return '';
   return `<div class="ds-section"><p class="ds-section-label">${label}</p>${rows}</div>`;
@@ -2185,10 +2254,10 @@ function _dsRender() {
   if (!body) return;
   const s = _dsScan();
   const html =
-    _dsSectionHtml('Gemerkt', s.fav, false) +
-    _dsSectionHtml('Bewertet', s.rate, true) +
-    _dsSectionHtml('Ausprobiert', s.tried, false);
-  body.innerHTML = html || `<div class="empty-note">Noch nichts gemerkt. Sobald du etwas favorisierst, bewertest oder ausprobierst, sammelt es sich hier — über alle Bereiche hinweg.</div>`;
+    _dsSectionHtml('Gemerkt', s.fav) +
+    _dsSectionHtml('Deine Stimmen', s.vote, LU.vote) +
+    _dsSectionHtml('Ausprobiert', s.tried);
+  body.innerHTML = html || `<div class="empty-note">Noch nichts gemerkt. Sobald du etwas merkst, dafür stimmst oder ausprobierst, sammelt es sich hier — über alle Bereiche hinweg.</div>`;
 }
 
 function openDeineSachen() {

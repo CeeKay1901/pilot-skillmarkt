@@ -95,7 +95,7 @@ Alle Farbwerte stehen in `tokens.css`. Greif sie über `var(--name)` ab und schr
 2. **Gelbe Fläche trägt immer schwarzen Text.** Der Kontrast ist 11,58:1 (`base.css:328`). Nie Weiß auf Gelb.
 3. **Ein gelber Moment pro Sichtbereich.** Der Textmarker-Effekt `.mk` ist ausdrücklich sparsam einzusetzen, „ein Marker-Moment pro Sichtbereich" (`base.css:249`). Beim Hover gilt dasselbe: „eine gelbe Geste pro Hover, nicht zwei" (`base.css:306`).
 4. **Ein bis zwei dunkle Momente pro Seite.** Das schwarze Band mit gelbem Label und gelbem Knopf ist der Anker einer Seite, kein Muster, das sich wiederholt (`base.css:1499`).
-5. Gelb markiert: den aktiven Reiter (`base.css:617`), den gefüllten Stern (`base.css:380`), den wichtigsten Knopf (`base.css:629`), den Hover einer Karte (`base.css:309`). Es sortiert nicht und es warnt nicht.
+5. Gelb markiert: den aktiven Reiter (`base.css:617`), den gedrückten Stimmen-Knopf (`base.css:2413`), den wichtigsten Knopf (`base.css:629`), den Hover einer Karte (`base.css:309`). Es sortiert nicht und es warnt nicht.
 
 Für Warnungen und Fehler gibt es `--c-warn` und `--c-err` (`base.css:87, 88`). Erfinde dafür kein Rot und kein Grün dazu.
 

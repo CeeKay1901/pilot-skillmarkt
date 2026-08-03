@@ -1188,15 +1188,18 @@
       </div>
     </section>
 
-    <!-- pilot AI & Claude Code — die EINE Stelle, an der das Produkt hinter „pilot AI"
-         beim Namen genannt wird (Langdock). Überall sonst heißt die Plattform
-         durchgängig „pilot AI"; wer sie im Alltag kennt, soll sie hier trotzdem
-         wiedererkennen. -->
+    <!-- pilot AI & Claude Code — die Plattform heißt auf der ganzen Seite ausnahmslos
+         „pilot AI". Hier stand bis E16 als einzige Stelle der Produktname des
+         Anbieters dahinter (Langdock) in Klammern; er ist raus, weil zwei Namen für
+         dieselbe Sache genau die Zielgruppe verwirren, die von dort kommt. Dass es
+         dasselbe Werkzeug ist, gehört erklärt — aber an einer eigenen Stelle und
+         nicht als Einschub (steht im BACKLOG). Interne IDs bleiben unberührt:
+         der Plattform-Schlüssel in data/skills.js heißt weiterhin 'langdock'. -->
     <section class="ex-section ex-bg reveal">
       <div class="ex-wrap">
         <p class="ex-eyebrow">pilot AI &amp; Claude Code</p>
         <h2 class="ex-h2">Zwei Werkzeuge,<br>zwei <span class="ex-hl">Stärken</span></h2>
-        <p class="ex-body"><strong>pilot AI</strong> — die Chat-Plattform, die ihr aus dem Alltag kennt (sie läuft auf Langdock) — ist bei uns zu Recht gesetzt: die Top-Modelle im Chat, eigene Assistenten fürs Team, Workflows, euer Firmenwissen angebunden, DSGVO-konform in der EU gehostet. Claude Code nimmt davon nichts weg. Es beginnt dort, wo aus einer guten Antwort ein <em>fertiges Ergebnis</em> werden soll: eine Datei, ein Tool, eine Webseite, die du behältst und weiterentwickelst.</p>
+        <p class="ex-body"><strong>pilot AI</strong> — die Chat-Plattform, die ihr aus dem Alltag kennt — ist bei uns zu Recht gesetzt: die Top-Modelle im Chat, eigene Assistenten fürs Team, Workflows, euer Firmenwissen angebunden, DSGVO-konform in der EU gehostet. Claude Code nimmt davon nichts weg. Es beginnt dort, wo aus einer guten Antwort ein <em>fertiges Ergebnis</em> werden soll: eine Datei, ein Tool, eine Webseite, die du behältst und weiterentwickelst.</p>
         <div class="cmp">
           <div class="cmp-row cmp-head">
             <div class="cmp-dim"></div>
@@ -1484,12 +1487,13 @@ Gib einen priorisierten Report aus:
         <button class="modal-close" onclick="closeModal()" aria-label="Skill-Detail schließen">✕</button>
       </div>
       <div class="modal-meta" id="modal-meta"></div>
-      <div class="modal-tabs" role="tablist" aria-label="Skill-Details">
-        <button class="tab-btn active" role="tab" aria-selected="true" data-tab="overview" onclick="switchTab('overview')">Übersicht</button>
-        <button class="tab-btn" role="tab" aria-selected="false" data-tab="files" onclick="switchTab('files')">Dateien &amp; Download</button>
-        <button class="tab-btn" role="tab" aria-selected="false" data-tab="ratings" onclick="switchTab('ratings')">Bewertungen</button>
-        <button class="tab-btn" role="tab" aria-selected="false" data-tab="pilots" onclick="switchTab('pilots')">Piloten</button>
-      </div>
+      <!-- Leer wie auf prompts.html: die Reiter baut renderModalHead() bei JEDEM
+           Öffnen typabhängig neu auf (modalTabsFor — Plugins bekommen „Installation“,
+           Frameworks „So arbeitest du damit“). Bis E16 standen hier vier statische
+           Knöpfe, die nie jemand zu Gesicht bekam und deren dritter noch
+           „Bewertungen“ hieß, während die Laufzeit „Stimmen & Kommentare“ setzt —
+           zwei Wahrheiten, von denen die sichtbare gewinnt. -->
+      <div class="modal-tabs" role="tablist" aria-label="Skill-Details"></div>
       <div class="modal-body" id="modal-body"></div>
     </div>
   </div>
@@ -1920,10 +1924,22 @@ Gib einen priorisierten Report aus:
     }
 
     // ===== SUBKATEGORIE-LABEL (statt Emoji) =====
-    function subLabel(sub) {
-      const labels = {loslegen:'Loslegen', bauen:'Bauen', texten:'Texten & Reden', gestalten:'Gestalten', praesentieren:'Präsentieren & Daten', media:'Media & Strategie', einstieg:'Einstieg', content:'Content', strategy:'Strategie', data:'Data'};
-      return labels[sub] || sub;
-    }
+    /* EINE Beschriftung je Aufgaben-Gruppe — für Reiterleiste, Karten-Badge,
+       Merge-Karte und Aktiv-Filter-Pille. Quelle ist TASK_LABELS aus data/skills.js,
+       also dieselbe Liste, aus der über TASK_GROUP auch s.subcategory stammt
+       (Zuweisung weiter oben) — Anzeige und Datenwert können damit nicht mehr
+       auseinanderlaufen.
+       Bis E16 standen hier DREI Listen nebeneinander: die Reiter sagten „Texten“,
+       die Karten „Texten & Reden“, die Aktiv-Pille wieder „Texten“. Wer auf einen
+       Reiter klickte, bekam Karten mit anderer Aufschrift — dieselbe Gruppe unter
+       zwei Namen, und niemand konnte sicher sein, dass es dieselbe ist. Maßgeblich
+       sind die Langformen; prompts.html hält aus demselben Grund eine kommentierte
+       Kopie von TASK_LABELS (es lädt data/skills.js bewusst nicht).
+       Die frühere Notfallliste für die Rohwerte aus dem JSON (einstieg, content,
+       strategy, data) ist entfallen: TASK_GROUP deckt alle 36 Einträge ab, die
+       Rohwerte erreichen die Oberfläche nicht. Bliebe doch einmal einer übrig,
+       zeigt der Fallback ihn unverändert an — sichtbar statt still falsch. */
+    function subLabel(sub) { return TASK_LABELS[sub] || sub; }
 
     // ===== FAVORITEN =====
     // Favoriten (getFavorites/isFavorite/toggleFavorite): shared/base.js;
@@ -2022,16 +2038,19 @@ Gib einen priorisierten Report aus:
       return countFor({ subcategory: subId === 'all' ? null : subId });
     }
     function renderCatTabs() {
+      // Beschriftung kommt aus subLabel() — dieselbe Quelle wie Karten-Badge und
+      // Aktiv-Pille. Die Reihenfolge steht hier, weil sie eine redaktionelle
+      // Entscheidung ist („Loslegen“ zuerst) und nicht aus den Daten folgt.
       const subs = [
         // Gegenstück zu „Alle Typen“ in der Leiste darüber — siehe renderTypeTabs().
         {id:'all',        label:'Alle Aufgaben'},
-        {id:'loslegen',   label:'Loslegen'},
-        {id:'bauen',      label:'Bauen'},
-        {id:'texten',     label:'Texten'},
-        {id:'gestalten',  label:'Gestalten'},
-        {id:'praesentieren', label:'Präsentieren'},
-        {id:'media',      label:'Media'}
-      ];
+        {id:'loslegen'},
+        {id:'bauen'},
+        {id:'texten'},
+        {id:'gestalten'},
+        {id:'praesentieren'},
+        {id:'media'}
+      ].map(s => ({ id: s.id, label: s.label || subLabel(s.id) }));
       // „Alle Aufgaben" ist nicht die Summe der Gruppen, sondern das, was ohne
       // Aufgaben-Filter übrig bleibt — sonst weicht die Zahl vom Ergebniszähler ab.
       const total = countFor({ subcategory: null });
@@ -2259,8 +2278,9 @@ Gib einen priorisierten Report aus:
       if (!bar) return;
       const pills = [];
       if (state.subcategory) {
-        const labels = {loslegen:'Loslegen',bauen:'Bauen',texten:'Texten',gestalten:'Gestalten',praesentieren:'Präsentieren',media:'Media'};
-        pills.push({label: labels[state.subcategory] || state.subcategory, clear: `setSubCat('all')`});
+        // subLabel() statt eigener Liste: die Pille muss exakt so heißen wie der
+        // Reiter, den sie zusammenfasst (siehe Kommentar an subLabel).
+        pills.push({label: subLabel(state.subcategory), clear: `setSubCat('all')`});
       }
       if (state.itemType !== 'all') {
         pills.push({label: 'Typ: ' + typeLabel(state.itemType) + 's', clear: `setItemType('all')`});
@@ -3242,6 +3262,17 @@ Mehr Skills und alle Details: pilot AI Marketplace.
       const reqChips = skill.requirements.map(r => `<span class="req-chip">${escHtml(r)}</span>`).join('');
       const useCasesHtml = skill.useCases.map(u => `<li>${escHtml(u)}</li>`).join('');
       const tagsHtml = skill.tags.map(t => `<span class="modal-tag">${escHtml(t)}</span>`).join('');
+      /* Herkunftslink im Fuß der Übersicht: IMMER da, wenn der Datensatz eine Quelle
+         hat. Bis E16 hing die Zeile zusätzlich an itemType !== 'skill' — den Link
+         bekamen also nur Plugins und Frameworks, während ausgerechnet die einzelnen
+         Community-Skills ohne Rückweg dastanden (grill-me stammt aus
+         mattpocock/skills unter MIT, dataviz aus dem knowledge-work-Repo). Fremde
+         Arbeit zu zeigen und die Quelle wegzulassen, ist keine Layout-Frage.
+         Ohne source-Feld entsteht die Zeile weiterhin nicht: ein Link, den wir nicht
+         haben, wird nicht erfunden. */
+      const quelleHtml = skill.source
+        ? `<div class="info-item"><dt>Quelle</dt><dd><a class="src-link" href="${escHtml(skill.source)}" target="_blank" rel="noopener">${escHtml(skill.source.replace('https://github.com/', 'github.com/').split('/tree/')[0])} ↗</a></dd></div>`
+        : '';
 
       return `
         <p class="long-desc">${escHtml(skill.longDescription)}</p>
@@ -3352,7 +3383,7 @@ Mehr Skills und alle Details: pilot AI Marketplace.
           ${skill.version ? `<div class="info-item"><dt>Version</dt><dd>${escHtml(skill.version)}</dd></div>` : ''}
           <div class="info-item"><dt>Hinzugefügt</dt><dd>${formatDate(skill.addedAt)}</dd></div>
           <div class="info-item"><dt>Zuletzt aktualisiert</dt><dd>${formatDate(skill.updatedAt)}</dd></div>
-          ${itemType(skill) !== 'skill' && skill.source ? `<div class="info-item"><dt>Quelle</dt><dd><a class="src-link" href="${escHtml(skill.source)}" target="_blank" rel="noopener">${escHtml(skill.source.replace('https://github.com/', 'github.com/').split('/tree/')[0])} ↗</a></dd></div>` : ''}
+          ${quelleHtml}
         </dl>
 
         ${itemType(skill) === 'skill' ? `
@@ -3778,8 +3809,10 @@ Mehr Skills und alle Details: pilot AI Marketplace.
     // Explainer: Plattform-Toggle in „Ein Skill, zwei Systeme“
     // ===== QUELLE- & ROLLEN-FILTER =====
     // Entrümpelt: statt drei fast gleicher Chip-Reihen (Quelle/Rolle/Einsatz) nur EIN sinnvoller Toggle.
-    // „Quelle" (Herkunft) ist für Einsteiger:innen irrelevant und lebt als Karten-Badge weiter; „Rolle" doppelte
-    // die Themen-Tabs. Übrig bleibt der für Umsteiger:innen wertvollste Anker: „Läuft auch in pilot AI" (Plattform-ID bleibt 'langdock').
+    // „Quelle" (Herkunft) ist für Einsteiger:innen irrelevant und steht nur noch im Detail-Modal — als
+    // .cat-badge in der Meta-Zeile (renderModalHead) und an den ähnlichen Einträgen. Auf der Karte gibt es
+    // sie NICHT mehr; dort steht die Aufgaben-Gruppe. „Rolle" doppelte die Themen-Tabs. Übrig bleibt der für
+    // Umsteiger:innen wertvollste Anker: „Läuft auch in pilot AI" (Plattform-ID bleibt 'langdock').
     function renderRoleChips() {
       const container = document.getElementById('role-chips');
       if (!container) return;

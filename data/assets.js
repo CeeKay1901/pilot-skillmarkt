@@ -77,10 +77,10 @@
    TEILMENGE von seed.anzahl — gelesen nur von bestRated(), das seinen
    Rotations-Pool aus „Top-n gesamt" VEREINIGT mit „Top-n zuletzt" bildet. Die
    Reihenfolgen sind bewusst verschieden gestaffelt. Ehrlich dazugesagt: Weil
-   nur die Schriften einen Seed tragen, ist der Pool derzeit genauso groß wie
-   n — die Fläche auf der Startseite rotiert also noch nicht, sie kann es erst,
-   wenn mehr als n Assets echte Signale haben. Erfundene Seeds für Paletten,
-   Muster und Icon-Sets wären der falsche Weg dorthin.
+   nur die Schriften einen Seed tragen, rotiert die Fläche auf der Startseite
+   derzeit nur über diese fünf — Paletten, Muster und Icon-Sets können dort
+   erst erscheinen, wenn sie echte Signale haben. Erfundene Seeds dafür wären
+   der falsche Weg dorthin.
 
    Alle Zahlen sind real zählbar aus diesen Arrays. Nichts erfunden.
    ============================================================ */

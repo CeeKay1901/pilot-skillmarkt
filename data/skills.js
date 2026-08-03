@@ -29,7 +29,7 @@
         ],
         "useCases": [
           "Erster Tag mit Claude Code",
-          "Umstieg von Langdock",
+          "Umstieg von pilot AI",
           "Nach der KI-Schulung",
           "Team-Onboarding"
         ],
@@ -51,7 +51,7 @@
             "name": "Christopher Kipp",
             "role": "Innovation Lead",
             "initials": "CK",
-            "text": "Der Startpunkt für alle, die von Langdock kommen. Nimmt die Scheu vorm Terminal."
+            "text": "Der Startpunkt für alle, die von pilot AI kommen. Nimmt die Scheu vorm Terminal."
           },
           {
             "name": "Sophie Klein",
@@ -1807,7 +1807,7 @@
             "name": "Christopher Kipp",
             "role": "Innovation Lead",
             "initials": "CK",
-            "text": "Läuft bei uns vor jedem größeren Prototyp — und als reine SKILL.md auch in Langdock."
+            "text": "Läuft bei uns vor jedem größeren Prototyp — und als reine SKILL.md auch in pilot AI."
           }
         ],
         "comments": [
@@ -1820,7 +1820,8 @@
             "rating": 5
           }
         ],
-        "featured": false
+        "featured": false,
+        "source": "https://github.com/obra/superpowers"
       },
 
       {
@@ -1892,7 +1893,8 @@
             "rating": 5
           }
         ],
-        "featured": false
+        "featured": false,
+        "source": "https://github.com/obra/superpowers"
       },
 
       {
@@ -1902,9 +1904,9 @@
         "name": "dataviz",
         "tagline": "Charts, die eine Aussage treffen — Diagrammwahl, Farbe & Barrierefreiheit",
         "description": "Anthropics Data-Visualization-Skill: eine erprobte Entscheidungshilfe, welcher Diagrammtyp zu welchen Daten passt — plus fertige Python-Muster (matplotlib/seaborn/plotly), Farbregeln und eine Barrierefreiheits-Checkliste.",
-        "longDescription": "Die Lücke zwischen „Zahlen aufbereiten“ und „Zahlen zeigen“: Dieser offizielle Anthropic-Skill (aus dem knowledge-work-plugins-Repo) bringt Claude bei, Diagramme nach Design-Prinzipien zu bauen statt nach Bauchgefühl. Eine Auswahltabelle ordnet 13+ Diagrammtypen der jeweiligen Datenbeziehung zu (Trend, Vergleich, Verteilung, Anteil …), inklusive klarer „nimm-das-nicht“-Regeln (keine Tortendiagramme, kein 3D). Dazu kopierfertige Python-Muster für Linien-, Balken-, Histogramm-, Heatmap- und Small-Multiples-Charts, farbsichere Paletten und eine Checkliste für lesbare, barrierefreie Grafiken. In Claude Code erzeugt er echte Chart-Dateien; als reine SKILL.md ist er auch in Langdock als Gestaltungs-Leitfaden nutzbar. Ideal für Report-Charts, Dashboards und Slide-Grafiken, die überall gleich aussehen.",
+        "longDescription": "Die Lücke zwischen „Zahlen aufbereiten“ und „Zahlen zeigen“: Dieser offizielle Anthropic-Skill (aus dem knowledge-work-plugins-Repo) bringt Claude bei, Diagramme nach Design-Prinzipien zu bauen statt nach Bauchgefühl. Eine Auswahltabelle ordnet 13+ Diagrammtypen der jeweiligen Datenbeziehung zu (Trend, Vergleich, Verteilung, Anteil …), inklusive klarer „nimm-das-nicht“-Regeln (keine Tortendiagramme, kein 3D). Dazu kopierfertige Python-Muster für Linien-, Balken-, Histogramm-, Heatmap- und Small-Multiples-Charts, farbsichere Paletten und eine Checkliste für lesbare, barrierefreie Grafiken. In Claude Code erzeugt er echte Chart-Dateien; als reine SKILL.md ist er auch in pilot AI als Gestaltungs-Leitfaden nutzbar. Ideal für Report-Charts, Dashboards und Slide-Grafiken, die überall gleich aussehen.",
         "exampleOutput": "Frage: „Umsatz je Kanal übers Jahr — welcher Chart?“\n\nEmpfehlung: gruppiertes Balkendiagramm, nicht Torte\n  → Balken bei 0 beginnen (sonst verzerrt)\n  → nach Wert sortieren, nicht alphabetisch\n  → Blau/Orange statt Rot/Grün (farbenblind-sicher)\n  → Titel sagt die Aussage: „Search trägt 48 % des Umsatzes“\n\n+ fertiger matplotlib-Codeblock zum Einsetzen",
-        "category": "extern",
+        "category": "anthropic",
         "subcategory": "praesentieren",
         "trigger": null,
         "author": "Anthropic (knowledge-work-plugins)",
@@ -2192,8 +2194,13 @@
        langdock = SKILL.md direkt als Skill hochladbar (reine Instruktions-Skills).
        Die ID bleibt 'langdock' — sie steckt in localStorage-Keys, in gespeicherten
        Filter-Links und in skillPlatforms(); ein Umbenennen bräche beides ohne Not.
-       Sichtbar heißt die Plattform bei uns „pilot AI"; Langdock ist das Produkt
-       dahinter und wird nur dort genannt, wo es tatsächlich erklärt wird. */
+       Sichtbar heißt die Plattform bei uns durchgehend „pilot AI" — auch in
+       useCases, Stimmen und Beschreibungen; in dieser Datei kommt der
+       Herstellername seit der Feedback-Runde 2026-08 nicht mehr vor
+       (Nutzer-Beschluss: eine Beschriftung, keine zwei). Erklärt wird die
+       Gleichsetzung an genau einer Stelle, dem Glossar-Eintrag „Langdock" in
+       data/glossar.js; dass sie darüber hinaus aktiv vermittelt werden muss,
+       steht als eigener Punkt im BACKLOG.md. */
     const PLATFORMS = [
       { id: 'code',     label: 'Claude Code',   short: 'Code' },
       { id: 'langdock', label: 'pilot AI',      short: 'pilot AI' }
