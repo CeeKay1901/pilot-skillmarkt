@@ -328,30 +328,11 @@
        Dachzeile, kräftige H1-Skala (700, eng), Subline eine Stufe dunkler. */
     .page-head { padding: 5.6rem 0 1.2rem; }
 
-    /* ===== SEITENKOPF-MOTIVE ==========================================
-       Dasselbe Motiv wie auf der zugehoerigen Startseiten-Karte, hier als
-       schmales Band rechts neben der Ueberschrift. Zweck ist Wiedererkennung:
-       Wer auf der Startseite auf ein Bild geklickt hat, sieht es auf der
-       Zielseite wieder. Rein dekorativ, deshalb CSS-Hintergrund statt <img>.
-       Unter 900px faellt das Band weg — dort ist der Platz fuer die
-       Ueberschrift wichtiger als die Wiedererkennung. */
-    .page-head[data-motiv] .page-head-inner { position: relative; }
-    @media (min-width: 900px) {
-      .page-head[data-motiv] .page-head-inner::after {
-        content: ""; position: absolute; right: var(--pad-d); top: 50%;
-        transform: translateY(-50%);
-        width: 22rem; height: 8.4rem;
-        border: 1px solid var(--line); border-radius: var(--r-md);
-        background-color: var(--c-bg);
-        background-repeat: no-repeat; background-position: center 46%; background-size: cover;
-        pointer-events: none;
-      }
-      .page-head[data-motiv="katalog"] .page-head-inner::after    { background-image: url(../assets/motive/katalog.webp); }
-      .page-head[data-motiv="prompts"] .page-head-inner::after    { background-image: url(../assets/motive/prompts.webp); }
-      .page-head[data-motiv="vorlagen"] .page-head-inner::after   { background-image: url(../assets/motive/bibliothek.webp); }
-      .page-head[data-motiv="showroom"] .page-head-inner::after   { background-image: url(../assets/motive/showroom.webp); }
-      .page-head[data-motiv="lernen"] .page-head-inner::after      { background-image: url(../assets/motive/lernen.webp); }
-    }
+    /* (Die Seitenkopf-Motive sind entfernt — bewusste Entscheidung, kein
+       Versehen. Mit dem Band fiel auch das `position: relative` auf
+       .page-head-inner weg: es trug ausschließlich dieses eine absolut
+       gesetzte ::after, sonst nichts. Der Kopf selbst ist unberührt — das
+       Band lag als Overlay rechts daneben und hat nie Platz reserviert.) */
     .page-head-inner { max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-d); }
     .kicker {
       display: flex; align-items: center; gap: 1.1rem;
