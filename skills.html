@@ -166,25 +166,15 @@
     .expf-panel { background: var(--paper, #fbfbf7); border: 1px solid var(--c-gray-l); border-radius: 1.4rem; padding: 3rem 3.2rem; }
     .expf-cell code { font-family: var(--font-mono); font-size: .88em; background: var(--c-bg); border: 1px solid var(--c-gray-l); border-radius: var(--r-xs); padding: .05rem .5rem; }
     .expf-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; margin: 2.4rem 0 2.8rem; }
-    /* Analogie-Motive: Die Bilder tragen die Analogie mit, die der Text
-       aufmacht — ein Rezept, ein Kochbuch, eine Arbeitsweise. Sie erklaeren
-       mit, statt zu schmuecken. Dekorativ eingebunden, weil der Text die
-       Aussage vollstaendig traegt; wer nicht sieht, verliert nichts. */
-    .expf-cell[data-analogie]::before {
-      content: ""; display: block;
-      height: 13rem; margin-bottom: 1.4rem;
-      border: 1px solid var(--line); border-radius: var(--r-md);
-      background-color: var(--c-bg);
-      /* contain, nicht cover: Diese Motive sind Gegenstaende mit Aussage — vom
-         Kreislauf-Diagramm blieben unter cover zwei Stationen und ein Pfeil
-         uebrig, und damit war die Analogie weg. Hier zaehlt Vollstaendigkeit
-         mehr als eine gefuellte Flaeche. */
-      background-repeat: no-repeat; background-position: center; background-size: contain;
-    }
-    .expf-cell[data-analogie="rezept"]::before   { background-image: url(assets/motive/analogie-rezept.webp); }
-    .expf-cell[data-analogie="kochbuch"]::before { background-image: url(assets/motive/analogie-kochbuch.webp); }
-    .expf-cell[data-analogie="methode"]::before  { background-image: url(assets/motive/analogie-methode.webp); }
-    @media (max-width: 700px) { .expf-cell[data-analogie]::before { height: 10rem; } }
+    /* (Über den drei Zellen stand bis August 2026 je ein Analogie-Motiv —
+       Rezept, Kochbuch, Arbeitsweise. Entfernt, weil die Bilder KI-erzeugt
+       waren und ihre Nutzungsrechte nie geklärt wurden. Kein Ersatz an ihrer
+       Stelle, und das ist Absicht: Die Analogie steckt im Text jeder Zelle
+       („wie ein einzelnes Rezept", „wie ein Kochbuch") — sie war nie auf das
+       Bild angewiesen. Mit dem Motiv fiel auch die 13rem hohe Bildfläche des
+       ::before weg; eine leere gerahmte Kiste über jeder Zelle hätte nur nach
+       nicht geladenem Bild ausgesehen. Die drei Zellen stehen jetzt wieder als
+       reiner Textvergleich nebeneinander, so wie vor der Bildsprache. */
     .expf-cell h3 { font-size: 1.3rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--c-gray-m); margin-bottom: .8rem; }
     .expf-cell p { font-size: 1.55rem; line-height: 1.6; }
     @media (max-width: 767px) {
@@ -1323,15 +1313,15 @@ Gib einen priorisierten Report aus:
         <p class="ex-body">Neben Skills begegnen dir hier noch zwei größere Bausteine — gleiches Prinzip, eine Nummer größer. Bleiben wir beim Bild vom Rezept:</p>
         <div class="expf-panel" style="margin-top:2.4rem">
           <div class="expf-grid" style="margin:0">
-            <div class="expf-cell" data-analogie="rezept">
+            <div class="expf-cell">
               <h3>Skill — eine Fähigkeit</h3>
               <p>Ein Ablauf in einer Textdatei, den du per <code>/befehl</code> oder ganz normalem Satz abrufst. <strong>Wie ein einzelnes Rezept.</strong></p>
             </div>
-            <div class="expf-cell" data-analogie="kochbuch">
+            <div class="expf-cell">
               <h3>Plugin — ein Paket</h3>
               <p>Bündelt mehrere zusammengehörige Skills und Befehle und kommt mit einem einzigen <code>/plugin</code>-Befehl in dein Claude Code. <strong>Wie ein Kochbuch:</strong> einmal ins Regal gestellt, alle Rezepte griffbereit.</p>
             </div>
-            <div class="expf-cell" data-analogie="methode">
+            <div class="expf-cell">
               <h3>Framework — eine Arbeitsweise</h3>
               <p>Kein Download, sondern ein komplettes Vorgehen, das deine Zusammenarbeit mit Claude strukturiert — von der Idee über den Plan bis zum geprüften Ergebnis. <strong>Wie eine Art zu kochen,</strong> nicht nur ein Rezept.</p>
             </div>

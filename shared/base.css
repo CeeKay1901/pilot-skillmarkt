@@ -388,21 +388,15 @@
       color: var(--c-gray-m); font-size: 1.5rem; line-height: 1.6;
     }
 
-    /* Ein leerer Zustand soll nach „hier ist noch nichts“ aussehen und nicht
-       nach „hier ist etwas kaputt“. Das Motiv zeigt genau das: ein leeres
-       Fach. Dekorativ, deshalb Hintergrund statt <img>. */
-    .empty-note::before {
-      content: ""; display: block;
-      width: 14rem; height: 10.4rem; margin: 0 auto 1.8rem;
-      background: url(../assets/motive/leer-treffer.webp) center / contain no-repeat;
-      opacity: .85;
-    }
-    .jr-empty::before {
-      content: ""; display: block;
-      width: 16rem; height: 12rem; margin: 0 0 2rem;
-      background: url(../assets/motive/leer-sachen.webp) center / contain no-repeat;
-      opacity: .85;
-    }
+    /* (Über beiden Leerzuständen — .empty-note für „keine Treffer", .jr-empty
+       für ein leeres „Deine Sachen" — stand bis August 2026 die Illustration
+       eines leeren Fachs. Entfernt, weil KI-erzeugt und in den
+       Nutzungsrechten nie geklärt. Beide Zustände tragen ihre Aussage im
+       Satz; .empty-note rahmt ihn zusätzlich gestrichelt, damit er nach „hier
+       ist noch nichts" aussieht und nicht nach „hier ist etwas kaputt". Die
+       Abstände stimmen ohne Bild: Die Polsterung von .empty-note (4,4rem) und
+       der Absatz-Abstand von .jr-empty p (1,8rem) standen schon vor der
+       Illustration da und sind unverändert.) */
 
     /* ===== CARD-MIN (E11: minimale Karte — Titel, Satz, 1–2 Meta) =====
        Editorial-Hover: Karte rückt leicht auf, schwarzer Rand + gelber
@@ -1653,26 +1647,14 @@
     /* Editorial-Pass Juli 2026: das Band ist der dunkle Anker jeder Seite —
        Schwarz, gelbes Label, gelber CTA. (Farbklima-Entscheidung: 1–2 dunkle
        Momente pro Seite; Kontraste AA: Weiß .72/.55 auf #262626.) */
-    /* Papierkorn auf dem dunklen Band: dieselbe Materialwelt wie die Motive,
-       nur als Textur. Sehr niedrige Deckkraft — es soll die Flaeche beleben,
-       nicht sichtbar sein. Die Kachel ist eine Graustufe; die Farbe kommt
-       vom Schwarz darunter. */
-    .submit-band { background: var(--c-black); padding: 6.8rem 0 7.2rem; position: relative; }
-    /* Papierkorn als eigene Ebene mit sehr niedriger Deckkraft — NICHT per
-       background-blend-mode. Der erste Versuch mischte die Kachel in voller
-       Staerke ins Schwarz: Das Band wirkte schmutzig und hob den Untergrund so
-       weit an, dass der Textkontrast litt. Der Kontrastpruefer meldete das
-       nicht, weil er Farb-Tokens gegeneinander rechnet und nicht die
-       tatsaechlich gemischten Pixel — deshalb hier per Hand am Screenshot
-       nachgemessen (siehe assets/motive/HERKUNFT.md). 6% traegt die Textur,
-       ohne den Grund messbar aufzuhellen. */
-    .submit-band::before {
-      content: ""; position: absolute; inset: 0; pointer-events: none;
-      background: url(../assets/motive/korn.webp) repeat;
-      background-size: 40rem;
-      opacity: .06;
-    }
-    .submit-band > * { position: relative; }
+    /* (Auf dem Band lag bis August 2026 eine Papierkorn-Textur bei 6%
+       Deckkraft. Entfernt, weil sie KI-erzeugt war und ihre Nutzungsrechte
+       nie geklärt wurden. Das Band behält seine Fläche: reines --c-black.
+       Mit der Textur entfielen auch `position: relative` und die
+       Stapel-Regel `.submit-band > *` — beide standen ausschließlich dafür
+       da, die Textur-Ebene unter den Text zu legen. Der Textkontrast wird
+       dadurch besser, nicht schlechter: Die Textur hob den Grund minimal an.) */
+    .submit-band { background: var(--c-black); padding: 6.8rem 0 7.2rem; }
     /* E12 N2: Inhalt zentriert statt linksbündig — vorher füllte das Band nur die
        linke Hälfte (~50% Void). Moderat, kein Redesign: Textspalte begrenzt & mittig. */
     /* max-width in rem, nicht ch: die Sektion erbt die 10px-Root-Schrift, wodurch

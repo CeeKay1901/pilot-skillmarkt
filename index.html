@@ -125,25 +125,22 @@
        eigentlichen Handlungsanker. Kommt je wieder ein Bereich im Bau dazu,
        gehört das Label dorthin — nicht auf die fertigen.) */
     /* (Die Bereichs-Motive auf den Kacheln sind entfernt — bewusste
-       Entscheidung, kein Versehen. Die übrigen Motive bleiben: das
-       Auftakt-Band gleich hier drunter, die Analogie-Bilder auf skills.html
-       und die Leer-Zustände. Mit dem Band fiel auch `.area-card { overflow:
-       hidden }` weg — das stand nur da, um das per negativem Rand über die
-       Kartenkante gezogene Motiv an den Ecken zu beschneiden. Die Kachel
-       selbst brauchte keine Anpassung: die 2,2rem Kopfpolsterung standen
-       schon vorher da, das Motiv lag bloß darüber.) */
+       Entscheidung, kein Versehen. Mit dem Band fiel auch `.area-card {
+       overflow: hidden }` weg — das stand nur da, um das per negativem Rand
+       über die Kartenkante gezogene Motiv an den Ecken zu beschneiden. Die
+       Kachel selbst brauchte keine Anpassung: die 2,2rem Kopfpolsterung
+       standen schon vorher da, das Motiv lag bloß darüber.
 
-    /* Auftakt-Band: nur der beschnittene untere Teil des Motivs, damit man
-       Bewegung und Papierkorn sieht statt eines Bildmotivs mit Aussage. */
-    .idx-band {
-      height: 18rem; margin-top: 4.4rem;
-      /* 50% statt bottom: „bottom" zeigte nur das Halbton-Rauschen unter den
-         Fliegern — bei 18rem Bandhoehe ist von einem 1400x422-Bild nur gut ein
-         Drittel sichtbar, der Ausschnitt muss also bewusst gesetzt werden. */
-      background: url(assets/motive/auftakt.webp) center 50% / cover no-repeat, var(--c-bg);
-      border-bottom: 1px solid var(--line);
-    }
-    @media (max-width: 1023px) { .idx-band { height: 11rem; margin-top: 3.2rem; } }
+       Seit August 2026 sind ALLE generierten Motive der Seite entfernt: Sie
+       waren KI-erzeugt und ihre Nutzungsrechte nie geklärt. Damit ist auch
+       das „Auftakt-Band" entfallen, das hier stand — ein leeres <div>, das
+       ausschließlich ein Bild trug. Ohne Bild bliebe eine 18rem hohe Fläche
+       ohne Inhalt: ein Loch, kein Gestaltungsmittel. Der Seitenkopf schließt
+       jetzt wieder direkt ans Bereichs-Raster an, genau wie vor der
+       Bildsprache. Wer hier wieder ein Band einzieht, braucht erst einen
+       Inhalt dafür.
+       Nicht betroffen und weiterhin in Gebrauch: die lizenzgeprüften
+       Unsplash-Fotos in assets/bilder/. */
 
     .area-text { font-size: 1.45rem; line-height: 1.55; color: var(--c-ink-body); }
     .area-count { display: flex; align-items: baseline; gap: 1rem; margin: .6rem 0 0; }
@@ -243,7 +240,6 @@
         <h1>Ein Ort für alles,<br>was ihr <span class="mk">mit KI baut</span>.</h1>
         <p class="idx-stats" id="idx-stats"></p>
       </div>
-      <div class="idx-band" aria-hidden="true"></div>
     </header>
 
     <!-- ===== BEREICHS-RASTER ===== -->
