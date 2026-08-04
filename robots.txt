@@ -1,0 +1,23 @@
+# Interne Arbeitsschnittstelle der Citizen-Coding-Gruppe — Seite ist live
+# erreichbar, soll aber nicht in Suchmaschinen auftauchen.
+#
+# Die HTML-Seiten stehen bewusst NICHT unter Disallow: sie tragen alle
+# <meta name="robots" content="noindex, follow">, und das liest ein
+# Crawler nur, wenn er die Seite abrufen darf. Ein Disallow würde das
+# noindex unsichtbar machen und die URLs könnten trotzdem (ohne Inhalt)
+# im Index landen.
+#
+# Disallow deshalb nur für die Nicht-HTML-Bestände, denen man kein
+# Meta-Tag mitgeben kann:
+User-agent: *
+Disallow: /assets/
+Disallow: /beispieldaten/
+Disallow: /data/
+Disallow: /demo/
+Disallow: /docs/
+Disallow: /pakete/
+Disallow: /shared/
+Disallow: /skills/
+Disallow: /startprojekte/
+Disallow: /tests/
+Disallow: /tools/
