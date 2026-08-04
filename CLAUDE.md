@@ -102,6 +102,35 @@ node tests/e3-prompts.cjs http://localhost:8412/ | grep -oE '"[0-9]{2}[a-z]?_[a-
 
 Reale Check-Zahlen (25.07.2026, mit genau diesem Kommando gezählt): e1 17 · e3 18 · e6 17 · e7 15 · e8 15 · e9 9 · e10 7 · e11 10 · e12 13 · e13 15 · e14 16. e12, e13 und e14 laufen über zwei Viewports, zählen aber jeden Check einmal.
 
+### Prüfumfang nach Änderungsgröße (Stufenmodell)
+
+Die volle Batterie (elf Suiten + QA-Tools) braucht ~1 h Playwright-Laufzeit. Nach jedem kleinen Schritt gefahren, kostet sie viel und findet nichts, was eine gezielte Prüfung nicht auch fände. Der Prüfumfang folgt deshalb der **Reichweite** der Änderung:
+
+| Stufe | Änderung | Prüfung |
+|---|---|---|
+| 0 | Kommentare, Doku (README/STATUS/BACKLOG/docs/), Text ohne Markup-Wirkung | `node --check` der berührten JS-Dateien. Kein Browser. |
+| 1 | Eine HTML-Seite, lokal (Markup, Styles, Inline-JS) | Suiten der Seite (Tabelle unten) + gezielte Nachmessung der Änderung + 0 Konsolenfehler auf der Seite. QA-Tools nur die betroffene Dimension. |
+| 2 | `data/*.js` | Zuerst die browserlosen Prüfer (Sekunden): `muster-datauri`/`bilder-pakete` je nach Datei, `tools/seit.mjs --pruefen` bei neuen Einträgen. Dann die Sammlungs-Suite(n) + `e11` (der Neuigkeiten-Block hängt an allen Sammlungen). |
+| 3 | `shared/base.js`, `shared/base.css`, Nav/Suche/Engine — oder ≥3 Seiten in einem Zug | Volle Batterie. |
+
+**Die Deploy-Regel bleibt unangetastet: vor jedem Push volle Batterie.** Das Stufenmodell spart die Zwischenläufe — bei mehreren kleinen Schritten in einer Sitzung je Schritt nur Stufe 0–2, die volle Batterie **einmal** am Ende vor dem Push, nicht nach jedem Schritt.
+
+**Seite/Datendatei → Pflicht-Suiten** (verifiziert an den `goto`-Zielen der Tests, 04.08.2026):
+
+| Änderung in | Suiten |
+|---|---|
+| index.html | e11 · wenn Deep-Links/Weiterleitungen berührt: zusätzlich e3, e6, e7, e8, e10 (die streifen index darüber) |
+| skills.html | e1, e9 |
+| prompts.html | e3, e9 |
+| vorlagen.html | e6, e7, e9, e12, e14 |
+| showroom.html | e8, e13 |
+| lernen-hilfe.html | e10 |
+| data/skills.js → e1, e9 · prompts.js → e3 · assets.js/bausteine.js → e6, e7 · bilder.js/pakete.js → e14 · anweisungen.js → e12 · startprojekte.js → e13 · cases.js → e8, e13 · befehle.js/glossar.js/faq.js/ressourcen.js → e10 · seit.js → e11 | |
+
+**QA-Tools gezielt statt pauschal:** `kontrast` nur nach Farb-/Deckkraft-Änderungen · `a11y` nach Markup-/ARIA-Änderungen · `responsive` nach Layout-/Viewport-Änderungen · `robust` nach localStorage-Code · `zaehler` nach Zähler- oder Datenmengen-Änderungen · `links` nach URL-Änderungen in data/ · `manifest` nach Änderungen unter skills/.
+
+**„Gezielte Nachmessung" heißt:** ein kurzes Wegwerf-Playwright-Skript, das genau die geänderte Stelle misst (ein Selektor, ein Zustand, eine Zahl) — kein Voll-Audit und kein eigener Prüf-Agent für eine Einzeländerung.
+
 Playwright-Aufruf in eigenen Skripten:
 ```js
 const { chromium } = require('/usr/lib/node_modules/playwright');
