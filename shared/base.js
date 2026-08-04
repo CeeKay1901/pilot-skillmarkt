@@ -148,8 +148,12 @@ function renderNav(activePage, opts) {
     const active = it.page === activePage;
     const cls = 'nav-link' + (active ? ' active' : '');
     const onclick = opts.sharedOnclick && opts.sharedOnclick[it.page];
-    if (onclick) return `<button type="button" class="${cls}" id="${it.id}" onclick="${onclick}">${it.label}</button>`;
-    return `<a class="${cls}" id="${it.id}" href="${it.href}"${active ? ' aria-current="page"' : ''}>${it.label}</a>`;
+    // aria-current gehört in BEIDE Zweige: skills.html rendert seinen Nav-Punkt
+    // über sharedOnclick als <button> — dort war „du bist hier“ allein an der
+    // gelben Fläche erkennbar, für Screenreader also gar nicht.
+    const cur = active ? ' aria-current="page"' : '';
+    if (onclick) return `<button type="button" class="${cls}" id="${it.id}" onclick="${onclick}"${cur}>${it.label}</button>`;
+    return `<a class="${cls}" id="${it.id}" href="${it.href}"${cur}>${it.label}</a>`;
   }
   const linkHtml = sharedItems.map(it => itemToHtml(it));
 
@@ -170,7 +174,7 @@ function renderNav(activePage, opts) {
         <span class="overline">AI Marketplace</span>
       </a>
       <nav class="main-nav" aria-label="Hauptnavigation">${linkHtml.join('\n        ')}</nav>
-      <button type="button" class="nav-ds-btn" id="nav-ds-btn" aria-label="Deine Sachen — Gemerktes und Bewertetes" aria-haspopup="dialog" onclick="openDeineSachen()"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg><span class="nav-ds-count" id="nav-ds-count" hidden></span></button>
+      <button type="button" class="nav-ds-btn" id="nav-ds-btn" aria-label="Deine Sachen — Gemerktes, deine Stimmen und Ausprobiertes" aria-haspopup="dialog" onclick="openDeineSachen()"><svg class="lu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg><span class="nav-ds-count" id="nav-ds-count" hidden></span></button>
       <button type="button" class="nav-suche-btn" id="nav-suche-btn" aria-label="Marketplace durchsuchen (Cmd/Ctrl+K)" aria-haspopup="dialog" onclick="openGlobalSearch()">${LU.search}<span class="nav-suche-kbd" aria-hidden="true"><kbd>${_gsShortcutLabel()}</kbd></span></button>
     </div>
   </header>`;
@@ -246,7 +250,7 @@ function renderNav(activePage, opts) {
   // .cat-tabs stumme Sackgassen: gemessen @360px scrollWidth/clientWidth 872/320
   // (skills), 792/320 (prompts), 754/320 (lernen-hilfe) — 2 von 7 Kategorien
   // sichtbar, ohne jeden Hinweis, dass es weitergeht. .modal-tabs @360px 570/360.
-  document.querySelectorAll('.cat-tabs, .modal-tabs').forEach(initScrollRail);
+  document.querySelectorAll(RAIL_SEL).forEach(initScrollRail);
 }
 
 /* ===== SCROLL-RAILS (Fade-Affordanz) =====
@@ -254,7 +258,14 @@ function renderNav(activePage, opts) {
    Zustand steckt in data-scroll (none|start|mid|end), die passende Maske legt
    shared/base.css darüber: am Anfang faded nur rechts, in der Mitte beidseitig,
    am Ende nur links. Ursprünglich nur für .main-nav gebaut (E12), jetzt für
-   .cat-tabs und .modal-tabs mitbenutzt — eine Mechanik, kein zweiter Weg. */
+   alle Rails mitbenutzt — eine Mechanik, kein zweiter Weg. */
+/* EINE Liste für beide Aufrufstellen (Erst-Init und _railsRefreshVisible), damit
+   eine neue Rail nicht an der zweiten Stelle vergessen wird. .main-nav steht
+   nicht drin: sie wird oben einzeln behandelt (Auto-Zentrieren des aktiven
+   Punkts). .vl-tabs (vorlagen.html) und .pillar-inner (lernen-hilfe.html) sind
+   dieselbe Sorte Sub-Nav wie .cat-tabs — vier Bereiche, overflow-x:auto,
+   versteckter Scrollbalken; die Selektoren dafür stehen in shared/base.css. */
+const RAIL_SEL = '.cat-tabs, .modal-tabs, .vl-tabs, .pillar-inner';
 function _railState(el) {
   const overflow = el.scrollWidth - el.clientWidth;
   if (overflow <= 1) { el.setAttribute('data-scroll', 'none'); return; }
@@ -281,7 +292,7 @@ function initScrollRail(el) {
 // Nach dem Sichtbarwerden neu messen: solange das Modal display:none ist, sind
 // scrollWidth und clientWidth beide 0 und die Rail meldet fälschlich „passt“.
 function _railsRefreshVisible() {
-  document.querySelectorAll('.cat-tabs, .modal-tabs').forEach(el => { initScrollRail(el); _railState(el); });
+  document.querySelectorAll(RAIL_SEL).forEach(el => { initScrollRail(el); _railState(el); });
 }
 
 /* ===== SHARED HELPER (Kontrakt — von allen Seiten nutzbar) =====
@@ -404,9 +415,13 @@ function formatDate(dateStr) {
   return `${parseInt(parts[2])}. ${months[parseInt(parts[1])-1]} ${parts[0]}`;
 }
 
+/* `if (!str) return ''` war zweimal falsch: escHtml(0) lieferte '' (die Zahl 0
+   verschwand aus jeder Ausgabe, die sie durchreicht) und escHtml(5) warf, weil
+   Zahlen kein .replace haben. null/undefined werden weiter zu '', Zeichenketten
+   verhalten sich unverändert — alles andere geht durch String(). */
 function escHtml(str) {
-  if (!str) return '';
-  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+  return String(str == null ? '' : str)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
 }
 
 function debounce(fn, ms) {
@@ -2188,7 +2203,15 @@ function _dsResolve(typ, id) {
     }
   }
   if (!g || !item) return null;
-  return { title: g.title(item), href: g.href(item), typ };
+  /* Anzeige-Typ aus dem Eintrag, nicht aus dem Speicher-Schlüssel: skills.html
+     merkt Skills, Plugins UND Frameworks alle unter fav:skill:<id> (ein Katalog,
+     ein Namespace) — „Deine Sachen" hat deshalb jedes gemerkte Plugin als
+     „Skill" beschriftet. Der Eintrag selbst weiß es besser (SKILLS[].itemType,
+     dieselbe Quelle, aus der GSEARCH_GROUPS Skills von Plugins & Frameworks
+     trennt). Nur die BESCHRIFTUNG ändert sich: das localStorage-Format bleibt
+     unangetastet, und ein itemType ohne eigenes Label fällt auf typ zurück. */
+  const label = item.itemType && DS_TYPE_LABEL[item.itemType] ? item.itemType : typ;
+  return { title: g.title(item), href: g.href(item), typ: label };
 }
 
 function _dsCount() { return lsKeysWithPrefix('fav:').length; }

@@ -520,12 +520,24 @@
        Namen, und niemand konnte sicher sein, dass es dieselbe ist.
        Maßgeblich sind die Langformen: Es sind die TASK_LABELS aus data/skills.js,
        also die Namen, unter denen der Skill-Katalog dieselben sechs Gruppen führt.
-       Der Name der Konstante ist absichtlich derselbe. Warum hier trotzdem eine
-       eigene Kopie steht: prompts.html lädt data/skills.js nicht (und soll es
-       nicht — das sind 240 KB für sechs Wörter). Wer dort etwas umbenennt, muss
-       diese Zeile mitziehen; deshalb steht der Hinweis direkt daneben. */
-    const TASK_LABELS = { loslegen: 'Loslegen', bauen: 'Bauen', texten: 'Texten & Reden', gestalten: 'Gestalten', praesentieren: 'Präsentieren & Daten', media: 'Media & Strategie' };
-    function groupLabel(g) { return TASK_LABELS[g] || g; }
+       Warum hier trotzdem eine eigene Kopie steht: prompts.html bindet
+       data/skills.js nicht per <script src> ein (und soll es nicht — das sind
+       240 KB für sechs Wörter). Wer dort etwas umbenennt, muss diese Zeile
+       mitziehen; deshalb steht der Hinweis direkt daneben.
+
+       Der Name ist BEWUSST ein anderer als in data/skills.js. Bis E16 hieß die
+       Konstante hier ebenfalls TASK_LABELS — mit der Begründung, prompts.html
+       lade data/skills.js ohnehin nie. Seit E9 stimmt das nicht mehr: beim
+       ersten Öffnen der globalen Suche zieht _gsEnsureData() (base.js) alle
+       fehlenden data/*.js per <script> nach, darunter data/skills.js. Deren
+       top-level `const TASK_LABELS` traf dann auf dieses hier — SyntaxError
+       beim Nachladen, data/skills.js lief gar nicht erst durch, und die
+       Trefferschublade „Skills" fehlte in der globalen Suche komplett.
+       Kein Konsolenfehler auf der Seite selbst, nur eine leere Gruppe.
+       Regel daraus: alles, was hier top-level steht, darf keinen Namen tragen,
+       den eine nachladbare data/*.js top-level vergibt. */
+    const PROMPT_TASK_LABELS = { loslegen: 'Loslegen', bauen: 'Bauen', texten: 'Texten & Reden', gestalten: 'Gestalten', praesentieren: 'Präsentieren & Daten', media: 'Media & Strategie' };
+    function groupLabel(g) { return PROMPT_TASK_LABELS[g] || g; }
 
     function diffLabel(d) {
       if (d === 'easy') return 'Einfach';
@@ -868,13 +880,13 @@
         && (!state.difficulty || p.difficulty === state.difficulty)
         && (!terms.length || promptSearchScore(p, terms) > 0)).length;
     }
-    // Die Reiter kommen aus TASK_LABELS statt aus einer zweiten Liste: Beschriftung
+    // Die Reiter kommen aus PROMPT_TASK_LABELS statt aus einer zweiten Liste: Beschriftung
     // und Reihenfolge stehen damit an genau einer Stelle, und ein Reiter kann nicht
     // anders heißen als das, was auf den Karten darunter steht. Gruppen ohne Treffer
     // blendet die Schleife unten ohnehin aus (aktuell: „Gestalten“ ist leer).
     function renderCatTabs() {
       const subs = [{ id: 'all', label: 'Alle' }]
-        .concat(Object.keys(TASK_LABELS).map(id => ({ id, label: TASK_LABELS[id] })));
+        .concat(Object.keys(PROMPT_TASK_LABELS).map(id => ({ id, label: PROMPT_TASK_LABELS[id] })));
       const total = subs.slice(1).reduce((a, s) => a + groupCount(s.id), 0);
       document.getElementById('cat-tabs').innerHTML = subs.map(s => {
         const count = s.id === 'all' ? total : groupCount(s.id);
@@ -1535,9 +1547,26 @@
       initModalEngine();
       initModalSwipe();
 
-      // Seitenlokal: „/“ fokussiert die Suche
+      /* Seitenlokal: „/“ fokussiert die Suche.
+         Der Abbruch bei offenem Overlay ist nicht kosmetisch: das Suchfeld
+         `#search` liegt UNTER dem Overlay. Ohne die Prüfung riss ein „/“ den
+         Fokus aus dem offenen Dialog heraus auf ein Feld, das gerade gar nicht
+         sichtbar ist — die Tab-Falle des Dialogs greift danach ins Leere, und
+         die Eingabe landet unbemerkt in der Seite dahinter. Die Prüfung auf
+         INPUT/TEXTAREA allein reicht nicht: in der globalen Suche liegt der
+         Fokus nach den Pfeiltasten auf einem Treffer-Link, im Modal auf einem
+         Knopf. Die fünf IDs sind nachgesehen, nicht geraten — es sind genau
+         die Overlays, die base.js mit der Klasse `open` schaltet
+         (`modal-overlay` steht im Seiten-HTML, die vier anderen legt base.js
+         bei Bedarf selbst an). */
+      const OVERLAY_IDS = ['modal-overlay', 'gsearch-overlay', 'ds-overlay', 'submit-overlay', 'about-overlay'];
+      const overlayOffen = () => OVERLAY_IDS.some(id => {
+        const ov = document.getElementById(id);
+        return !!ov && ov.classList.contains('open');
+      });
       document.addEventListener('keydown', e => {
-        if (e.key === '/' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+        if (e.key === '/' && !overlayOffen()
+            && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
           e.preventDefault();
           const search = document.getElementById('search');
           if (search) { search.focus(); search.select(); }

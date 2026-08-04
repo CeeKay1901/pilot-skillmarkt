@@ -70,11 +70,10 @@ const SAMMLUNGEN = [
   /* BILDER und PAKETE (Vorlagen-Reiter „Daten" bzw. „Pakete"). Beide haben eine
      eigene Datei, beide schreiben ihre id als `id: 'x'` — die Pickaxe-Regex im
      Dateikopf (Falle 1) deckt diese Form ab.
-     ACHTUNG bei den zwei Test-SVGs: `testbild-kampagne` und `testbild-produkt`
-     stehen mit derselben id AUCH in BEISPIELDATEN (data/bausteine.js). Das ist
-     kein Konflikt — der Schlüssel ist `<Global>:<id>`, und der Pickaxe sucht je
-     Sammlung in IHRER Datei. Beide bekommen also getrennte, jeweils korrekte
-     Ersterscheinungs-Daten. */
+     ACHTUNG bei gleichen ids über Sammlungen hinweg (aktuell: `einseiter` steht
+     in ANWEISUNGEN UND STARTPROJEKTE): Das ist kein Konflikt — der Schlüssel ist
+     `<Global>:<id>`, und der Pickaxe sucht je Sammlung in IHRER Datei. Beide
+     bekommen also getrennte, jeweils korrekte Ersterscheinungs-Daten. */
   ['BILDER',        'bilder.js'],
   ['PAKETE',        'pakete.js'],
 ];

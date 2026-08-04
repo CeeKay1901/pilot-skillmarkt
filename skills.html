@@ -13,7 +13,9 @@
   <meta property="og:url" content="https://ceekay1901.github.io/pilot-skillmarkt/skills.html">
   <meta property="og:image" content="https://ceekay1901.github.io/pilot-skillmarkt/og-image.png">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="pilot AI Marketplace">
+  <!-- Deckungsgleich mit og:title (und mit <title>): X/Twitter liest twitter:title
+       vor og:title, der generische Wert überschrieb dort also den seitenspezifischen. -->
+  <meta name="twitter:title" content="pilot AI Marketplace — Skills">
   <meta name="twitter:description" content="32 echte Skills für Claude Code &amp; pilot AI entdecken, verstehen und selbst nutzen.">
   <meta name="twitter:image" content="https://ceekay1901.github.io/pilot-skillmarkt/og-image.png">
   <!-- canonical fehlte auf allen Seiten (gemessen: null), og:url war dagegen korrekt.
@@ -392,6 +394,18 @@
     .fav-filter-btn .ff-star { color: var(--c-black); display: inline-flex; align-items: center; }
     .fav-filter-btn .ff-star .lu { width: 1.5rem; height: 1.5rem; fill: var(--c-yellow); }
     .fav-filter-btn.active .ff-star { color: var(--c-white); }
+    /* WCAG 2.5.8 (Target Size, Minimum): base.css gibt der Checkbox 1.6rem =
+       16×16 px — unter den geforderten 24×24. Die Ausnahme „Equivalent" greift
+       hier nicht: dieselbe Funktion gibt es sonst nirgends, und der Prüfer misst
+       das Bedienelement selbst (tools/qa: getBoundingClientRect des Elements,
+       Ersatzziel nur bei identischem onclick-Rumpf am Vorfahren — ein <label>
+       hat keinen). Deshalb wird das Kästchen echt größer statt nur die Fläche
+       drumherum. `flex: none` gehört dazu: .endorsed-toggle ist ein Flex-
+       Container, ohne die Zeile darf die Box in enger Leiste unter 24 px
+       schrumpfen und die Messung kippt zurück.
+       Der Regelplatz ist bewusst hier und nicht in base.css: .endorsed-toggle
+       kommt nur auf dieser Seite vor. */
+    .endorsed-toggle input { width: 2.4rem; height: 2.4rem; flex: none; }
     /* Card Trigger Chip */
     .card-trigger-chip {
       font-size: 1.2rem; padding: .3rem .8rem;
@@ -3162,9 +3176,14 @@ Mehr Skills und alle Details: pilot AI Marketplace.
         comp.className = 'ann-il-wrap';
         comp.innerHTML = `<div class="ann-composer-inline">
           <div class="ann-anchor" id="ann-anchor"></div>
-          <textarea id="ann-text" class="ann-text-input" rows="3" placeholder="Deine Anmerkung zu dieser Stelle …"></textarea>
+          <!-- aria-label statt <label>: der Composer wird zwischen zwei Codezeilen
+               eingehängt, eine sichtbare Beschriftung hätte den Anker verschoben.
+               Ein Platzhalter ist keine Beschriftung — er verschwindet beim Tippen
+               und wird von Screenreadern nicht verlässlich vorgelesen. Gleiches
+               Muster wie #sort-select in der Filterleiste. -->
+          <textarea id="ann-text" class="ann-text-input" rows="3" aria-label="Deine Anmerkung" placeholder="Deine Anmerkung zu dieser Stelle …"></textarea>
           <div class="ann-composer-row">
-            <input id="ann-author" class="ann-author-input" placeholder="Dein Name" value="${escHtml(getAnnAuthor())}">
+            <input id="ann-author" class="ann-author-input" aria-label="Dein Name" placeholder="Dein Name" value="${escHtml(getAnnAuthor())}">
             <button class="c-cta -black-bg ann-save" onclick="submitAnnotation()">Speichern</button>
             <button class="ann-cancel" onclick="cancelAnnotate()">Abbrechen</button>
           </div>
@@ -4244,9 +4263,26 @@ Mehr Skills und alle Details: pilot AI Marketplace.
       // Overlay-Klick, Esc und Tab-Fokus-Falle: shared/base.js
       initModalEngine();
 
-      // Seitenlokal: „/" fokussiert die Katalog-Suche
+      /* Seitenlokal: „/" fokussiert die Katalog-Suche.
+         Der Abbruch bei offenem Overlay ist nicht kosmetisch: das Suchfeld
+         `#search` liegt UNTER dem Overlay. Ohne die Prüfung riss ein „/" den
+         Fokus aus dem offenen Dialog heraus auf ein Feld, das gerade gar nicht
+         sichtbar ist — die Tab-Falle des Dialogs greift danach ins Leere, und
+         die Eingabe landet unbemerkt in der Seite dahinter. Die Prüfung auf
+         INPUT/TEXTAREA allein reicht nicht: in der globalen Suche liegt der
+         Fokus nach den Pfeiltasten auf einem Treffer-Link, im Skill-Modal auf
+         einem Reiter-Knopf. Die fünf IDs sind nachgesehen, nicht geraten — es
+         sind genau die Overlays, die base.js mit der Klasse `open` schaltet
+         (`modal-overlay` steht im Seiten-HTML, die vier anderen legt base.js
+         bei Bedarf selbst an). */
+      const OVERLAY_IDS = ['modal-overlay', 'gsearch-overlay', 'ds-overlay', 'submit-overlay', 'about-overlay'];
+      const overlayOffen = () => OVERLAY_IDS.some(id => {
+        const ov = document.getElementById(id);
+        return !!ov && ov.classList.contains('open');
+      });
       document.addEventListener('keydown', e => {
-        if (e.key === '/' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+        if (e.key === '/' && !overlayOffen()
+            && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
           e.preventDefault();
           const search = document.getElementById('search');
           if (search) { search.focus(); search.select(); }

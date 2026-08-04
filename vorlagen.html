@@ -999,9 +999,15 @@
        Zustand gezielt nachziehen statt das Grid neu zu rendern: der Fokus bleibt
        auf dem Knopf (Tastaturbedienung) und die Karten springen nicht.
        Gelesen wird pro Knopf mit SEINEM data-fav-typ — der Rückruf aus base.js
-       liefert nur die id, und dieselbe id könnte in zwei Modulen vorkommen
-       (testbild-produkt gibt es als Bild UND als Beispieldatei). So bleibt jeder
-       Knopf in seinem eigenen Namensraum korrekt.
+       liefert nur die id, und dieselbe id kann in zwei Sammlungen vorkommen.
+       Einzige Kollision im Bestand ist seit der Kuration vom 03.08.2026
+       `einseiter` (ANWEISUNGEN UND STARTPROJEKTE) — hier stand vorher
+       testbild-produkt „als Bild UND als Beispieldatei", und genau das ist seit
+       demselben Tag nicht mehr wahr: Die zwei Testbilder liegen nur noch in
+       data/bilder.js. Die Regel hängt nicht daran, welche Sammlungen eine Seite
+       gerade führt (STARTPROJEKTE lädt diese hier gar nicht) — sie hält den
+       Knopf in seinem eigenen Namensraum korrekt, auch wenn morgen eine zweite
+       Kollision dazukommt.
        KEIN textContent mehr: Der Knopf trägt jetzt ein SVG als Kind. Ein
        Überschreiben des Textinhalts würde es ersatzlos löschen, und die Karte
        hätte nach dem ersten Klick einen leeren Knopf — die Umstellung auf
@@ -1290,7 +1296,23 @@
        showroom.html und lernen-hilfe.html.
        „Empfohlen zuerst" bleibt der Startwert und bleibt an leuchtturm+Kopien
        hängen: Es ist die redaktionelle Reihenfolge und soll gerade NICHT von
-       Stimmen abhängen, sonst gäbe es zweimal dieselbe Sortierung. */
+       Stimmen abhängen, sonst gäbe es zweimal dieselbe Sortierung.
+
+       KEIN window.onUpvoteChanged auf dieser Seite — bewusst, gleiche Lage und
+       gleiche Entscheidung wie in showroom.html (siehe dort den Rückruf am
+       Case-Grid). skills.html und prompts.html sortieren nach jeder Stimme live
+       um; hier trägt JEDE Baustein-Karte eine Live-Vorschau in einem
+       <iframe srcdoc>. renderBausteine() schreibt #bk-grid per innerHTML neu,
+       damit werden alle Rahmen verworfen und neu aufgebaut — das Raster blitzt
+       weiß auf und der Fokus fällt vom gerade gedrückten Knopf. Ein blosses
+       Umhängen der vorhandenen Knoten hilft nicht: Ein iframe, das im DOM neu
+       eingefügt wird, lädt seinen Inhalt ohnehin erneut.
+       „Meiste Stimmen" ordnet deshalb erst beim nächsten Rendern um (Filter,
+       Suche, Sortierwechsel, Reload). Die Zahl am Knopf stimmt sofort — die
+       zieht toggleUpvote() in base.js selbst nach. Ein springendes Raster unter
+       dem Finger wäre die schlechtere Wahl.
+       (Nicht betroffen: das Ranking über dem Raster sortiert nach Kopien, nicht
+       nach Stimmen — renderRanking().) */
     function sortedBausteine(list) {
       const arr = list.slice();
       if (state.sort === 'votes') {
@@ -2840,8 +2862,8 @@
        Die Vorschauen der Fotos sind auf die längste Kante 400 skaliert (so steht
        es im Kopf von data/bilder.js); breite/hoehe im Datensatz beschreiben die
        grosse Datei. Aus beidem folgt die Vorschaugrösse eindeutig. Nachgemessen
-       am 25.07.2026 gegen die WebP-Dateiköpfe aller neun Vorschauen: alle neun
-       Paare stimmen auf den Pixel.
+       am 25.07.2026 gegen die WebP-Dateiköpfe aller damaligen Vorschauen: jedes
+       Paar stimmt auf den Pixel.
        Die zwei Test-SVGs haben KEINE eigene Vorschau (vorschau === datei) — dort
        sind breite/hoehe schon die richtigen Werte, und ein Herunterrechnen wäre
        schlicht falsch. Das ist die Bedingung, nicht das Format: sie prüft, was
@@ -2853,8 +2875,8 @@
       return { w: Math.round(b.breite * f), h: Math.round(b.hoehe * f) };
     }
 
-    /* alt-Text = der erste Satz der Beschreibung. Der beschreibt in allen elf
-       Einträgen das MOTIV; der Rest der Beschreibung ist Verwendungsrat („nimm es,
+    /* alt-Text = der erste Satz der Beschreibung. Der beschreibt in JEDEM Eintrag
+       von BILDER das MOTIV; der Rest der Beschreibung ist Verwendungsrat („nimm es,
        wenn …") und gehört nicht in ein alt-Attribut, das jemand vorgelesen bekommt.
        Fällt der Schnitt aus, steht die ganze Beschreibung drin — nie ein leeres alt. */
     function bildAltText(b) {

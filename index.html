@@ -70,8 +70,10 @@
     .news-date { font-family: var(--font-mono); font-size: 1.2rem; color: var(--c-gray-m); padding-top: .2rem; white-space: nowrap; }
     .news-title { font-size: 1.55rem; font-weight: var(--fw-semi); margin-bottom: .2rem; }
     .news-text { font-size: 1.4rem; line-height: 1.5; color: var(--c-ink-body); }
-    .news-text a { color: var(--c-black); font-weight: 500; text-decoration: none; border-bottom: 1px solid var(--c-yellow); }
-    .news-text a:hover { background: var(--c-yellow); }
+    /* Fließtext-Link auf der Startseite — EIN Muster für Neuigkeiten-Block und
+       Bereichs-Kacheln, damit ein Verweis im Text überall gleich aussieht. */
+    .news-text a, .area-text a { color: var(--c-black); font-weight: 500; text-decoration: none; border-bottom: 1px solid var(--c-yellow); }
+    .news-text a:hover, .area-text a:hover { background: var(--c-yellow); }
     @media (max-width: 1023px) {
       .fresh { padding: 3.6rem 0 4rem; }
       .news-item { grid-template-columns: 1fr; gap: .2rem; }
@@ -290,7 +292,12 @@
               <span class="area-count-num" id="area-bibliothek-count">0</span>
               <span class="area-count-label">Assets</span>
             </div>
-            <p class="area-text">Schriften, Icons, Farbpaletten und Muster — frei nutzbar, Lizenz sichtbar an jedem Asset.</p>
+            <!-- Die Reiter „Daten“ und „Pakete“ standen auf der Startseite nirgends —
+                 wer die Kachel las, konnte nicht wissen, dass es sie gibt. Beide
+                 Verweise tragen den sichtbaren Namen ihrer Sektion auf vorlagen.html
+                 („Bilder zum Weiterverwenden“, „Beispieldaten zum Üben“, „Pakete zum
+                 Mitnehmen“), damit Link und Ziel dasselbe heißen. -->
+            <p class="area-text">Schriften, Icons, Farbpaletten und Muster — frei nutzbar, Lizenz sichtbar an jedem Asset. Im selben Bereich findest du <a href="vorlagen.html?tab=daten">Bilder und Beispieldaten</a> sowie <a href="vorlagen.html?tab=pakete">Pakete zum Mitnehmen</a>.</p>
             <div class="area-spot-slot" id="area-bibliothek-spot"></div>
             <div class="area-cta-row">
               <a class="c-cta -yellow-bg" href="vorlagen.html?tab=assets">Bibliothek öffnen</a>
@@ -516,7 +523,20 @@
       const parts = [];
       if (typeof VISIBLE_SKILL_COUNT !== 'undefined') parts.push([VISIBLE_SKILL_COUNT, 'Skills']);
       if (typeof PROMPTS !== 'undefined') parts.push([PROMPTS.length, 'Prompts']);
-      if (typeof ASSETS !== 'undefined' && typeof BAUSTEINE !== 'undefined') parts.push([ASSETS.length + BAUSTEINE.length, 'Vorlagen']);
+      /* „Vorlagen" ist die Summe ALLER Sammlungen, die vorlagen.html führt —
+         nicht nur Assets + Bausteine. Bis E16 fehlten hier Beispieldaten,
+         Bilder, Pakete und Projektanweisungen: die Kennzahl versprach damit
+         deutlich weniger, als hinter der Kachel liegt. Alle sechs Globals sind
+         auf dieser Seite geladen (assets.js, bausteine.js → BAUSTEINE UND
+         BEISPIELDATEN, bilder.js, pakete.js, anweisungen.js — die vier zuletzt
+         genannten per defer, deshalb steht die Auswertung in DOMContentLoaded).
+         Fehlt eine davon, entfällt die ganze Kennzahl, statt still zu wenig zu
+         zeigen — dasselbe Muster wie bei „Lern- & Hilfe-Einträge" unten. */
+      if (typeof ASSETS !== 'undefined' && typeof BAUSTEINE !== 'undefined'
+          && typeof BEISPIELDATEN !== 'undefined' && typeof BILDER !== 'undefined'
+          && typeof PAKETE !== 'undefined' && typeof ANWEISUNGEN !== 'undefined')
+        parts.push([ASSETS.length + BAUSTEINE.length + BEISPIELDATEN.length
+          + BILDER.length + PAKETE.length + ANWEISUNGEN.length, 'Vorlagen']);
       if (typeof CASES !== 'undefined') parts.push([CASES.length, 'Projekte']);
       if (typeof RESSOURCEN !== 'undefined' && typeof BEFEHLE !== 'undefined'
           && typeof GLOSSAR !== 'undefined' && typeof FAQ !== 'undefined')
@@ -617,40 +637,54 @@
     });
 
     // ===== MEINE REISE (sektionsübergreifend aus localStorage, via base.js) =====
-    // Aggregiert ehrlich ALLE Typen: Favoriten & Ausprobiert über skill/prompt/asset/
-    // baustein/case, Bewertungen (eigene Sterne rate:* + eigene Kommentare comments:*)
-    // über die Stern-Typen, und Reaktionen/Stimmen (jede abgegebene vote:<typ>:*, u. a.
-    // die Showroom-„Will ich auch"-Reaktion). Läuft in DOMContentLoaded, weil die Namens-
-    // Auflösung der Chips ASSETS/BAUSTEINE/CASES braucht (die per defer laden).
+    // Aggregiert ehrlich ALLE merkbaren Typen: Favoriten & Ausprobiert, eigene
+    // Kommentare (comments:*) und Reaktionen/Stimmen (jede abgegebene vote:<typ>:*,
+    // u. a. die Showroom-„Will ich auch"-Reaktion). Läuft in DOMContentLoaded,
+    // weil die Namens-Auflösung der Chips die Daten-Globals braucht (defer).
     document.addEventListener('DOMContentLoaded', function renderJourney() {
       const body = document.getElementById('journey-body');
       if (!body) return;
 
-      const FAV_TYPES = ['skill', 'prompt', 'asset', 'baustein', 'case'];
-      const TYPE_LABEL = { skill: 'Skill', prompt: 'Prompt', asset: 'Asset', baustein: 'Baustein', case: 'Projekt' };
-      const linkFor = {
-        skill:    id => 'skills.html?skill=' + encodeURIComponent(id),
-        prompt:   id => 'prompts.html?p=' + encodeURIComponent(id),
-        asset:    id => 'vorlagen.html?a=' + encodeURIComponent(id),
-        baustein: id => 'vorlagen.html?b=' + encodeURIComponent(id),
-        case:     id => 'showroom.html?case=' + encodeURIComponent(id)
-      };
-      const nameFor = (type, id) => {
-        try {
-          if (type === 'skill'    && typeof SKILLS    !== 'undefined') { const x = SKILLS.find(s => s.id === id);    if (x) return x.name; }
-          if (type === 'prompt'   && typeof PROMPTS   !== 'undefined') { const x = PROMPTS.find(s => s.id === id);   if (x) return x.name; }
-          if (type === 'asset'    && typeof ASSETS    !== 'undefined') { const x = ASSETS.find(s => s.id === id);    if (x) return x.name; }
-          if (type === 'baustein' && typeof BAUSTEINE !== 'undefined') { const x = BAUSTEINE.find(s => s.id === id); if (x) return x.name; }
-          if (type === 'case'     && typeof CASES     !== 'undefined') { const x = CASES.find(s => s.id === id);     if (x) return x.titel; }
-        } catch (e) {}
-        return id;
-      };
+      /* KEINE zweite Typenliste. Bis E16 stand hier eine handgepflegte Aufzählung
+         mit fünf Typen (skill/prompt/asset/baustein/case). Die sechs anderen
+         merkbaren Typen — bild, paket, anweisung, daten, ressource, startprojekt —
+         fehlten darin: wer sich ein Bild oder ein Paket gemerkt hatte, sah hier
+         den Leerzustand, während das Lesezeichen-Badge im Header (_dsCount,
+         base.js — zählt alle fav:-Schlüssel) korrekt eine Zahl zeigte.
+         Die Typen kommen deshalb aus GSEARCH_GROUPS, der Registry, die laut
+         CLAUDE.md ohnehin jeder neue Inhaltstyp durchlaufen muss. Ein künftiger
+         Typ ist damit automatisch dabei, statt an dieser Stelle still zu fehlen.
+         `plugin` und `framework` teilen sich den Speicher-Namensraum von `skill`
+         (fav:skill:<id>) — die zusätzlichen Schlüssel laufen ins Leere und
+         kosten nichts. */
+      const FAV_TYPES = [...new Set(GSEARCH_GROUPS.map(g => g.key))];
 
-      // Favoriten & Ausprobiert über alle Typen (Alt-Keys deckt getFavorites/getTried mit ab)
+      /* Favoriten & Ausprobiert über alle Typen (Alt-Keys deckt getFavorites/
+         getTried mit ab).
+
+         Aufgelöst wird mit _dsResolve() aus base.js — derselben Funktion, die
+         das Overlay „Deine Sachen" benutzt. Sie holt Titel und Deep-Link über
+         GSEARCH_GROUPS und gibt null zurück, wenn die ID dort nicht (mehr)
+         steht. Genau das war der zweite Fehler an dieser Stelle: eine
+         umbenannte ID fiel je nach Typ mal still weg (linkFor kannte den Typ
+         nicht → TypeError) und wurde mal als roher Schlüssel mit totem Link
+         gerendert (nameFor gab die ID zurück) — mitgezählt hat der Zähler sie
+         in beiden Fällen. Jetzt gilt: was sich nicht auflösen lässt, kommt
+         weder in die Liste noch in den Zähler. Die Zahl über den Chips ist
+         damit genau die Zahl der Einträge, die es unten auch wirklich gibt.
+         Dass das Header-Badge in diesem Fall höher steht, ist gewollt: es
+         zählt den Speicher, diese Sektion zählt, was sie zeigen kann.
+
+         Nur die Favoriten werden so gefiltert — sie sind das Einzige hier, das
+         Links rendert und deshalb ins Leere zeigen könnte. „Ausprobiert",
+         „Stimmen" und „Kommentare" bleiben reine Zählungen über den Speicher. */
       const favItems = [];
       let triedCount = 0;
       FAV_TYPES.forEach(t => {
-        getFavorites(t).forEach(id => favItems.push({ id, type: t }));
+        getFavorites(t).forEach(id => {
+          const r = _dsResolve(t, id);
+          if (r) favItems.push({ type: t, title: r.title, href: r.href });
+        });
         triedCount += getTried(t).length;
       });
 
@@ -667,7 +701,7 @@
       });
 
       // Stimmen: jede abgegebene vote:<typ>:* (Showroom-„Will ich auch",
-      // Hilfe-„Hat mir geholfen", „Hilfreich" auf den Karten …) — binär, ein
+      // „Hilfreich" auf Karten, Befehlen und Glossar …) — binär, ein
       // Schlüssel pro Eintrag. Dasselbe, was „Deine Sachen" als Sektion listet.
       const stimmen = lsKeysWithPrefix('vote:').filter(k => lsGet(k) === '1').length;
 
@@ -683,8 +717,12 @@
       // Marke am Chip ist das Lesezeichen (LU.bookmark) — dasselbe Symbol, mit
       // dem der Eintrag im Marketplace gemerkt wurde. Nur das Icon, kein
       // favBookmarkHtml(): das liefert einen <button>, und der Chip ist ein <a>.
-      const favChips = favItems.slice(0, 6).map(({ id, type }) =>
-        `<a class="chip jr-chip" href="${linkFor[type](id)}">${LU.bookmark}${escHtml(nameFor(type, id))}<span class="jr-chip-type" aria-hidden="true">${TYPE_LABEL[type]}</span></a>`
+      // Typ-Beschriftung aus DS_TYPE_LABEL (base.js) statt aus einer eigenen
+      // Liste — dieselbe Einzahl, die auch „Deine Sachen" und der Neuigkeiten-
+      // Block benutzen. Fehlt dort ein Schlüssel, steht der Typ selbst da:
+      // schief, aber nie leer.
+      const favChips = favItems.slice(0, 6).map(({ type, title, href }) =>
+        `<a class="chip jr-chip" href="${escHtml(href)}">${LU.bookmark}${escHtml(title)}<span class="jr-chip-type" aria-hidden="true">${escHtml(DS_TYPE_LABEL[type] || type)}</span></a>`
       ).join('');
       const more = favItems.length > 6 ? `<span class="jr-more">+${favItems.length - 6} weitere</span>` : '';
 

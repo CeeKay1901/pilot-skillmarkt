@@ -188,7 +188,12 @@
       --term-ink: #d4d4d4;
       --term-ink-soft: #cfcfc7;
       --term-ok: #7ac59a;
-      /* --term-err entfernt: 0 Treffer (--term-ok/-key/-dim/-ink-soft sind in Gebrauch). */
+      /* --term-err war in E11 als „0 Treffer" entfernt worden — zusammen mit der
+         einzigen Regel, die es las (.ex-t-res .r-err). Die Daten benutzen die
+         Klasse weiter (data/skills.js: „✗ 3 Fehler", „http://", markierte Lücken),
+         also kommt das Token mit der Regel zurück. Rot muss auf --term-bg (#14140f)
+         lesbar sein, deshalb nicht --c-err (#b3362c, für helle Flächen gedacht). */
+      --term-err: #e8888e;
       --term-key: #6aa9e8;
       --term-dim: #6a6a60;
 
@@ -549,17 +554,26 @@
        Flächen sitzen (.cat-tabs auf --c-bg, .modal-tabs auf der Modal-Fläche):
        die Maske blendet die Rail selbst aus und braucht deshalb gar keine
        Flächenfarbe zu kennen. Kein Media-Query nötig — passt alles hinein,
-       setzt base.js data-scroll="none" und es liegt keine Maske an. */
-    .cat-tabs, .modal-tabs { --fade: 2.4rem; }
-    .cat-tabs[data-scroll="start"], .modal-tabs[data-scroll="start"] {
+       setzt base.js data-scroll="none" und es liegt keine Maske an.
+       NACHZUG: Dieselbe Begründung trifft zwei weitere Rails, die dieselbe Rolle
+       spielen und beide overflow-x:auto + versteckten Scrollbalken haben —
+       .vl-tabs (vorlagen.html, vier Bereiche) und .pillar-inner (lernen-hilfe.html,
+       vier Bereiche). Sie sind hier NUR Selektoren: die Rails selbst und ihr
+       Seiten-CSS bleiben unangetastet, base.js initialisiert sie mit derselben
+       Mechanik mit. Eine Rail, eine Mechanik — kein zweiter Weg. */
+    .cat-tabs, .modal-tabs, .vl-tabs, .pillar-inner { --fade: 2.4rem; }
+    .cat-tabs[data-scroll="start"], .modal-tabs[data-scroll="start"],
+    .vl-tabs[data-scroll="start"], .pillar-inner[data-scroll="start"] {
       -webkit-mask-image: linear-gradient(to right, #000 calc(100% - var(--fade)), transparent);
               mask-image: linear-gradient(to right, #000 calc(100% - var(--fade)), transparent);
     }
-    .cat-tabs[data-scroll="mid"], .modal-tabs[data-scroll="mid"] {
+    .cat-tabs[data-scroll="mid"], .modal-tabs[data-scroll="mid"],
+    .vl-tabs[data-scroll="mid"], .pillar-inner[data-scroll="mid"] {
       -webkit-mask-image: linear-gradient(to right, transparent, #000 var(--fade), #000 calc(100% - var(--fade)), transparent);
               mask-image: linear-gradient(to right, transparent, #000 var(--fade), #000 calc(100% - var(--fade)), transparent);
     }
-    .cat-tabs[data-scroll="end"], .modal-tabs[data-scroll="end"] {
+    .cat-tabs[data-scroll="end"], .modal-tabs[data-scroll="end"],
+    .vl-tabs[data-scroll="end"], .pillar-inner[data-scroll="end"] {
       -webkit-mask-image: linear-gradient(to right, transparent, #000 var(--fade));
               mask-image: linear-gradient(to right, transparent, #000 var(--fade));
     }
@@ -903,6 +917,11 @@
       display: flex; align-items: center; gap: .8rem; flex-wrap: wrap;
       padding-top: 1.2rem; border-top: 1px solid var(--c-bg);
     }
+    /* Wie bei .tag-chips und .ftb-count: display:flex schlägt sonst das
+       hidden-Attribut aus dem UA-Stylesheet. Ohne den Guard blieb im
+       Ausgangszustand (keine aktiven Filter) die 13px hohe Haarlinie aus
+       padding-top + border-top stehen. */
+    .active-filters[hidden] { display: none; }
     .active-filters-label { font-size: 1.3rem; color: var(--c-gray-m); }
     .active-pill {
       display: inline-flex; align-items: center; gap: .6rem;
@@ -1154,6 +1173,35 @@
     .ex-dot:nth-child(1) { background: #ff5f57; } .ex-dot:nth-child(2) { background: #febc2e; } .ex-dot:nth-child(3) { background: #28c840; }
     .ex-terminal-title { margin-left: 1rem; font-size: 1.3rem; color: rgba(252,252,252,.4); font-family: var(--font-mono); }
     .ex-terminal-body { padding: 2.4rem; font-family: var(--font-mono); font-size: 1.55rem; line-height: 1.8; min-height: 34rem; color: var(--term-ink); }
+    /* Zeilentypen der Terminal-Engine. appendTermLine() (shared/base.js) vergibt
+       genau diese sechs Klassen aus line.t (user|claude|tool|res|hl|sys) — der
+       E11-CSS-Abriss hat die Familie als tot entfernt, obwohl sie zur Laufzeit
+       erzeugt wird und in keinem HTML als String steht. Ohne sie rendert die
+       Demo auf skills.html, prompts.html und lernen-hilfe.html als flacher,
+       einfarbiger Textblock ohne ⏺/⎿ und ohne erhaltene Zeilenumbrüche. */
+    .ex-t-user { color: var(--c-white); }
+    .ex-t-user .ex-term-prompt { color: var(--c-yellow); }
+    .ex-t-sys { color: #8a8a82; }
+    .ex-t-hl { color: var(--c-yellow); }
+    /* Echtes Claude-Code-Terminalverhalten: Claude-Text (⏺), Tool-Calls, Ergebnis (⎿).
+       padding + negativer text-indent = hängender Einzug bei Umbrüchen, wie in der CLI */
+    .ex-t-claude { color: #e4e4de; margin-top: .4rem; padding-left: 2.4rem; text-indent: -2.4rem; }
+    .ex-t-claude::before { content: '⏺'; color: var(--c-yellow); margin-right: .8rem; font-size: .8em; vertical-align: 1px; }
+    .ex-t-tool { color: #b4b4ac; margin-top: .4rem; padding-left: 2.4rem; text-indent: -2.4rem; }
+    .ex-t-tool::before { content: '⏺'; color: var(--term-ok); margin-right: .8rem; font-size: .8em; vertical-align: 1px; }
+    .ex-t-tool b { color: #fcfcfc; font-weight: 700; }
+    /* white-space: pre-wrap — die Ergebniszeilen tragen \n in data/skills.js */
+    .ex-t-res { color: #86867e; white-space: pre-wrap; padding-left: 4rem; text-indent: -1.8rem; }
+    /* echte Farbe statt opacity — Deckkraft ist für den Kontrast-Prüfer unsichtbar */
+    .ex-t-res::before { content: '⎿'; margin-right: .7rem; color: #64645d; }
+    .ex-t-res .r-num { color: var(--c-yellow); }
+    .ex-t-res .r-err { color: var(--term-err); }
+    .ex-t-res .r-ok { color: var(--term-ok); }
+    @media (max-width: 640px) { .ex-t-res { font-size: 1.2rem; } }
+    /* Prompt-Zeichen „›". setTermContent()/typeText() erzeugen es auf allen drei
+       Terminal-Seiten, die Regel stand aber nur in skills.html — dort bleibt sie
+       (Onepager „Ohne/Mit Skill" + Auslöser-Kachel), hier steht sie für die Engine. */
+    .ex-term-prompt { color: var(--c-yellow); font-weight: 700; margin-right: .6rem; }
     .ex-cursor { display: inline-block; width: .9rem; height: 1.6rem; background: var(--c-yellow); vertical-align: text-bottom; animation: exBlink 1s steps(2) infinite; }
     @keyframes exBlink { 50% { opacity: 0; } }
 
@@ -1721,7 +1769,11 @@
       border: 1px solid var(--line-strong); border-radius: var(--r-sm);
       background: var(--c-white); color: var(--c-black); cursor: pointer;
     }
-    .bk-sort select:focus { outline: none; border-color: var(--c-yellow); }
+    /* Kein `outline: none`: Gelb (#ffe05e) auf der weißen Feldfläche sind 1,11:1,
+       WCAG 1.4.11 verlangt 3:1 — der gelbe Rand allein war kein Fokusindikator.
+       Ohne die Unterdrückung greift der globale :focus-visible-Ring von oben
+       (2px schwarz, Offset 2px); der gelbe Rand bleibt als zweites Signal. */
+    .bk-sort select:focus { border-color: var(--c-yellow); }
 
     /* ----- Baustein-Grid & -Karten ----- */
     .bk-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2rem; }
@@ -1969,7 +2021,10 @@
       border: 1px solid var(--line-strong); border-radius: var(--r-sm);
       background: var(--c-white); color: var(--c-black); cursor: pointer;
     }
-    .sr-select select:focus { outline: none; border-color: var(--c-yellow); }
+    /* Gleiche Korrektur wie bei .bk-sort select:focus — `outline: none` hat den
+       globalen :focus-visible-Ring erschlagen und nur den gelben Rand (1,11:1
+       gegen die weiße Fläche) übrig gelassen. */
+    .sr-select select:focus { border-color: var(--c-yellow); }
 
     /* ----- Case-Grid & -Karten ----- */
     .sr-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2rem; }
@@ -2186,8 +2241,14 @@
       color: rgba(252,252,252,.72); cursor: pointer;
       flex-shrink: 0; transition: var(--trans);
     }
-    .nav-suche-btn:hover,
-    .nav-suche-btn:focus-visible { color: var(--c-yellow); border-color: var(--c-yellow); outline: none; }
+    .nav-suche-btn:hover { color: var(--c-yellow); border-color: var(--c-yellow); }
+    /* Fokus war Pixel für Pixel der Hover-Zustand — `outline: none` hat den
+       globalen Header-Ring erschlagen, wer per Tastatur ankam sah nicht, wo er
+       steht. Ohne die Unterdrückung legt sich der Ring von oben darüber
+       (:focus-visible 2px solid, Offset 2px; .site-header :focus-visible → gelb):
+       zwischen gelbem Rand und gelbem Ring bleiben 2px dunkler Header stehen,
+       damit ist Fokus vom Hover unterscheidbar. */
+    .nav-suche-btn:focus-visible { color: var(--c-yellow); border-color: var(--c-yellow); }
     .nav-suche-btn .lu { width: 2rem; height: 2rem; }
     .nav-suche-kbd kbd {
       font-family: var(--font-mono); font-size: 1.1rem;
@@ -2322,8 +2383,10 @@
       flex-shrink: 0; transition: var(--trans);
       margin-left: auto;
     }
-    .nav-ds-btn:hover,
-    .nav-ds-btn:focus-visible { color: var(--c-yellow); border-color: var(--c-yellow); outline: none; }
+    .nav-ds-btn:hover { color: var(--c-yellow); border-color: var(--c-yellow); }
+    /* Gleiche Korrektur wie bei .nav-suche-btn: ohne `outline: none` greift der
+       globale gelbe Header-Fokusring und macht Fokus vom Hover unterscheidbar. */
+    .nav-ds-btn:focus-visible { color: var(--c-yellow); border-color: var(--c-yellow); }
     .nav-ds-btn .lu { width: 1.8rem; height: 1.8rem; }
     .nav-ds-count {
       position: absolute; top: -.4rem; right: -.4rem;

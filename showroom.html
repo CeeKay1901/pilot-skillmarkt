@@ -102,8 +102,21 @@
     /* Case-Karten: harter Versatz-Hover statt Weichschatten */
     .sr-card {
       transition: transform .22s cubic-bezier(.2,.7,.2,1), box-shadow .22s ease, border-color .22s ease;
+      /* Seit die ganze Fläche das Detail öffnet (srCardClick), muss der Zeiger
+         das auch sagen. .skill-card trägt das in base.css schon; hier lokal,
+         weil base.css fremdes Eigentum ist. */
+      cursor: pointer;
     }
     .sr-card:hover {
+      transform: translate(-2px, -2px);
+      border-color: var(--c-black);
+      box-shadow: 6px 6px 0 var(--c-yellow);
+    }
+    /* Hat etwas in der Karte den Fokus (z. B. der Titel-Button), reagiert die
+       Karte sichtbar mit — dieselbe Geste wie :hover, gleiches Muster wie
+       .skill-card:focus-within in base.css. Ersetzt den Fokusring, den die
+       Karte selbst NICHT tragen darf (kein tabindex, siehe caseCardHtml). */
+    .sr-card:focus-within {
       transform: translate(-2px, -2px);
       border-color: var(--c-black);
       box-shadow: 6px 6px 0 var(--c-yellow);
@@ -142,7 +155,7 @@
        Basis-Regeln (base.css) per Kaskade überschreiben — hier neutralisieren. */
     @media (prefers-reduced-motion: reduce) {
       .sr-card, .sr-rank-item { transition: none; }
-      .sr-card:hover, .sr-rank-item:hover { transform: none; box-shadow: none; }
+      .sr-card:hover, .sr-card:focus-within, .sr-rank-item:hover { transform: none; box-shadow: none; }
     }
 
     /* ============================================================
@@ -169,6 +182,9 @@
        Karten direkt unter der h1 — als h3 entstünde eine übersprungene Ebene
        (h1→h3, axe `heading-order`). Optik hängt an .sr-name, nicht am Tag. */
     .sr-card .sr-name { line-height: 1.25; }
+    /* 1.8rem × 1.25 ergäbe 22,5px Button-Höhe — unter dem 24px-Tap-Minimum,
+       das tools/qa responsive prüft. Flex zentriert den Text trotz Mindesthöhe. */
+    .sr-card .sr-name .card-open-btn { min-height: 2.4rem; display: inline-flex; align-items: center; }
 
     @media (max-width: 640px) {
       /* Mobil standen Label und Select der drei Filter je nach Wortlänge
@@ -458,8 +474,24 @@
     function caseById(id) { return CASES.find(c => c.id === id); }
     function personaRolle(name) {
       if (typeof PILOTS !== 'undefined') { const p = PILOTS.find(x => x.name === name); if (p) return p.role; }
-      if (name === 'pilot-Tool') return 'automatisch vom pilot-Tool erzeugt';
       return '';
+    }
+
+    /* PERSONA IST OPTIONAL — und ein fehlender Wert bekommt KEINEN Platzhalter.
+       Zwei echte Team-Tools sind Gruppenarbeit ohne Einzel-Zuordnung und tragen
+       deshalb `persona: null` (data/cases.js). Was vorher an dieser Stelle stand
+       („pilot-Tool"), landete fett im Personen-Slot und las sich damit wie ein
+       Name — eine behauptete Urheberschaft, die es nicht gibt (CLAUDE.md:
+       „Nichts erfinden", und Regel 4 trennt echt von inszeniert gerade an der
+       Personenzuordnung). Ein Slot, der nichts Wahres sagen kann, bleibt leer.
+       Zwei Helfer statt drei Inline-Bedingungen: Karte, Modal-Kopf und
+       Fakten-Box müssen dieselbe Regel anwenden, sonst zeigt eine der drei
+       Stellen den Platzhalter weiter. */
+    function hatPersona(item) { return !!(item && String(item.persona || '').trim()); }
+    function personaMitRolle(item) {
+      if (!hatPersona(item)) return '';
+      const rolle = personaRolle(item.persona);
+      return escHtml(item.persona) + (rolle ? ' · ' + escHtml(rolle) : '');
     }
     // Immer statisch positioniert (im Fluss) — die absolute Overlay-Variante über dem
     // Thumbnail ist entfallen (kollidierte mit Logos/Badges der Demo-Seiten selbst).
@@ -613,10 +645,21 @@
          standard            → Persona/Säule
          ausführlich         → zusätzlich die volle Beschreibung
        Reihenfolge im Markup = Lesereihenfolge; die Klassen aus base.css
-       (.density-hide-kompakt / .density-only-ausfuehrlich) blenden nur aus. */
+       (.density-hide-kompakt / .density-only-ausfuehrlich) blenden nur aus.
+
+       KLICKBARE KARTE nach dem Haus-Muster (CLAUDE.md, §„Klickbare Karten"):
+       Die ganze Fläche öffnet das Detail (Maus), die Aktion selbst hängt am
+       TITEL-BUTTON (.card-open-btn) — der trägt Tastaturzugang und Fokusring,
+       so wie auf skills.html und prompts.html. Vorher trug der Titel gar keine
+       Aktion: Er war nur Text und konnte nie fokussiert werden, das Detail lag
+       ausschließlich hinter dem „Details"-Knopf am Fuß.
+       KEIN role="button"/tabindex am <article>: Die Karte enthält Merken,
+       „Will ich auch", „Ansehen" und „Details" — eine Schaltfläche darf keine
+       Schaltflächen enthalten (axe nested-interactive). Sichtbar mitreagieren
+       tut die Karte über :focus-within (base.css). */
     function caseCardHtml(c) {
       return `
-        <article class="sr-card" id="case-${c.id}" data-id="${c.id}" data-saeule="${c.saeule}" data-art="${c.art}" data-umfang="${umfangStufe(c)}">
+        <article class="sr-card" id="case-${c.id}" data-id="${c.id}" data-saeule="${c.saeule}" data-art="${c.art}" data-umfang="${umfangStufe(c)}" onclick="srCardClick(event,'${c.id}')">
           <div class="sr-thumb">
             <iframe class="sr-frame" src="${c.liveUrl}" loading="lazy"
                     tabindex="-1" aria-hidden="true" title="Vorschau (nicht interaktiv): ${escHtml(c.titel)}"></iframe>
@@ -628,24 +671,56 @@
                    Überschrift), die Karten sitzen jetzt direkt unter der h1 —
                    als h3 entstünde ein Sprung
                    über die h2-Ebene. .sr-name bleibt der Hook für Tests/CSS,
-                   der Textinhalt bleibt exakt der Projekttitel. -->
-              <h2 class="sr-name">${escHtml(c.titel)}</h2>
+                   der Textinhalt bleibt exakt der Projekttitel — der Button
+                   erbt die Typografie, der Titel sieht unverändert aus
+                   (e8:03b liest .sr-name per textContent und bekommt dasselbe).
+                   stopPropagation: sonst öffnete der Klick das Modal zweimal,
+                   einmal über den Button und einmal über die Karte. -->
+              <h2 class="sr-name"><button type="button" class="card-open-btn" onclick="event.stopPropagation();openModal('${c.id}')">${escHtml(c.titel)}</button></h2>
               <span class="sr-sub">${escHtml(ART_LABEL[c.art] || c.art)}</span>
             </div>
             <p class="sr-nutzen">${escHtml(c.nutzen || '')}</p>
             <p class="sr-metrik" title="Gemessen an ${escHtml((c.umfang && c.umfang.quelle) || '')}">${LU['file-text']}${escHtml(umfangText(c))}</p>
-            <p class="sr-persona density-hide-kompakt"><strong>${escHtml(c.persona)}</strong> · ${escHtml(SAEULE_LABEL[c.saeule] || c.saeule)}</p>
+            <!-- Ohne Persona bleibt die Säule allein stehen: Sie ist eine Angabe
+                 über das Projekt, nicht über eine Person, und sonst nirgends auf
+                 der Karte zu lesen. Weg fällt nur der Personen-Teil. -->
+            <p class="sr-persona density-hide-kompakt">${hatPersona(c) ? `<strong>${escHtml(c.persona)}</strong> · ` : ''}${escHtml(SAEULE_LABEL[c.saeule] || c.saeule)}</p>
             <p class="sr-desc density-only-ausfuehrlich">${escHtml(c.kurz)}</p>
             <div class="sr-actions">
               ${reactionBtnHtml(c, true)}
               <!-- „Ansehen“/„Details“ heißen im Grid an jeder Karte gleich —
-                   unsichtbarer Zusatz nennt Projekt und (beim Link) den neuen Tab. -->
+                   unsichtbarer Zusatz nennt Projekt und (beim Link) den neuen Tab.
+                   „Details“ BLEIBT, obwohl der Titel-Button jetzt dasselbe tut und
+                   skills/prompts keinen solchen Knopf haben: Dort ist das Modal das
+                   einzige Ziel der Karte, hier stehen ZWEI nebeneinander — die echte
+                   Anwendung („Ansehen“, neuer Tab) und das Detail. Ohne den
+                   benannten Knopf wäre nur eines der beiden beschriftet, und das
+                   prominentere führte weg von der Seite. -->
+
               <a class="lib-btn -primary" href="${c.liveUrl}" target="_blank" rel="noopener">${LU.eye}Ansehen<span class="sr-only"> — ${escHtml(c.titel)}, öffnet neuen Tab</span></a>
               <button class="lib-btn" onclick="openModal('${c.id}')">${LU['layout-dashboard']}Details<span class="sr-only"> — ${escHtml(c.titel)}</span></button>
             </div>
           </div>
         </article>`;
     }
+
+    /* Klick auf die Kartenfläche öffnet das Detail — außer auf einem
+       Bedienelement. Die Karte trägt vier davon, und zwei würden ohne diesen
+       Test doppelt auslösen: „Ansehen" (öffnet den neuen Tab UND das Modal)
+       und „Details" (openModal zweimal). Merken und „Will ich auch" rufen
+       selbst stopPropagation (toggleFavorite/toggleUpvote in base.js) — der
+       Test hier ist die zweite Sicherung, auch für alles, was später dazukommt.
+       Gleiche Machart wie resCardClick() in lernen-hilfe.html, inklusive der
+       Textauswahl: Wer mit der Maus markiert, wollte lesen, nicht schalten.
+       Die Vorschau im Kopf fängt nichts ab (.sr-frame hat pointer-events:none),
+       ein Klick darauf landet also hier. */
+    function srCardClick(evt, id) {
+      const t = evt.target;
+      if (t.closest && t.closest('a, button')) return;
+      try { if (String(window.getSelection())) return; } catch (e) {}
+      openModal(id);
+    }
+
     function renderCases() {
       const host = document.getElementById('sr-grid');
       if (!host) return;
@@ -872,13 +947,14 @@
     window.gotoTab = gotoTab;
     function renderCaseHead(item) {
       document.getElementById('modal-name').textContent = item.titel;
-      const rolle = personaRolle(item.persona);
       // aria-hidden auf den Trennpunkten: rein optische Gliederung, Screenreader
       // sollen zwischen den Angaben kein „Mittelpunkt“ vorlesen.
       const sep = '<span class="modal-meta-sep" aria-hidden="true">·</span>';
+      // Ohne Persona entfällt die Angabe MITSAMT ihrem Trennpunkt — sonst stünden
+      // zwei Punkte nebeneinander (siehe hatPersona()).
       document.getElementById('modal-meta').innerHTML =
         markerHtml(item)
-        + sep + `<span>${escHtml(item.persona)}${rolle ? ' · ' + escHtml(rolle) : ''}</span>`
+        + (hatPersona(item) ? sep + `<span>${personaMitRolle(item)}</span>` : '')
         + sep + `<span>${escHtml(umfangText(item))}</span>`;
       const tabBar = document.querySelector('#modal .modal-tabs');
       if (tabBar) {
@@ -887,7 +963,6 @@
       }
     }
     function renderCaseOverview(item) {
-      const rolle = personaRolle(item.persona);
       const fb = item.faktenBox || {};
       const u = item.umfang || {};
       const np = (fb.prompts || []).length, nb = (fb.bausteine || []).length;
@@ -908,7 +983,7 @@
         <div class="sr-facts">
           <div><span class="sr-fact-label">Umfang (gemessen)</span><div class="sr-fact-val">${escHtml(umfangText(item))}${u.quelle ? `<br><span style="font-family:var(--font-mono);font-size:1.15rem;color:var(--c-gray-m)">${escHtml(u.quelle)}</span>` : ''}</div></div>
           ${fb.dauer ? `<div><span class="sr-fact-label">Entstanden in (geschätzt)</span><div class="sr-fact-val">${escHtml(fb.dauer)}</div></div>` : ''}
-          <div><span class="sr-fact-label">Von</span><div class="sr-fact-val">${escHtml(item.persona)}${rolle ? ' · ' + escHtml(rolle) : ''}</div></div>
+          ${hatPersona(item) ? `<div><span class="sr-fact-label">Von</span><div class="sr-fact-val">${personaMitRolle(item)}</div></div>` : ''}
           <div><span class="sr-fact-label">Genutzte Skills</span><div class="sr-fact-val">${(fb.skills || []).map(id => { const s = SKILLS.find(x => x.id === id); return escHtml(s ? s.name : id); }).join(', ') || '—'}</div></div>
           <div><span class="sr-fact-label">Prompts &amp; Bausteine</span><div class="sr-fact-val">${np} ${np === 1 ? 'Prompt' : 'Prompts'} · ${nb} ${nb === 1 ? 'Baustein' : 'Bausteine'}</div></div>
         </div>

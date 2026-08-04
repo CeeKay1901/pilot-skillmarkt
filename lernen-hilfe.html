@@ -720,15 +720,12 @@
       .res-intro { padding: 4rem 0 2rem; }
       .glo-tools { gap: 1.2rem; }
       .glo-search { flex: 1 1 100%; }
-      /* Sub-Nav: mobil ist der Scrollbalken versteckt — Fade-Kante am rechten
-         Rand signalisiert, dass hinter „Befehle & Kniffe“ noch Tabs kommen
-         (gleiches Muster wie die A-Z-Leiste darunter). */
-      .pillar-inner::after {
-        content: ''; flex: 0 0 2.8rem;
-        position: sticky; right: 0;
-        background: linear-gradient(to right, rgba(251,251,247,0), var(--paper) 75%);
-        pointer-events: none;
-      }
+      /* (Die Fade-Kante der Sub-Nav stand hier bis zur E12-Nachrüstung als
+         eigenes .pillar-inner::after. Sie kommt jetzt aus der gemeinsamen
+         Scroll-Maske in shared/base.css — .pillar-inner steht in RAIL_SEL
+         (base.js). Die lokale Kante war danach nicht nur doppelt, sondern
+         falsch: Sie lag positionsunabhängig fest und behauptete auch bei
+         data-scroll="end" noch, rechts ginge es weiter.) */
       /* A-Z-Leiste: mobil ist der Scrollbalken versteckt — eine Fade-Kante am
          rechten Rand signalisiert, dass die Leiste bis Z weitergeht. */
       .az-rail::after {
@@ -869,7 +866,7 @@
                        und der ist seit dem Feedback-Pass nirgends mehr zu sehen. Eine
                        Reihenfolge, deren Kriterium unsichtbar ist, kann niemand
                        nachvollziehen oder anzweifeln; deshalb sortiert die Liste jetzt
-                       nach demselben Wert, den der „Hat mir geholfen“-Knopf zeigt. -->
+                       nach demselben Wert, den der „Hilfreich“-Knopf zeigt. -->
                   <option value="stimmen">Meiste Stimmen</option>
                   <option value="dauer">Kürzeste zuerst</option>
                   <option value="alpha">Titel A–Z</option>
@@ -914,9 +911,9 @@
              gleiche Starthöhe der Überschrift über alle vier Reiter: Der aktive
              Reiter sagt „Befehle & Kniffe“, die Überschrift sagt es noch einmal,
              der Kicker sagte „Ranking“ — was der Vorspann darunter ohnehin erklärt
-             („Hat mir geholfen“ sortiert die Rangliste live neu). -->
+             („Hilfreich“ sortiert die Rangliste live neu). -->
         <h2 class="bef-h2" id="befehle-h">Befehle &amp; Kniffe</h2>
-        <p class="bef-sub"><span id="bef-count">0</span> Befehle, Flags und Tastentricks für Claude Code und pilot AI — „Hat mir geholfen“ sortiert die Rangliste live neu.</p>
+        <p class="bef-sub"><span id="bef-count">0</span> Befehle, Flags und Tastentricks für Claude Code und pilot AI — „Hilfreich“ sortiert die Rangliste live neu.</p>
 
         <div class="bef-chips" role="group" aria-label="Nach Kategorie filtern" id="bef-chips"></div>
 
@@ -1324,7 +1321,7 @@
       // eingeordnet, woher die Zahl kommt. Interne Platzhalter haben ehrlich keine.
       if (!r.intern) h += `
         <div><span class="res-body-label">Stimmen</span>
-          <span class="res-rating">${LU.vote}<span><strong>${getUpvoteCount(r, 'ressource')}</strong> × „Hat mir geholfen“ — redaktioneller Startwert plus deine eigene Stimme, gespeichert nur in diesem Browser.</span></span>
+          <span class="res-rating">${LU.vote}<span><strong>${getUpvoteCount(r, 'ressource')}</strong> × „Hilfreich“ — redaktioneller Startwert plus deine eigene Stimme, gespeichert nur in diesem Browser.</span></span>
         </div>`;
       // Linkout (Feedback: eindeutiger, benannter Ausgang zur Quelle) — zusätzlich
       // zum verlinkten Titel. stopPropagation, damit der Klick nicht zugleich die
@@ -1405,7 +1402,7 @@
       // Verhalten, nur die gemeinsame Optik aller Gattungen statt einer Sonderfassung.
       const footHtml = r.intern
         ? `<span class="res-intern-hint">Noch nicht bewertbar — der Link folgt.</span>`
-        : renderUpvoteBtn(r.id, 'ressource', getUpvoteCount(r, 'ressource'), { label: 'Hat mir geholfen', name: r.titel });
+        : renderUpvoteBtn(r.id, 'ressource', getUpvoteCount(r, 'ressource'), { label: 'Hilfreich', name: r.titel });
       return `
         <article class="res-card${r.intern ? ' -intern' : ''}${state._noCardAnim ? '' : ' card-in'}" style="animation-delay:${state._noCardAnim ? 0 : delay}ms" id="res-${r.id}" data-id="${r.id}" onclick="resCardClick(event,'${r.id}')">
           <div class="res-ico" aria-hidden="true">${typIcon(r.typ)}</div>
@@ -1470,6 +1467,69 @@
        Zahl, denselben Toast — und zieht zusätzlich alle Knöpfe desselben Eintrags
        gleichzeitig nach. Die Ressourcen-Stimme bleibt dabei getrennt von der
        Sterne-Engine, genau wie vorher.) */
+
+    /* ===== STIMME ABGEGEBEN → RESSOURCEN-LISTE NACHZIEHEN =====
+       toggleUpvote() in shared/base.js zieht nur die Knöpfe nach und ruft dann
+       hierher — bewusst ohne selbst zu rendern, damit diese Seite die alten
+       Kartenpositionen für die FLIP-Bewegung noch messen kann. Gleiches Muster
+       wie skills.html und prompts.html.
+       Warum das hier besonders wehtat: „Meiste Stimmen" ist auf dieser Seite die
+       VOREINSTELLUNG (state.sort). Ohne Rückruf zeigte die Liste also im
+       Normalfall eine Reihenfolge, die ihrer eigenen Beschriftung widerspricht,
+       und zwar dauerhaft bis zum nächsten Filterklick.
+       Anders als prompts.html wird bei aktiver Suche NICHT ausgestiegen: Dort
+       ersetzt die Trefferbewertung die Sortierung, hier steht sie nur davor —
+       state.sort bleibt der Stichentscheid bei gleichem Score (filterRessourcen),
+       eine Stimme kann die sichtbare Reihenfolge also auch mit Suche ändern.
+       Befehle und Glossar landen nie hier: die haben ihre eigenen Vote-Wege
+       (voteBefehl/voteBegriff). Der Typ-Test hält das fest, statt es
+       vorauszusetzen. */
+    window.onUpvoteChanged = function (id, type, count) {
+      if (type !== 'ressource') return;
+      /* Erst die Zahl im aufgeklappten Kartenkörper nachziehen. toggleUpvote()
+         kennt nur .up-count in den Knöpfen — der Satz „<n> × „Hilfreich“" im
+         Detail stünde sonst eine Stimme daneben, im selben Blickfeld. Muss auch
+         dann laufen, wenn unten nicht neu sortiert wird. */
+      if (typeof count === 'number') {
+        const big = document.querySelector('#res-' + id + ' .res-rating strong');
+        if (big) big.textContent = count;
+      }
+      if (state.sort !== 'stimmen') return;
+      const host = document.getElementById('res-list');
+      if (!host) return;
+
+      // FLIP Schritt 1: alte Positionen merken (gleiche Machart wie renderRanking).
+      const prevTop = {};
+      const animate = !window.prefersReduce();
+      if (animate) host.querySelectorAll('.res-card').forEach(el => { prevTop[el.dataset.id] = el.getBoundingClientRect().top; });
+
+      state._noCardAnim = true;   // Einblend-Animation aussetzen: zwei Bewegungen übereinander lesen sich als Fehler
+      render();
+      state._noCardAnim = false;
+
+      // FLIP Schritt 2: bewegte Karten gleiten sichtbar an ihren neuen Platz.
+      if (animate) {
+        host.querySelectorAll('.res-card').forEach(el => {
+          const was = prevTop[el.dataset.id];
+          if (was === undefined) return;
+          const dy = was - el.getBoundingClientRect().top;
+          if (Math.abs(dy) < 2) return;
+          el.style.transform = `translateY(${dy}px)`;
+          el.style.transition = 'transform 0s';
+          requestAnimationFrame(() => {
+            el.style.transition = 'transform .5s var(--ae)';
+            el.style.transform = '';
+          });
+        });
+      }
+      /* render() hat den gedrückten Knopf mitsamt Karte ersetzt — ohne diese
+         Zeile fiele der Fokus auf <body> und die Tastaturbedienung wäre nach
+         jeder Stimme unterbrochen. preventScroll, weil die FLIP-Bewegung die
+         Karte ohnehin gerade an ihren Platz führt. (Dasselbe tut renderRanking
+         für die Befehle-Liste.) */
+      const btn = document.querySelector('#res-' + id + ' .up-btn');
+      if (btn) btn.focus({ preventScroll: true });
+    };
 
     /* Ganze Karte klappt auf (Feedback: ganze Karte klappt auf). Zwei Fälle bleiben ausgenommen:
        — Klicks auf Bedienelemente. Merken (toggleFavorite), Hilfreich (toggleUpvote),
@@ -1609,7 +1669,7 @@
        — .pf-tag (Claude Code / pilot AI): keine Zusatzinfo, sondern die Bedingung,
          unter der der Befehl überhaupt funktioniert. Ein Befehl ohne sein Werkzeug
          ist eine falsche Fährte, egal wie dicht die Ansicht ist.
-       — der „Hat mir geholfen“-Knopf: er sortiert die Liste, die man gerade ansieht. */
+       — der „Hilfreich“-Knopf: er sortiert die Liste, die man gerade ansieht. */
     function cardHtml(b, rank) {
       const open = _expanded.has(b.id);
       const voted = hasVoted('befehl', b.id);
@@ -1624,12 +1684,25 @@
             <div class="cmd-main">
               <div class="cmd-line">
                 <code class="cmd-code">${escHtml(b.cmd)}</code>
-                ${copyable ? `<button type="button" class="cmd-copy" onclick="copyBefehl(event,'${b.id}')" title="Befehl kopieren" aria-label="Befehl ${escHtml(b.cmd)} kopieren">${LU.copy} Kopieren</button>` : ''}
+                ${copyable ? `<button type="button" class="cmd-copy" onclick="copyBefehl(event,'${b.id}')" title="Befehl kopieren" aria-label="Befehl ${escHtml(b.cmd)} (${escHtml(PF_LABEL[b.plattform] || b.plattform)}) kopieren">${LU.copy} Kopieren</button>` : ''}
                 <span class="pf-tag">${PF_LABEL[b.plattform] || b.plattform}</span>
                 ${isLh ? '<span class="lh-tag density-hide-kompakt">Mini-Demo</span>' : ''}
                 <span class="cmd-actions">
-                  <button type="button" class="vote-btn${voted ? ' voted' : ''}" aria-pressed="${voted}" onclick="voteBefehl('${b.id}')">
-                    ${LU.vote}<span>Hat mir geholfen</span><span class="vote-count">${votesOf(b)}</span>
+                  <!-- aria-label mit dem Befehl: Ohne ihn heißen 28 Knöpfe in dieser
+                       Liste identisch „Hilfreich“, und die Knopfliste eines
+                       Screenreaders ist damit unbrauchbar. Wortlaut und Trennzeichen
+                       wie renderUpvoteBtn() in shared/base.js (Label zuerst, dann der
+                       Eintragsname) — dieselbe Seite benutzt diesen Knopf für die
+                       Ressourcen schon so. Label VORNE erfüllt WCAG 2.5.3
+                       („Label in Name“); der Zustand steht in aria-pressed, nicht im
+                       Namen, deshalb bleibt der Name in beiden Zuständen gleich.
+                       Die Plattform gehört dazu, nicht als Zierrat: „@“ steht ZWEIMAL
+                       im Bestand (datei-verweis für Claude Code, ld-prompt-bibliothek
+                       für pilot AI). Mit dem Befehl allein blieben zwei Knöpfe
+                       ununterscheidbar — sichtbar trennt sie der .pf-tag daneben,
+                       hörbar erst diese Angabe. -->
+                  <button type="button" class="vote-btn${voted ? ' voted' : ''}" aria-pressed="${voted}" aria-label="Hilfreich — ${escHtml(b.cmd)} (${escHtml(PF_LABEL[b.plattform] || b.plattform)})" onclick="voteBefehl('${b.id}')">
+                    ${LU.vote}<span>Hilfreich</span><span class="vote-count">${votesOf(b)}</span>
                   </button>
                   <button type="button" class="cmd-toggle" aria-expanded="${open}" aria-controls="cmd-body-${b.id}" onclick="toggleBefehl('${b.id}')">
                     <span>${isLh ? 'Beispiel & Demo' : 'Mini-Beispiel'}</span><span class="ct-arrow" aria-hidden="true">›</span>
@@ -1682,8 +1755,19 @@
     }
 
     // ===== INTERAKTIONEN (Befehle) =====
+    /* toggleVote() liefert false für ZWEI verschiedene Ausgänge: „Stimme
+       zurückgenommen" und „konnte nicht speichern" (privater Modus, Speicher
+       voll) — im zweiten Fall hat es bereits selbst gemeldet. Wer das nicht
+       unterscheidet, legt auf den Fehlschlag noch ein „Stimme zurückgenommen"
+       obendrauf und behauptet damit einen Zustand, den es nie gab.
+       Deshalb VORHER merken, was gewollt war; wollte jemand stimmen und ist es
+       nicht gespeichert, hier still zurück. Gleicher Guard wie toggleUpvote()
+       in shared/base.js. Kein renderRanking() in dem Fall: Die Reihenfolge hat
+       sich nicht geändert, ein Neuaufbau nähme dem Knopf nur den Fokus. */
     function voteBefehl(id) {
+      const wanted = !hasVoted('befehl', id);
       const now = toggleVote('befehl', id);
+      if (wanted && !now) return;
       showToast(now ? 'Danke — deine Stimme zählt (gespeichert in deinem Browser)' : 'Stimme zurückgenommen');
       renderRanking(id);
     }
@@ -1795,8 +1879,10 @@
             ${g.stolper ? `<div><span class="g-body-label">Typischer Stolperstein</span><p>${mdInline(g.stolper)}</p></div>` : ''}
             ${xrefsHtml(g.verweise)}
             <div class="g-actions">
-              <button type="button" class="vote-btn g-vote${voted ? ' voted' : ''}" aria-pressed="${voted}" onclick="voteBegriff('${g.id}')">
-                ${LU.vote}<span>Hat mir geholfen</span><span class="vote-count">${getVotes('begriff', g.id, g.votes)}</span>
+              <!-- aria-label mit dem Begriff — siehe cardHtml() im Befehle-Bereich:
+                   64 Knöpfe hießen hier identisch „Hilfreich“. -->
+              <button type="button" class="vote-btn g-vote${voted ? ' voted' : ''}" aria-pressed="${voted}" aria-label="Hilfreich — ${escHtml(g.wort)}" onclick="voteBegriff('${g.id}')">
+                ${LU.vote}<span>Hilfreich</span><span class="vote-count">${getVotes('begriff', g.id, g.votes)}</span>
               </button>
             </div>
           </div>
@@ -1886,10 +1972,15 @@
       renderGlossar();
     }
 
+    // Guard wie in voteBefehl(): ohne ihn meldete ein fehlgeschlagenes Speichern
+    // „Stimme zurückgenommen“ und der Knopf bliebe im ungestimmten Zustand —
+    // zwei widersprüchliche Aussagen zur selben Aktion.
     function voteBegriff(id) {
       const g = begriffById(id);
       if (!g) return;
+      const wanted = !hasVoted('begriff', id);
       const now = toggleVote('begriff', id);
+      if (wanted && !now) return;
       const btn = document.querySelector(`#begriff-${id} .g-vote`);
       if (btn) {
         btn.classList.toggle('voted', now);
@@ -2178,18 +2269,33 @@
         state._noCardAnim = true; render(); state._noCardAnim = false;
       }, 150));
 
-      document.getElementById('sort-select').addEventListener('change', e => {
+      // ?. wie bei den ~20 Nachbarzugriffen in diesem Block: Das Sortierfeld
+      // steht in der Filterleiste des Ressourcen-Reiters. Fehlt es (Umbau,
+      // Teil-Render), stürzte der ganze DOMContentLoaded-Handler hier ab — und
+      // mit ihm alles, was danach kommt: Suche, Tastaturkürzel, Mobil-Panel.
+      document.getElementById('sort-select')?.addEventListener('change', e => {
         state.sort = e.target.value;
         render();
       });
 
-      // Seitenlokal: „/“ fokussiert die Ressourcen-Suche
+      /* Seitenlokal: „/“ fokussiert die Ressourcen-Suche.
+         Nicht, solange ein Overlay offen ist. Modal, globale Suche, „Deine
+         Sachen“, der Einreichen-Flow und „Über diese Seite“ sind modal und
+         fangen ihren Fokus (Fokusfalle in shared/base.js) — ein „/“ darin riss
+         den Fokus auf ein Feld HINTER dem Overlay, das man weder sieht noch
+         verlassen kann, ohne das Overlay zu schließen. Die IDs und die
+         Offen-Klasse sind die aus base.js (openModal/openGlobalSearch/
+         openDeineSachen/openSubmitFlow/openAbout), nicht geraten.
+         Ein Tippen in Text zählt weiter als Eingabe, nicht als Kürzel. */
       document.addEventListener('keydown', e => {
-        if (e.key === '/' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
-          e.preventDefault();
-          const search = document.getElementById('search');
-          if (search) { search.focus(); search.select(); }
-        }
+        if (e.key !== '/') return;
+        const ae = document.activeElement;
+        if (ae && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA')) return;
+        if (document.querySelector('#modal-overlay.open, #gsearch-overlay.open, #ds-overlay.open, #submit-overlay.open, #about-overlay.open')) return;
+        const search = document.getElementById('search');
+        if (!search) return;
+        e.preventDefault();
+        search.focus(); search.select();
       });
 
       // Mobil: Filterpanel startet eingeklappt — der Platz gehört dem Regal

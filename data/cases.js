@@ -134,13 +134,13 @@ const CASES = [
     saeule: 'performance',
     art: 'dashboard',
     istEcht: true,
-    persona: 'pilot-Tool',
+    persona: null, // Team-Tool ohne Einzel-Zuordnung — die Karte lässt den Personen-Slot dann weg
     /* Die 77 Zeilen sind kein Tippfehler: Der Report ist erzeugt, nicht getippt —
        zwei einzelne Zeilen tragen zusammen rund 140 der 149 KB. Deshalb steht die
        Größe auf der Karte vorn und entscheidet auch über die Umfangs-Stufe. */
     umfang: { bytes: 152241, zeilen: 77, dateien: 1, quelle: 'demo/webaudit/report.html' },
     nutzen: 'Zeigt, wie aus einem Skill-Lauf ein teilbarer Prüfbericht als einzelne HTML-Datei wird.',
-    kurz: 'Ein echter Prüfbericht, den der Skill „webaudit“ über den TKP-Rechner erzeugt hat. Der Report gibt einen Gesamt-Score von 95 von 100 aus, listet 0 Fehler, 1 Warnung und 13 bestandene Checks — jeder Fund mit Fundstelle. Erzeugt hat ihn kein Mensch, sondern der Audit-Lauf selbst; deshalb ist er neutral als pilot-Tool attribuiert. Zeigt gut, wie aus einem Skill ein teilbares, statisches HTML-Artefakt wird.',
+    kurz: 'Ein echter Prüfbericht, den der Skill „webaudit“ über den TKP-Rechner erzeugt hat. Der Report gibt einen Gesamt-Score von 95 von 100 aus, listet 0 Fehler, 1 Warnung und 13 bestandene Checks — jeder Fund mit Fundstelle. Erzeugt hat ihn kein Mensch, sondern der Audit-Lauf selbst; deshalb ist er keiner einzelnen Person zugeordnet. Zeigt gut, wie aus einem Skill ein teilbares, statisches HTML-Artefakt wird.',
     story: {
       ausgangsproblem: 'Vor dem Teilen eines selbstgebauten Tools will man wissen, ob Grundlagen wie Zugänglichkeit, Meta-Angaben und offensichtliche Fehler stimmen — ohne selbst Prüf-Checklisten abzuarbeiten.',
       ersterPrompt: 'Führe einen webaudit über tkp-rechner.html aus und schreibe das Ergebnis als eigenständigen HTML-Report: Gesamt-Score, Fehler, Warnungen und bestandene Checks, jeder Fund mit konkreter Fundstelle.',
@@ -179,7 +179,7 @@ const CASES = [
     saeule: 'performance',
     art: 'helfer',
     istEcht: true,
-    persona: 'pilot-Tool',
+    persona: null, // Team-Tool ohne Einzel-Zuordnung — die Karte lässt den Personen-Slot dann weg
     /* Gemessen wird der Report selbst (report.md), nicht die geprüfte kampagne.csv:
        das Artefakt hinter der Vorschau ist der Bericht. */
     umfang: { bytes: 1555, zeilen: 38, dateien: 1, quelle: 'demo/campaign-check/report.md' },
