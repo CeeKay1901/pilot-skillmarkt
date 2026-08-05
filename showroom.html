@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>pilot AI Marketplace — Showroom</title>
-  <meta name="description" content="Projekte aus dem Team zum Anklicken — echte Werkzeuge und Beispiel-Projekte, die zeigen, was mit KI möglich ist. Mit der ehrlichen Geschichte, wie sie entstanden sind, und allem zum Nachbauen.">
+  <meta name="description" content="Projekte aus dem Team zum Anklicken — echte Werkzeuge und Beispiel-Projekte fiktiver Personas, die zeigen, was mit KI möglich ist. Mit der ehrlichen Geschichte, wie sie entstanden sind, und allem zum Nachbauen.">
   <meta name="robots" content="noindex, follow">
   <meta name="theme-color" content="#262626">
   <meta property="og:type" content="website">
@@ -68,6 +68,25 @@
        aufbläht und das Lesezeichen optisch am rechten Innenrand sitzt.
        Gilt für die Variante .-lu genauso — die Maße stehen am Basis-.fav-btn. */
     .sr-marker-row .fav-btn { margin: -1.2rem -.7rem -1.2rem 0; }
+
+    /* ===== „fiktive Persona" am Personennamen (CLAUDE.md, harte Regel 4) =====
+       Sitzt auf der Karte hinter dem fetten Namen und im Modal an denselben zwei
+       Stellen (Kopfzeile, Fakten-Box „Von"). Dieselbe Zeichensprache wie die
+       übrigen Herkunfts-Angaben der Seite: Mono, versal, klein, umrandet — es
+       ist eine Auszeichnung ÜBER die Angabe daneben, kein Teil des Namens.
+       Farbe über --c-gray-m statt opacity: gedämpfte Deckkraft ist nicht
+       prüfbar (tools/qa kontrast). #66655d auf --paper-warm ergibt 5,19:1 und
+       hält damit WCAG AA auch bei dieser Schriftgröße.
+       white-space: nowrap — die zwei Wörter dürfen nicht mitten im Label
+       umbrechen, sonst steht „fiktive" allein hinter dem Namen. */
+    .sr-fiktiv {
+      display: inline-block; margin-left: .6rem;
+      font-family: var(--font-mono); font-size: 1.05rem; font-weight: 600;
+      letter-spacing: .08em; text-transform: uppercase; white-space: nowrap;
+      color: var(--c-gray-m); background: var(--paper-warm);
+      border: 1px solid var(--line); border-radius: var(--r-xs);
+      padding: .1rem .5rem;
+    }
 
     /* Die „Will ich auch"-Geste ist seit dem Feedback-Pass der geteilte .up-btn
        aus shared/base.js (renderUpvoteBtn) — dieselbe Optik wie die Stimmen auf
@@ -219,7 +238,13 @@
            gewichen — base.css sagt zum Primitive: „ein Marker-Moment pro
            Sichtbereich“, und der Seitenkopf ist einer. Der Text bleibt wörtlich. -->
       <h1><span class="mk">Showroom</span></h1>
-      <p class="page-sub">Projekte aus dem Team zum Anklicken — ein Marker unterscheidet echte Team-Tools von Beispiel-Projekten, jedes mit Geschichte und Nachbau-Anleitung.</p>
+      <!-- Der zweite Satz sagt aus, was der Marker allein offen ließ: „Beispiel-
+           Projekt" kann man als „echtes Projekt, hier als Beispiel gezeigt"
+           lesen — und dann liest sich der Name auf der Karte wie eine reale
+           Kollegin. Die Kennzeichnung am Namen selbst (fiktivLabelHtml im
+           Script) sagt es an jeder einzelnen Karte; hier steht die Regel dahinter
+           einmal im Zusammenhang. Beides zusammen ist harte Regel 4. -->
+      <p class="page-sub">Projekte aus dem Team zum Anklicken — ein Marker unterscheidet echte Team-Tools von Beispiel-Projekten, jedes mit Geschichte und Nachbau-Anleitung. Beispiel-Projekte zeigen echte, klickbare Artefakte, sind aber fiktiven Personas zugeordnet.</p>
     </div>
   </header>
 
@@ -269,7 +294,17 @@
               <!-- A11y: der barrierefreie Name muss das sichtbare Label „Sortierung“
                    enthalten (WCAG 2.5.3 Label in Name) — „Projekte sortieren“ tat das nicht. -->
               <select id="sr-sort" aria-label="Sortierung der Projekte">
-                <option value="recommended">Empfohlen zuerst</option>
+                <!-- Das Label nennt, was die Sortierung TUT: erst die echten
+                     Team-Tools (c.istEcht), dann nach Reaktionen, dann A–Z —
+                     siehe sortedCases(), Zweig `else`. „Empfohlen zuerst" stand
+                     bis 04.08.2026 hier und ließ offen, wer empfiehlt und wonach;
+                     dieselbe Korrektur wie auf prompts.html, wo aus „Empfohlen
+                     zuerst" „Meiste Stimmen" wurde, weil es das tut. Nachprüfbar
+                     ist es auf jeder Karte: Der Ehrlichkeits-Marker (markerHtml)
+                     sagt „Echtes Team-Tool" oder „Beispiel-Projekt".
+                     Der interne Wert bleibt 'recommended' — e8:… und e13:…
+                     lesen den WERT, nicht die Beschriftung. -->
+                <option value="recommended">Echte Team-Tools zuerst</option>
                 <!-- Wert bleibt 'meistgewollt' (interner Zustand), das LABEL folgt dem
                      Wortlaut der Schwesterseiten: dort heißt dieselbe Sortierung
                      „Meiste Stimmen“ (skills.html, prompts.html). -->
@@ -478,6 +513,39 @@
       return '';
     }
 
+    /* ===== FIKTIVE ROLLE SICHTBAR MACHEN (CLAUDE.md, harte Regel 4) ==========
+       Der Marker auf der Karte sagt „Beispiel-Projekt". Das trennt echt von
+       inszeniert für das PROJEKT — aber nicht für die PERSON daneben. Ein
+       Beispiel-Projekt zeigt ein echtes, klickbares Artefakt; „Beispiel-Projekt"
+       liest sich deshalb ohne Weiteres als „echtes Projekt, hier als Beispiel
+       gezeigt". Der Name darunter und das Ich-Zitat im Modal wirkten damit wie
+       eine Aussage einer realen Kollegin — genau die Verwechslung, die Regel 4
+       verhindern soll.
+
+       Quelle ist ausschliesslich `fiktiv: true` in data/contributors.js, nicht
+       istEcht: Die zwei Angaben sind verschieden. Real ist dort nur Christopher
+       Kipp; ihm sind die echten Team-Tools zugeordnet, und an seinem Namen darf
+       kein Label stehen.
+
+       FALLBACK IST ABSICHTLICH „KEIN LABEL": Ein Name, den PILOTS nicht kennt
+       (fehlende Datei, Tippfehler, künftige Persona ohne Flag), bekommt nichts
+       angehängt. Ein fälschlich gesetztes „fiktive Persona" an einer realen Person
+       wäre der schlimmere Fehler von beiden — es spräche jemandem seine Arbeit
+       ab. Dieselbe Zurückhaltung wie bei hatPersona(): lieber leer als geraten. */
+    function personaIstFiktiv(name) {
+      if (typeof PILOTS === 'undefined') return false;
+      const p = PILOTS.find(x => x.name === name);
+      return !!(p && p.fiktiv);
+    }
+    /* Dezent und trotzdem vorlesbar: eigener Text im Fluss (kein reines Icon),
+       damit Screenreader und Suche ihn mitnehmen. Wortlaut und title sind
+       zeichengleich mit skills.html/prompts.html/lernen-hilfe.html — dieselben
+       Personas, dieselbe Beschriftung; „fiktive Rolle" wäre zudem schief, weil
+       die Person erfunden ist, nicht ihre (real existierende) Rolle. */
+    function fiktivLabelHtml(name) {
+      return personaIstFiktiv(name) ? `<span class="sr-fiktiv" title="Redaktionelle Persona — keine reale Kollegin, kein realer Kollege.">fiktive Persona</span>` : '';
+    }
+
     /* PERSONA IST OPTIONAL — und ein fehlender Wert bekommt KEINEN Platzhalter.
        Zwei echte Team-Tools sind Gruppenarbeit ohne Einzel-Zuordnung und tragen
        deshalb `persona: null` (data/cases.js). Was vorher an dieser Stelle stand
@@ -492,7 +560,12 @@
     function personaMitRolle(item) {
       if (!hatPersona(item)) return '';
       const rolle = personaRolle(item.persona);
-      return escHtml(item.persona) + (rolle ? ' · ' + escHtml(rolle) : '');
+      // Das Label hängt am NAMEN, nicht hinter der Rolle: Wer nur den fetten
+      // Namen liest, soll es trotzdem sehen. Beide Aufrufstellen (Modal-Kopf und
+      // Fakten-Box „Von") setzen den Rückgabewert per innerHTML — das Label
+      // kommt dort als Markup an, der Name bleibt escHtml-geschützt.
+      return escHtml(item.persona) + fiktivLabelHtml(item.persona)
+        + (rolle ? ' · ' + escHtml(rolle) : '');
     }
     // Immer statisch positioniert (im Fluss) — die absolute Overlay-Variante über dem
     // Thumbnail ist entfallen (kollidierte mit Logos/Badges der Demo-Seiten selbst).
@@ -685,7 +758,7 @@
             <!-- Ohne Persona bleibt die Säule allein stehen: Sie ist eine Angabe
                  über das Projekt, nicht über eine Person, und sonst nirgends auf
                  der Karte zu lesen. Weg fällt nur der Personen-Teil. -->
-            <p class="sr-persona density-hide-kompakt">${hatPersona(c) ? `<strong>${escHtml(c.persona)}</strong> · ` : ''}${escHtml(SAEULE_LABEL[c.saeule] || c.saeule)}</p>
+            <p class="sr-persona density-hide-kompakt">${hatPersona(c) ? `<strong>${escHtml(c.persona)}</strong>${fiktivLabelHtml(c.persona)} · ` : ''}${escHtml(SAEULE_LABEL[c.saeule] || c.saeule)}</p>
             <p class="sr-desc density-only-ausfuehrlich">${escHtml(c.kurz)}</p>
             <div class="sr-actions">
               ${reactionBtnHtml(c, true)}

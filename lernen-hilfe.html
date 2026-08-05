@@ -258,7 +258,7 @@
        Sterne-Anzeige aus base.js — ein Bewertungs-DURCHSCHNITT, den auf dieser
        Seite niemand abgeben kann, weil es kein Sterne-Formular gibt. Jetzt steht
        hier die Zahl, die die Karte wirklich erhebt: die Upvotes. Der Zusatz
-       „redaktioneller Startwert … nur in diesem Browser“ ist die Demo-Kennzeichnung
+       VOTE_DEMO_HINT (aus base.js) ist die Demo-Kennzeichnung
        (CLAUDE.md, harte Regel 3). Sie ist mit der .res-note weggefallen und sitzt
        jetzt an der Zahl, auf die sie sich bezieht — zusätzlich zur seitenweiten
        Kennzeichnung im „Über diese Seite“-Fenster (base.js). */
@@ -266,6 +266,11 @@
     .res-rating .lu { width: 1.4rem; height: 1.4rem; flex-shrink: 0; margin-top: .2rem; }
     .res-rating strong { font-family: var(--font-mono); color: var(--c-black); }
     .res-intern-hint { font-size: 1.25rem; color: var(--c-gray-m); font-style: italic; }
+    /* Hülle um den Stimmen-Knopf auf der Karte. Sie trägt nur den title mit der
+       Demo-Kennzeichnung (.up-btn bietet keinen an) — inline-flex, damit der Knopf
+       im Flex-Fuß genauso sitzt wie vorher ohne Hülle. Gleiche Machart wie
+       .card-votes (skills.html) und .vl-votes (vorlagen.html). */
+    .res-votes { display: inline-flex; align-items: center; }
 
     /* Linkout im Aufklapp-Detail (Feedback: eindeutiger, benannter Ausgang zur
        Quelle). Der Titel ist zwar verlinkt, aber
@@ -698,6 +703,52 @@
     .faq-voice blockquote { font-size: 1.4rem; line-height: 1.6; color: var(--c-ink-body); font-style: italic; margin: 0 0 .5rem; }
     .faq-voice figcaption { font-family: var(--font-mono); font-size: 1.15rem; color: var(--c-gray-m); }
 
+    /* ===== DEMO-KENNZEICHNUNG DER ZITATE (CLAUDE.md, harte Regeln 3 + 4) =======
+       Diese Seite zeigt an drei Stellen gesetzte Zitate mit Personennamen:
+       RESSOURCEN[].stimmen, BEFEHL_KOMMENTARE und FAQ[].stimme. Fünf davon
+       laufen unter „Christopher Kipp" — der einzigen REALEN Person in PILOTS.
+       Deshalb zwei Bausteine, wie im Katalog (skills.html):
+
+       .persona-fiktiv steht direkt AM NAMEN, weil dort die Verwechslung entsteht.
+       Es bringt eigenen Grund und eigene Umrandung mit und funktioniert deshalb
+       unverändert auf hellem Papier (.res-card, .faq-card) UND im dunklen
+       Ranking-Panel (.cmd-card) — --c-gray-m auf --c-bg = 5,17:1, WCAG AA.
+       Wortgleich mit skills.html: dieselben Personas, dieselbe Beschriftung.
+
+       .seed-hint sagt einmal je Zitat-BLOCK (nicht je Zitat), woher die Zitate
+       kommen — das ist der Teil, den ein Label am Namen nicht leisten kann,
+       weil die reale Person korrekt KEIN Label bekommt. Der Platz folgt der
+       Seiten-Regel: die Aussage steht dort, wo die Sache steht (kein Vorspann
+       vor dem Regal, siehe .res-note-Kommentar oben und der Kommentar im
+       Ressourcen-Regal). Farbe als echte Farbe, nicht als Deckkraft — gerechnet:
+       --c-gray-m auf --paper = 5,65:1; im dunklen Panel rgba(252,252,252,.62)
+       auf dem Kartengrund (#303030) = 5,95:1 — beides WCAG AA. */
+    /* Die Doppel-Selektoren sind nicht redundant: .res-body p und .cmd-body p
+       (Klasse + Typ) sind spezifischer als .seed-hint (nur Klasse) und würden
+       Größe, Farbe und Abstand des Hinweises überschreiben. Deshalb hier
+       ausdrücklich mit .<block> p.seed-hint dagegen. */
+    .seed-hint,
+    .res-body p.seed-hint, .cmd-body p.seed-hint, .faq-body p.seed-hint {
+      font-size: 1.2rem; line-height: 1.5; color: var(--c-gray-m);
+      margin: -.2rem 0 1rem; max-width: 78ch;
+    }
+    .cmd-body p.seed-hint { color: rgba(252,252,252,.62); }
+    /* Im FAQ gibt es keine Block-Beschriftung, an die sich der Hinweis hängen
+       könnte — dort steht er unmittelbar über dem Zitat und braucht deshalb
+       eigenen Abstand nach oben. */
+    .faq-body p.seed-hint.-vor-zitat { margin: 1.8rem 0 -1.4rem; }
+    /* font-family: die drei Zitat-Beschriftungen sind Mono (.res-voice/.cmd-voice/
+       .faq-voice figcaption). Das Label ist KEIN Teil der Angabe daneben, sondern
+       eine Auszeichnung darüber — deshalb bricht es bewusst aus der Mono-Reihe aus
+       und trägt dieselbe Schrift wie in skills.html. */
+    .persona-fiktiv {
+      font-family: var(--font-sans);
+      font-size: 1.05rem; font-weight: 500; color: var(--c-gray-m);
+      background: var(--c-bg); border: 1px solid var(--c-gray-l);
+      border-radius: var(--r-xl); padding: .1rem .8rem; margin-left: .6rem;
+      white-space: nowrap; vertical-align: middle;
+    }
+
     /* ===== MITMACHEN-BÄNDER: .submit-band-Primitive aus base.css ===== */
 
     /* ===== RESPONSIVE & TOUCH ===== */
@@ -1003,12 +1054,20 @@
   <script src="data/befehle.js"></script>
   <script src="data/glossar.js"></script>
   <script src="data/ressourcen.js"></script>
+  <!-- PILOTS (data/contributors.js): einzige Quelle für `fiktiv: true`. Alle drei
+       Zitat-Quellen dieser Seite (RESSOURCEN[].stimmen, BEFEHL_KOMMENTARE,
+       FAQ[].stimme) nennen nur autor/rolle/text — das Flag kommt von hier.
+       Kollisionsfrei: contributors.js steht NICHT in GSEARCH_SOURCES (base.js),
+       wird also von _gsEnsureData() nie ein zweites Mal nachgeladen; und keine
+       andere data/*.js vergibt PILOTS top-level. -->
+  <script src="data/contributors.js"></script>
   <script src="shared/base.js"></script>
   <script>
     // ===== DATA =====
     //   data/befehle.js:   BEFEHLE, BEFEHL_LEUCHTTUERME, BEFEHL_KOMMENTARE
     //   data/glossar.js:   GLOSSAR, FAQ
     //   data/ressourcen.js: RESSOURCEN, RESSOURCE_TYPEN
+    //   data/contributors.js: PILOTS (nur für die Fiktiv-Kennzeichnung der Zitate)
     // ===== ENGINE ===== (Nav, Vote-/Upvote-Helfer inkl. voteScore, favBookmarkHtml,
     //   initDensity, searchScore, playScript, openSubmitFlow, Utils: shared/base.js)
     //
@@ -1070,11 +1129,49 @@
     /* ============================================================
        BEREICH 1: RESSOURCEN (aus lernen.html)
        ============================================================ */
-    const TYP_CARD_LABEL = { video: 'Video', doku: 'Doku', artikel: 'Artikel', kurs: 'Kurs', podcast: 'Podcast', intern: 'pilot-intern' };
+    /* Typ-Beschriftung kommt aus RESSOURCE_TYPEN (data/ressourcen.js) — EINE
+       Quelle, zwei Formen: `label` steht in der Mehrzahl („Videos") und
+       beschriftet den Reiter UND die Aktiv-Pille, weil beide den FILTER
+       benennen, also eine Kategorie voller Einträge. `einzel` steht in der
+       Einzahl („Video") und beschriftet das Badge auf der einzelnen Karte.
+       Bis 04.08.2026 hielt diese Seite dafür eine zweite Liste (TYP_CARD_LABEL)
+       neben den Reitern; sie konnte auseinanderlaufen, ohne dass etwas rot wurde. */
+    function resTypEintrag(t) { return RESSOURCE_TYPEN.find(x => x.id === t); }
+    function resTypLabel(t)   { const e = resTypEintrag(t); return e ? e.label  : t; }
+    function resTypEinzel(t)  { const e = resTypEintrag(t); return e ? e.einzel : t; }
     const NIVEAU_LABEL = { einsteiger: 'Einsteiger', fortgeschritten: 'Fortgeschritten' };
     // gemeinsames Plattform-Label für Befehle UND Ressourcen (Superset)
     const PF_LABEL = { code: 'Claude Code', langdock: 'pilot AI', allgemein: 'Allgemein' };
     const SPRACHE_LABEL = { de: 'Deutsch', en: 'Englisch' };
+    /* DEMO-KENNZEICHNUNG (CLAUDE.md, harte Regel 3): Die Zahl am „Hilfreich"-Knopf
+       ist ein Startwert aus den Daten plus höchstens die eigene Stimme, gespeichert
+       unter vote:ressource:<id> in diesem Browser. Der Satz steht genau einmal und
+       ist wörtlich derselbe wie auf allen Seiten — er kommt als VOTE_DEMO_HINT
+       aus base.js, damit keine je Fläche abweichende Fassung entstehen kann. */
+
+    /* ===== FIKTIVE PERSONAS KENNZEICHNEN (CLAUDE.md, harte Regel 4) ==========
+       „Echt und inszeniert bleiben getrennt." Das Flag `fiktiv: true` steht an
+       genau EINER Stelle: PILOTS in data/contributors.js. Die drei Zitat-Quellen
+       dieser Seite (RESSOURCEN[].stimmen, BEFEHL_KOMMENTARE, FAQ[].stimme) tragen
+       es nicht mit — sie nennen nur autor, rolle und text. Der Abgleich läuft
+       deshalb über den Namen; das ist der einzige Schlüssel, den beide Seiten
+       gemeinsam haben.
+       Wer NICHT in PILOTS steht (oder dort ohne Flag), bekommt kein Label:
+       Christopher Kipp ist real. Lieber kein Label als ein falsches.
+       Wortgleich mit skills.html — dieselben Personas, dieselbe Beschriftung. */
+    function istFiktivePersona(name) {
+      if (typeof PILOTS === 'undefined' || !name) return false;
+      return PILOTS.some(p => p.name === name && p.fiktiv === true);
+    }
+    function fiktivLabelHtml(name) {
+      return istFiktivePersona(name)
+        ? ` <span class="persona-fiktiv" title="Redaktionelle Persona — keine reale Kollegin, kein realer Kollege.">fiktive Persona</span>`
+        : '';
+    }
+    // EIN Wortlaut für alle drei Zitat-Blöcke — abgeleitet aus skills.html
+    // („Redaktionelle Startwerte — die Zitate sind gesetzt, nicht erhoben.").
+    const SEED_ZITAT_HINWEIS = 'Redaktionelle Startwerte — die Zitate sind gesetzt, nicht erhoben.';
+
     // Kumulative Dauer-Buckets — identisch mit den Zeit-Kacheln im Hero.
     const DAUER_BUCKETS = [
       { id: '5',       label: 'bis 5 Min',   zahl: '≤ 5',  name: 'Espresso',    test: r => r.dauerMin <= 5 },
@@ -1271,7 +1368,9 @@
       const bar = document.getElementById('active-filters');
       if (!bar) return;
       const pills = [];
-      if (state.typ) pills.push({ label: 'Typ: ' + (TYP_CARD_LABEL[state.typ] || state.typ), clear: `setTyp('all')` });
+      // Reiter-Beschriftung (Mehrzahl): Die Pille beschreibt den aktiven FILTER,
+      // nicht eine einzelne Karte — sie muss also so heißen wie der Reiter.
+      if (state.typ) pills.push({ label: 'Typ: ' + resTypLabel(state.typ), clear: `setTyp('all')` });
       if (state.niveau) pills.push({ label: 'Niveau: ' + NIVEAU_LABEL[state.niveau], clear: `setNiveau('${state.niveau}')` });
       if (state.dauer) pills.push({ label: 'Dauer: ' + bucketById(state.dauer).label, clear: `setDauer('${state.dauer}')` });
       if (state.sprache) pills.push({ label: 'Sprache: ' + SPRACHE_LABEL[state.sprache], clear: `setSprache('${state.sprache}')` });
@@ -1311,10 +1410,11 @@
         </div>`;
       if (r.stimmen && r.stimmen.length) h += `
         <div><span class="res-body-label">Stimmen aus dem Team</span>
+          <p class="seed-hint">${SEED_ZITAT_HINWEIS}</p>
           ${r.stimmen.map(v => `
           <figure class="res-voice">
             <blockquote>${escHtml(v.text)}</blockquote>
-            <figcaption>${escHtml(v.autor)} · ${escHtml(v.rolle)}</figcaption>
+            <figcaption>${escHtml(v.autor)}${fiktivLabelHtml(v.autor)} · ${escHtml(v.rolle)}</figcaption>
           </figure>`).join('')}
         </div>`;
       // Stimmenzahl MIT Demo-Kennzeichnung (CLAUDE.md, harte Regel 3). Bewusst als
@@ -1322,7 +1422,7 @@
       // eingeordnet, woher die Zahl kommt. Interne Platzhalter haben ehrlich keine.
       if (!r.intern) h += `
         <div><span class="res-body-label">Stimmen</span>
-          <span class="res-rating">${LU.vote}<span><strong>${getUpvoteCount(r, 'ressource')}</strong> × „Hilfreich“ — redaktioneller Startwert plus deine eigene Stimme, gespeichert nur in diesem Browser.</span></span>
+          <span class="res-rating">${LU.vote}<span><strong>${getUpvoteCount(r, 'ressource')}</strong> × „Hilfreich“ — ${escHtml(VOTE_DEMO_HINT)}</span></span>
         </div>`;
       // Linkout (Feedback: eindeutiger, benannter Ausgang zur Quelle) — zusätzlich
       // zum verlinkten Titel. stopPropagation, damit der Klick nicht zugleich die
@@ -1397,19 +1497,28 @@
         ? `<a class="res-title" href="${escHtml(r.url)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${escHtml(r.titel)}${LU.extern}</a>`
         : `<span class="res-title">${escHtml(r.titel)}</span>`;
       // Interne Platzhalter haben ehrlich keine Stimmen (kein Link, niemand hat sie
-      // gesehen) — deshalb dort ein Hinweis statt eines Knopfes.
+      // gesehen) — deshalb dort ein Hinweis statt eines Knopfes. Der Satz spricht
+      // seit dem 04.08.2026 von Stimmen: Sterne-Bewertungen gibt es hier nicht
+      // mehr, „bewertbar" versprach eine Geste, die die Seite nicht mehr kennt.
       // renderUpvoteBtn schreibt in denselben Speicher wie vorher (vote:ressource:<id>)
       // und rechnet den Seed über getUpvoteCount aus r.votes: gleiche Zahl, gleiches
       // Verhalten, nur die gemeinsame Optik aller Gattungen statt einer Sonderfassung.
+      // DEMO-KENNZEICHNUNG (CLAUDE.md, harte Regel 3) an der Hülle, weil .up-btn
+      // selbst kein title anbietet — gleiches Muster wie skills.html (.card-votes)
+      // und vorlagen.html (.vl-votes). Der Vorspann über dem Regal ist entfallen,
+      // sein Versprechen („Demo-Kennzeichnung direkt an der Stimmenzahl", siehe
+      // Kommentar am .res-section) wird hier eingelöst.
       const footHtml = r.intern
-        ? `<span class="res-intern-hint">Noch nicht bewertbar — der Link folgt.</span>`
-        : renderUpvoteBtn(r.id, 'ressource', getUpvoteCount(r, 'ressource'), { label: 'Hilfreich', name: r.titel });
+        ? `<span class="res-intern-hint">Abstimmen geht, sobald der Link da ist.</span>`
+        : `<span class="res-votes" title="${VOTE_DEMO_HINT}">`
+          + renderUpvoteBtn(r.id, 'ressource', getUpvoteCount(r, 'ressource'), { label: 'Hilfreich', name: r.titel })
+          + `</span>`;
       return `
         <article class="res-card${r.intern ? ' -intern' : ''}${state._noCardAnim ? '' : ' card-in'}" style="animation-delay:${state._noCardAnim ? 0 : delay}ms" id="res-${r.id}" data-id="${r.id}" onclick="resCardClick(event,'${r.id}')">
           <div class="res-ico" aria-hidden="true">${typIcon(r.typ)}</div>
           <div class="res-main">
             <div class="res-kopf">
-              <span class="res-typ">${TYP_CARD_LABEL[r.typ] || r.typ}</span>
+              <span class="res-typ">${resTypEinzel(r.typ)}</span>
               <span class="res-quelle">${escHtml(r.quelle)}</span>
               ${r.intern ? '<span class="intern-tag">Link folgt</span>' : ''}
               ${favBookmarkHtml(r.id, 'ressource', r.titel)}
@@ -1653,10 +1762,11 @@
       if (voices.length) h += `
         <div class="cmd-voices">
           <span class="cmd-body-label">Stimmen aus dem Team</span>
+          <p class="seed-hint">${SEED_ZITAT_HINWEIS}</p>
           ${voices.map(v => `
           <figure class="cmd-voice">
             <blockquote>${escHtml(v.text)}</blockquote>
-            <figcaption>${escHtml(v.autor)} · ${escHtml(v.rolle)}</figcaption>
+            <figcaption>${escHtml(v.autor)}${fiktivLabelHtml(v.autor)} · ${escHtml(v.rolle)}</figcaption>
           </figure>`).join('')}
         </div>`;
       return h;
@@ -1702,7 +1812,7 @@
                        für pilot AI). Mit dem Befehl allein blieben zwei Knöpfe
                        ununterscheidbar — sichtbar trennt sie der .pf-tag daneben,
                        hörbar erst diese Angabe. -->
-                  <button type="button" class="vote-btn${voted ? ' voted' : ''}" aria-pressed="${voted}" aria-label="Hilfreich — ${escHtml(b.cmd)} (${escHtml(PF_LABEL[b.plattform] || b.plattform)})" onclick="voteBefehl('${b.id}')">
+                  <button type="button" class="vote-btn${voted ? ' voted' : ''}" aria-pressed="${voted}" title="${VOTE_DEMO_HINT}" aria-label="Hilfreich — ${escHtml(b.cmd)} (${escHtml(PF_LABEL[b.plattform] || b.plattform)})" onclick="voteBefehl('${b.id}')">
                     ${LU.vote}<span>Hilfreich</span><span class="vote-count">${votesOf(b)}</span>
                   </button>
                   <button type="button" class="cmd-toggle" aria-expanded="${open}" aria-controls="cmd-body-${b.id}" onclick="toggleBefehl('${b.id}')">
@@ -1882,7 +1992,7 @@
             <div class="g-actions">
               <!-- aria-label mit dem Begriff — siehe cardHtml() im Befehle-Bereich:
                    64 Knöpfe hießen hier identisch „Hilfreich“. -->
-              <button type="button" class="vote-btn g-vote${voted ? ' voted' : ''}" aria-pressed="${voted}" aria-label="Hilfreich — ${escHtml(g.wort)}" onclick="voteBegriff('${g.id}')">
+              <button type="button" class="vote-btn g-vote${voted ? ' voted' : ''}" aria-pressed="${voted}" title="${VOTE_DEMO_HINT}" aria-label="Hilfreich — ${escHtml(g.wort)}" onclick="voteBegriff('${g.id}')">
                 ${LU.vote}<span>Hilfreich</span><span class="vote-count">${getVotes('begriff', g.id, g.votes)}</span>
               </button>
             </div>
@@ -2018,9 +2128,10 @@
             <p class="faq-intro">${mdInline(f.intro)}</p>
             <ol class="faq-steps">${f.schritte.map(s => `<li>${mdInline(s)}</li>`).join('')}</ol>
             ${f.stimme ? `
+            <p class="seed-hint -vor-zitat">${SEED_ZITAT_HINWEIS}</p>
             <figure class="faq-voice">
               <blockquote>${escHtml(f.stimme.text)}</blockquote>
-              <figcaption>${escHtml(f.stimme.autor)} · ${escHtml(f.stimme.rolle)}</figcaption>
+              <figcaption>${escHtml(f.stimme.autor)}${fiktivLabelHtml(f.stimme.autor)} · ${escHtml(f.stimme.rolle)}</figcaption>
             </figure>` : ''}
             ${xrefsHtml(f.verweise)}
           </div>
@@ -2065,6 +2176,21 @@
       if (el) {
         el.classList.add('-highlight');
         setTimeout(() => el.classList.remove('-highlight'), 2400);
+        /* Der Fokus muss MITWANDERN. Ohne das scrollt der Deep-Link zwar zum
+           Ziel und markiert es, document.activeElement bleibt aber BODY: Wer
+           danach Tab drückt, landet wieder am Seitenanfang und muss sich zum
+           eben angesprungenen Eintrag durcharbeiten — und ein Screenreader
+           liest weiter dort vor, wo er stand, statt am Ziel.
+           tabindex="-1" macht das Ziel NUR programmatisch fokussierbar; es
+           kommt damit nicht in die Tab-Reihenfolge (das wäre bei einer Karte
+           voller Knöpfe falsch). Es bleibt danach stehen — ohne Wirkung auf
+           die Tastaturreihenfolge, und ein zweiter Deep-Link auf dasselbe Ziel
+           findet es vor. Kein eigener :focus-Ring: Für programmatischen Fokus
+           auf einem nicht-interaktiven Element greift :focus-visible nicht, die
+           Markierung übernimmt die -highlight-Klasse. preventScroll, weil das
+           Anfahren oben schon passiert ist (und der Font-Re-Anker noch folgt). */
+        el.setAttribute('tabindex', '-1');
+        try { el.focus({ preventScroll: true }); } catch (e) { el.focus(); }
       }
     }
 

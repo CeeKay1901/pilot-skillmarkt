@@ -51,7 +51,26 @@
       border: 1px solid var(--c-black); color: var(--c-black); background: transparent;
       white-space: nowrap; flex-shrink: 0;
     }
-    .card-top-left { display: inline-flex; align-items: center; gap: .8rem; min-width: 0; }
+    /* Kopfzeile der Karte. flex-wrap wie auf prompts.html: seit hier neben
+       Aufgaben-Gruppe und Typ- auch Neu-Fähnchen und „Fang hier an" stehen
+       können, passen die Marker auf 390 px nicht mehr zwingend in eine Zeile —
+       ohne Umbruch schöbe der letzte über den Kartenrand hinaus.
+       Ein Niveau-Badge gibt es auf der Karte BEWUSST nicht — Begründung am
+       Markup in renderCard(). */
+    .card-top-left { display: inline-flex; flex-wrap: wrap; align-items: center; gap: .8rem; row-gap: .6rem; min-width: 0; }
+    /* „Fang hier an": die eine Karte, die renderSkills() unabhängig von der
+       Sortierung oben anheftet (erste-schritte). Ohne Fähnchen stünde sie bei
+       „Meiste Stimmen" unbegründet über besser bewerteten Karten und die
+       Sortierung sähe kaputt aus — dasselbe Problem und dieselbe Lösung wie auf
+       prompts.html, deshalb bewusst identischer Stil.
+       Umriss statt Gelbfüllung: „Neu" füllt bereits gelb. */
+    .card-start-flag {
+      font-family: var(--font-mono); font-size: 1rem; font-weight: 700;
+      letter-spacing: .14em; text-transform: uppercase;
+      background: transparent; color: var(--c-black);
+      border: 1px solid var(--c-black); border-radius: var(--r-pill);
+      padding: .25rem .8rem .2rem; white-space: nowrap; flex-shrink: 0;
+    }
     /* Typ-Leiste (E2): zweite Filterdimension über den Aufgaben-Tabs (Skill / Plugin / Framework) */
     .type-row { display: flex; align-items: center; justify-content: space-between; gap: .8rem 2rem; flex-wrap: wrap; }
     .type-tabs { display: flex; gap: .6rem; flex-wrap: wrap; }
@@ -72,6 +91,32 @@
     .type-info-toggle:hover { color: var(--c-black); }
     .type-info-toggle .tt-arrow { font-size: 1.1rem; transition: transform .2s; }
     .type-info-toggle[aria-expanded="true"] .tt-arrow { transform: rotate(180deg); }
+    /* Karten-vs.-Einträge-Erklärung (Persona-Review, Einsteigerin): steht dauerhaft
+       unter den Typ-Reitern, nicht hinter dem Aufklapper — die Frage entsteht beim
+       ersten Blick auf die Zahlen, nicht nach einem Klick. Gefüllt von
+       renderMergeHint(); jede Zahl darin ist zur Laufzeit gerechnet. */
+    .merge-hint { font-size: 1.25rem; line-height: 1.5; color: var(--c-gray-m); margin: .2rem 0 0; flex-basis: 100%; }
+    .merge-hint[hidden] { display: none; }
+
+    /* Sprungmarke im Inhalt. Ruhezustand ist WÖRTLICH .sr-only aus base.css —
+       inklusive `position: absolute`: .filter-inner ist ein Flex-Container mit
+       gap, und ein 1px hohes Flex-Kind kostete dort eine sichtbare Lücke.
+       Absolut positionierte Kinder sind keine Flex-Items, also kostet die Marke
+       im Ruhezustand exakt nichts. Bei Fokus fällt sie mit `position: static`
+       zurück in die Spalte und steht damit da, wohin sie gehört — anders als der
+       Seiten-Skip-Link oben, der über den Seitenkopf klappt. */
+    .skip-inline {
+      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+      background: var(--c-yellow); color: var(--c-black);
+      font-size: 1.3rem; font-weight: 700; text-decoration: none;
+    }
+    .skip-inline:focus {
+      position: static; width: auto; height: auto; margin: 0;
+      overflow: visible; clip: auto;
+      display: inline-block; align-self: flex-start;
+      padding: .8rem 1.6rem; border-radius: var(--r-sm);
+    }
     .type-info { font-size: 1.35rem; line-height: 1.6; color: var(--c-gray-m); margin: -.2rem 0 0; }
     .type-info strong { color: var(--c-black); }
     .type-info[hidden] { display: none; }
@@ -272,6 +317,20 @@
       font-size: 1.3rem; padding: .4rem 1rem;
       border: 1px solid var(--c-gray-l); border-radius: var(--r-xl); color: var(--c-gray-m);
     }
+    /* Verlinkter Voraussetzungs-Chip: gleiche Form, nur als Weg erkennbar.
+       Farbe statt Deckkraft (base.css-Regel: Deckkraft taugt nicht zur
+       Text-Abschwächung), Pfeil als sichtbares Signal ohne eigenes Markup. */
+    .req-chip.-link {
+      display: inline-flex; align-items: center; gap: .5rem;
+      color: var(--c-ink-strong); text-decoration: none;
+      border-color: var(--line-strong); background: var(--c-white);
+    }
+    .req-chip.-link::after { content: '→'; color: var(--c-gray-m); }
+    .req-chip.-link:hover { background: var(--c-yellow); border-color: var(--c-black); color: var(--c-black); }
+    .req-chip.-link:hover::after { color: var(--c-black); }
+    .req-note { font-size: 1.3rem; line-height: 1.5; color: var(--c-gray-m); margin-top: .8rem; }
+    .req-note a { color: var(--c-black); font-weight: 500; text-decoration: none; border-bottom: 1px solid var(--c-yellow); }
+    .req-note a:hover { background: var(--c-yellow); }
     .long-desc {
       font-size: 1.6rem; line-height: 1.7; color: var(--c-ink-strong); margin-bottom: 2rem;
     }
@@ -307,6 +366,46 @@
     .pilot-tab-name { font-size: 1.6rem; font-weight: 700; margin-bottom: .2rem; }
     .pilot-tab-role { font-size: 1.3rem; color: var(--c-gray-m); margin-bottom: .8rem; }
     .pilot-tab-quote { font-size: 1.5rem; line-height: 1.6; color: var(--c-ink-body); font-style: italic; }
+
+    /* DEMO-KENNZEICHNUNG (CLAUDE.md, harte Regeln 3 + 4) ========================
+       Zwei Bausteine, bewusst im selben Ton wie .comment-own-badge und
+       .comment-local-hint aus base.css — die Seite kennzeichnet Seed-Daten seit
+       E16 mit genau dieser Sprache, ein drittes Aussehen wäre nur Unruhe.
+
+       .persona-fiktiv steht direkt AM NAMEN, weil dort die Verwechslung entsteht:
+       Auf dem Piloten-Reiter und unter den Kommentaren stehen erfundene Personas
+       neben Christopher Kipp, der real ist. Ein Hinweis am Fuß der Fläche käme zu
+       spät — gelesen wird der Name.
+       .seed-hint ist die Flächen-Kennzeichnung („diese Zitate sind gesetzt"). */
+    .persona-fiktiv {
+      font-size: 1.15rem; font-weight: 500; color: var(--c-gray-m);
+      background: var(--c-bg); border: 1px solid var(--c-gray-l);
+      border-radius: var(--r-xl); padding: .1rem .8rem; margin-left: .6rem;
+      white-space: nowrap; vertical-align: middle;
+    }
+    .pilot-tab-card .persona-fiktiv, .comment-item .persona-fiktiv { background: var(--c-white); }
+    .seed-hint {
+      font-size: 1.25rem; line-height: 1.5; color: var(--c-gray-m);
+      margin: -.4rem 0 1.6rem;
+    }
+    .seed-hint.-vor-liste { margin: 2rem 0 1rem; }
+
+    /* Aktionen in der Modal-Kopfzeile: Merken + Schließen in EINER Zeile.
+       .modal-header ist ein flex mit `justify-content: space-between` (base.css) —
+       der zweite Flex-Sohn war bisher direkt .modal-close. Die Gruppe übernimmt
+       dessen `margin-bottom`, damit die Grundlinie zum Titel unverändert bleibt.
+       Der Stern bringt seine 44px-Trefffläche aus base.css mit; das negative
+       Randmaß gleicht nur dessen Innenabstand gegen den Schließen-Knopf aus. */
+    .modal-head-actions {
+      display: flex; align-items: center; gap: .2rem;
+      flex-shrink: 0; margin-bottom: 1.6rem;
+    }
+    .modal-head-actions .modal-close { margin-bottom: 0; }
+    .fav-btn.mh-fav { padding: .8rem; }
+    @media (max-width: 767px) {
+      .modal-head-actions { margin-bottom: 1rem; }
+      .modal-head-actions .modal-close { margin-bottom: 0; }
+    }
 
     /* Sanfter Kommentar-CTA nach „ausprobiert“ (E2): sticky Leiste am Modal-Fuß */
     .tried-cta {
@@ -663,6 +762,17 @@
     .files-code .tk-k { color: var(--term-key); }
     .files-code .tk-b { color: var(--c-yellow); }
     .files-code .tk-code { color: var(--term-ok); }
+    /* Der Datei-Inhalt bekommt einen EIGENEN Scrollbereich. Ohne Kappe wuchs der
+       Inhaltsbereich mit der Datei: skills/brainstorming/scripts/server.cjs ergibt
+       724 Zeilen à ~23,6 px, also über 17.000 px am Stück. Das Modal selbst scrollt
+       zwar (.modal, max-height 90vh) — aber Dateibaum und Kopfleiste mit „⬇ Datei",
+       „Kopieren" und dem Ansichts-Umschalter stehen ganz oben und waren nach ein
+       paar Bildschirmen Code nur noch durch Zurückscrollen erreichbar. Mit der
+       Kappe bleiben Baum und Leiste im Bild, gescrollt wird nur der Inhalt.
+       vh statt einer festen Höhe, weil das Modal selbst in vh gedeckelt ist;
+       overscroll-behavior verhindert, dass das Modal weiterscrollt, sobald der
+       Code-Bereich am Ende ist. */
+    .files-code, .files-preview { max-height: 62vh; overflow-y: auto; overscroll-behavior: contain; }
     /* Umschalter Code ↔ formatierte Ansicht */
     .view-seg { display: inline-flex; border: 1px solid rgba(255,255,255,.25); border-radius: var(--r-pill); overflow: hidden; flex-shrink: 0; }
     .view-seg button { background: transparent; border: none; color: rgba(252,252,252,.75); font-family: inherit; font-size: 1.2rem; padding: .4rem 1.2rem; cursor: pointer; transition: var(--trans); }
@@ -1037,9 +1147,21 @@
       <div class="filter-inner">
         <!-- E11: Seiten-Suchfeld — renderNav rendert opts.search in diesen Slot (ID bleibt #search) -->
         <div data-page-search></div>
+        <!-- SPRUNGMARKE (Persona-Review, Tastatur): Zwischen Suchfeld und erster
+             Karte liegen Typ-Reiter, Aufgaben-Reiter, Rollen-Chips, Sortierung,
+             Dichte-Regler — mit Tab gemessen ein langer Weg für jemanden, der
+             gerade einen Suchbegriff getippt hat. Muster wie der Skip-Link oben
+             (.skip-link in base.css): im Fluss, aber erst bei Fokus sichtbar. -->
+        <a href="#skills-grid" class="skip-inline" onclick="fokusErgebnisse(event)">Zu den Ergebnissen springen</a>
         <div class="type-row">
           <div class="type-tabs" id="type-tabs" role="group" aria-label="Nach Typ filtern"></div>
           <button class="type-info-toggle" id="type-info-toggle" onclick="toggleTypeInfo()" aria-expanded="false" aria-controls="type-info">Skill, Plugin, Framework — was ist der Unterschied? <span class="tt-arrow" aria-hidden="true">▾</span></button>
+          <!-- Zahlen-Ehrlichkeit (CLAUDE.md, harte Regel 2): Der Seitenkopf zählt
+               EINTRÄGE, die Reiter zählen KARTEN — eine gebündelte Gruppe ist eine
+               Karte für mehrere Skills. Ohne diesen Satz sieht die Differenz wie ein
+               Rechenfehler aus. Text und Zahlen kommen komplett aus renderMergeHint(),
+               hier steht bewusst keine Ziffer. -->
+          <p class="merge-hint" id="merge-hint" hidden></p>
         </div>
         <p class="type-info" id="type-info" hidden><strong>Skill</strong> = eine Fähigkeit · <strong>Plugin</strong> = Paket aus Skills und Befehlen · <strong>Framework</strong> = komplette Arbeitsweise. Ausführlich erklärt unter <button class="type-info-link" onclick="showView('explainer')">„Was sind Skills?“</button></p>
         <div class="cat-tabs" id="cat-tabs" role="group" aria-label="Nach Themenbereich filtern"></div>
@@ -1056,14 +1178,23 @@
                    „Meiste Bewertungen" sind mit den Sternen gegangen; „Zuletzt
                    aktualisiert" ist raus, weil updatedAt die redaktionelle Pflege
                    meint und nicht „neu hier" — das sagt das Neu-Fähnchen aus
-                   data/seit.js bereits auf der Karte. -->
+                   data/seit.js bereits auf der Karte.
+                   E17 — zwei Beschriftungen, die dasselbe Wort benutzten, aber
+                   Verschiedenes meinten: Die Sortierung hieß „Empfohlen zuerst",
+                   sortiert real aber die sechs kuratierten SPOTLIGHT-Einträge nach
+                   vorn (data/skills.js) und dahinter nach Stimmen — mit
+                   SKILLS[].endorsedBy hat sie nichts zu tun. Genau das ist aber die
+                   Checkbox daneben. Die Sortierung heißt deshalb jetzt nach ihrem
+                   echten Kriterium, die Checkbox nach ihrem. Der interne Wert
+                   'recommended' bleibt: er steht in state, resetFilters und in den
+                   Deep-Links. -->
               <select id="sort-select" aria-label="Skills sortieren">
-                <option value="recommended">Empfohlen zuerst</option>
+                <option value="recommended">Redaktions-Tipps zuerst</option>
                 <option value="votes">Meiste Stimmen</option>
                 <option value="alpha">Name A–Z</option>
               </select>
               <label class="endorsed-toggle">
-                <input type="checkbox" id="endorsed-only"> Nur empfohlene
+                <input type="checkbox" id="endorsed-only"> Von Kolleg:innen empfohlen
               </label>
               <button class="fav-filter-btn" id="fav-filter-btn" onclick="toggleFavoritesOnly()" aria-pressed="false" style="display:none">
                 <span class="ff-star"></span> Favoriten <span class="ff-count" id="fav-count">0</span>
@@ -1120,7 +1251,11 @@
              Visuell überflüssig — die Filterleiste darüber sagt bereits, was folgt —
              deshalb nur für Screenreader. -->
         <h2 class="sr-only">Alle Skills, Plugins und Frameworks</h2>
-        <div class="skills-grid" id="skills-grid"></div>
+        <!-- tabindex="-1": Sprungziel der Marke „Zu den Ergebnissen“ oben in der
+             Filterleiste. Ohne das verschiebt ein Anker-Sprung in den meisten
+             Browsern nur den Startpunkt der Tab-Reihenfolge, der Fokus selbst
+             bleibt hängen — die Marke wäre für die Tastatur wirkungslos. -->
+        <div class="skills-grid" id="skills-grid" tabindex="-1"></div>
         <div class="empty-state" id="empty-state" style="display:none">
           <p>Keine Skills gefunden.</p>
           <button onclick="resetFilters()" class="c-cta -yellow-bg">Filter zurücksetzen</button>
@@ -1133,6 +1268,11 @@
       <div class="pilots-inner">
         <p class="overline">Unsere Piloten</p>
         <h2>Das sagen Kolleg:innen, die schon dabei sind</h2>
+        <!-- Demo-Kennzeichnung (CLAUDE.md, harte Regeln 3 + 4): Die Karten stehen
+             gemischt — eine reale Person neben redaktionellen Personas. Ohne diese
+             Zeile liest sich die ganze Fläche als erhobene Rückmeldung aus dem Team;
+             das Label am einzelnen Namen setzt renderPilots() über fiktivLabelHtml(). -->
+        <p class="seed-hint">Redaktionelle Startwerte — die Empfehlungen sind gesetzt, nicht erhoben. Fiktive Personas sind am Namen gekennzeichnet.</p>
         <div class="pilots-grid" id="pilots-grid"></div>
       </div>
     </section>
@@ -1499,7 +1639,17 @@ Gib einen priorisierten Report aus:
           <button class="trigger-badge" id="modal-trigger" onclick="copyTrigger()" title="Diesen Befehl in Claude Code eingeben — Klick kopiert ihn"></button>
           <span class="trigger-hint" id="trigger-hint" style="font-size:1.3rem;color:var(--c-gray-m);display:none"></span>
         </div>
-        <button class="modal-close" onclick="closeModal()" aria-label="Skill-Detail schließen">✕</button>
+        <!-- MERKEN IN DER KOPFZEILE (Persona-Review, Wiederkommer/Mobile/Tastatur):
+             Bis hierher saß der Stern ausschließlich auf der Karte. Wer im Modal
+             merkte, dass er den Skill später wieder braucht, musste schließen, die
+             Karte im Raster wiederfinden und dort klicken — der teuerste Umweg des
+             ganzen Reviews. Gefüllt wird der Slot von renderModalHead() mit
+             favBookmarkHtml() aus base.js, also demselben Markup und demselben
+             localStorage-Schlüssel (fav:skill:<id>) wie der Karten-Stern. -->
+        <div class="modal-head-actions">
+          <span id="modal-fav-slot"></span>
+          <button class="modal-close" onclick="closeModal()" aria-label="Skill-Detail schließen">✕</button>
+        </div>
       </div>
       <div class="modal-meta" id="modal-meta"></div>
       <!-- Leer wie auf prompts.html: die Reiter baut renderModalHead() bei JEDEM
@@ -1583,11 +1733,23 @@ Gib einen priorisierten Report aus:
     closeModal = function () { stopTermScript(); removeTriedCta(); _engineCloseModal(); };
 
     // ===== ENGINE-HOOKS (shared/base.js) =====
-    window.onFavoritesChanged = () => {
+    window.onFavoritesChanged = (id, isNowFav) => {
       state._noCardAnim = true;
       updateFavCount();
       render();
       setTimeout(() => { state._noCardAnim = false; }, 0);
+      /* Der Stern in der Modal-Kopfzeile liegt AUSSERHALB von #skills-grid —
+         render() baut ihn nicht mit neu und er bliebe im alten Zustand stehen.
+         Nachgezogen wird über dieselbe data-fav-id-Mechanik, die prompts.html
+         schon für seine Karten benutzt: nur Klasse und ARIA setzen, kein
+         textContent (das würde das Bookmark-SVG aus dem Knopf werfen). */
+      document.querySelectorAll('#modal .fav-btn[data-fav-id]').forEach(btn => {
+        if (btn.getAttribute('data-fav-id') !== String(id)) return;
+        btn.classList.toggle('active', !!isNowFav);
+        btn.setAttribute('aria-pressed', String(!!isNowFav));
+        const nam = btn.getAttribute('data-fav-name') || 'Eintrag';
+        btn.setAttribute('aria-label', `${nam} ${isNowFav ? 'aus Favoriten entfernen' : 'zu Favoriten hinzufügen'}`);
+      });
     };
     window.onTried = (id, tried) => {
       if (STARTER_JOURNEY.includes(id)) {
@@ -1673,8 +1835,8 @@ Gib einen priorisierten Report aus:
     // Kurzform mit festem Typ — die Seite kennt nur 'skill'.
     function upCount(s) { return getUpvoteCount(s, 'skill'); }
     function upScore(s) { return voteScore(s, 'skill'); }
-    // Ein Satz, überall derselbe — die Kennzeichnung darf nicht je Fläche driften.
-    const VOTE_DEMO_HINT = 'Demo-Wert: Startzahl aus den Daten plus deine eigene Stimme — nur auf diesem Gerät gespeichert.';
+    // VOTE_DEMO_HINT (Demo-Kennzeichnung der Stimmen) kommt aus base.js —
+    // hier nicht erneut deklarieren, eine zweite const wäre ein SyntaxError.
 
     function isFeatured(s) { return SPOTLIGHT.has(s.id); }
 
@@ -1893,12 +2055,49 @@ Gib einen priorisierten Report aus:
       renderTagChips();
       renderSourceChips();
       renderRoleChips();
+      renderMergeHint();
+    }
+
+    /* ===== KARTEN ≠ EINTRÄGE (Zahlen-Ehrlichkeit, CLAUDE.md Regel 2) ==========
+       Der Seitenkopf sagt „32 Skills" (VISIBLE_SKILL_COUNT — eine ITEM-Zahl), die
+       Reiter und der Ergebniszähler sagen 31 (eine KARTEN-Zahl, weil zwei Gruppen
+       zu je einer Karte gebündelt sind). Zwei richtige Zahlen, die nebeneinander
+       wie ein Rechenfehler aussehen — im Persona-Review genau so gelesen.
+       Diese Zeile nennt beide und die Differenz dazwischen. Sie rechnet mit
+       denselben Funktionen wie das Grid (applyFilters/mergeableGroups/
+       displayCountOf), folgt also jedem Filter mit und kann nicht driften.
+       Ohne aktive Merge-Gruppe (z. B. nach einer Suche, die die Gruppen auflöst)
+       gibt es keine Differenz zu erklären — dann bleibt die Zeile weg. */
+    function renderMergeHint() {
+      const el = document.getElementById('merge-hint');
+      if (!el) return;
+      const filtered = applyFilters();
+      const gruppen = [...mergeableGroups(filtered)];
+      if (!gruppen.length) { el.hidden = true; el.textContent = ''; return; }
+      const karten = displayCountOf(filtered);
+      const gebuendelt = gruppen.reduce((n, g) => n + filtered.filter(s => MEMBER_OF[s.id] === g).length, 0);
+      const satz = gruppen.length === 1
+        ? `eine Karte bündelt ${gebuendelt} verwandte Skills`
+        : `${gruppen.length} Karten bündeln ${gebuendelt} verwandte Skills`;
+      /* Die Typ-Aufschlüsselung verbindet die Einträge-Zahl mit der Kopfzahl:
+         „32 Skills" im Seitenkopf sind die Skills DARIN — ohne die Klammer stünde
+         mit 31/32/36 eine dritte Zahl im Raum, die nirgendwo sonst auftaucht.
+         Nur wenn mehrere Typen im Filter liegen; im reinen Skills-Reiter deckt
+         sich die Einträge-Zahl ohnehin mit der Kopfzahl. */
+      const proTyp = {};
+      filtered.forEach(s => { const t = itemType(s); proTyp[t] = (proTyp[t] || 0) + 1; });
+      const TYP_NAME = { skill: ['Skill', 'Skills'], plugin: ['Plugin', 'Plugins'], framework: ['Framework', 'Frameworks'] };
+      const teile = Object.keys(TYP_NAME).filter(t => proTyp[t])
+        .map(t => `${proTyp[t]} ${TYP_NAME[t][proTyp[t] === 1 ? 0 : 1]}`);
+      const klammer = teile.length > 1 ? ` (${teile.join(', ')})` : '';
+      el.textContent = `Die Reiter zählen Karten, nicht Einträge: ${karten} Karten für ${filtered.length} Einträge${klammer} — ${satz}.`;
+      el.hidden = false;
     }
 
     // ===== RENDER CARD =====
     /* E11 Karten-Diät: Titel + ein Satz + Kategorie/Typ + Stimmen + Befehl-Kopierchip.
-       Tags, Ergebnis-Vorschau, Schwierigkeit, Dauer, Plattform-Chips und
-       Empfehlungs-Avatare leben im Detail-Modal.
+       Tags, Ergebnis-Vorschau, Dauer, Plattform-Chips, Empfehlungs-Avatare und das
+       Niveau leben im Detail-Modal (zum Niveau siehe die Begründung unten im Rumpf).
        E16: Statt Sternen steht hier der Stimmen-Knopf (kompakt), und der Fließtext
        hängt am Dichte-Regler — siehe .density-clamp weiter oben im CSS. */
     function renderCard(skill, isFeatured = false, idx = 0, isStart = false) {
@@ -1914,6 +2113,17 @@ Gib einen priorisierten Report aus:
       // „Neu" kommt aus data/seit.js, nicht aus den Katalogdaten — siehe istNeu()
       // in base.js. Ohne geladenes SEIT bleibt es einfach leer.
       const neuFlagHtml = (typeof istNeu === 'function' && istNeu('SKILLS', skill.id)) ? '<span class="card-neu-flag">Neu</span>' : '';
+      /* BEWUSST kein Niveau-Badge auf der Karte: Diese Seite hat keinen
+         Niveau-Filter (das Prinzip „Filterkriterium muss auf der Karte ablesbar
+         sein" greift hier nicht — anders als auf prompts.html), E11 hat die
+         Schwierigkeit gezielt von der Karte ins Modal verlegt, und bei 21 von 36
+         Einträgen „Einfach" wäre das Badge Rauschen statt Signal. */
+      // Das Fähnchen erklärt die einzige Karte, die renderSkills() unabhängig von
+      // der Sortierung nach oben zieht. Ohne es stünde sie bei „Meiste Stimmen"
+      // grundlos über besser bewerteten Karten (Muster von prompts.html).
+      const startFlagHtml = isStart
+        ? '<span class="card-start-flag" title="Empfehlung der Redaktion für den Einstieg — steht unabhängig von der Sortierung oben.">Fang hier an</span>'
+        : '';
 
       const triggerHtml = skill.trigger
         ? `<button class="card-trigger-chip" onclick="quickCopy(event,'${escHtml(skill.trigger)}')" title="Befehl kopieren">${escHtml(skill.trigger)}</button>`
@@ -1924,7 +2134,7 @@ Gib einen priorisierten Report aus:
       return `
         <article class="skill-card${state._noCardAnim ? '' : ' card-in'}" style="animation-delay:${state._noCardAnim ? 0 : delay}ms" onclick="openModal('${skill.id}')">
           <div class="card-top">
-            <span class="card-top-left"><span class="card-sub">${escHtml(subLabel(skill.subcategory))}</span>${typeBadgeHtml}${neuFlagHtml}</span>
+            <span class="card-top-left"><span class="card-sub">${escHtml(subLabel(skill.subcategory))}</span>${startFlagHtml}${typeBadgeHtml}${neuFlagHtml}</span>
             ${favBookmarkHtml(skill.id, 'skill', skill.name)}
           </div>
           <h3 class="skill-name"><button type="button" class="card-open-btn" onclick="event.stopPropagation();openModal('${skill.id}')">${escHtml(skill.name)}</button></h3>
@@ -1995,6 +2205,26 @@ Gib einen priorisierten Report aus:
     }
     // copyTriggerRunway: shared/base.js
 
+    /* ===== FIKTIVE PERSONAS KENNZEICHNEN (CLAUDE.md, harte Regel 4) ==========
+       „Echt und inszeniert bleiben getrennt." Das Flag `fiktiv: true` steht an
+       genau EINER Stelle: PILOTS in data/contributors.js. Weder die Endorsements
+       in SKILLS[].endorsements noch die Seed-Kommentare in SKILLS[].comments
+       tragen es mit — beide nennen nur Name, Rolle und Text. Der Abgleich läuft
+       deshalb über den Namen; das ist der einzige Schlüssel, den beide Seiten
+       gemeinsam haben.
+       Wer NICHT in PILOTS steht (oder dort ohne Flag), bekommt kein Label:
+       Christopher Kipp ist real, und ein eigener Kommentar aus dem localStorage
+       ist es auch. Lieber kein Label als ein falsches. */
+    function istFiktivePersona(name) {
+      if (typeof PILOTS === 'undefined' || !name) return false;
+      return PILOTS.some(p => p.name === name && p.fiktiv === true);
+    }
+    function fiktivLabelHtml(name) {
+      return istFiktivePersona(name)
+        ? ` <span class="persona-fiktiv" title="Redaktionelle Persona — keine reale Kollegin, kein realer Kollege.">fiktive Persona</span>`
+        : '';
+    }
+
     // ===== RENDER PILOTS =====
     // Einzige Quelle der Wahrheit: SKILLS[].endorsedBy (data/skills.js). Die Chips je
     // Pilot:in werden daraus invertiert — HIDDEN-Skills tauchen nicht auf, sortiert
@@ -2015,7 +2245,7 @@ Gib einen priorisierten Report aus:
         return `
           <div class="pilot-card" onclick="filterByPilot('${escHtml(pilot.name)}')">
             <div class="pilot-avatar-lg">${pilot.initials}</div>
-            <div class="pilot-name"><button type="button" class="card-open-btn" onclick="event.stopPropagation();filterByPilot('${escHtml(pilot.name)}')" aria-label="Nur Skills anzeigen, die ${escHtml(pilot.name)} empfiehlt">${escHtml(pilot.name)}</button></div>
+            <div class="pilot-name"><button type="button" class="card-open-btn" onclick="event.stopPropagation();filterByPilot('${escHtml(pilot.name)}')" aria-label="Nur Skills anzeigen, die ${escHtml(pilot.name)} empfiehlt">${escHtml(pilot.name)}</button>${fiktivLabelHtml(pilot.name)}</div>
             <div class="pilot-role">${escHtml(pilot.role)}</div>
             <div class="pilot-dept">${escHtml(pilot.department)}</div>
             <p class="pilot-bio">${escHtml(pilot.bio)}</p>
@@ -2075,16 +2305,45 @@ Gib einen priorisierten Report aus:
         // Leere Gruppen nicht anbieten — außer sie sind gerade aktiv (z. B. „Texten 0"
         // nach Typ-Wechsel), sonst verschwindet der aktive Filter aus der Leiste.
         if (!count && s.id !== 'all' && !isActive) return '';
-        return `<button class="cat-tab${isActive ? ' active' : ''}" aria-pressed="${isActive}" onclick="setSubCat('${s.id}')">${escHtml(s.label)} <span class="tab-count">${count}</span></button>`;
+        // data-sub: Wiedererkennungsmarke für den Fokus-Rückgriff in setSubCat().
+        return `<button class="cat-tab${isActive ? ' active' : ''}" data-sub="${escHtml(s.id)}" aria-pressed="${isActive}" onclick="setSubCat('${s.id}')">${escHtml(s.label)} <span class="tab-count">${count}</span></button>`;
       }).join('');
       document.getElementById('cat-tabs').innerHTML = html;
     }
 
     function setSubCat(sub) {
+      /* FOKUS ÜBER DEN RE-RENDER RETTEN (Persona-Review, Tastatur) =============
+         renderCatTabs() ersetzt die komplette innerHTML von #cat-tabs. Der eben
+         betätigte Knopf existiert danach nicht mehr — der Fokus fällt auf BODY,
+         und die nächste Tab-Taste beginnt wieder ganz oben auf der Seite. Wer die
+         Leiste mit der Tastatur durchgeht, verliert nach JEDEM Reiterwechsel
+         seinen Platz.
+         Gemerkt wird nur, wenn der Fokus vorher wirklich in der Leiste lag; sonst
+         würde ein Mausklick nachträglich einen Fokus setzen, der vorher keiner war.
+         preventScroll, weil focus() sonst die Filterleiste ins Bild zieht. */
+      const ausLeiste = !!(document.activeElement && document.activeElement.closest
+        && document.activeElement.closest('#cat-tabs'));
       state.subcategory = sub === 'all' ? null : sub;
       renderCounters();
       render();
       updateURL();
+      if (ausLeiste) {
+        const btn = document.querySelector('#cat-tabs .cat-tab[data-sub="' + sub + '"]');
+        if (btn) btn.focus({ preventScroll: true });
+      }
+    }
+
+    /* Sprungmarke „Zu den Ergebnissen“: Der Anker allein verschiebt in den meisten
+       Browsern nur den Startpunkt der Tab-Reihenfolge. #skills-grid trägt deshalb
+       tabindex="-1" und bekommt den Fokus hier ausdrücklich — dann liest ein
+       Screenreader auch vor, wo er gelandet ist. Der Hash bleibt draußen: er würde
+       mit dem Deep-Link-Schema #<skill-id> kollidieren (applyHash). */
+    function fokusErgebnisse(evt) {
+      const grid = document.getElementById('skills-grid');
+      if (!grid) return;
+      if (evt) evt.preventDefault();
+      grid.scrollIntoView({ behavior: window.scrollBehavior ? scrollBehavior() : 'smooth', block: 'start' });
+      grid.focus({ preventScroll: true });
     }
 
     // ===== TYP-TABS (E2): zweite Filterdimension Skill / Plugin / Framework =====
@@ -2108,14 +2367,22 @@ Gib einen priorisierten Report aus:
       el.innerHTML = types.map(t => {
         const count = t.id === 'all' ? total : visibleTypeCount(t.id);
         const active = state.itemType === t.id;
-        return `<button class="type-tab${active ? ' active' : ''}" aria-pressed="${active}" onclick="setItemType('${t.id}')">${t.label} <span class="rc-count">${count}</span></button>`;
+        return `<button class="type-tab${active ? ' active' : ''}" data-typ="${t.id}" aria-pressed="${active}" onclick="setItemType('${t.id}')">${t.label} <span class="rc-count">${count}</span></button>`;
       }).join('');
     }
     function setItemType(t) {
+      /* Fokus über den Re-Render retten — gleiche Bauart wie setSubCat():
+         renderCounters() → renderTypeTabs() ersetzt die innerHTML der Leiste. */
+      const ausLeiste = !!(document.activeElement && document.activeElement.closest
+        && document.activeElement.closest('#type-tabs'));
       state.itemType = t;
       state._noCardAnim = true; setTimeout(() => { state._noCardAnim = false; }, 0);
       renderCounters();
       render();
+      if (ausLeiste) {
+        const btn = document.querySelector('#type-tabs .type-tab[data-typ="' + t + '"]');
+        if (btn) btn.focus({ preventScroll: true });
+      }
     }
     function toggleTypeInfo() {
       const btn = document.getElementById('type-info-toggle');
@@ -2311,8 +2578,14 @@ Gib einen priorisierten Report aus:
         const p = PLATFORMS.find(x => x.id === state.platform);
         pills.push({label: 'Einsatz: ' + (p ? p.label : state.platform), clear: `setPlatform('${state.platform}')`});
       }
-      if (state.endorsedOnly) pills.push({label: 'Nur empfohlene', clear: `clearEndorsed()`});
-      if (state.pilotFilter) pills.push({label: 'Empfohlen von ' + escHtml(state.pilotFilter), clear: `clearPilotFilter()`});
+      // Wortlaut identisch mit der Checkbox in der Filterleiste — eine Pille, die
+      // anders heißt als das Bedienelement, das sie gesetzt hat, ist nicht zuzuordnen.
+      if (state.endorsedOnly) pills.push({label: 'Von Kolleg:innen empfohlen', clear: `clearEndorsed()`});
+      // fiktivLabelHtml: die seed-hint über dem Piloten-Raster verspricht
+      // „Fiktive Personas sind am Namen gekennzeichnet" — das gilt auch hier,
+      // sonst transportiert eine geteilte/gescreenshottete Filteransicht den
+      // Namen ohne Marker. Bei realen Personen liefert die Funktion leer.
+      if (state.pilotFilter) pills.push({label: 'Empfohlen von ' + escHtml(state.pilotFilter) + fiktivLabelHtml(state.pilotFilter), clear: `clearPilotFilter()`});
       if (state.favoritesOnly) pills.push({label: 'Nur Favoriten', clear: `toggleFavoritesOnly()`});
       state.tags.forEach(t => pills.push({label: '#' + t, clear: `toggleTagFilter('${t}')`}));
       // hasSearch statt state.search: eine Eingabe, aus der kein brauchbarer Term
@@ -2406,6 +2679,12 @@ Gib einen priorisierten Report aus:
           `<button class="tab-btn${i === 0 ? ' active' : ''}" role="tab" aria-selected="${i === 0 ? 'true' : 'false'}" data-tab="${id}" onclick="switchTab('${id}')">${escHtml(label)}</button>`
         ).join('');
       }
+
+      // Merken-Knopf in der Kopfzeile — gleiche Quelle wie auf der Karte
+      // (favBookmarkHtml → toggleFavorite → fav:skill:<id>). `mh-fav` ist nur die
+      // Einpassung in die Kopfzeile, keine zweite Mechanik.
+      const favSlot = document.getElementById('modal-fav-slot');
+      if (favSlot) favSlot.innerHTML = favBookmarkHtml(skill.id, 'skill', skill.name, 'mh-fav');
 
       const trigBtn = document.getElementById('modal-trigger');
       if (skill.trigger) {
@@ -3279,7 +3558,23 @@ Mehr Skills und alle Details: pilot AI Marketplace.
     // highlightCode: shared/base.js
 
     function renderModalOverview(skill) {
-      const reqChips = skill.requirements.map(r => `<span class="req-chip">${escHtml(r)}</span>`).join('');
+      /* VORAUSSETZUNGS-CHIPS (Persona-Review, Einsteigerin) ====================
+         Der Chip „Claude Code" war eine Sackgasse: Er nennt die Voraussetzung, aber
+         nicht, was jemand tut, der sie noch gar nicht hat — und genau das ist die
+         Zielgruppe dieser Seite (kommt von pilot AI, hat Claude Code oft nie
+         installiert). Beide Ziele existieren bereits, keins ist erfunden:
+           · lernen-hilfe.html?begriff=claude-code  → Glossar-Eintrag „Claude Code"
+             (data/glossar.js, Deep-Link-Schema ?begriff= wie in GSEARCH_GROUPS)
+           · lernen-hilfe.html?r=code-terminal-guide → Ressource „Terminal-Anleitung:
+             Claude Code ohne Vorkenntnisse starten" (data/ressourcen.js)
+         Verlinkt wird nur, was auch wirklich „Claude Code" heißt — die übrigen
+         Voraussetzungen (z. B. der Superpowers-Hinweis) bleiben unverändert Text. */
+      const reqChips = skill.requirements.map(r => /^Claude Code/.test(r)
+        ? `<a class="req-chip -link" href="lernen-hilfe.html?begriff=claude-code">${escHtml(r)}</a>`
+        : `<span class="req-chip">${escHtml(r)}</span>`).join('');
+      const reqNote = skill.requirements.some(r => /^Claude Code/.test(r))
+        ? `<p class="req-note">Claude Code noch nicht installiert? <a href="lernen-hilfe.html?r=code-terminal-guide">Terminal-Anleitung: Claude Code ohne Vorkenntnisse starten</a></p>`
+        : '';
       const useCasesHtml = skill.useCases.map(u => `<li>${escHtml(u)}</li>`).join('');
       const tagsHtml = skill.tags.map(t => `<span class="modal-tag">${escHtml(t)}</span>`).join('');
       /* Herkunftslink im Fuß der Übersicht: IMMER da, wenn der Datensatz eine Quelle
@@ -3343,35 +3638,51 @@ Mehr Skills und alle Details: pilot AI Marketplace.
           </ol>
         </div>`;
           }
-          return `
-        <div class="runway">
-          <p class="section-label">So legst du los</p>
-          <ol class="runway-steps">
-            <li class="runway-step">
-              <span class="runway-num">1</span>
-              <div class="runway-body">
-                ${skill.install === 'builtin'
-                  ? `<strong>Nichts zu installieren</strong><p class="runway-desc">Dieser Skill steckt fest in Claude Code — direkt weiter zu Schritt&nbsp;2.</p>`
-                  : skill.install === 'plugin'
-                  ? `<strong>Einmalig installieren</strong><p class="runway-desc">Offizieller Anthropic-Skill. In Claude Code einmal einrichten:</p>
-                     <button class="runway-action" onclick="quickCopy(event,'/plugin marketplace add anthropics/skills')"><span>/plugin marketplace add anthropics/skills</span><span class="ra-copy">kopieren</span></button>
-                     <p class="runway-note">Alternativ im Tab „Dateien &amp; Download“ als .zip laden.</p>`
-                  : `<strong>Skill herunterladen</strong><p class="runway-desc">Als .zip laden und in deinem Projekt nach <code>.claude/skills/</code> entpacken.</p>
-                     <button class="runway-action -primary" onclick="downloadSkill('${skill.id}', this)">Skill herunterladen (.zip)</button>`}
-              </div>
-            </li>
-            <li class="runway-step">
-              <span class="runway-num">2</span>
-              <div class="runway-body">
-                <strong>In Claude Code einfügen und loslegen</strong>
+          /* REIHENFOLGE DER ZWEI WEGE (Persona-Review, Einsteigerin) ==============
+             Schritt 1 hieß „Skill herunterladen" und schickte die Leserin nach
+             <code>.claude/skills/</code> — ein Ordner, den Finder und Explorer
+             standardmäßig gar nicht anzeigen. Für die Zielgruppe (kommt von pilot AI,
+             hat noch nie einen Punkt-Ordner geöffnet) endet der Weg dort. Der Satz
+             zum Kopieren, mit dem sie sofort etwas in der Hand hat, stand darunter.
+             Wo ein KURATIERTER Startprompt existiert (START_PROMPTS in
+             data/skills.js — 19 von 32 Einträgen), steht er deshalb jetzt oben und
+             heißt auch so; die Installation folgt als zweiter Schritt für alle, die
+             den Skill dauerhaft dabeihaben wollen. Ohne kuratierten Startprompt
+             bleibt die alte Reihenfolge: der generische Ersatzsatz aus startPrompt()
+             ist kein Weg, den man als „den einfachsten" bewerben sollte.
+             Inhaltlich ist NICHTS dazugekommen — nur Reihenfolge und Beschriftung. */
+          const kuratierterStart = (typeof START_PROMPTS === 'object' && START_PROMPTS)
+            ? !!START_PROMPTS[skill.id] : false;
+
+          const startBody = `
+                <strong>${kuratierterStart ? 'Kopier diesen Satz — der einfachste Weg' : 'In Claude Code einfügen und loslegen'}</strong>
                 <p class="runway-desc">Kopier diesen Satz und füg ihn in Claude Code ein — genau wie du es aus pilot AI kennst:</p>
                 <div class="startprompt">
                   <p class="startprompt-text">${escHtml(startPrompt(skill))}</p>
                   <button class="startprompt-copy" onclick="copyStartPrompt(event,'${skill.id}')" aria-label="Startprompt kopieren">Kopieren</button>
                 </div>
-                ${skill.trigger ? `<p class="runway-alt">Schon geübt? Kürzer geht's mit <button class="mini-trigger" onclick="copyTriggerRunway(event,'${escHtml(skill.trigger)}','${skill.id}')">${escHtml(skill.trigger)}</button></p>` : ''}
+                ${skill.trigger ? `<p class="runway-alt">Schon geübt? Kürzer geht's mit <button class="mini-trigger" onclick="copyTriggerRunway(event,'${escHtml(skill.trigger)}','${skill.id}')">${escHtml(skill.trigger)}</button></p>` : ''}`;
+
+          const installBody = skill.install === 'builtin'
+            ? `<strong>Nichts zu installieren</strong><p class="runway-desc">Dieser Skill steckt fest in Claude Code — du richtest nichts ein.</p>`
+            : skill.install === 'plugin'
+            ? `<strong>${kuratierterStart ? 'Schon geübt? Einmalig fest einrichten' : 'Einmalig installieren'}</strong><p class="runway-desc">Offizieller Anthropic-Skill. In Claude Code einmal einrichten:</p>
+                     <button class="runway-action" onclick="quickCopy(event,'/plugin marketplace add anthropics/skills')"><span>/plugin marketplace add anthropics/skills</span><span class="ra-copy">kopieren</span></button>
+                     <p class="runway-note">Alternativ im Tab „Dateien &amp; Download“ als .zip laden.</p>`
+            : `<strong>${kuratierterStart ? 'Schon geübt? Skill fest einbauen' : 'Skill herunterladen'}</strong><p class="runway-desc">Als .zip laden und in deinem Projekt nach <code>.claude/skills/</code> entpacken.</p>
+                     <button class="runway-action -primary" onclick="downloadSkill('${skill.id}', this)">Skill herunterladen (.zip)</button>`;
+
+          const wege = kuratierterStart ? [startBody, installBody] : [installBody, startBody];
+          return `
+        <div class="runway">
+          <p class="section-label">So legst du los</p>
+          <ol class="runway-steps">
+            ${wege.map((body, i) => `
+            <li class="runway-step">
+              <span class="runway-num">${i + 1}</span>
+              <div class="runway-body">${body}
               </div>
-            </li>
+            </li>`).join('')}
           </ol>
         </div>`;
         })()}
@@ -3394,6 +3705,7 @@ Mehr Skills und alle Details: pilot AI Marketplace.
 
         <p class="section-label">Voraussetzungen</p>
         <div class="req-list">${reqChips}</div>
+        ${reqNote}
 
         <p class="section-label">Tags</p>
         <div class="modal-tag-list">${tagsHtml}</div>
@@ -3464,19 +3776,33 @@ Mehr Skills und alle Details: pilot AI Marketplace.
       const allComments = [...userComments, ...skill.comments];
       const commentSkillId = skill.id;
 
+      /* Demo-Kennzeichnung (CLAUDE.md, harte Regeln 3 + 4): Die Liste mischt zwei
+         Herkünfte — vorn die eigenen Kommentare aus dem localStorage, dahinter die
+         Seed-Kommentare aus data/skills.js. Bis hierher trug nur die EIGENE Seite
+         ein Abzeichen („von dir"); die gesetzten Zitate standen ununterscheidbar
+         daneben, unter Namen, die es teils gar nicht gibt.
+         Jetzt: EINE Zwischenzeile genau über dem ersten Seed-Kommentar (nicht je
+         Kommentar ein Badge — bei fünf Einträgen wäre das Rauschen) plus das Label
+         am Namen für die fiktiven Personas. Eigene Kommentare bleiben unmarkiert. */
       const commentsHtml = allComments.length === 0
         ? '<p class="no-comments">Noch keine Kommentare — schreib den ersten!</p>'
-        : allComments.map((c, i) => `
-          <div class="comment-item${i < userComments.length ? ' -own' : ''}">
+        : allComments.map((c, i) => {
+          const eigen = i < userComments.length;
+          const trenner = (!eigen && i === userComments.length)
+            ? '<p class="seed-hint -vor-liste">Beispiel-Kommentare der Redaktion — gesetzte Startwerte, keine erhobenen Rückmeldungen.</p>'
+            : '';
+          return trenner + `
+          <div class="comment-item${eigen ? ' -own' : ''}">
             <div class="avatar" style="flex-shrink:0;width:4rem;height:4rem;font-size:1.4rem">${escHtml(c.initials || getInitials(c.author))}</div>
             <div style="flex:1">
-              <div class="comment-author">${escHtml(c.author)}${i < userComments.length ? ' <span class="comment-own-badge">von dir · nur auf diesem Gerät</span>' : ''}</div>
+              <div class="comment-author">${escHtml(c.author)}${eigen ? ' <span class="comment-own-badge">von dir · nur auf diesem Gerät</span>' : fiktivLabelHtml(c.author)}</div>
               <div class="comment-role-date">${escHtml(c.role)} · ${formatDate(c.date)}</div>
               <p class="comment-text">${escHtml(c.text)}</p>
             </div>
-            ${i < userComments.length ? `<button type="button" class="comment-delete" onclick="deleteComment('${commentSkillId}', ${i})" aria-label="Deinen Kommentar löschen" title="Deinen Kommentar löschen">✕</button>` : ''}
+            ${eigen ? `<button type="button" class="comment-delete" onclick="deleteComment('${commentSkillId}', ${i})" aria-label="Deinen Kommentar löschen" title="Deinen Kommentar löschen">✕</button>` : ''}
           </div>
-        `).join('');
+        `;
+        }).join('');
 
       return `
         <div class="rating-overview" style="margin-bottom:2rem">
@@ -3489,7 +3815,14 @@ Mehr Skills und alle Details: pilot AI Marketplace.
 
         <form class="comment-form" onsubmit="event.preventDefault();submitComment('${commentSkillId}')">
           <h3>Dein Kommentar</h3>
-          <p class="user-rating-hint">Was ist dir aufgefallen? Zwei Sätze reichen — sie helfen den Kolleg:innen bei der Auswahl.</p>
+          <!-- REIHENFOLGE (Persona-Review, Skeptikerin): Das Nutzenversprechen stand
+               über den Feldern, die Einschränkung erst UNTER dem Absende-Knopf — bei
+               1440×900 angeschnitten. Wer den Knopf drückte, hatte die einzige Aussage,
+               auf die es ankommt, noch nicht gelesen. Beides steht jetzt VOR dem ersten
+               Feld, und das Versprechen sagt dazu, wann es überhaupt eintritt: die
+               Beitragsseite ist laut CLAUDE.md noch simuliert. -->
+          <p class="user-rating-hint">Was ist dir aufgefallen? Zwei Sätze reichen — sie helfen den Kolleg:innen bei der Auswahl, sobald Beiträge geteilt werden können.</p>
+          <p class="comment-local-hint">Demo-Hinweis: Die angezeigte Stimmenzahl ist eine redaktionelle Startzahl. Deine Stimme &amp; deine Kommentare werden nur in deinem Browser gespeichert — Kolleg:innen sehen sie (noch) nicht.</p>
           <div class="form-row" style="margin-top:1.6rem">
             <div>
               <label for="comment-author-${commentSkillId}">Dein Name *</label>
@@ -3503,7 +3836,6 @@ Mehr Skills und alle Details: pilot AI Marketplace.
           <label for="comment-text-${commentSkillId}" style="margin-top:1.2rem">Dein Kommentar *</label>
           <textarea id="comment-text-${commentSkillId}" rows="3" required></textarea>
           <button type="submit" class="c-cta -black-bg">Kommentar speichern</button>
-          <p class="comment-local-hint">Demo-Hinweis: Die angezeigte Stimmenzahl ist eine redaktionelle Startzahl. Deine Stimme &amp; deine Kommentare werden nur in deinem Browser gespeichert — Kolleg:innen sehen sie (noch) nicht.</p>
         </form>
 
         <p class="section-label">Alle Kommentare (${allComments.length})</p>
@@ -3515,13 +3847,19 @@ Mehr Skills und alle Details: pilot AI Marketplace.
       if (!skill.endorsements || skill.endorsements.length === 0) {
         return `<p class="no-endorsements">Noch keine Piloten-Endorsements für diesen Skill.</p>`;
       }
+      /* Demo-Kennzeichnung (CLAUDE.md, harte Regeln 3 + 4): Bis hierher stand auf
+         diesem Reiter eine namentliche Empfehlung MIT Zitat und ohne jeden
+         Hinweis — und weil Christopher Kipp real ist und die übrigen Personas
+         erfunden sind, las sich die ganze Fläche als erhobene Aussage. Jetzt
+         zuerst die Kennzeichnung der Fläche, dann das Label am einzelnen Namen. */
       return `
         <p class="section-label">${skill.endorsements.length} ${skill.endorsements.length === 1 ? 'Pilot empfiehlt' : 'Piloten empfehlen'} diesen Skill</p>
+        <p class="seed-hint">Redaktionelle Startwerte — die Zitate sind gesetzt, nicht erhoben. Echte Empfehlungen aus dem Team kommen mit dem Backend.</p>
         ${skill.endorsements.map(e => `
           <div class="pilot-tab-card">
             <div class="pilot-tab-avatar">${escHtml(e.initials)}</div>
             <div>
-              <div class="pilot-tab-name">${escHtml(e.name)}</div>
+              <div class="pilot-tab-name">${escHtml(e.name)}${fiktivLabelHtml(e.name)}</div>
               <div class="pilot-tab-role">${escHtml(e.role)}</div>
               <p class="pilot-tab-quote">„${escHtml(e.text)}“</p>
             </div>
@@ -3722,6 +4060,13 @@ Mehr Skills und alle Details: pilot AI Marketplace.
       const fileRel = parts.slice(2).join('/');
       const skill = SKILLS.find(s => s.id === skillId);
       if (!skill) {
+        /* Kein Skill — aber vielleicht ein ECHTER Seitenanker: #main-content
+           (Skip-Link) und #skills-grid (Sprungmarke hinter dem Suchfeld) sind
+           legitime Hashes und keine kaputten Deep-Links. Ohne diesen Guard
+           bekäme jeder Tastatur-Nutzer beim Überspringen der Navigation die
+           Meldung „Diesen Eintrag gibt es nicht mehr." (gleiche Absicherung
+           wie in prompts.html). */
+        if (document.getElementById(raw)) return;
         // Kaputter Deep-Link: die ID gibt es nicht (mehr). Vorher blieb der Hash
         // stumm stehen — gemessen wurde aus „skills.html?skill=gibtsnicht" die URL
         // „skills.html?skill=gibtsnicht#gibtsnicht", ohne jede Rückmeldung. Ein
@@ -3756,14 +4101,44 @@ Mehr Skills und alle Details: pilot AI Marketplace.
       const t = state._hashTarget; if (!t) return;
       state._hashTarget = null;
       const files = state._files || [];
+      let needsRender = false;
       if (t.fileRel) {
         const idx = files.findIndex(f => f.path.split('/').slice(1).join('/') === t.fileRel);
-        if (idx >= 0 && idx !== state.activeFile) { state.activeFile = idx; renderFilesInto(state.activeSkill); }
+        // Kaputter Dateipfad wird GEMELDET, nicht umgebogen — analog zur kaputten
+        // Skill-ID in applyHash(). Vorher blieb die erste Datei stehen und der Hash
+        // wurde unten auf sie umgeschrieben: Der geteilte Link sah danach aus, als
+        // hätte er funktioniert, zeigte aber eine andere Datei als versprochen.
+        // Deshalb hier auch der frühe Ausstieg — er überspringt das writeHash am Ende.
+        if (idx < 0) { showToast('Diese Datei gibt es im Skill nicht (mehr).'); return; }
+        if (idx !== state.activeFile) { state.activeFile = idx; needsRender = true; }
       }
+      // Ein Link mit „:L…" zeigt auf QUELLZEILEN, und die gibt es nur in der
+      // Code-Ansicht: Markdown und CSV öffnen laut _fileViewMode standardmäßig
+      // formatiert, dort trägt kein Element eine cl-<n>-Kennung und der Sprung
+      // ginge ins Leere. Ein Zeilen-Link schaltet die betroffene Dateiart deshalb
+      // auf „Code" — über dieselbe Voreinstellung, die auch der Umschalter setzt,
+      // damit die Segment-Steuerung anzeigt, in welcher Ansicht man gelandet ist.
+      if (t.lineRange) {
+        const cur = files[Math.min(state.activeFile || 0, files.length - 1)];
+        const kind = cur && _previewKind(cur.path);
+        if (kind && _fileViewMode(cur.path) !== 'code') {
+          state._viewPref = state._viewPref || { md: 'preview', csv: 'preview' };
+          state._viewPref[kind] = 'code';
+          needsRender = true;
+        }
+      }
+      if (needsRender) renderFilesInto(state.activeSkill);
       if (t.lineRange) {
         requestAnimationFrame(() => {
           const [a, b] = t.lineRange;
-          const first = document.getElementById('cl-' + a) || _pvAnchorFor(a);
+          // Zeilennummer jenseits des Dateiendes wird STILL geklammert: Gibt es
+          // cl-<a> nicht, landet der Sprung auf der letzten vorhandenen Zeile
+          // (Code-Ansicht) bzw. auf dem letzten Block (formatierte Ansicht).
+          // Bewusst ohne Meldung — anders als ein falscher Dateiname zeigt eine zu
+          // große Zeilennummer immer noch die richtige Datei, und das Ende ist die
+          // beste verfügbare Näherung.
+          const codeLines = document.querySelectorAll('#modal-body .files-code .code-line');
+          const first = document.getElementById('cl-' + a) || codeLines[codeLines.length - 1] || _pvAnchorFor(a);
           first?.scrollIntoView({ behavior: window.scrollBehavior ? scrollBehavior() : 'smooth', block: 'center' });
           let flashed = false;
           for (let L = a; L <= b; L++) {
@@ -3794,8 +4169,10 @@ Mehr Skills und alle Details: pilot AI Marketplace.
       let h = '#' + skill.id + '/files/' + rel;
       if (a.line) h += ':L' + a.line + (a.lineEnd && a.lineEnd > a.line ? '-' + a.lineEnd : '');
       const url = location.origin + location.pathname + location.search + h;
-      quickCopy(null, url);
-      showToast('Link zur Stelle kopiert');
+      // Eigene Meldung als Argument — sonst gewinnt der asynchrone Toast von
+      // quickCopy („Kopiert: " + komplette URL) und die Einblendung zeigt den Link
+      // statt der Bestätigung (siehe builderCopy).
+      copyToClipboard(url, 'Link zur Stelle kopiert');
     }
 
     // ===== DEBOUNCE =====
@@ -4120,8 +4497,11 @@ Mehr Skills und alle Details: pilot AI Marketplace.
     }
     function builderCopy() {
       const d = builderValidate(); if (!d) return;
-      quickCopy(null, buildBuilderMd(d));
-      showToast('SKILL.md kopiert ✓');
+      // copyToClipboard statt quickCopy: quickCopy setzt seinen Toast ERST, wenn das
+      // Kopieren aufgelöst ist („Kopiert: " + kompletter Text) — ein direkt danach
+      // abgesetzter showToast() käme davor und würde vom Dateiinhalt überschrieben.
+      // Die eigene Meldung gehört deshalb als zweites Argument mit hinein.
+      copyToClipboard(buildBuilderMd(d), 'SKILL.md kopiert ✓');
     }
     async function builderDownloadZip(btn) {
       const d = builderValidate(); if (!d) return;

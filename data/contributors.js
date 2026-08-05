@@ -2,6 +2,9 @@
 // Klassisches Script, definiert globale Konstante: PILOTS.
 // Empfehlungen leben NICHT hier: einzige Quelle ist SKILLS[].endorsedBy in data/skills.js —
 // wer welche Skills empfiehlt, wird daraus invertiert (kein endorsedSkills-Feld mehr, Etappe A).
+// `fiktiv: true` = redaktionelle Persona, keine reale Person (CLAUDE.md Regel 4:
+// echt und inszeniert bleiben getrennt). Die Seiten kennzeichnen fiktive Personas
+// sichtbar am Namen — ohne das Flag gälte ein gesetztes Zitat als echte Aussage.
 
     const PILOTS = [
       {
@@ -13,6 +16,7 @@
       },
       {
         "name": "Mia Hoffmann",
+        "fiktiv": true,
         "initials": "MH",
         "role": "Senior UX Designerin",
         "department": "Creation & Design",
@@ -20,6 +24,7 @@
       },
       {
         "name": "Jan Richter",
+        "fiktiv": true,
         "initials": "JR",
         "role": "Tech Lead & Citizen-Coding-Mentor",
         "department": "Technology & Data",
@@ -27,6 +32,7 @@
       },
       {
         "name": "Sophie Klein",
+        "fiktiv": true,
         "initials": "SK",
         "role": "Projektmanagerin",
         "department": "Projektmanagement",
@@ -34,6 +40,7 @@
       },
       {
         "name": "Lukas Weber",
+        "fiktiv": true,
         "initials": "LW",
         "role": "SEO Strategist",
         "department": "Performance Marketing",
@@ -41,6 +48,7 @@
       },
       {
         "name": "Anna Schreiber",
+        "fiktiv": true,
         "initials": "AS",
         "role": "Content Strategin",
         "department": "Content & Kreation",

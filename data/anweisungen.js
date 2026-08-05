@@ -98,7 +98,7 @@ const ANWEISUNGEN = [
       'Mehrere Personen sollen dieselben Daten sehen und ändern — das kann keine der drei Vorlagen, dafür braucht es einen Server'
     ],
     tags: ['tool', 'rechner', 'formular', 'einzeldatei', 'interaktiv', 'browser'],
-    votesSeed: 8,    // Demo-Seed wie in allen Sammlungen; VL_VOTE_HINT verspricht eine Startzahl
+    votesSeed: 8,    // Demo-Seed wie in allen Sammlungen; VOTE_DEMO_HINT (base.js) verspricht eine Startzahl
     votesRecent: 3,
     warum: [
       {

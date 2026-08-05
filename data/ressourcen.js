@@ -54,13 +54,19 @@
 //   addedAt       Aufnahmedatum
 //   tags          Suche (searchScore-fieldsOpt)
 
+/* `label` beschriftet den Reiter (Mehrzahl: eine Kategorie voller Einträge),
+   `einzel` das Badge auf der einzelnen Karte. (Die Aktiv-Pille benutzt bewusst
+   `label`: sie beschreibt den aktiven FILTER, muss also wie der Reiter heißen —
+   siehe Kommentar an der Pille in lernen-hilfe.html.) EINE Quelle
+   für beide Formen — lernen-hilfe.html hielt dafür früher eine zweite,
+   abweichende Liste (TYP_CARD_LABEL), die driften konnte. */
 const RESSOURCE_TYPEN = [
-  { id: 'video',   label: 'Videos' },
-  { id: 'doku',    label: 'Doku' },
-  { id: 'artikel', label: 'Artikel' },
-  { id: 'kurs',    label: 'Kurse' },
-  { id: 'podcast', label: 'Podcasts' },
-  { id: 'intern',  label: 'pilot-intern' }
+  { id: 'video',   label: 'Videos',       einzel: 'Video' },
+  { id: 'doku',    label: 'Doku',         einzel: 'Doku' },
+  { id: 'artikel', label: 'Artikel',      einzel: 'Artikel' },
+  { id: 'kurs',    label: 'Kurse',        einzel: 'Kurs' },
+  { id: 'podcast', label: 'Podcasts',     einzel: 'Podcast' },
+  { id: 'intern',  label: 'pilot-intern', einzel: 'pilot-intern' }
 ];
 
 const RESSOURCEN = [

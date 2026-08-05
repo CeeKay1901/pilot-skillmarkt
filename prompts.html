@@ -349,6 +349,18 @@
        einzeln zu zerfallen. */
     .card-flaggen { display: inline-flex; align-items: center; gap: .8rem; flex-shrink: 0; }
 
+    /* Niveau auf der Karte. Nach ihm lässt sich in der Chip-Leiste filtern
+       („Niveau: Einfach/Mittel/Fortgeschritten“, siehe renderRoleChips) — es stand
+       aber nur im Modal, sodass die gefilterte Liste das Filterkriterium selbst
+       nicht zeigte. Gleiches Badge wie im Modal (.diff-badge, base.css), nur eine
+       Spur kleiner, damit es neben der Aufgaben-Gruppe nicht dominiert. */
+    .prompt-card .diff-badge { font-size: 1.15rem; flex-shrink: 0; }
+
+    /* Hülle um den Stimmen-Knopf: trägt die Demo-Kennzeichnung als title, weil
+       .up-btn selbst kein title-Attribut anbietet. Gleiches Muster wie im Katalog
+       (skills.html). */
+    .card-votes { display: inline-flex; }
+
     /* „Fang hier an“: die eine Karte, die die Redaktion oben anheftet (PROMPT_START).
        Das Fähnchen ist seit E15 nötig, nicht Schmuck. Vorher hieß die Standard-
        Sortierung „Empfohlen zuerst“ — da war eine redaktionelle Ausnahme unsichtbar
@@ -365,6 +377,132 @@
       border: 1px solid var(--c-black); border-radius: var(--r-pill);
       padding: .25rem .8rem .2rem; white-space: nowrap; flex-shrink: 0;
     }
+
+    /* ===== AKTIONEN IN DER MODAL-KOPFZEILE (Merken · Link kopieren · Schließen)
+       .modal-header ist ein Flex mit space-between (base.css); der zweite
+       Flex-Sohn war bisher direkt .modal-close. Die Gruppe übernimmt dessen
+       margin-bottom, damit die Grundlinie zum Titel unverändert bleibt. */
+    .modal-head-actions { display: flex; align-items: center; gap: .2rem; flex-shrink: 0; margin-bottom: 1.6rem; }
+    .modal-head-actions .modal-close { margin-bottom: 0; }
+    .fav-btn.mh-fav { padding: .8rem; }
+    .modal-link-btn {
+      background: none; border: none; cursor: pointer; color: var(--c-gray-m);
+      min-width: 4.4rem; min-height: 4.4rem;   /* Trefffläche WCAG 2.5.8 */
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: .8rem; transition: var(--trans);
+    }
+    .modal-link-btn:hover { color: var(--c-black); }
+    .modal-link-btn .lu { width: 2rem; height: 2rem; }
+    @media (max-width: 767px) {
+      .modal-head-actions { margin-bottom: 1rem; }
+      .modal-head-actions .modal-close { margin-bottom: 0; }
+    }
+
+    /* ===== MOBIL: PROMPT KOPIEREN IN DIE DAUMENZONE (Persona-Review, Mobile) ===
+       Auf ≤640px liegt der Kopier-Knopf am Kopf des Reiters — und bei Prompts mit
+       Baukasten schiebt sich der Prompt-Text weit darunter. Wer beim Lesen unten
+       ankommt, muss zum Kopieren wieder hochscrollen. Die Leiste hängt deshalb am
+       unteren Rand des Modal-Körpers, solange der Prompt-Reiter offen ist.
+       Sie ist eine KOPIE des Knopfes, nicht sein Ersatz: der obere bleibt stehen,
+       damit die Erklärung daneben („kopiert den aktuellen Stand …“) ihren Platz
+       behält. Beide rufen dieselbe Funktion. Seitenlokal — base.css ist fremdes
+       Eigentum. */
+    .pb-sticky-copy { display: none; }
+    @media (max-width: 640px) {
+      /* Die Randmaße heben exakt das Innenmaß von .modal-body auf
+         (base.css: 2rem 1.4rem unter 768px) — die Leiste soll bündig über die
+         ganze Modalbreite laufen, nicht eingerückt schweben. */
+      .pb-sticky-copy {
+        display: block; position: sticky; bottom: 0; z-index: 6;
+        margin: 2rem -1.4rem -2rem; padding: 1.2rem 1.4rem calc(1.2rem + env(safe-area-inset-bottom, 0px));
+        background: var(--c-white); border-top: 1px solid var(--line-strong);
+      }
+      .pb-sticky-copy .c-cta { display: block; width: 100%; }
+    }
+
+    /* ===== MOBIL: BAUKASTEN EINKLAPPBAR (Persona-Review, Mobile) ==============
+       Fünf Felder untereinander drücken den Prompt-Text auf ~y=1000 — auf einem
+       Telefon liegt damit das Wichtigste (der Text) unter drei Wischbewegungen.
+       <details> ist die Aufklapp-Mechanik ohne eigenes JavaScript; ob `open`
+       gesetzt wird, entscheidet renderModalPrompt() einmal beim Rendern
+       (nur ≤640px UND ≥4 Felder wird eingeklappt). Weil dieses CSS ab 641px
+       das <summary> ausblendet, öffnet applyBuilderFold() (matchMedia-Listener
+       im Script) ein geschlossenes details, sobald der Breakpoint nach oben
+       überschritten wird — sonst wäre der Baukasten dort unerreichbar. */
+    /* Ab 641px verschwindet die Zusammenfassung ganz: die Fläche ist dort immer
+       offen (das `open`-Attribut setzt renderModalPrompt), und ein zweiter
+       Kopftext neben „Prompt-Builder" wäre nur Dopplung. Ein per CSS verstecktes
+       <summary> unterdrückt auch den UA-Standardmarker — der entsteht nur, wenn
+       im Markup gar kein <summary> steht. */
+    .pb-fold > summary { display: none; list-style: none; }
+    .pb-fold > summary::-webkit-details-marker { display: none; }
+    @media (max-width: 640px) {
+      .pb-fold > summary {
+        display: flex; align-items: center; justify-content: space-between;
+        gap: .8rem; cursor: pointer;
+        min-height: 4.4rem;   /* Trefffläche WCAG 2.5.8 */
+        font-size: 1.45rem; font-weight: var(--fw-semi); color: var(--c-ink-strong);
+        margin: 0 0 .4rem;
+      }
+      .pb-fold > summary:focus-visible { outline: 2px solid var(--c-black); outline-offset: 2px; }
+      .pb-fold .pb-fold-hint {
+        display: inline-flex; align-items: center; gap: .5rem;
+        font-size: 1.25rem; font-weight: 400; color: var(--c-gray-m); white-space: nowrap;
+      }
+      /* Das Wort kommt aus dem CSS, damit es dem Zustand folgt — ein statisches
+         „anzeigen" stünde sonst auch über dem bereits offenen Panel. Den
+         Auf/Zu-Zustand selbst trägt das native <details> für Screenreader;
+         das Wort hier ist Sichthilfe. */
+      .pb-fold:not([open]) .pb-fold-hint::before { content: 'anzeigen'; }
+      .pb-fold[open] .pb-fold-hint::before { content: 'ausblenden'; }
+      .pb-fold .pb-fold-hint::after { content: '▾'; transition: transform .2s; }
+      .pb-fold[open] .pb-fold-hint::after { transform: rotate(180deg); }
+    }
+
+    /* Sprungmarke im Inhalt. Ruhezustand ist WÖRTLICH .sr-only aus base.css —
+       inklusive `position: absolute`: .filter-inner ist ein Flex-Container mit
+       gap, und ein 1px hohes Flex-Kind kostete dort eine sichtbare Lücke.
+       Absolut positionierte Kinder sind keine Flex-Items, also kostet die Marke
+       im Ruhezustand exakt nichts. Bei Fokus fällt sie mit `position: static`
+       zurück in die Spalte. Dieselbe Fassung steht in skills.html. */
+    .skip-inline {
+      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+      background: var(--c-yellow); color: var(--c-black);
+      font-size: 1.3rem; font-weight: 700; text-decoration: none;
+    }
+    .skip-inline:focus {
+      position: static; width: auto; height: auto; margin: 0;
+      overflow: visible; clip: auto;
+      display: inline-block; align-self: flex-start;
+      padding: .8rem 1.6rem; border-radius: var(--r-sm);
+    }
+
+    /* DEMO-KENNZEICHNUNG (CLAUDE.md, harte Regeln 3 + 4) ========================
+       Wörtlich dieselbe Fassung wie im Katalog (skills.html) — die beiden Seiten
+       zeigen dieselben Seed-Kommentare derselben Personas, ein zweites Aussehen
+       wäre nur Unruhe. Beide Bausteine sind bewusst im Ton von .comment-own-badge
+       und .comment-local-hint aus base.css gehalten.
+
+       .persona-fiktiv steht direkt AM NAMEN, weil dort die Verwechslung entsteht:
+       Unter den Kommentaren stehen erfundene Personas neben Christopher Kipp, der
+       real ist. Ein Hinweis am Fuß der Liste käme zu spät — gelesen wird der Name.
+       .seed-hint ist die Flächen-Kennzeichnung („diese Zitate sind gesetzt").
+       Farbe über --c-gray-m statt opacity — gerechnet: 5,71:1 auf --c-white
+       (Modal-Grund), 5,17:1 auf dem Pillen-Grund --c-bg. Beides WCAG AA und im
+       Gegensatz zu gedämpfter Deckkraft nachprüfbar (tools/qa kontrast). */
+    .persona-fiktiv {
+      font-size: 1.15rem; font-weight: 500; color: var(--c-gray-m);
+      background: var(--c-bg); border: 1px solid var(--c-gray-l);
+      border-radius: var(--r-xl); padding: .1rem .8rem; margin-left: .6rem;
+      white-space: nowrap; vertical-align: middle;
+    }
+    .comment-item .persona-fiktiv { background: var(--c-white); }
+    .seed-hint {
+      font-size: 1.25rem; line-height: 1.5; color: var(--c-gray-m);
+      margin: -.4rem 0 1.6rem;
+    }
+    .seed-hint.-vor-liste { margin: 2rem 0 1rem; }
   </style>
 </head>
 <body>
@@ -395,6 +533,12 @@
     <div class="filter-bar" id="filter-bar">
       <div class="filter-inner">
         <div data-page-search></div>
+        <!-- SPRUNGMARKE (Persona-Review, Tastatur): Zwischen Suchfeld und erster
+             Karte liegen Aufgaben-Reiter, Niveau-Chips, Sortierung und der
+             Dichte-Regler. Wer gerade einen Suchbegriff getippt hat, tabbt sonst
+             an allem vorbei. Muster wie der Skip-Link oben (.skip-link, base.css):
+             im Fluss, aber erst bei Fokus sichtbar. -->
+        <a href="#prompts-grid" class="skip-inline" onclick="fokusErgebnisse(event)">Zu den Ergebnissen springen</a>
         <div class="cat-tabs" id="cat-tabs" role="group" aria-label="Nach Aufgabe filtern"></div>
         <button class="filter-toggle-btn" id="filter-toggle-btn" onclick="toggleMobileFilter()" aria-expanded="true">
           <span>Filter &amp; Sortierung <span class="ftb-count" id="ftb-count" hidden></span></span>
@@ -430,7 +574,10 @@
              Gliederung von der Seiten-H1 direkt auf h3 (WCAG 1.3.1 / 2.4.10).
              Visuell überflüssig, deshalb nur für Screenreader. -->
         <h2 class="sr-only">Alle Prompts</h2>
-        <div class="skills-grid" id="prompts-grid"></div>
+        <!-- tabindex="-1": Sprungziel der Marke „Zu den Ergebnissen“ oben. Ohne das
+             verschiebt ein Ankersprung in den meisten Browsern nur den Startpunkt
+             der Tab-Reihenfolge, der Fokus selbst bleibt liegen. -->
+        <div class="skills-grid" id="prompts-grid" tabindex="-1"></div>
       </div>
     </div>
 
@@ -456,7 +603,20 @@
           <p class="modal-kind">Prompt</p>
           <h2 id="modal-name"></h2>
         </div>
-        <button class="modal-close" onclick="closeModal()" aria-label="Prompt-Detail schließen">✕</button>
+        <!-- KOPFZEILEN-AKTIONEN (Persona-Review) ============================
+             Merken: saß bisher nur auf der Karte. Wer im offenen Prompt merkte,
+             dass er ihn wieder brauchen wird, musste schließen, die Karte im
+             Raster wiederfinden und dort klicken. Gefüllt von renderModalHead()
+             mit favBookmarkHtml() aus base.js — gleiches Markup, gleicher
+             Schlüssel (fav:prompt:<id>) wie der Karten-Stern.
+             Link kopieren: die teilbare Adresse dieses Prompts (?p=<id>) stand
+             nirgends; wer ihn im Chat weitergeben wollte, kopierte die Seiten-URL
+             ohne den Prompt. -->
+        <div class="modal-head-actions">
+          <button type="button" class="modal-link-btn" id="modal-link-btn" onclick="copyPromptLink()" title="Teilbaren Link auf diesen Prompt kopieren" aria-label="Link zu diesem Prompt kopieren"></button>
+          <span id="modal-fav-slot"></span>
+          <button class="modal-close" onclick="closeModal()" aria-label="Prompt-Detail schließen">✕</button>
+        </div>
       </div>
       <div class="modal-meta" id="modal-meta"></div>
       <div class="modal-tabs" role="tablist" aria-label="Prompt-Details"></div>
@@ -468,6 +628,16 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script src="data/prompts.js"></script>
+  <!-- PILOTS (data/contributors.js): einzige Quelle für `fiktiv: true`. Gebraucht
+       für die Kennzeichnung der Seed-Kommentare — Reihenfolge und Platz wie in
+       skills.html (Datendatei, dann contributors, dann seit, dann base.js).
+       KEIN defer: renderModalRatings() läuft synchron aus dem Deep-Link-Pfad,
+       und `typeof PILOTS` muss dort bereits stimmen.
+       Kollisionsfrei: contributors.js steht NICHT in GSEARCH_SOURCES (base.js),
+       wird also von _gsEnsureData() nie ein zweites Mal nachgeladen; und keine
+       andere data/*.js vergibt PILOTS top-level. Beides ist die Fehlerklasse,
+       vor der der Kommentar bei PROMPT_TASK_LABELS unten warnt. -->
+  <script src="data/contributors.js"></script>
   <!-- Ersterscheinungs-Daten (tools/seit.mjs) für das „Neu"-Fähnchen. defer
        genügt: die Karten entstehen erst in DOMContentLoaded. -->
   <script src="data/seit.js" defer></script>
@@ -545,6 +715,26 @@
       if (d === 'medium') return 'Mittel';
       if (d === 'advanced') return 'Fortgeschritten';
       return d;
+    }
+
+    /* ===== FIKTIVE PERSONAS KENNZEICHNEN (CLAUDE.md, harte Regel 4) ==========
+       „Echt und inszeniert bleiben getrennt." Das Flag `fiktiv: true` steht an
+       genau EINER Stelle: PILOTS in data/contributors.js. Die Seed-Kommentare in
+       PROMPTS[].comments tragen es nicht mit — sie nennen nur Name, Rolle, Text.
+       Der Abgleich läuft deshalb über den Namen; das ist der einzige Schlüssel,
+       den beide Seiten gemeinsam haben.
+       Wer NICHT in PILOTS steht (oder dort ohne Flag), bekommt kein Label:
+       Christopher Kipp ist real, und ein eigener Kommentar aus dem localStorage
+       ist es auch. Lieber kein Label als ein falsches.
+       Wortgleich mit skills.html — dieselben Personas, dieselbe Beschriftung. */
+    function istFiktivePersona(name) {
+      if (typeof PILOTS === 'undefined' || !name) return false;
+      return PILOTS.some(p => p.name === name && p.fiktiv === true);
+    }
+    function fiktivLabelHtml(name) {
+      return istFiktivePersona(name)
+        ? ` <span class="persona-fiktiv" title="Redaktionelle Persona — keine reale Kollegin, kein realer Kollege.">fiktive Persona</span>`
+        : '';
     }
 
     function promptPlatformChips(p) {
@@ -893,14 +1083,41 @@
         const count = s.id === 'all' ? total : groupCount(s.id);
         const isActive = state.taskGroup === (s.id === 'all' ? null : s.id);
         if (!count && s.id !== 'all' && !isActive) return '';
-        return `<button class="cat-tab${isActive ? ' active' : ''}" aria-pressed="${isActive}" onclick="setTaskGroup('${s.id}')">${escHtml(s.label)} <span class="tab-count">${count}</span></button>`;
+        // data-sub: Wiedererkennungsmarke für den Fokus-Rückgriff in setTaskGroup().
+        return `<button class="cat-tab${isActive ? ' active' : ''}" data-sub="${escHtml(s.id)}" aria-pressed="${isActive}" onclick="setTaskGroup('${s.id}')">${escHtml(s.label)} <span class="tab-count">${count}</span></button>`;
       }).join('');
     }
     function setTaskGroup(g) {
+      /* FOKUS ÜBER DEN RE-RENDER RETTEN (Persona-Review, Tastatur) =============
+         renderCatTabs() ersetzt die komplette innerHTML von #cat-tabs — der eben
+         betätigte Knopf existiert danach nicht mehr, der Fokus fällt auf BODY, und
+         die nächste Tab-Taste beginnt wieder ganz oben auf der Seite.
+         Gemerkt wird nur, wenn der Fokus vorher wirklich in der Leiste lag; sonst
+         setzte ein Mausklick nachträglich einen Fokus, den es vorher nicht gab.
+         preventScroll, damit focus() die Filterleiste nicht ins Bild zieht. */
+      const ausLeiste = !!(document.activeElement && document.activeElement.closest
+        && document.activeElement.closest('#cat-tabs'));
       state.taskGroup = g === 'all' ? null : g;
       renderCatTabs();
       render();
       updateURL();
+      if (ausLeiste) {
+        const btn = document.querySelector('#cat-tabs .cat-tab[data-sub="' + g + '"]');
+        if (btn) btn.focus({ preventScroll: true });
+      }
+    }
+
+    /* Sprungmarke „Zu den Ergebnissen“: Der Anker allein verschiebt in den meisten
+       Browsern nur den Startpunkt der Tab-Reihenfolge. #prompts-grid trägt deshalb
+       tabindex="-1" und bekommt den Fokus hier ausdrücklich. Der Hash bleibt
+       draußen: er würde mit dem Deep-Link-Schema #<prompt-id> kollidieren
+       (applyHash läuft auf jedes hashchange). */
+    function fokusErgebnisse(evt) {
+      const grid = document.getElementById('prompts-grid');
+      if (!grid) return;
+      if (evt) evt.preventDefault();
+      grid.scrollIntoView({ behavior: window.scrollBehavior ? scrollBehavior() : 'smooth', block: 'start' });
+      grid.focus({ preventScroll: true });
     }
 
     // ===== PLATTFORM- & NIVEAU-CHIPS =====
@@ -1017,11 +1234,17 @@
        „Meistkopiert“ ist deshalb bewusst eine reine Anzeige und kein Knopf: Kopiert
        wird über den Chip daneben. Abstimmen bleibt in diesem Fall dem Modal
        vorbehalten — dort steht der Knopf immer. */
+    /* Demo-Kennzeichnung an der Stimmenzahl (CLAUDE.md, harte Regel 3). Sie hängt
+       an einer Hülle, weil .up-btn selbst kein title-Attribut anbietet — dasselbe
+       Muster wie im Katalog (skills.html). VOTE_DEMO_HINT kommt aus base.js,
+       damit die Kennzeichnung nicht je Fläche driftet. */
     function cardMetricHtml(p) {
       if (state.sort === 'copies') {
-        return `<span class="copy-count" data-copies="${p.id}">${copyCountOf(p)}× kopiert</span>`;
+        return `<span class="copy-count" data-copies="${p.id}" title="Demo-Wert: Startzahl aus den Daten plus deine eigenen Kopien — nur auf diesem Gerät gezählt.">${copyCountOf(p)}× kopiert</span>`;
       }
-      return renderUpvoteBtn(p.id, 'prompt', getUpvoteCount(p, 'prompt'), { label: '', compact: true, name: p.name });
+      return `<span class="card-votes" title="${VOTE_DEMO_HINT}">`
+        + renderUpvoteBtn(p.id, 'prompt', getUpvoteCount(p, 'prompt'), { label: '', compact: true, name: p.name })
+        + `</span>`;
     }
 
     // ===== RENDER CARD =====
@@ -1054,11 +1277,17 @@
         ? '<span class="card-start-flag" title="Empfehlung der Redaktion für den Einstieg — steht unabhängig von der Sortierung oben.">Fang hier an</span>'
         : '';
       const flaggen = `${startFlagHtml}${hatBaukasten ? baukastenFlagHtml() : ''}${neuFlagHtml}`;
+      // Niveau: dasselbe Badge wie im Modal. Es steht bewusst NICHT in .card-flaggen —
+      // das ist die Klammer für die Fähnchen, die zusammen umziehen sollen; das
+      // Niveau gehört zur Beschreibung der Karte, nicht zu den Auszeichnungen.
+      // Ohne Wert kein Badge, statt „undefined" anzuzeigen.
+      const diffHtml = p.difficulty ? `<span class="diff-badge ${p.difficulty}">${escHtml(diffLabel(p.difficulty))}</span>` : '';
       return `
         <article class="skill-card prompt-card${hatBaukasten ? ' -baukasten' : ''}${state._noCardAnim ? '' : ' card-in'}" style="animation-delay:${state._noCardAnim ? 0 : delay}ms" data-prompt-id="${p.id}" onclick="openModal('${p.id}')">
           <div class="card-top">
             <span class="card-top-left">
               <span class="card-sub">${escHtml(groupLabel(p.taskGroup))}</span>
+              ${diffHtml}
               ${flaggen ? `<span class="card-flaggen">${flaggen}</span>` : ''}
             </span>
             ${favBookmarkHtml(p.id, 'prompt', p.name)}
@@ -1184,6 +1413,15 @@
 
     function renderModalHead(p) {
       document.getElementById('modal-name').textContent = p.name;
+
+      // Merken + Link kopieren in der Kopfzeile. Der Stern kommt aus base.js
+      // (favBookmarkHtml → toggleFavorite → fav:prompt:<id>) — dieselbe Quelle wie
+      // auf der Karte, deshalb zieht window.onFavoritesChanged unten beide nach.
+      const favSlot = document.getElementById('modal-fav-slot');
+      if (favSlot) favSlot.innerHTML = favBookmarkHtml(p.id, 'prompt', p.name, 'mh-fav');
+      const linkBtn = document.getElementById('modal-link-btn');
+      if (linkBtn) linkBtn.innerHTML = LU.link;
+
       const tabBar = document.querySelector('#modal .modal-tabs');
       if (tabBar) {
         tabBar.innerHTML = modalTabsFor(p).map(([id, label], i) =>
@@ -1192,15 +1430,18 @@
       }
       // Stimme statt Sterne-Durchschnitt: im Modal MIT Wortlabel (auf den Karten
       // reicht Icon + Zahl, hier ist Platz für die Aufforderung).
+      // Demo-Kennzeichnung (CLAUDE.md, harte Regel 3) wie auf der Karte: Stimmen-
+      // und Kopierzahl sind dieselben Seed-Werte, die dort ihre title-Hülle
+      // tragen — dieselben Zahlen, dieselbe Kennzeichnung.
       document.getElementById('modal-meta').innerHTML = `
-        ${renderUpvoteBtn(p.id, 'prompt', getUpvoteCount(p, 'prompt'), { label: 'Hilfreich', name: p.name })}
+        <span class="card-votes" title="${VOTE_DEMO_HINT}">${renderUpvoteBtn(p.id, 'prompt', getUpvoteCount(p, 'prompt'), { label: 'Hilfreich', name: p.name })}</span>
         <span class="modal-meta-sep">·</span>
         <span class="diff-badge ${p.difficulty}">${diffLabel(p.difficulty)}</span>
         <span class="modal-meta-sep">·</span>
         <span>${escHtml(groupLabel(p.taskGroup))}</span>
         <span class="modal-meta-sep">·</span>
         <span class="card-platforms" role="group" aria-label="Einsetzbar in">${promptPlatformChips(p)}</span>
-        <span class="copy-count" data-copies="${p.id}">${copyCountOf(p)}× kopiert</span>
+        <span class="copy-count" data-copies="${p.id}" title="Demo-Wert: Startzahl aus den Daten plus deine eigenen Kopien — nur auf diesem Gerät gezählt.">${copyCountOf(p)}× kopiert</span>
       `;
     }
 
@@ -1225,23 +1466,70 @@
       }
       return `
         <div class="pb-field${f.type === 'textarea' ? ' -wide' : ''}${off ? ' -off' : ''}">
-          <label class="pb-label" for="${inputId}">${escHtml(f.label)}<mark class="ph">${escHtml(f.ph)}</mark></label>
+          <!-- aria-hidden am <mark>: Der Platzhalter ist eine optische Zuordnungshilfe
+               („welche Stelle im Prompt fülle ich hier?"). Im Label mitgelesen ergab er
+               den zugänglichen Namen „Marke [MARKE]" — eine Vorlesestimme sagte das Wort
+               damit zweimal, das zweite Mal buchstabiert. Der Platzhalter steht bei
+               Bedarf ohnehin nochmal im Hinweis darunter (.pb-off-note). -->
+          <label class="pb-label" for="${inputId}">${escHtml(f.label)}<mark class="ph" aria-hidden="true">${escHtml(f.ph)}</mark></label>
           ${control}
           ${off ? `<p class="pb-off-note">Im Prompt-Text steht <strong>${escHtml(f.ph)}</strong> derzeit nicht — was du hier einträgst, landet nirgends.</p>` : ''}
         </div>`;
     }
 
+    /* BREAKPOINT-WÄCHTER für den einklappbaren Baukasten (siehe .pb-fold im
+       CSS): Ab 641px blendet das Stylesheet das <summary> aus — ein details,
+       das bei ≤640px geschlossen gerendert wurde, wäre nach einer Drehung ins
+       Querformat sonst unsichtbar UND unerreichbar (der einzige Umschalter ist
+       weg, CSS kann den Inhalt eines geschlossenen details nicht zeigen).
+       Beim Wechsel nach oben wird deshalb geöffnet; beim Wechsel nach unten
+       bleibt offen — Inhalt verschwindet nicht unter den Händen, eingeklappt
+       wird nur beim nächsten frischen Rendern. */
+    const _pbFoldMq = window.matchMedia ? window.matchMedia('(max-width: 640px)') : null;
+    function applyBuilderFold() {
+      if (_pbFoldMq && !_pbFoldMq.matches)
+        document.querySelectorAll('.pb-fold:not([open])').forEach(d => { d.open = true; });
+    }
+    if (_pbFoldMq && _pbFoldMq.addEventListener) _pbFoldMq.addEventListener('change', applyBuilderFold);
+
     function renderModalPrompt(p) {
       const hasBuilder = !!(p.builder && p.builder.fields && p.builder.fields.length);
 
+      /* BAUKASTEN AUF SCHMALEN GERÄTEN EINGEKLAPPT (Persona-Review, Mobile) =====
+         Die Felder stehen auf dem Telefon untereinander und schieben den
+         Prompt-Text — das, weswegen die Seite geöffnet wurde — weit unter den
+         Falz. <details> ist die Aufklapp-Mechanik ohne eigenes JavaScript; ab
+         641px ist die Fläche unverändert offen und die Zusammenfassung per CSS
+         ausgeblendet, es ändert sich dort also nichts.
+         Der Zurücksetzen-Knopf bleibt AUSSERHALB von <summary>: summary hat die
+         Rolle button, und eine Schaltfläche darf keine Schaltfläche enthalten
+         (CLAUDE.md, nested-interactive).
+         Die Feldzahl im Text kommt aus den Daten, nicht aus der Tastatur
+         (CLAUDE.md, harte Regel 2). */
+      /* EINGEKLAPPT WIRD NUR, WO ES WEH TUT — unter 640px UND ab vier Feldern.
+         Gemessen wurde der Fall mit fünf Feldern (claim-werkstatt,
+         vibecoding-kickoff): dort beginnt der Prompt-Text erst bei y≈1000. Die
+         drei-Feld-Baukästen (briefing-zusammenfassung, excel-formel-erklaerer)
+         bleiben deutlich darunter — sie einzuklappen kostete einen Tipp und
+         spart nichts. Die Schwelle steht an der Feldzahl, nicht an einer
+         gepflegten ID-Liste: sie folgt damit den Daten, nicht der Erinnerung.
+         Nebenwirkung, die hier hingehört: e3:06 füllt ein Baukasten-Feld von
+         briefing-zusammenfassung auch im 390px-Lauf. Der Eintrag hat drei
+         Felder, bleibt also offen — die Prüfung greift unverändert. */
+      const VIELE_FELDER = 4;
+      const schmal = !!(window.matchMedia && window.matchMedia('(max-width: 640px)').matches);
+      const eingeklappt = hasBuilder && schmal && p.builder.fields.length >= VIELE_FELDER;
       const builderHtml = hasBuilder ? `
         <div class="pb-wrap">
           <div class="pb-head">
             <p class="pb-title">Prompt-Builder</p>
             <button type="button" class="pb-reset" onclick="resetBuilder('${p.id}')">Zurücksetzen</button>
           </div>
-          <p class="pb-lead">Fülle die Felder aus — deine Angaben landen live im Prompt darunter. Leere Felder bleiben als gelbe Platzhalter stehen. Deine Eingaben werden nur in diesem Browser gemerkt.</p>
-          <div class="pb-form">${p.builder.fields.map(f => builderFieldHtml(p, f)).join('')}</div>
+          <details class="pb-fold"${eingeklappt ? '' : ' open'}>
+            <summary>${p.builder.fields.length} Felder ausfüllen<span class="pb-fold-hint"></span></summary>
+            <p class="pb-lead">Fülle die Felder aus — deine Angaben landen live im Prompt darunter. Leere Felder bleiben als gelbe Platzhalter stehen. Deine Eingaben werden nur in diesem Browser gemerkt.</p>
+            <div class="pb-form">${p.builder.fields.map(f => builderFieldHtml(p, f)).join('')}</div>
+          </details>
         </div>` : '';
 
       const copyHint = hasBuilder
@@ -1265,11 +1553,23 @@
           <span class="xref-ic" aria-hidden="true">${LU.sparkles}</span>
           <p class="xref-label">Passender Skill</p>
           <p class="xref-name"><a href="skills.html?skill=${encodeURIComponent(p.skillRef)}">${escHtml(p.skillRefName || p.skillRef)} →</a></p>
-          <p class="xref-note">${escHtml(p.skillRefNote || 'Derselbe Weg als fertiges Werkzeug im Skill-Katalog.')}</p>
+          <p class="xref-note">${escHtml(p.skillRefNote || 'Derselbe Weg als fertiges Werkzeug im Skills-Bereich.')}</p>
         </div>` : ''}
         <div class="modal-submit-row">
           <span>Du formulierst das anders — und es funktioniert besser?</span>
           <button type="button" class="c-cta -black-border" onclick="openPromptSubmit('${p.id}')">Variante einreichen</button>
+        </div>
+        <!-- Daumenzone (Persona-Review, Mobile): dieselbe Aktion wie oben, nur am
+             unteren Rand klebend und nur auf ≤640px sichtbar (.pb-sticky-copy).
+             Der obere Knopf bleibt stehen — an ihm hängt die Erklärung, was
+             genau kopiert wird. aria-hidden wäre falsch: die Leiste IST bedienbar;
+             stattdessen trägt sie dieselbe Beschriftung, damit die Doppelung als
+             Doppelung erkennbar ist. -->
+        <div class="pb-sticky-copy">
+          <!-- aria-label unterscheidet die beiden gleich beschrifteten Knöpfe in
+               der Screenreader-Elementliste (WCAG 2.5.3: sichtbarer Text bleibt
+               im Label enthalten). -->
+          <button class="c-cta -yellow-bg" aria-label="Prompt kopieren (Leiste am unteren Rand)" onclick="copyCurrentPrompt(null,'${p.id}')">${LU.copy} Prompt kopieren</button>
         </div>
       `;
     }
@@ -1352,25 +1652,44 @@
       const allComments = [...userComments, ...(p.comments || [])];
       const cid = p.id;
 
+      /* Demo-Kennzeichnung (CLAUDE.md, harte Regeln 3 + 4): Die Liste mischt zwei
+         Herkünfte — vorn die eigenen Kommentare aus dem localStorage, dahinter die
+         Seed-Kommentare aus data/prompts.js. Bis hierher trug nur die EIGENE Seite
+         ein Abzeichen („von dir"); die gesetzten Zitate standen ununterscheidbar
+         daneben, unter Namen, die es teils gar nicht gibt.
+         Jetzt: EINE Zwischenzeile genau über dem ersten Seed-Kommentar (nicht je
+         Kommentar ein Badge — bei fünf Einträgen wäre das Rauschen) plus das Label
+         am Namen für die fiktiven Personas. Eigene Kommentare bleiben unmarkiert.
+         Wortgleich mit skills.html, das dieselbe Liste aus derselben Mischung baut. */
       const commentsHtml = allComments.length === 0
         ? '<p class="no-comments">Noch keine Kommentare — schreib den ersten!</p>'
-        : allComments.map((c, i) => `
-          <div class="comment-item${i < userComments.length ? ' -own' : ''}">
+        : allComments.map((c, i) => {
+          const eigen = i < userComments.length;
+          const trenner = (!eigen && i === userComments.length)
+            ? '<p class="seed-hint -vor-liste">Beispiel-Kommentare der Redaktion — gesetzte Startwerte, keine erhobenen Rückmeldungen.</p>'
+            : '';
+          return trenner + `
+          <div class="comment-item${eigen ? ' -own' : ''}">
             <div class="avatar" style="flex-shrink:0;width:4rem;height:4rem;font-size:1.4rem">${escHtml(c.initials || getInitials(c.author))}</div>
             <div style="flex:1">
-              <div class="comment-author">${escHtml(c.author)}${i < userComments.length ? ' <span class="comment-own-badge">von dir · nur auf diesem Gerät</span>' : ''}</div>
+              <div class="comment-author">${escHtml(c.author)}${eigen ? ' <span class="comment-own-badge">von dir · nur auf diesem Gerät</span>' : fiktivLabelHtml(c.author)}</div>
               <div class="comment-role-date">${escHtml(c.role)} · ${formatDate(c.date)}</div>
               <p class="comment-text">${escHtml(c.text)}</p>
             </div>
-            ${i < userComments.length ? `<button type="button" class="comment-delete" onclick="deleteComment('${cid}', ${i})" aria-label="Deinen Kommentar löschen" title="Deinen Kommentar löschen">✕</button>` : ''}
+            ${eigen ? `<button type="button" class="comment-delete" onclick="deleteComment('${cid}', ${i})" aria-label="Deinen Kommentar löschen" title="Deinen Kommentar löschen">✕</button>` : ''}
           </div>
-        `).join('');
+        `;
+        }).join('');
 
       return `
         <div class="rating-overview" style="margin-bottom:2rem">
           <div>
             <div class="rating-big">${getUpvoteCount(p, 'prompt')}</div>
-            <div class="rating-sub">Stimmen — Kolleg:innen, die diesen Prompt hilfreich fanden</div>
+            <!-- Demo-Kennzeichnung an der Zahl (CLAUDE.md, harte Regel 3): derselbe
+                 Zusatz „(Demo-Wert)" und derselbe Titel-Text (VOTE_DEMO_HINT aus
+                 base.js) wie an der Stimmen-Zahl im Katalog (skills.html). Ohne ihn
+                 stand hier die einzige Zahl des Reiters ohne Herkunft. -->
+            <div class="rating-sub" title="${VOTE_DEMO_HINT}">Stimmen — Kolleg:innen, die diesen Prompt hilfreich fanden (Demo-Wert)</div>
           </div>
           <div>${renderUpvoteBtn(p.id, 'prompt', getUpvoteCount(p, 'prompt'), { label: 'Hilfreich', name: p.name })}</div>
         </div>
@@ -1439,6 +1758,29 @@
     function updateURL() { const h = buildHash(); if (h) writeHash(h, false); }
     function pushURL()   { const h = buildHash(); if (h) writeHash(h, true); }
 
+    /* „Link kopieren“ in der Modal-Kopfzeile (Persona-Review, Wiederkommer) =====
+       Intern arbeitet die Seite mit der Hash-Form (#<id>[/tab]). Zum Weitergeben
+       taugt die ?p=-Form besser: Sie ist das Schema, das auch die globale Suche
+       verlinkt (GSEARCH_GROUPS in base.js), sie überlebt Chat-Clients, die Hashes
+       abschneiden, und beim Laden schreibt die Seite sie ohnehin selbst auf die
+       Hash-Form um. Übrige Query-Parameter bleiben stehen — dieselbe Regel wie in
+       deepLinkMiss() und im Deep-Link-Umgang von base.js (utm überlebt). */
+    function copyPromptLink() {
+      const p = state.activeSkill;
+      if (!p) return;
+      let url;
+      try {
+        const u = new URL(location.href);
+        u.hash = '';
+        u.searchParams.set('p', p.id);
+        url = u.href;
+      } catch (e) {
+        // file:// in exotischen Browsern — dann die einfache, immer gültige Form
+        url = location.pathname + '?p=' + encodeURIComponent(p.id);
+      }
+      copyToClipboard(url, 'Link kopiert — teile ihn im Chat.');
+    }
+
     // Kaputter Deep-Link: die id gibt es nicht (mehr). Vorher blieb der Hash stumm
     // stehen — gemessen wurde aus „prompts.html?p=gibtsnicht" die URL
     // „prompts.html?p=gibtsnicht#gibtsnicht", ohne jede Rückmeldung. Ein
@@ -1446,8 +1788,22 @@
     // Jetzt fliegen Hash UND der auslösende ?p=-Parameter raus (übrige
     // Query-Parameter wie utm bleiben erhalten), dazu ein kurzer Hinweis.
     // Gleiches Muster wie skills.html:applyHash und lernen-hilfe.html:deepLinkMiss.
-    function deepLinkMiss() {
-      showToast('Diesen Prompt gibt es hier (noch) nicht — der Link ist vermutlich veraltet.');
+    function deepLinkMiss(slug) {
+      /* AUS DEM FEHLSCHLAG EINE SUCHE MACHEN (Persona-Review) ==================
+         Der Toast verschwindet nach 2,5 Sekunden und lässt die Leserin auf einer
+         Seite zurück, auf der sie selbst weitersuchen muss — obwohl der Link die
+         beste Vermutung darüber mitbringt, wonach sie sucht. Der Slug aus dem
+         ?p=-Parameter wandert deshalb ins Seiten-Suchfeld, die Liste filtert sich
+         sofort darauf.
+         Bindestriche werden zu Leerzeichen: die IDs sind Slugs („briefing-gen"),
+         die Suche arbeitet über Wörter (searchTerms/searchScore in base.js).
+         Escaping: Der Wert wird als DOM-Eigenschaft `value` gesetzt und nie als
+         HTML geparst — Markup aus dem Parameter kann hier nicht wirksam werden.
+         In state.search landet er kleingeschrieben, genau wie beim Tippen. */
+      const begriff = String(slug || '').replace(/[-_]+/g, ' ').trim().slice(0, 80);
+      showToast(begriff
+        ? 'Diesen Prompt gibt es hier (noch) nicht — wir haben den Namen in die Suche übernommen.'
+        : 'Diesen Prompt gibt es hier (noch) nicht — der Link ist vermutlich veraltet.');
       try {
         const q = new URLSearchParams(location.search);
         q.delete('p');
@@ -1456,6 +1812,13 @@
         history.replaceState(null, '', location.pathname + (qs ? '?' + qs : ''));
         setTimeout(() => { _hashLock = false; }, 0);
       } catch (e) { /* History blockiert — dann bleibt nur der Toast */ }
+      const feld = document.getElementById('search');
+      if (feld && begriff) {
+        feld.value = begriff;
+        state.search = begriff.toLowerCase();
+        renderCatTabs();   // Reiter-Zähler folgen der Suche, wie beim Tippen
+        render();
+      }
     }
 
     function applyHash(fromLoad) {
@@ -1475,7 +1838,7 @@
            Anker vorbei: der Skip-Link springt auf #main-content. Ein Toast pro
            Ankersprung wäre falsch, und ein Hash, der ein echtes Element trifft,
            ist kein kaputter Deep-Link. Sonst wie bisher: URL nicht vom UI abweichen lassen. */
-        if (fromLoad && !document.getElementById(raw)) return deepLinkMiss();
+        if (fromLoad && !document.getElementById(raw)) return deepLinkMiss(id);
         updateURL(); return;
       }
       // Nur Tabs, die es für DIESEN Prompt gibt (Leuchttürme: vorschau, Breite: beispiel)

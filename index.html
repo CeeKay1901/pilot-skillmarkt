@@ -73,8 +73,57 @@
     .news-text { font-size: 1.4rem; line-height: 1.5; color: var(--c-ink-body); }
     /* Fließtext-Link auf der Startseite — EIN Muster für Neuigkeiten-Block und
        Bereichs-Kacheln, damit ein Verweis im Text überall gleich aussieht. */
-    .news-text a, .area-text a { color: var(--c-black); font-weight: 500; text-decoration: none; border-bottom: 1px solid var(--c-yellow); }
-    .news-text a:hover, .area-text a:hover { background: var(--c-yellow); }
+    .news-text a, .area-text a, .idx-cta-note a { color: var(--c-black); font-weight: 500; text-decoration: none; border-bottom: 1px solid var(--c-yellow); }
+    .news-text a:hover, .area-text a:hover, .idx-cta-note a:hover { background: var(--c-yellow); }
+
+    /* GLOSSAR-VERWEIS IM FLIESSTEXT (Persona-Review, Einsteigerin) =============
+       „Skill" und „Prompt" sind die zwei Wörter, an denen die Startseite hängt —
+       und beide sind für die Zielgruppe (kommt von pilot AI, kein
+       Software-Hintergrund) Fachbegriffe. Die Erklärung existiert bereits im
+       Glossar (data/glossar.js) und ist per ?begriff=<id> direkt adressierbar.
+       Bewusst ANDERS als der gelbe Fließtext-Link daneben: eine gepunktete Linie
+       ist die übliche Geste für „hier steckt eine Erklärung", kein Weiterklick zu
+       einer weiteren Sammlung. Und bewusst nur EINMAL je Begriff, an der
+       prominentesten Stelle — jede Erwähnung zu verlinken macht aus einem Hinweis
+       ein Muster im Text. */
+    .glossar-link {
+      color: inherit; font-weight: inherit; text-decoration: none;
+      border-bottom: 1px dotted var(--c-gray-m);
+    }
+    .glossar-link:hover { border-bottom-style: solid; border-bottom-color: var(--c-black); background: var(--c-yellow); }
+    .area-text a.glossar-link { border-bottom: 1px dotted var(--c-gray-m); font-weight: inherit; }
+    .area-text a.glossar-link:hover { border-bottom-style: solid; border-bottom-color: var(--c-black); }
+
+    /* Demo-Kennzeichnung unter dem Kachelraster (CLAUDE.md, harte Regel 3):
+       Die „Bestbewertete … n Stimmen“-Zeile in den Kacheln trug ihre Kennzeichnung
+       nur im title-Attribut — unsichtbar für alle, die nicht mit der Maus
+       darüberfahren, und auf dem Telefon gar nicht erreichbar. Ton wie im
+       „Über diesen Marketplace“-Dialog (shared/base.js). */
+    .areas-note {
+      margin-top: 1.8rem; font-size: 1.3rem; line-height: 1.6; color: var(--c-gray-m);
+    }
+    .areas-note button {
+      background: none; border: none; padding: 0; font: inherit; cursor: pointer;
+      color: var(--c-black); font-weight: 500; border-bottom: 1px solid var(--c-yellow);
+      /* 24px-Tap-Ziel (qa responsive): Texthöhe allein wären ~22px. */
+      display: inline-flex; align-items: center; min-height: 2.4rem;
+    }
+    .areas-note button:hover { background: var(--c-yellow); }
+
+    /* Textlink im Kachelfuß („Was ist ein Skill? →“) — steht neben dem gelben
+       Haupt-CTA und darf ihm optisch nicht Konkurrenz machen. Er liegt bewusst
+       NEBEN .area-cta-row (Geschwister im .area-foot), nicht darin: die Suiten
+       sichern „genau ein Bereichs-CTA je Kachel" über die Anker-Zahl in
+       .area-cta-row zu (e6/e7/e8:i4, e10:07). */
+    .area-foot { margin-top: auto; padding-top: 1.6rem; display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.6rem; }
+    .area-foot .area-cta-row { margin-top: 0; padding-top: 0; }
+    .area-link {
+      font-size: 1.4rem; font-weight: 500; color: var(--c-black); text-decoration: none;
+      border-bottom: 1px solid var(--c-yellow); white-space: nowrap;
+      /* 24px-Tap-Ziel (qa responsive): Texthöhe allein wären ~19px. */
+      display: inline-flex; align-items: center; min-height: 2.4rem;
+    }
+    .area-link:hover { background: var(--c-yellow); }
     @media (max-width: 1023px) {
       .fresh { padding: 3.6rem 0 4rem; }
       .news-item { grid-template-columns: 1fr; gap: .2rem; }
@@ -95,6 +144,23 @@
       font-size: 1.25rem; letter-spacing: .05em; color: var(--c-gray-m);
     }
     .idx-stats b { color: var(--c-black); font-weight: 700; font-size: 1.45rem; margin-right: .55rem; font-variant-numeric: tabular-nums; }
+
+    /* EINSTIEG IM KOPF (Persona-Review, Einsteigerin) =========================
+       Zwischen Claim und Zahlenzeile stand nichts: kein Satz, der sagt, was das
+       hier ist und für wen — und kein Knopf. Der erste anklickbare Einstieg lag
+       gemessen bei y≈687, also unterhalb des ersten Bildschirms. Die Subline sagt
+       in einem Satz, was README und CLAUDE.md als Scope festhalten; der Knopf
+       führt auf den einen Skill, der genau dafür da ist („Erste Schritte"). */
+    .idx-lead {
+      max-width: 62rem; margin-top: 1.8rem;
+      font-size: clamp(1.6rem, 1.4rem + .4vw, 1.9rem); line-height: 1.6;
+      color: var(--c-ink-body); text-wrap: pretty;
+    }
+    .idx-cta-row { display: flex; flex-wrap: wrap; gap: 1.2rem; margin-top: 2.4rem; align-items: center; }
+    .idx-cta-note { font-size: 1.35rem; color: var(--c-gray-m); }
+    /* 24px-Tap-Ziel (qa responsive): der Zweitweg steht frei neben dem CTA,
+       nicht im Fließtext — Texthöhe allein wären ~19px. */
+    .idx-cta-note a { display: inline-flex; align-items: center; min-height: 2.4rem; }
     @media (max-width: 1023px) { .idx-head { padding: 4.6rem 0 0; } }
 
     .areas { padding: 4.8rem 0 6rem; border-bottom: 1px solid var(--line); }
@@ -189,7 +255,10 @@
       color: var(--c-ink-strong); font-variant-numeric: tabular-nums;
     }
     .area-spot-votes .lu { width: 1.4rem; height: 1.4rem; flex: none; }
-    .area-cta-row { margin-top: auto; padding-top: 1.6rem; }
+    /* flex + wrap, weil die Skills-Kachel neben dem gelben Knopf jetzt einen
+       Textlink trägt („Was ist ein Skill? →“). Auf schmalen Karten rutscht er in
+       die zweite Zeile, statt den Knopf zu stauchen. */
+    .area-cta-row { margin-top: auto; padding-top: 1.6rem; display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.6rem; }
     @media (max-width: 1023px) {
       .areas { padding: 4.4rem 0 4.8rem; }
       .areas-grid { grid-template-columns: 1fr; }
@@ -241,12 +310,28 @@
       <div class="idx-head-inner">
         <p class="kicker">pilot Agenturgruppe · intern</p>
         <h1>Ein Ort für alles,<br>was ihr <span class="mk">mit KI baut</span>.</h1>
+        <!-- Ein Satz zum Was und Für-wen, abgeleitet aus dem Scope in README.md
+             und CLAUDE.md („Arbeitsschnittstelle der Citizen-Coding-Projektgruppe",
+             Zielgruppe: Kolleg:innen ohne Software-Hintergrund). Nichts dazuerfunden. -->
+        <p class="idx-lead">Die Arbeitsschnittstelle der Citizen-Coding-Projektgruppe bei pilot: Skills, Prompts, Vorlagen, Projekte und Lernmaterial an einem Ort — für euch, auch ohne Software-Hintergrund, wenn ihr eigene kleine Tools bauen wollt.</p>
+        <!-- Erster Handlungsknopf im ersten Bildschirm. Ziel ist das bestehende
+             ?skill=-Deep-Link-Schema von skills.html (dort auf die Hash-Form
+             umgeschrieben) und der Skill „erste-schritte“, der in data/skills.js
+             auch der erste Eintrag der STARTER_JOURNEY ist. -->
+        <div class="idx-cta-row">
+          <a class="c-cta -yellow-bg" href="skills.html?skill=erste-schritte">Neu hier? Erste Schritte</a>
+          <!-- tabindex="-1" am Ziel + focus() hier: gleiche Bauart wie die
+               Sprungmarken auf skills/prompts — der Anker allein verschiebt in
+               den meisten Browsern nur den Startpunkt der Tab-Reihenfolge,
+               der Fokus selbst bliebe im Kopfbereich hängen. -->
+          <span class="idx-cta-note">Oder <a href="#bereiche" onclick="document.getElementById('bereiche').focus({preventScroll:true})">gleich zu den sechs Bereichen</a>.</span>
+        </div>
         <p class="idx-stats" id="idx-stats"></p>
       </div>
     </header>
 
     <!-- ===== BEREICHS-RASTER ===== -->
-    <section class="areas" id="bereiche" aria-labelledby="areas-h">
+    <section class="areas" id="bereiche" tabindex="-1" aria-labelledby="areas-h">
       <div class="areas-inner">
         <p class="kicker">Überblick</p>
         <h2 id="areas-h">Die sechs Bereiche</h2>
@@ -261,10 +346,23 @@
               <span class="area-count-num" id="area-skill-count">0</span>
               <span class="area-count-label">Skills</span>
             </div>
-            <p class="area-text">Skills, Plugins und Frameworks für Claude Code und pilot AI — mit Live-Demos, Datei-Einblick und fertigen Startprompts.</p>
+            <!-- Zwei Glossar-Verweise, je einmal an ihrer prominentesten Stelle:
+                 „Skills“ direkt unter der Kachel-Überschrift, „Claude Code“ dort,
+                 wo es zum ersten Mal auf der Seite steht. Beide IDs existieren in
+                 data/glossar.js (Deep-Link-Schema lernen-hilfe.html?begriff=<id>,
+                 dieselbe Form, die GSEARCH_GROUPS in base.js verlinkt). -->
+            <p class="area-text"><a class="glossar-link" href="lernen-hilfe.html?begriff=skill" title="Was ist ein Skill? — Glossar">Skills</a>, Plugins und Frameworks für <a class="glossar-link" href="lernen-hilfe.html?begriff=claude-code" title="Was ist Claude Code? — Glossar">Claude Code</a> und pilot AI — mit Live-Demos, Datei-Einblick und fertigen Startprompts.</p>
             <div class="area-spot-slot" id="area-skill-spot"></div>
-            <div class="area-cta-row">
-              <a class="c-cta -yellow-bg" href="skills.html">Skills öffnen</a>
+            <div class="area-foot">
+              <div class="area-cta-row">
+                <a class="c-cta -yellow-bg" href="skills.html">Skills öffnen</a>
+              </div>
+              <!-- Der Onepager „Was sind Skills?“ ist ein Sub-Tab von skills.html und
+                   über ?view=explainer direkt adressierbar (skills.html liest den
+                   Parameter in DOMContentLoaded aus). Von der Startseite führte
+                   bisher kein sichtbarer Weg dorthin — der Kommentar an
+                   skills.html:4319 erwähnte einen Startseiten-Link, den es nie gab. -->
+              <a class="area-link" href="skills.html?view=explainer">Was ist ein Skill? →</a>
             </div>
           </article>
 
@@ -277,7 +375,9 @@
               <span class="area-count-num" id="area-prompt-count">0</span>
               <span class="area-count-label">Prompts</span>
             </div>
-            <p class="area-text">Kopierfertige Prompts mit Platzhaltern, Varianten und der Erklärung, warum sie funktionieren.</p>
+            <!-- Glossar-Verweis „Prompt“ (data/glossar.js, id: 'prompt') — einmal,
+                 an der prominentesten Stelle der Seite für dieses Wort. -->
+            <p class="area-text">Kopierfertige <a class="glossar-link" href="lernen-hilfe.html?begriff=prompt" title="Was ist ein Prompt? — Glossar">Prompts</a> mit Platzhaltern, Varianten und der Erklärung, warum sie funktionieren.</p>
             <div class="area-spot-slot" id="area-prompt-spot"></div>
             <div class="area-cta-row">
               <a class="c-cta -yellow-bg" href="prompts.html">Prompts öffnen</a>
@@ -353,6 +453,13 @@
             </div>
           </article>
         </div>
+        <!-- Demo-Kennzeichnung (CLAUDE.md, harte Regel 3): Die Zeile „BESTBEWERTETE
+             … n Stimmen“ in den Kacheln trug ihren Hinweis bisher NUR im
+             title-Attribut von .area-spot-votes — unsichtbar ohne Maus und auf dem
+             Telefon gar nicht erreichbar. Ton und Wortwahl folgen dem
+             „Über diesen Marketplace“-Dialog (shared/base.js), damit die Seite
+             überall dieselbe Auskunft gibt. -->
+        <p class="areas-note">Die Stimmen in den Kacheln sind redaktionelle Startwerte plus deine eigene Stimme — echte Team-Signale kommen mit dem Backend. <button type="button" onclick="openAboutModal()">Über diesen Marketplace</button></p>
       </div>
     </section>
 

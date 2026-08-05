@@ -279,7 +279,7 @@ const BEFEHLE = [
     kategorie: 'slash',
     plattform: 'code',
     nutzen: 'Kopiert Claudes letzte Antwort in deine Zwischenablage — sauberer als mühsames Markieren mit der Maus im Terminal.',
-    beispiel: 'Claude hat den Social-Media-Plan fertig formuliert: `/copy`, rüber in Teams oder Langdock, fertig.',
+    beispiel: 'Claude hat den Social-Media-Plan fertig formuliert: `/copy`, rüber in Teams oder pilot AI, fertig.',
     tipp: '`/copy 2` holt die vorletzte Antwort — die Rettung, wenn du nach dem guten Ergebnis noch eine Nachfrage hinterhergeschickt hast. Stecken Code-Blöcke in der Antwort, fragt Claude vorher, ob du einen einzelnen davon oder alles willst; mit `w` landet die Auswahl statt in der Zwischenablage in einer Datei.',
     votes: 10, votesRecent: 4
   },
@@ -331,8 +331,8 @@ const BEFEHLE = [
     cmd: '@',
     kategorie: 'langdock',
     plattform: 'langdock',
-    nutzen: 'Tippe `@` ins Langdock-Eingabefeld, um gespeicherte Prompts aus der Bibliothek direkt in den Chat zu laden — das Langdock-Pendant zu unseren Prompt-Rezepten.',
-    beispiel: '`@` tippen, „Prompts“ wählen, dein gespeichertes Briefing-Template einsetzen — mit `{{Variablen}}`, die Langdock beim Einfügen abfragt.',
+    nutzen: 'Tippe `@` ins pilot-AI-Eingabefeld, um gespeicherte Prompts aus der Bibliothek direkt in den Chat zu laden — das pilot-AI-Pendant zu unseren Prompt-Rezepten.',
+    beispiel: '`@` tippen, „Prompts“ wählen, dein gespeichertes Briefing-Template einsetzen — mit `{{Variablen}}`, die pilot AI beim Einfügen abfragt.',
     tipp: 'Die geschweiften Klammern sind der eigentliche Kniff: `Schreib eine {{Tonalität}} Mail an {{Empfänger}}` wird einmal gespeichert und danach jedes Mal abgefragt — ein Template statt zwanzig fast gleicher Kopien. Prompts und ganze Prompt-Ordner kannst du privat lassen, für den gesamten Workspace freigeben oder auf einzelne Gruppen begrenzen.',
     votes: 24, votesRecent: 10
   },
@@ -341,9 +341,9 @@ const BEFEHLE = [
     cmd: 'Cmd+K (Mac) / Ctrl+K (Windows)',
     kategorie: 'langdock',
     plattform: 'langdock',
-    nutzen: 'Öffnet die Langdock-Kommandozentrale — Chat-Verlauf durchsuchen, gepinnte Agents finden, Einstellungen erreichen, alles ohne Maus.',
+    nutzen: 'Öffnet die Kommandozentrale von pilot AI — Chat-Verlauf durchsuchen, gepinnte Agents finden, Einstellungen erreichen, alles ohne Maus.',
     beispiel: '„Wo war der Chat zur Q3-Kampagne?“ — `Cmd+K`, Stichwort tippen, Treffer öffnen.',
-    tipp: 'Die Leiste sucht nicht nur, sie legt auch an: `Cmd+K` drücken, „new project“ tippen — so entsteht ein Langdock-Projekt, ohne dass du die Seitenleiste durchsuchst. Auch die Einstellungen erreichst du von hier, ohne dich durchzuklicken.',
+    tipp: 'Die Leiste sucht nicht nur, sie legt auch an: `Cmd+K` drücken, „new project“ tippen — so entsteht ein pilot-AI-Projekt, ohne dass du die Seitenleiste durchsuchst. Auch die Einstellungen erreichst du von hier, ohne dich durchzuklicken.',
     votes: 22, votesRecent: 4
   },
   {
@@ -353,7 +353,7 @@ const BEFEHLE = [
     plattform: 'langdock',
     nutzen: 'Über den Modellnamen oben links im Chat wechselst du jederzeit das KI-Modell — sogar mitten im Gespräch, ohne dass der Verlauf verloren geht.',
     beispiel: 'Erst Claude fürs Konzept, dann testweise dieselbe Frage an GPT — einfach oben links umschalten, die nächste Nachricht nutzt das neue Modell.',
-    tipp: 'Der Wechsel wirkt ab der nächsten Nachricht, der bisherige Verlauf bleibt vollständig stehen — du verlierst also nichts. Die Langdock-Doku empfiehlt genau diese Arbeitsteilung: das stärkere Modell fürs Denken und Konzipieren, danach ein schnelleres für die Fleißarbeit.',
+    tipp: 'Der Wechsel wirkt ab der nächsten Nachricht, der bisherige Verlauf bleibt vollständig stehen — du verlierst also nichts. Die Doku des Herstellers Langdock empfiehlt genau diese Arbeitsteilung: das stärkere Modell fürs Denken und Konzipieren, danach ein schnelleres für die Fleißarbeit.',
     votes: 19, votesRecent: 3
   },
   {
@@ -361,7 +361,7 @@ const BEFEHLE = [
     cmd: 'Sidebar → Projects → +',
     kategorie: 'langdock',
     plattform: 'langdock',
-    nutzen: 'Ein Langdock-Projekt bündelt Chats zu einem Thema und gibt allen darin dieselben Dateien und Anweisungen mit — wie ein CLAUDE.md fürs Chatten.',
+    nutzen: 'Ein pilot-AI-Projekt bündelt Chats zu einem Thema und gibt allen darin dieselben Dateien und Anweisungen mit — wie ein CLAUDE.md fürs Chatten.',
     beispiel: 'Projekt „Kunde Müller“ mit Styleguide-PDF und der Anweisung „immer förmliche Ansprache“ — jeder neue Chat darin kennt beides automatisch.',
     tipp: 'Ein Projekt besteht aus drei Dingen: Name, angehängte Dateien und eigene Anweisungen. Anlegen geht auch ohne Seitenleiste — `Cmd+K` drücken, „new project“ tippen. Ergänzt du später eine Datei oder änderst die Anweisungen, gilt das laut Doku für alle künftigen Chats des Projekts.',
     votes: 17, votesRecent: 9
@@ -371,9 +371,9 @@ const BEFEHLE = [
     cmd: 'Cmd+Shift+O (Mac) / Ctrl+Shift+O (Windows)',
     kategorie: 'langdock',
     plattform: 'langdock',
-    nutzen: 'Startet blitzschnell einen neuen Chat — das Langdock-Pendant zu `/clear`: neues Thema, frischer Kontext.',
+    nutzen: 'Startet blitzschnell einen neuen Chat — das pilot-AI-Pendant zu `/clear`: neues Thema, frischer Kontext.',
     beispiel: 'Reporting fertig, jetzt Textarbeit: `Cmd+Shift+O` statt mit der Maus zum „Neuer Chat“-Knopf zu wandern.',
-    tipp: 'In der Langdock-Desktop-App liegt derselbe Griff zusätzlich auf `Cmd+N` bzw. `Ctrl+N`. Und wenn du zum Lesen Platz brauchst: `Cmd+Shift+S` bzw. `Ctrl+Shift+S` klappt die Seitenleiste weg und wieder auf.',
+    tipp: 'In der Desktop-App liegt derselbe Griff zusätzlich auf `Cmd+N` bzw. `Ctrl+N`. Und wenn du zum Lesen Platz brauchst: `Cmd+Shift+S` bzw. `Ctrl+Shift+S` klappt die Seitenleiste weg und wieder auf.',
     votes: 8, votesRecent: 2
   },
   {
@@ -381,7 +381,7 @@ const BEFEHLE = [
     cmd: 'Cmd+Shift+C (Mac) / Ctrl+Shift+C (Windows)',
     kategorie: 'langdock',
     plattform: 'langdock',
-    nutzen: 'Kopiert die letzte Antwort in deine Zwischenablage — das Langdock-Pendant zu `/copy` in Claude Code.',
+    nutzen: 'Kopiert die letzte Antwort in deine Zwischenablage — das pilot-AI-Pendant zu `/copy` in Claude Code.',
     beispiel: 'Der finale Textvorschlag steht: `Cmd+Shift+C` und direkt ins CMS oder in die Mail einfügen.',
     tipp: 'Das Kürzel nimmt immer die LETZTE Antwort. Willst du eine frühere, fahr mit der Maus darüber — dort sitzt derselbe Kopier-Knopf, gleich daneben der Kreispfeil für „nochmal, anders formuliert“.',
     votes: 6, votesRecent: 2

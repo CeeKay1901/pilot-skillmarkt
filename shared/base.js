@@ -656,7 +656,14 @@ function toggleFavorite(evt, id, type) {
     // (favBookmarkHtml → LU.bookmark), nicht mit einem Stern. Die Stern-Glyphe
     // stand hier noch aus der Zeit vor dem Lesezeichen-Knopf. Das Gegenstück
     // oben ist mitgezogen, damit Merken und Zurücknehmen dasselbe Wort benutzen.
-    showToast('Gemerkt — du findest es unter „Deine Sachen“');
+    //
+    // REICHWEITE STEHT DABEI: Gemerktes liegt in localStorage, also an DIESEM
+    // Browser auf DIESEM Gerät. Bis hierher stand das nirgends — wer am Handy
+    // merkt und am Bürorechner nachsieht, erfuhr es erst an der leeren Liste,
+    // und das ist der teuerste Moment dafür. Der Zusatz sagt es im Augenblick
+    // der Handlung; die Dauerzeile im Panel („Deine Sachen“) sagt es dem, der
+    // später hinschaut. Kein Alarm, nur die Tatsache.
+    showToast('Gemerkt — du findest es unter „Deine Sachen“, nur in diesem Browser');
   }
   if (type === 'skill') { // Alt-Key synchron halten
     try {
@@ -792,6 +799,11 @@ function voteScore(item, type) { return getUpvoteCount(item, type); }
      name    Titel des Eintrags, geht in das aria-label.
      compact true → .-kompakt (kleinere Pille, Trefffläche bleibt ≥44px).
      cls     zusätzliche Klassen der Seite. */
+/* Demo-Kennzeichnung an Stimmenzahlen (CLAUDE.md, harte Regel 3): EIN Satz für
+   alle Seiten. Hier statt je Seite, damit die Kennzeichnung nicht driftet — und
+   weil eine zweite Seiten-Konstante gleichen Namens ein SyntaxError wäre
+   (dieselbe Fehlerklasse wie die TASK_LABELS-Kollision). */
+const VOTE_DEMO_HINT = 'Demo-Wert: Startzahl aus den Daten plus deine eigene Stimme — nur auf diesem Gerät gespeichert.';
 function renderUpvoteBtn(id, type, count, opts) {
   opts = opts || {};
   const on = hasVoted(type, id);
@@ -1405,22 +1417,29 @@ function _sfStepsHtml(steps, doneFirst, type) {
     </ol>`;
 }
 
+/* `required` allein reicht der Vorlesesoftware hier nicht: das Formular trägt
+   `novalidate`, die Browser-Validierung ist also abgeschaltet und die Pflicht
+   steht sonst nur als Sternchen da, das `aria-hidden` trägt. Deshalb zusätzlich
+   `aria-required` — das ist die Angabe, die vorgelesen wird.
+   `aria-invalid` setzt submitFlowSend() erst beim Fehlversuch und
+   _submitFlowInput() nimmt es bei der nächsten Eingabe wieder weg. */
 function _sfFieldHtml(conf, f) {
   const draft = getSubmitDraft(conf.type);
   const v = draft[f.key] !== undefined ? String(draft[f.key]) : String(f.value || '');
   const id = `sf-field-${f.key}`;
   const req = f.required ? ' <span class="sf-req" aria-hidden="true">*</span>' : '';
+  const rq = f.required ? ' required aria-required="true"' : '';
   const on = `oninput="_submitFlowInput('${f.key}', this.value)"`;
   let control;
   if (f.type === 'select') {
-    control = `<select id="${id}" data-sf-key="${f.key}"${f.required ? ' required' : ''} onchange="_submitFlowInput('${f.key}', this.value)">
+    control = `<select id="${id}" data-sf-key="${f.key}"${rq} onchange="_submitFlowInput('${f.key}', this.value)">
       <option value="">— bitte wählen —</option>
       ${(f.options || []).map(o => `<option value="${escHtml(o)}"${o === v ? ' selected' : ''}>${escHtml(o)}</option>`).join('')}
     </select>`;
   } else if (f.type === 'textarea') {
-    control = `<textarea id="${id}" data-sf-key="${f.key}" rows="4" placeholder="${escHtml(f.placeholder || '')}"${f.required ? ' required' : ''} ${on}>${escHtml(v)}</textarea>`;
+    control = `<textarea id="${id}" data-sf-key="${f.key}" rows="4" placeholder="${escHtml(f.placeholder || '')}"${rq} ${on}>${escHtml(v)}</textarea>`;
   } else {
-    control = `<input type="text" id="${id}" data-sf-key="${f.key}" value="${escHtml(v)}" placeholder="${escHtml(f.placeholder || '')}"${f.required ? ' required' : ''} ${on}>`;
+    control = `<input type="text" id="${id}" data-sf-key="${f.key}" value="${escHtml(v)}" placeholder="${escHtml(f.placeholder || '')}"${rq} ${on}>`;
   }
   return `
     <div class="sf-field">
@@ -1430,34 +1449,81 @@ function _sfFieldHtml(conf, f) {
     </div>`;
 }
 
+/* Liegt für diesen Typ ein gespeicherter Entwurf vor? `_submittedAt` ist eine
+   Verwaltungsangabe und kein Feldwert — ein Entwurf, der NUR daraus besteht,
+   ist keiner. */
+function _sfHasDraft(type) {
+  return Object.keys(getSubmitDraft(type)).some(k => k !== '_submittedAt');
+}
+
+/* Der Formular-Zustand des Dialogs als eigene Funktion, weil er zweimal
+   gebraucht wird: beim Öffnen und nach „Entwurf verwerfen". Ein zweiter Aufruf
+   von openSubmitFlow() ginge dafür nicht — der merkt sich `document.activeElement`
+   als Auslöser, und das wäre nach dem Verwerfen der Verwerfen-Knopf selbst, den
+   es dann nicht mehr gibt. */
+function _sfBodyHtml(config) {
+  const steps = config.steps || _sfDefaultSteps(config.type);
+  const draft = getSubmitDraft(config.type);
+  const hasDraft = _sfHasDraft(config.type);
+  /* Ein Entwurf mit `_submittedAt` ist im Demo-Flow schon einmal „abgeschickt"
+     worden. Ohne diesen Satz stand das Formular beim nächsten Öffnen
+     kommentarlos vorbefüllt da und sah aus, als wäre nichts passiert. */
+  const sent = hasDraft && draft._submittedAt
+    ? `<p class="sf-sent-note">Diesen Entwurf hast du am ${escHtml(formatDate(draft._submittedAt))} im Demo-Flow abgeschickt — gesendet wurde nichts. Du kannst ihn weiter bearbeiten oder unten verwerfen.</p>`
+    : '';
+  return `
+    <p class="sf-demo-note">${LU.check} Demo — deine Eingabe bleibt lokal in deinem Browser, es wird nichts gesendet.</p>
+    ${_sfStepsHtml(steps, false, config.type)}
+    ${config.intro ? `<p class="sf-intro">${escHtml(config.intro)}</p>` : ''}
+    ${sent}
+    <form class="sf-form" novalidate onsubmit="event.preventDefault(); submitFlowSend();">
+      ${config.fields.map(f => _sfFieldHtml(config, f)).join('')}
+      <div class="sf-actions">
+        <button type="submit" class="c-cta -yellow-bg">${escHtml(config.submitLabel || 'Entwurf einreichen (Demo)')}</button>
+        <button type="button" class="c-cta -black-border" onclick="closeSubmitFlow()">Abbrechen</button>
+        ${hasDraft ? `<button type="button" class="sf-discard" onclick="discardSubmitDraft()">Entwurf verwerfen</button>` : ''}
+      </div>
+    </form>`;
+}
+
 function openSubmitFlow(config) {
   if (!config || !config.type || !config.fields) return;
   _submitFlowConfig = config;
   _submitFlowOpener = document.activeElement;
   const ov = _ensureSubmitOverlay();
   document.getElementById('sf-title').textContent = config.title || 'Beitrag einreichen';
-  const steps = config.steps || _sfDefaultSteps(config.type);
-  document.getElementById('sf-body').innerHTML = `
-    <p class="sf-demo-note">${LU.check} Demo — deine Eingabe bleibt lokal in deinem Browser, es wird nichts gesendet.</p>
-    ${_sfStepsHtml(steps, false, config.type)}
-    ${config.intro ? `<p class="sf-intro">${escHtml(config.intro)}</p>` : ''}
-    <form class="sf-form" novalidate onsubmit="event.preventDefault(); submitFlowSend();">
-      ${config.fields.map(f => _sfFieldHtml(config, f)).join('')}
-      <div class="sf-actions">
-        <button type="submit" class="c-cta -yellow-bg">${escHtml(config.submitLabel || 'Entwurf einreichen (Demo)')}</button>
-        <button type="button" class="c-cta -black-border" onclick="closeSubmitFlow()">Abbrechen</button>
-      </div>
-    </form>`;
+  document.getElementById('sf-body').innerHTML = _sfBodyHtml(config);
   ov.classList.add('open');
   document.body.style.overflow = 'hidden';
   setTimeout(() => { document.querySelector('#submit-overlay .sf-close')?.focus(); }, 50);
+}
+
+/* Entwurf wegwerfen: localStorage-Eintrag löschen und den Dialog mit leeren
+   Feldern neu aufbauen. Der Knopf verschwindet dabei mit — er hängt an
+   _sfHasDraft() —, deshalb muss der Fokus danach aktiv ins erste Feld gesetzt
+   werden, sonst fällt er still auf <body> zurück (dieselbe Falle wie in
+   closeSubmitFlow()). */
+function discardSubmitDraft() {
+  const conf = _submitFlowConfig;
+  if (!conf) return;
+  lsRemove(_submitDraftKey(conf.type));
+  const body = document.getElementById('sf-body');
+  if (body) body.innerHTML = _sfBodyHtml(conf);
+  showToast('Entwurf verworfen — die Felder sind wieder leer.');
+  document.querySelector('#sf-body [data-sf-key]')?.focus();
 }
 
 function _submitFlowInput(key, value) {
   if (!_submitFlowConfig) return;
   const vals = getSubmitDraft(_submitFlowConfig.type);
   if (value && value.trim()) vals[key] = value; else delete vals[key];
+  /* Sobald jemand etwas ändert, ist es nicht mehr der abgeschickte Entwurf —
+     die Hinweiszeile in _sfBodyHtml() würde beim nächsten Öffnen sonst etwas
+     behaupten, das für den geänderten Stand nicht mehr stimmt. */
+  delete vals._submittedAt;
   _saveSubmitDraft(_submitFlowConfig.type, vals);
+  // Fehlermarkierung nimmt die nächste Eingabe wieder zurück.
+  document.querySelector(`#sf-body [data-sf-key="${key}"]`)?.removeAttribute('aria-invalid');
 }
 
 function submitFlowSend() {
@@ -1468,6 +1534,7 @@ function submitFlowSend() {
     if (!f.required) continue;
     const el = document.querySelector(`#sf-body [data-sf-key="${f.key}"]`);
     if (el && !el.value.trim()) {
+      el.setAttribute('aria-invalid', 'true');
       showToast(`Bitte „${f.label}“ ausfüllen.`);
       el.focus();
       return;
@@ -1616,9 +1683,21 @@ const GSEARCH_GROUPS = [
     href: it => 'lernen-hilfe.html?r=' + encodeURIComponent(it.id),
     title: it => it.titel, sub: it => it.fuerDich || it.beschreibung,
     fields: it => [[it.titel || '', 5], [(it.tags || []).join(' '), 3], [it.beschreibung || '', 1], [it.fuerDich || '', 1]] },
+  /* `sub` liest die echte beschreibung aus dem Quell-Eintrag (ref), nicht das
+     Typwort. Der ASSETS-Index ist bewusst dünn — Beschreibung, Lizenz und Tags
+     stehen nur in FONTS/PALETTES/PATTERNS/ICONSETS und werden über ref gelesen
+     (data/assets.js, assetModel()). Vorher stand als zweite Zeile schlicht
+     „palette", „pattern", „font" — ein Wort, das jeder Treffer derselben
+     Gattung teilt und das damit nichts unterscheidet. Gelesen wird ref direkt
+     statt über assetModel(): sub() läuft in _gsRenderResults ohne try/catch,
+     und ein Aufruf einer Funktion aus data/assets.js wäre eine Abhängigkeit,
+     die ein fehlendes Global zum JS-Fehler machen könnte. Fällt beschreibung
+     aus, bleibt das Typwort als Rückfall — eine leere zweite Zeile wäre
+     schlechter als eine grobe. Wirkt zugleich in „Deine Sachen": dieselbe
+     Zeile speist dort die Kurzinfo. */
   { key: 'asset', label: 'Assets', glob: 'ASSETS', bereich: 'vorlagen.html?tab=assets',
     href: it => 'vorlagen.html?a=' + encodeURIComponent(it.id),
-    title: it => it.name, sub: it => it.typ,
+    title: it => it.name, sub: it => (it.ref && it.ref.beschreibung) || it.typ,
     fields: it => [[it.name || '', 5], [it.typ || '', 2], [it.kategorie || '', 2]] },
   /* Pakete (die Bausätze zum Mitnehmen). Steht direkt HINTER den Assets, weil ein
      Paket genau die Sorte Material bündelt, die dort einzeln liegt — wer nach
@@ -1822,8 +1901,31 @@ function newsHtml(anzahlTage) {
     /* Wenig am Tag: Einträge namentlich (contentorientiert). Viel am Tag:
        Gattung + Zahl — bei 153 Einträgen wären drei herausgegriffene Namen
        keine Information, sondern Zufall. Die Sammelmeldung ist immer gross. */
-    const namentlich = !m.sammel && m.gesamt <= NEWS_NAMENSGRENZE;
+    const kleinerTag = !m.sammel && m.gesamt <= NEWS_NAMENSGRENZE;
     const teile = m.gruppen.map(gr => {
+      /* NAMENTLICH IST EINE FRAGE AN DIE GATTUNG, NICHT NUR AN DEN TAG.
+         Gemessen am 03.08.2026: der Tag brachte 15 Begriffe, 1 Skill und
+         1 Ressource — mit 17 Einträgen über der Namensgrenze, also stand dort
+         „1 Skill" und verlinkte auf skills.html mit 31 ungefilterten Karten.
+         Was neu ist, musste man sich selbst zusammensuchen; die Meldung nannte
+         eine Zahl und verschwieg den Namen, den sie kannte. Dasselbe am
+         25.07.2026 für „3 Projektanweisungen", „3 Startprojekte", „1 Paket".
+         Eine Gattung mit höchstens NEWS_PRO_GRUPPE Einträgen wird deshalb
+         immer benannt und einzeln verlinkt, unabhängig davon, wie voll der
+         Tag sonst ist. Die grossen Gattungen desselben Tages bleiben bei
+         Zahl + Bereichslink — bei 15 Begriffen wären drei Namen wieder Zufall.
+         Der Bereichslink bleibt in BEIDEN Zweigen stehen (`ort`), die
+         Einzel-Deep-Links kommen hinzu.
+
+         AUSGENOMMEN BLEIBT DIE SAMMELMELDUNG — nicht aus Vorsicht, sondern
+         weil sie die einzige Meldung ist, die dauerhaft JEDEN Bereich nennt.
+         Genau daran hängen e11:09 und e3:i5/e6:i5/e7:i5/e8:i5, die exakte
+         hrefs wie „vorlagen.html" und „prompts.html" im Block verlangen.
+         Schaltete eine Gattung dort auf Einzel-Deep-Links um, sobald sie klein
+         genug wird, fiele ihr Bereichslink still aus dem Block — heute noch
+         folgenlos (alle Sammel-Gattungen zählen zweistellig oder knapp
+         darunter), morgen ein Testbruch ohne erkennbare Ursache. */
+      const namentlich = kleinerTag || (!m.sammel && gr.eintraege.length <= NEWS_PRO_GRUPPE);
       /* Bei GENAU EINEM Eintrag die Einzahl — „1 Pakete" stand am 25.07.2026
          sichtbar auf der Startseite, als die erste Sammlung mit nur einem
          Eintrag dazukam. Die Einzahl steht schon gepflegt in DS_TYPE_LABEL
@@ -1937,10 +2039,26 @@ function _gsRenderResults(q) {
   const byGroup = {};
   scored.forEach(s => { const k = s.entry.group.key; (byGroup[k] = byGroup[k] || []).push(s); });
   const PER = 6;
+  /* GRUPPEN-REIHENFOLGE FOLGT DER TREFFERQUALITÄT, NICHT DER LISTE.
+     Bis hierher lief diese Schleife stur über GSEARCH_GROUPS — die Schubladen
+     standen also immer in derselben Reihenfolge, egal wie gut sie trafen.
+     Gemessen an „reporting": der einzige Titeltreffer (Prompt „Reporting-Zahlen
+     in Management-Sprache", Score 10) stand auf Platz 8, hinter sechs Skills
+     mit blossen Beschreibungstreffern (Score 6 und darunter) und einem Plugin
+     (2). Enter auf dem ersten Treffer öffnete damit verlässlich den falschen.
+     `scored` ist bereits global nach Score sortiert, das erste Element einer
+     Gruppe ist also ihr bester Treffer. Danach wird sortiert; bei Gleichstand
+     entscheidet weiter die feste GSEARCH_GROUPS-Reihenfolge, damit die Anzeige
+     deterministisch bleibt und ein Test dagegen nicht wackelt.
+     Die Schubladen selbst bleiben: die Gruppen-Header sind der Fundort-Hinweis
+     (E9-Vertrag, Check 03), nur ihre Reihenfolge ist jetzt eine Aussage über
+     die Treffer statt über die Datei. */
+  const gruppen = GSEARCH_GROUPS
+    .map((g, i) => ({ g, i, list: (byGroup[g.key] || []).slice(0, PER) }))
+    .filter(x => x.list.length)
+    .sort((a, b) => b.list[0].sc - a.list[0].sc || a.i - b.i);
   let html = ''; let n = 0;
-  GSEARCH_GROUPS.forEach(g => {
-    const list = (byGroup[g.key] || []).slice(0, PER);
-    if (!list.length) return;
+  gruppen.forEach(({ g, list }) => {
     html += `<li class="gs-group" role="presentation"><span class="gs-group-label">${escHtml(g.label)}</span></li>`;
     list.forEach(s => {
       const it = s.entry.item;
@@ -2089,7 +2207,17 @@ function initGlobalSearch() {
 
 /* ===== „ÜBER DIESE SEITE“-MODAL (E9, additiv) — zentrale, ehrliche Demo-Kennzeichnung.
    Absender-Regel §1.1 wörtlich. Dynamisch erzeugtes #about-overlay, role="dialog",
-   Esc + Backdrop + Fokus zurück; Scroll-Sperre nur freigeben, wenn kein anderes Overlay offen. */
+   Esc + Backdrop + Fokus zurück; Scroll-Sperre nur freigeben, wenn kein anderes Overlay offen.
+
+   Der Absatz stand bis zur Audit-Runde 2026-08 sachlich falsch da und nannte die
+   Seite eine „Citizen-Coding-Demo … auf GitHub Pages" mit „Bewertungen". Drei
+   Fehler auf einmal: die Seite ist laut CLAUDE.md ausdrücklich KEINE Demo,
+   sondern die Arbeitsschnittstelle der Projektgruppe; der Hoster hängt am
+   Deployment und gehört nicht in den Text; und Sterne-Bewertungen sind seit E16
+   abgeschafft — abgestimmt wird, gemerkt wird, bewertet wird nicht.
+   Die drei Wendungen „redaktionelle Demo-Daten", „bleiben lokal in deinem
+   Browser" und „es wird nichts gesendet" sind der Sollwert von
+   e9:08_about_modal — beim Umformulieren müssen sie wörtlich stehen bleiben. */
 function _ensureAboutOverlay() {
   let ov = document.getElementById('about-overlay');
   if (ov) return ov;
@@ -2100,8 +2228,8 @@ function _ensureAboutOverlay() {
     <div class="about-modal" role="dialog" aria-modal="true" aria-labelledby="about-title">
       <button type="button" class="about-close" onclick="closeAboutModal()" aria-label="Dialog schließen">✕</button>
       <h2 id="about-title">Über diesen Marketplace</h2>
-      <p>Der pilot AI Marketplace ist eine <strong>Citizen-Coding-Demo</strong> der pilot Agenturgruppe — ein statischer Katalog auf GitHub Pages, ohne Backend, ohne Login, ohne Datenbank. Alles läuft in deinem Browser.</p>
-      <p class="about-note">Bewertungen, Stimmen und Beispiel-Projekte sind redaktionelle Demo-Daten — deine Eingaben bleiben lokal in deinem Browser, es wird nichts gesendet.</p>
+      <p>Der pilot AI Marketplace ist die <strong>Arbeitsschnittstelle der Citizen-Coding-Projektgruppe</strong> bei pilot: Skills, Prompts, Vorlagen und Projekte der Gruppe an einem Ort. Die Seite ist statisch — kein Backend, kein Login, keine Datenbank. Alles läuft in deinem Browser.</p>
+      <p class="about-note">Was du merkst, wofür du stimmst und was du ausprobiert hast — diese Angaben bleiben lokal in deinem Browser, es wird nichts gesendet und nichts geteilt. Was hier schon an Stimmen, Kommentaren und Beispiel-Projekten steht, sind redaktionelle Demo-Daten und auf den Seiten selbst als solche gekennzeichnet.</p>
     </div>`;
   document.body.appendChild(ov);
   ov.addEventListener('click', e => { if (e.target === ov) closeAboutModal(); });
@@ -2211,7 +2339,17 @@ function _dsResolve(typ, id) {
      trennt). Nur die BESCHRIFTUNG ändert sich: das localStorage-Format bleibt
      unangetastet, und ein itemType ohne eigenes Label fällt auf typ zurück. */
   const label = item.itemType && DS_TYPE_LABEL[item.itemType] ? item.itemType : typ;
-  return { title: g.title(item), href: g.href(item), typ: label };
+  /* `sub` ist ADDITIV: title/href/typ bleiben unverändert, weil index.html
+     dieselbe Funktion für seine Favoriten-Sektion benutzt und nur diese drei
+     Felder liest. Kurzinfo aus derselben GSEARCH_GROUPS-Zeile, aus der auch die
+     globale Suche ihre zweite Zeile zieht — bei den rund fünfzehn Skills, deren
+     Titel die technische ID ist (brainstorming, pptx, dataviz …), ist sie das
+     Einzige, woran man den Eintrag wiedererkennt. Gekappt wie dort auf 120
+     Zeichen; try/catch, weil sub() auf lückenhaften Daten werfen kann und eine
+     fehlende Kurzinfo die Zeile nicht kosten darf. */
+  let sub = '';
+  try { sub = String(g.sub(item) || '').slice(0, 120); } catch (e) { sub = ''; }
+  return { title: g.title(item), href: g.href(item), typ: label, sub };
 }
 
 function _dsCount() { return lsKeysWithPrefix('fav:').length; }
@@ -2232,7 +2370,11 @@ function _dsSectionHtml(label, entries, marker) {
   const rows = entries.map(e => {
     const r = _dsResolve(e.typ, e.id);
     if (!r) return '';
-    return `<a class="ds-item" href="${r.href}"><span class="ds-item-title">${escHtml(r.title)}</span><span class="ds-item-meta">${DS_TYPE_LABEL[r.typ] || r.typ}${marker || ''}</span></a>`;
+    return `<a class="ds-item" href="${r.href}">`
+      + `<span class="ds-item-main"><span class="ds-item-title">${escHtml(r.title)}</span>`
+      + (r.sub ? `<span class="ds-item-sub">${escHtml(r.sub)}</span>` : '')
+      + `</span>`
+      + `<span class="ds-item-meta">${DS_TYPE_LABEL[r.typ] || r.typ}${marker || ''}</span></a>`;
   }).filter(Boolean).join('');
   if (!rows) return '';
   return `<div class="ds-section"><p class="ds-section-label">${label}</p>${rows}</div>`;
@@ -2250,6 +2392,11 @@ function _ensureDsOverlay() {
         <h2 id="ds-title">Deine Sachen</h2>
         <button type="button" class="ds-close" onclick="closeDeineSachen()" aria-label="Deine Sachen schließen">✕</button>
       </div>
+      <!-- Dauerzeile, kein Toast: der Merken-Toast erreicht nur, wer gerade merkt.
+           Wer diese Liste an einem anderen Gerät leer vorfindet, hat nie gemerkt —
+           genau ihm muss hier stehen, warum. Ton wie die übrigen Demo-Hinweise:
+           Du-Form, ehrlich, keine Warnfarbe. -->
+      <p class="ds-geraet-hinweis">Nur in diesem Browser gespeichert — an einem anderen Gerät ist die Liste leer.</p>
       <div class="ds-body" id="ds-body"></div>
     </div>`;
   document.body.appendChild(ov);

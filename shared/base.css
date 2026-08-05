@@ -822,6 +822,15 @@
       white-space: nowrap;
     }
     .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+    /* nowrap ist auf dem Desktop Absicht — ein zweizeiliger Toast liest sich wie
+       eine Fehlermeldung. Auf 390 px passt aber schon der längste Bestands-Toast
+       („Diesen Prompt gibt es hier (noch) nicht …", 77 Zeichen) nicht mehr in
+       eine Zeile, und seit der Merken-Toast die Reichweite mitnennt, gilt das
+       auch für ihn. Statt links und rechts aus dem Viewport zu ragen, bricht er
+       auf schmalen Geräten um. */
+    @media (max-width: 640px) {
+      .toast { white-space: normal; max-width: calc(100vw - 3.2rem); text-align: center; }
+    }
 
     /* ===== EMPTY STATE ===== */
     .empty-state { grid-column: 1/-1; text-align: center; padding: 8rem 2rem; }
@@ -1371,7 +1380,33 @@
     }
     .sf-field input:focus, .sf-field textarea:focus, .sf-field select:focus { outline: none; border-color: var(--c-black); }
     .sf-hint { font-size: 1.25rem; color: var(--c-gray-m); line-height: 1.45; margin: 0; }
+    /* Hinweis „diesen Entwurf hast du schon abgeschickt" (_sfBodyHtml in base.js).
+       Bewusst NICHT wie .sf-demo-note gemustert: der Demo-Hinweis steht immer da
+       und ist Kleingedrucktes, diese Zeile steht nur manchmal und erklärt, warum
+       die Felder vorbefüllt sind — sie braucht Fließtextgröße und eine eigene
+       Kante. Gelber Balken statt Rahmen, weil es keine Warnung ist.
+       Kontrast --c-ink-strong (#444) auf --c-bg (#f1f1ec): 8,60:1. */
+    .sf-sent-note {
+      font-size: 1.4rem; line-height: 1.55; color: var(--c-ink-strong);
+      background: var(--c-bg); border-left: 3px solid var(--c-yellow);
+      border-radius: 0 var(--r-sm) var(--r-sm) 0;
+      padding: 1rem 1.4rem; margin: 0 0 1.8rem;
+    }
     .sf-actions { display: flex; gap: 1.2rem; flex-wrap: wrap; align-items: center; margin-top: .6rem; }
+    /* „Entwurf verwerfen" ist die dritte Aktion in einer Reihe, in der zwei
+       .c-cta stehen. Als dritter Block-Knopf würde sie gleich schwer wiegen wie
+       „Absenden" — deshalb Textknopf. `margin-left: auto` schiebt sie ans andere
+       Ende, damit sie nicht neben „Abbrechen" zu einem Paar verschmilzt; beim
+       Umbruch (flex-wrap) fällt das folgenlos weg.
+       Kontrast --c-gray-m (#66655d) auf --c-white (#fcfcfc, .sf-modal): 5,71:1. */
+    .sf-discard {
+      margin-left: auto; background: none; border: none; padding: .6rem;
+      font-family: inherit; font-size: 1.35rem; color: var(--c-gray-m);
+      text-decoration: underline; text-underline-offset: .25em;
+      cursor: pointer; transition: var(--trans);
+    }
+    .sf-discard:hover { color: var(--c-black); }
+    .sf-discard:focus-visible { outline: 2px solid var(--c-black); outline-offset: 2px; border-radius: var(--r-xs); }
     .sf-thanks { text-align: left; padding: .4rem 0 2rem; }
     .sf-thanks-ic { display: inline-flex; margin-bottom: 1.2rem; color: var(--c-black); }
     .sf-thanks-ic .lu { width: 3.2rem; height: 3.2rem; }
@@ -1385,6 +1420,10 @@
       .sf-header { padding: 2rem 1.6rem 1.2rem; align-items: center; }
       /* E12-Mobil: Schließen-Knopf des Einreichen-Sheets auf WCAG-Trefferfläche (≥44px). */
       .sf-close { min-width: 4.4rem; min-height: 4.4rem; display: inline-flex; align-items: center; justify-content: center; margin: -.6rem -.6rem -.6rem 0; }
+      /* Gleiche Trefferfläche für „Entwurf verwerfen". `margin-left: auto` fällt
+         mobil weg: die zwei .c-cta füllen die Breite, der Textknopf steht darunter
+         und würde sonst rechtsbündig ohne Bezug hängen. */
+      .sf-discard { margin-left: 0; min-height: 4.4rem; display: inline-flex; align-items: center; }
     }
 
     /* iOS Safari zoomt bei Formularfeldern < 16px automatisch hinein — deshalb
@@ -2414,9 +2453,19 @@
     @media (prefers-reduced-motion: reduce) { .ds-panel { animation: none; } }
     .ds-head {
       display: flex; align-items: center; justify-content: space-between;
-      padding: 2rem 2.4rem 1.6rem; border-bottom: 1px solid var(--line);
+      padding: 2rem 2.4rem .8rem;
     }
     .ds-head h2 { font-size: 1.9rem; font-weight: var(--fw-semi); letter-spacing: -.02em; }
+    /* Gerätehinweis als Dauerzeile im Kopf. Die Trennlinie ist von .ds-head
+       hierher gewandert, damit Überschrift und Hinweis EINE Kopfzone bilden
+       statt der Hinweis wie ein erster Listeneintrag zu wirken — er steht
+       immer, also gehört er über den Strich.
+       Kontrast --c-gray-m (#66655d) auf --paper (#fbfbf7, .ds-panel): 5,65:1,
+       derselbe Ton und derselbe Grund wie bei .ds-item-sub weiter unten. */
+    .ds-geraet-hinweis {
+      padding: 0 2.4rem 1.4rem; border-bottom: 1px solid var(--line);
+      font-size: 1.25rem; line-height: 1.45; color: var(--c-gray-m);
+    }
     .ds-close {
       background: none; border: none; cursor: pointer;
       font-size: 1.8rem; color: var(--c-gray-m); padding: .6rem;
@@ -2441,7 +2490,21 @@
     .ds-item:last-child { border-bottom: none; }
     .ds-item:hover .ds-item-title { text-decoration: underline; text-underline-offset: .25em; }
     .ds-item:focus-visible { outline: 2px solid var(--c-black); outline-offset: 2px; border-radius: var(--r-xs); }
+    /* Titel + Kurzinfo stehen als Spalte links, das Typ-Label bleibt rechts.
+       `min-width: 0` ist Pflicht: ohne das kann der Flex-Kindknoten nicht unter
+       seine Inhaltsbreite schrumpfen und die Ellipse greift nie. */
+    .ds-item-main { display: flex; flex-direction: column; gap: .2rem; min-width: 0; }
     .ds-item-title { font-size: 1.5rem; font-weight: 500; color: var(--c-black); }
+    /* Kurzinfo aus GSEARCH_GROUPS[].sub — dieselbe zweite Zeile, die die globale
+       Suche zeigt. Bei den Skills, deren Titel die technische ID ist (pptx,
+       dataviz …), ist sie das Einzige, woran der Eintrag erkennbar ist. Eine
+       Zeile mit Ellipse, damit die Liste scanbar bleibt.
+       Kontrast --c-gray-m (#66655d) auf --paper (#fbfbf7, .ds-panel): 5,65:1 —
+       derselbe Ton wie .ds-item-meta daneben. */
+    .ds-item-sub {
+      font-size: 1.25rem; line-height: 1.4; color: var(--c-gray-m);
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
     .ds-item-meta { font-size: 1.25rem; color: var(--c-gray-m); flex-shrink: 0; display: inline-flex; gap: .8rem; align-items: baseline; }
     @media (max-width: 640px) {
       .ds-panel { width: 100%; border-left: none; }

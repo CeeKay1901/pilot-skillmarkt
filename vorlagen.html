@@ -105,6 +105,26 @@
     color: var(--c-ink-body);
   }
 
+  /* ===== Aktionen im Modal-Kopf: Merken + Schließen =====
+     .modal-header ist in base.css ein `space-between` mit genau zwei Kindern
+     (Titel links, Schließen rechts). Diese Klammer hält Merken und Schließen
+     als EINE rechte Gruppe zusammen — ohne sie schöbe der Lesezeichen-Knopf den
+     Titel zusammen und stünde mittig in der Kopfzeile.
+     Sie steht hier und nicht in base.css: der Merken-Knopf im Modal-Kopf ist
+     bisher eine Eigenheit dieser Seite (Assets und Bausteine). Wandert er auf
+     weitere Seiten, gehört die Regel dorthin.
+     align-items: flex-start und margin-bottom spiegeln .modal-close (base.css)
+     — beide Knöpfe sitzen auf 4,4rem Trefffläche und müssen auf derselben
+     Grundlinie enden, sonst hängt einer sichtbar tiefer. */
+  .vl-modal-actions {
+    display: flex; align-items: flex-start; gap: .4rem; flex-shrink: 0;
+  }
+  .vl-modal-actions .fav-btn { margin-bottom: 1.6rem; }
+  /* 640px = die Breite, ab der base.css das Modal zum Vollbild-Sheet macht und
+     .modal-close auf margin-bottom: 1rem geht. Derselbe Wert, damit die zwei
+     Knöpfe auch dort bündig bleiben. */
+  @media (max-width: 640px) { .vl-modal-actions .fav-btn { margin-bottom: 1rem; } }
+
   /* ============================================================
      BILD-KARTEN (Reiter „Daten") und PAKET-KARTEN (Reiter „Pakete")
 
@@ -324,6 +344,33 @@
     @media (prefers-reduced-motion: reduce) {
       .asset-card, .font-card, .pal-card, .pat-card, .baustein-card, .bk-data-card { transition: none; }
       .asset-card:hover, .font-card:hover, .pal-card:hover, .pat-card:hover, .baustein-card:hover, .bk-data-card:hover { transform: none; }
+    }
+    /* Nur diese beiden Karten öffnen ein Detail-Modal (vlCardClick) — deshalb
+       sagt auch nur bei ihnen der Zeiger, dass die ganze Fläche schaltet.
+       .bk-data-card, .bild-card und .pk-card tragen alles auf der Karte und
+       bleiben bewusst außen vor: Ein Zeigefinger auf einer Fläche ohne Ziel
+       verspricht etwas, was nicht passiert. base.css ist fremdes Eigentum,
+       also steht die Regel hier — gleiche Lage wie .sr-card in showroom.html. */
+    .baustein-card, article.asset-card { cursor: pointer; }
+    /* Titelzeilen ergäben 22px Button-Höhe — unter dem 24px-Tap-Minimum, das
+       tools/qa responsive prüft. Gleiche Lösung wie .sr-name in showroom.html. */
+    .baustein-name .card-open-btn, .ac-name .card-open-btn { min-height: 2.4rem; display: inline-flex; align-items: center; }
+    /* Die Schriftprobe ist ein editierbares Textfeld (contenteditable). Sie erbt
+       den Zeiger sonst von der Karte und sähe aus wie ein Schalter, obwohl ein
+       Klick hinein den Cursor setzt — vlCardClick lässt sie genau deshalb durch. */
+    article.asset-card .ff-preview { cursor: text; }
+    /* Hat etwas in der Karte den Fokus (der Titel-Button, ein Kopieren-Knopf),
+       reagiert die Karte sichtbar mit — dieselbe Geste wie :hover. Das ersetzt
+       den Fokusring, den die Karte selbst NICHT tragen darf (kein tabindex,
+       siehe vlCardClick). Gleiches Muster wie .skill-card:focus-within in
+       base.css und .sr-card:focus-within in showroom.html. */
+    .baustein-card:focus-within, article.asset-card:focus-within {
+      transform: translate(-2px, -2px);
+      border-color: var(--c-black);
+      box-shadow: 6px 6px 0 var(--c-yellow);
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .baustein-card:focus-within, article.asset-card:focus-within { transform: none; }
     }
 
     /* ============================================================
@@ -589,7 +636,18 @@
           <div class="bk-sort">
             <label for="bk-sort">Sortierung</label>
             <select id="bk-sort" aria-label="Bausteine sortieren">
-              <option value="recommended">Empfohlen zuerst</option>
+              <!-- Das Label nennt, was die Sortierung TUT: Erst die als Highlight
+                   kuratierten Bausteine, dann alles übrige nach Kopien, dann
+                   alphabetisch (sortedBausteine(), Zweig `else`). „Empfohlen
+                   zuerst" stand bis 04.08.2026 hier und ließ offen, wer empfiehlt
+                   und wonach — dieselbe Korrektur wie auf prompts.html, wo aus
+                   „Empfohlen zuerst" „Meiste Stimmen" wurde, weil es das tut.
+                   „Highlights" ist auf dieser Seite nachprüfbar: Der Zähler über
+                   dem Raster nennt sie („… Bausteine · 3 Highlights", siehe
+                   renderBausteine). Der interne Wert bleibt 'recommended' —
+                   e7:… wählt über selectOption('#bk-sort', …) den WERT, nicht
+                   die Beschriftung. -->
+              <option value="recommended">Highlights zuerst</option>
               <!-- Wortlaut wörtlich wie auf den anderen fünf Seiten — siehe
                    sortedBausteine() für das Rangkriterium. -->
               <option value="votes">Meiste Stimmen</option>
@@ -836,7 +894,20 @@
     <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-name" aria-describedby="modal-body">
       <div class="modal-header">
         <div class="modal-title-wrap"><p class="modal-kind" id="modal-kind" hidden></p><h2 id="modal-name"></h2></div>
-        <button class="modal-close" onclick="closeModal()" aria-label="Detail schließen">✕</button>
+        <!-- Merken IM MODAL-KOPF: Wer über die Suche oder einen Deep-Link
+             (?a=…, ?b=…) direkt im Detail landet, sah bis hierher gar keinen
+             Merken-Knopf — der saß ausschließlich auf der Karte dahinter.
+             Merken hieß also: Modal schließen, Karte im Grid wiederfinden,
+             Lesezeichen klicken, Detail neu öffnen.
+             Der Knopf ist KEIN eigenes Markup: renderBausteinHead() bzw.
+             renderAssetHead() füllen #modal-fav mit favBookmarkHtml() und
+             übergeben ihren Typ dabei EXPLIZIT ('baustein' / 'asset') — der
+             Seiten-Default aus window.RatingConfig wechselt mit dem Reiter und
+             wäre hier die falsche Quelle (siehe MERKEN-Block im Script).
+             Zustands-Sync mit dem Karten-Lesezeichen läuft ohne Zusatzcode:
+             beide Knöpfe tragen dieselbe data-fav-id, und
+             window.onFavoritesChanged zieht alle Treffer gemeinsam nach. -->
+        <div class="vl-modal-actions"><span id="modal-fav"></span><button class="modal-close" onclick="closeModal()" aria-label="Detail schließen">✕</button></div>
       </div>
       <div class="modal-meta" id="modal-meta"></div>
       <div class="modal-tabs" role="tablist" aria-label="Details"></div>
@@ -1040,9 +1111,55 @@
 
        DEMO-KENNZEICHNUNG (CLAUDE.md, harte Regel 3): Die Zahl ist ein Startwert
        plus höchstens die eigene Stimme, gespeichert unter vote:<typ>:<id> in
-       diesem Browser. VL_VOTE_HINT sagt das an jedem Knopf; der Satz steht
-       genau einmal, damit die Fassungen nicht auseinanderlaufen. */
-    const VL_VOTE_HINT = 'Demo-Wert: Startzahl aus den Daten plus deine eigene Stimme — nur auf diesem Gerät gespeichert.';
+       diesem Browser. VOTE_DEMO_HINT (aus base.js — dort genau einmal, damit die
+       Fassungen nicht auseinanderlaufen) sagt das an jedem Knopf. */
+
+    /* ===== DEEP-LINK: Fokus wandert mit =====
+       Vier Deep-Links dieser Seite fahren eine Karte an und heben sie hervor,
+       ohne ein Modal zu öffnen: ?d= (Beispieldatei), ?pa= (Projektanweisung),
+       ?bild= und ?paket=. Bis zum 04.08.2026 blieb dabei document.activeElement
+       auf BODY — wer nach dem Sprung Tab drückte, landete wieder am Seitenanfang
+       und musste sich zum eben angesprungenen Eintrag durcharbeiten; ein
+       Screenreader las weiter dort vor, wo er vorher stand.
+       tabindex="-1" macht das Ziel NUR programmatisch fokussierbar, es kommt
+       also nicht in die Tab-Reihenfolge — bei einer Karte voller Knöpfe wäre
+       das falsch. Das Attribut bleibt danach stehen: ohne Wirkung auf die
+       Reihenfolge, und ein zweiter Deep-Link auf dasselbe Ziel findet es vor.
+       Kein eigener :focus-Ring nötig: Auf einem nicht-interaktiven Element mit
+       programmatischem Fokus greift :focus-visible nicht, sichtbar markiert die
+       Klasse .-highlight. preventScroll, weil das Anfahren schon passiert ist.
+       Ein Helfer für alle vier Stellen — der Zweig für Bilder und der für Pakete
+       liegen in eigenen Modul-IIFEs, die Funktion steht deshalb hier oben im
+       gemeinsamen Skript-Bereich. */
+    function vlDeepLinkFokus(el) {
+      if (!el) return;
+      el.setAttribute('tabindex', '-1');
+      try { el.focus({ preventScroll: true }); } catch (e) { el.focus(); }
+    }
+
+    /* ===== KLICKBARE KARTE (CLAUDE.md, §„Klickbare Karten") =====
+       Baustein- und Asset-Karten haben ein Detail-Modal, waren aber als einzige
+       Modal-Karten des Hauses nicht ganzflächig anklickbar: Das Modal ging nur
+       über den Knopf am Fuß, der Titel war reiner Text ohne Aktion und ohne
+       Tastaturzugang. Machart wie srCardClick() in showroom.html und
+       resCardClick() in lernen-hilfe.html:
+         Maus  → die ganze Fläche (onclick am <article>)
+         Tastatur → der Titel-Button .card-open-btn (der trägt auch den Fokusring)
+       KEIN role="button"/tabindex am <article>: Die Karten enthalten Merken,
+       Stimmen, Kopieren und Download — eine Schaltfläche darf keine
+       Schaltflächen enthalten (axe nested-interactive).
+       [contenteditable] steht ZUSÄTZLICH zur Haus-Liste im Test: Die Schriftprobe
+       der Asset-Karten (.ff-preview) ist ein editierbares Textfeld, aber weder
+       <input> noch <button>. Ohne diesen Zusatz öffnete jeder Klick hinein das
+       Modal, statt den Cursor zu setzen — das Feld wäre unbenutzbar.
+       Textauswahl gewinnt: Wer mit der Maus markiert, wollte lesen, nicht
+       schalten. */
+    function vlCardClick(event, id) {
+      const t = event.target;
+      if (t.closest && t.closest('a, button, input, select, label, [contenteditable]')) return;
+      try { if (String(window.getSelection())) return; } catch (e) {}
+      openModal(id);
+    }
 
     function vlShowTab(which, fromClick) {
       /* E12 — Tab-Wechsel-Verhalten: das Suchfeld gehört zu KEINEM Panel, darum
@@ -1329,9 +1446,12 @@
       return arr;
     }
 
+    /* Ganze Fläche öffnet „Ansehen & anpassen" (vlCardClick, Begründung dort).
+       Die Live-Vorschau im Kopf fängt nichts ab: .baustein-thumb .preview-frame
+       trägt pointer-events:none, ein Klick darauf landet also an der Karte. */
     function bausteinCardHtml(b) {
       return `
-        <article class="baustein-card" id="baustein-${b.id}" data-id="${b.id}" data-kat="${b.kategorie}">
+        <article class="baustein-card" id="baustein-${b.id}" data-id="${b.id}" data-kat="${b.kategorie}" onclick="vlCardClick(event,'${b.id}')">
           <div class="baustein-thumb" data-pv-id="${b.id}">
             <!-- tabindex="-1": Die Vorschau ist reine Optik (auch pointer-events:none).
                  Ohne das landet JEDER Rahmen des Rasters in der Tab-Reihenfolge und
@@ -1342,7 +1462,13 @@
           </div>
           <div class="baustein-body">
             <div class="baustein-kopf">
-              <span class="baustein-name">${escHtml(b.name)}</span>
+              <!-- Der Titel ist das echte Bedienelement der Karte: Er trägt die
+                   Aktion, den Tastaturzugang und den Fokusring (.card-open-btn,
+                   base.css — erbt die Typografie, sieht also unverändert aus).
+                   .baustein-name bleibt der Hook für CSS und Tests, textContent
+                   bleibt exakt der Baustein-Name. stopPropagation: sonst öffnete
+                   ein Klick das Modal zweimal, über den Button und über die Karte. -->
+              <span class="baustein-name"><button type="button" class="card-open-btn" onclick="event.stopPropagation();openModal('${b.id}')">${escHtml(b.name)}</button></span>
               <span class="vl-kopf-rechts"><span class="baustein-schwer">${escHtml(kategorieLabel(b))}</span>${favBookmarkHtml(b.id, 'baustein', b.name)}</span>
             </div>
             <p class="baustein-desc density-clamp">${escHtml(b.beschreibung)}</p>
@@ -1355,7 +1481,7 @@
                    label:'' — im Raster steht neben jedem Knopf schon der
                    Kopierzähler; ein zweites Wort „Hilfreich" daneben machte die
                    Zeile bei 320 px zweizeilig. Das aria-label trägt es trotzdem. -->
-              <span class="vl-votes" title="${VL_VOTE_HINT}">${renderUpvoteBtn(b.id, 'baustein', getUpvoteCount(b, 'baustein'), { label: '', compact: true, name: b.name })}</span>
+              <span class="vl-votes" title="${VOTE_DEMO_HINT}">${renderUpvoteBtn(b.id, 'baustein', getUpvoteCount(b, 'baustein'), { label: '', compact: true, name: b.name })}</span>
             </div>
             <div class="baustein-actions">
               <button class="lib-btn -primary" onclick="openModal('${b.id}')">${LU.blocks}Ansehen &amp; anpassen</button>
@@ -1506,6 +1632,18 @@
         + (d.uebungstext || '') + ' ' + (d.spaltenHinweis || '')).toLowerCase();
       return terms.every(t => hay.includes(t));
     }
+    /* KEIN DICHTE-REGLER — bewusst (CLAUDE.md: „Wo bewusst keiner sitzt, gehört
+       die Begründung daneben", sonst liest die nächste Prüfung es als Lücke).
+       Zwei Gründe, beide aus der Karte selbst:
+       (1) Diese Karte ist ein FAKTENBLATT. Format, Größe, Zeilen, Datensätze und
+           Spalten sind kein schmückender Text, sondern genau das, wonach man eine
+           Übungsdatei aussucht — was ein Dichte-Regler auf „kompakt" ausblenden
+           würde, ist hier der Inhalt.
+       (2) Die Übungs-Querverweise (.bk-data-xref) sind für einige Bausteine und
+           Prompts der einzige Weg VON der Datei ZUR passenden Übung. Sie im
+           Standard auszublenden — und „kompakt" IST der Standard, siehe
+           initDensity() beim Baustein-Raster — nähme diesen Weg still weg: eine
+           Erreichbarkeits-Regression, keine Aufräumaktion. */
     function renderBeispieldaten() {
       const host = document.getElementById('bk-data-grid');
       if (!host) return;
@@ -1643,12 +1781,21 @@
                vote:baustein:<id>. -->
           <div class="bk-pa-rate">
             <span class="bk-pa-rate-label">War die Vorlage hilfreich?</span>
-            <span class="vl-votes" title="${VL_VOTE_HINT}">${renderUpvoteBtn(a.id, 'anweisung', getUpvoteCount(a, 'anweisung'), { label: 'Hilfreich', name: a.name })}</span>
-            <p class="bk-pa-rate-hint">${escHtml(VL_VOTE_HINT)}</p>
+            <span class="vl-votes" title="${VOTE_DEMO_HINT}">${renderUpvoteBtn(a.id, 'anweisung', getUpvoteCount(a, 'anweisung'), { label: 'Hilfreich', name: a.name })}</span>
+            <p class="bk-pa-rate-hint">${escHtml(VOTE_DEMO_HINT)}</p>
           </div>
         </article>`;
     }
 
+    /* KEIN DICHTE-REGLER — bewusst, obwohl dieser Block im selben Reiter sitzt
+       wie das Baustein-Raster: initDensity() dort ist auf container '#bk-grid'
+       gebunden und lässt '#bk-pa-grid' absichtlich aus. Grund: Die Karte bringt
+       ihre Abstufung schon selbst mit. Das Lange steht in zwei <details>
+       ('Warum steht das drin?' und der vollständige Text) und ist im Ausgangs-
+       zustand ZU. Was offen bleibt — Kurzbeschreibung, „Wofür", „Passt / passt
+       nicht, wenn" — ist genau das Material, mit dem man zwischen den Vorlagen
+       wählt; im Standard eingeklappt wäre die Auswahl eine Raterei. Ein zweiter
+       Regler daneben schaltete also entweder nichts oder das Falsche. */
     function renderAnweisungen() {
       const host = document.getElementById('bk-pa-grid');
       if (!host) return;
@@ -1688,8 +1835,13 @@
       // Typ-Dachzeile: sagt im Kopf, WAS geöffnet wurde (wechselt mit dem Tab)
       const kindEl = document.getElementById('modal-kind');
       if (kindEl) { kindEl.textContent = 'Baustein'; kindEl.hidden = false; }
+      // Merken im Kopf — Typ EXPLIZIT 'baustein' (siehe MERKEN-Block oben:
+      // window.RatingConfig wechselt mit dem Reiter und taugt hier nicht als
+      // Quelle). Bei jedem Öffnen neu gerendert, damit der Zustand stimmt.
+      const favEl = document.getElementById('modal-fav');
+      if (favEl) favEl.innerHTML = favBookmarkHtml(item.id, 'baustein', item.name);
       document.getElementById('modal-meta').innerHTML =
-        `<span class="vl-votes" title="${VL_VOTE_HINT}">${renderUpvoteBtn(item.id, 'baustein', getUpvoteCount(item, 'baustein'), { label: 'Hilfreich', name: item.name })}</span>`
+        `<span class="vl-votes" title="${VOTE_DEMO_HINT}">${renderUpvoteBtn(item.id, 'baustein', getUpvoteCount(item, 'baustein'), { label: 'Hilfreich', name: item.name })}</span>`
         + `<span class="modal-meta-sep">·</span>`
         + `<span class="ff-kat">${escHtml(kategorieLabel(item))} · ${escHtml(schwierigkeitLabel(item))}</span>`
         + `<span class="modal-meta-sep">·</span>`
@@ -1756,8 +1908,8 @@
       return `
         <p class="am-source"><strong>${stimmen}</strong> ${stimmen === 1 ? 'Stimme' : 'Stimmen'} — Kolleg:innen, denen dieser Baustein geholfen hat.</p>
         <span class="am-label">Hat er dir geholfen?</span>
-        <div class="am-actions"><span class="vl-votes" title="${VL_VOTE_HINT}">${renderUpvoteBtn(item.id, 'baustein', stimmen, { label: 'Hilfreich', name: item.name })}</span></div>
-        <p class="am-hint">${escHtml(VL_VOTE_HINT)}</p>
+        <div class="am-actions"><span class="vl-votes" title="${VOTE_DEMO_HINT}">${renderUpvoteBtn(item.id, 'baustein', stimmen, { label: 'Hilfreich', name: item.name })}</span></div>
+        <p class="am-hint">${escHtml(VOTE_DEMO_HINT)}</p>
         <span class="am-label">Dein Kommentar (bleibt lokal in deinem Browser)</span>
         <div class="am-comment-form">
           <input id="comment-author-${item.id}" placeholder="Dein Name" aria-label="Dein Name">
@@ -1846,6 +1998,7 @@
           el.scrollIntoView({ behavior: window.scrollBehavior(), block: 'center' });
           el.classList.add('-highlight');
           setTimeout(() => el.classList.remove('-highlight'), 2400);
+          vlDeepLinkFokus(el);
         } else {
           vlDeepLinkMiss('d');   // id unbekannt: melden + URL aufräumen statt schweigen
         }
@@ -1862,6 +2015,7 @@
           el.scrollIntoView({ behavior: window.scrollBehavior(), block: 'center' });
           el.classList.add('-highlight');
           setTimeout(() => el.classList.remove('-highlight'), 2400);
+          vlDeepLinkFokus(el);
         } else {
           vlDeepLinkMiss('pa');
         }
@@ -2298,11 +2452,13 @@
       const stimmung = assetStimmungText(m);
       const tagsHtml = m.tags.map(t => `<span class="ac-tag">${escHtml(t)}</span>`).join('');
       return `
-        <article class="asset-card ${ASSET_TYP_KLASSE[m.typ] || ''}" id="asset-${m.id}" data-id="${m.id}" data-typ="${m.typ}">
+        <article class="asset-card ${ASSET_TYP_KLASSE[m.typ] || ''}" id="asset-${m.id}" data-id="${m.id}" data-typ="${m.typ}" onclick="vlCardClick(event,'${m.id}')">
           ${assetVorschauHtml(m)}
           <div class="ac-body">
             <div class="ac-kopf">
-              <span class="ac-name">${escHtml(m.name)}</span>
+              <!-- Titel als Bedienelement — gleiche Machart wie bei den
+                   Baustein-Karten, siehe Kommentar dort und vlCardClick(). -->
+              <span class="ac-name"><button type="button" class="card-open-btn" onclick="event.stopPropagation();openModal('${m.id}')">${escHtml(m.name)}</button></span>
               <span class="vl-kopf-rechts">${badge ? `<span class="ac-badge">${escHtml(badge)}</span>` : ''}${favBookmarkHtml(m.id, 'asset', m.name)}</span>
             </div>
             ${stimmung ? `<p class="ac-stimmung density-clamp">${escHtml(stimmung)}</p>` : ''}
@@ -2548,12 +2704,16 @@
       // Typ-Dachzeile: sagt im Kopf, WAS geöffnet wurde (wechselt mit dem Tab)
       const kindEl = document.getElementById('modal-kind');
       if (kindEl) { kindEl.textContent = 'Design-Asset'; kindEl.hidden = false; }
+      // Merken im Kopf — Typ EXPLIZIT 'asset'; gleiches Muster wie im
+      // Baustein-Modal, nur der Namensraum unterscheidet sich.
+      const favEl = document.getElementById('modal-fav');
+      if (favEl) favEl.innerHTML = favBookmarkHtml(item.id, 'asset', item.name);
       // Stimme vorn in der Meta-Zeile — gleiches Muster wie im Baustein-Modal.
       // Sie steht bei JEDEM Asset, auch bei denen ohne Seed (Paletten, Muster,
       // Icon-Sets starten ehrlich bei 0): Ein Knopf, der nur bei manchen Karten
       // auftaucht, sähe aus wie ein Fehler, und abstimmen kann man überall.
       document.getElementById('modal-meta').innerHTML =
-        `<span class="vl-votes" title="${VL_VOTE_HINT}">${renderUpvoteBtn(item.id, 'asset', getUpvoteCount(item, 'asset'), { label: 'Hilfreich', name: item.name })}</span>`
+        `<span class="vl-votes" title="${VOTE_DEMO_HINT}">${renderUpvoteBtn(item.id, 'asset', getUpvoteCount(item, 'asset'), { label: 'Hilfreich', name: item.name })}</span>`
         + `<span class="modal-meta-sep">·</span>`
         + `<span class="ff-kat">${typLabel(item)}</span><span class="modal-meta-sep">·</span>`
         + `<span class="lib-lic">${LU.check}${escHtml(assetLicenseLabel(item))}</span>`;
@@ -2674,8 +2834,8 @@
       return `
         <p class="am-source"><strong>${stimmen}</strong> ${stimmen === 1 ? 'Stimme' : 'Stimmen'} — Kolleg:innen, denen dieses Asset geholfen hat.</p>
         <span class="am-label">Hat es dir geholfen?</span>
-        <div class="am-actions"><span class="vl-votes" title="${VL_VOTE_HINT}">${renderUpvoteBtn(item.id, 'asset', stimmen, { label: 'Hilfreich', name: item.name })}</span></div>
-        <p class="am-hint">${escHtml(VL_VOTE_HINT)}</p>
+        <div class="am-actions"><span class="vl-votes" title="${VOTE_DEMO_HINT}">${renderUpvoteBtn(item.id, 'asset', stimmen, { label: 'Hilfreich', name: item.name })}</span></div>
+        <p class="am-hint">${escHtml(VOTE_DEMO_HINT)}</p>
         <span class="am-label">Dein Kommentar (bleibt lokal in deinem Browser)</span>
         <div class="am-comment-form">
           <input id="comment-author-${item.id}" placeholder="Dein Name" aria-label="Dein Name">
@@ -2953,6 +3113,13 @@
       el.hidden = false;
     }
 
+    /* KEIN DICHTE-REGLER — bewusst, gleiche Begründung wie bei den Beispieldaten
+       (siehe renderBeispieldaten): Die Bild-Karte ist ein Faktenblatt. Format,
+       Pixelmaße und Dateigröße entscheiden, ob ein Bild taugt, und Lizenz,
+       Urheber und Quelle sind Pflichtangaben — sie stehen auf der Karte, weil sie
+       jemand SIEHT, bevor er die Datei benutzt. Eine Ansicht, die sie im Standard
+       wegklappt, macht aus einer Rechtsangabe ein Detail auf Anfrage. Es gibt
+       hier deshalb nichts, was der Regler zumutbar ausblenden könnte. */
     function renderBilder() {
       const host = document.getElementById('bild-grid');
       if (!host) return;
@@ -2992,6 +3159,7 @@
       el.scrollIntoView({ behavior: window.scrollBehavior(), block: 'center' });
       el.classList.add('-highlight');
       setTimeout(() => el.classList.remove('-highlight'), 2400);
+      vlDeepLinkFokus(el);
     }
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -3101,6 +3269,13 @@
       el.hidden = false;
     }
 
+    /* KEIN DICHTE-REGLER — bewusst, und hier aus dem einfachsten Grund: PAKETE
+       enthält EINEN Eintrag (PAKETE_STATS.total, gezählt statt getippt). Ein
+       Regler, der eine einzige Karte kürzer macht, spart kein Scrollen und
+       schafft nur ein weiteres Bedienelement — dieselbe Überlegung wie beim
+       Stern, den die zwei Logos im Marken-Panel bewusst nicht tragen
+       (CLAUDE.md: „Nicht alles braucht einen Stern"). Wächst die Sammlung
+       spürbar, ist das hier die Stelle, an der die Frage neu gestellt gehört. */
     function renderPakete() {
       const host = document.getElementById('pk-grid');
       if (!host) return;
@@ -3247,6 +3422,7 @@
       el.scrollIntoView({ behavior: window.scrollBehavior(), block: 'center' });
       el.classList.add('-highlight');
       setTimeout(() => el.classList.remove('-highlight'), 2400);
+      vlDeepLinkFokus(el);
     }
 
     document.addEventListener('DOMContentLoaded', () => {
